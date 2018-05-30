@@ -1,0 +1,49 @@
+# Load gpg commands
+source "$HOME/.mutt/gpg.rc"
+
+# Default account
+source "$HOME/.mutt/account"
+
+# SSL
+set ssl_force_tls = yes
+set ssl_starttls  = yes
+set ssl_verify_host = no
+
+# Cache
+set header_cache = "$HOME/mail/headers"
+set message_cachedir = "$HOME/mail/bodies"
+
+# Sidebar
+set sidebar_visible = yes
+set sidebar_format = "%B %?N?(%N)?%* %S "
+set sidebar_width = 15
+bind index,pager B sidebar-toggle-visible
+
+# Pager
+set index_format = "%-4.4Z %-40.40L %-100.100s %-20D (%?l?%4l&%4c?)"
+set date_format = "%d/%m/%Y %H:%M"
+set sort = reverse-date-received
+set menu_scroll
+set pager_index_lines = 1
+
+# Plaint text / HTML
+auto_view text/html
+alternative_order text/plain text/html
+
+# Misc
+set mailcap_path = "$HOME/.mutt/mailcap"
+set smart_wrap
+set sleep_time = 0
+set editor = 'nvim'
+set mail_check_stats
+set imap_check_subscribed
+
+# Binds / Macros
+bind pager k previous-line
+bind pager j next-line
+bind pager g top
+bind pager G bottom
+bind attach,index,pager \CD next-page
+bind attach,index,pager \CU previous-page
+bind attach,index,pager g first-entry
+bind attach,index,pager G last-entry

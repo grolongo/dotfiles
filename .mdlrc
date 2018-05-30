@@ -1,0 +1,1 @@
+style ENV['DOTFILES_DIR']+'/markdownstyle.rb'

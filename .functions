@@ -1,0 +1,4 @@
+# Read markdown files like manpages
+md () {
+    pandoc -s -f markdown -t man "$*" | man -l -
+}

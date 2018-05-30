@@ -1,0 +1,440 @@
+#!/bin/bash
+
+# Recurring functions {{{
+# ===================
+msg_info() {
+  yellow='\033[33m'
+  nc='\033[0m'
+  echo
+  echo -e "${yellow}$1${nc}"
+}
+
+msg_error() {
+  red='\033[91m'
+  nc='\033[0m'
+  echo -e "${red}$1${nc}" >&2
+}
+
+check_is_sudo() {
+  if [ "$EUID" -ne 0 ]; then
+    msg_error "Requires root privileges. Use sudo."
+    exit 1
+  fi
+}
+
+check_is_not_sudo() {
+  if [ ! "$EUID" -ne 0 ]; then
+    msg_error "Don't run this as sudo."
+    exit 1
+  fi
+}
+
+confirm() {
+  while true; do
+    read -r -p "$1 [y/n] " choice
+    case "$choice" in
+      [yY]es|[yY])
+        return 0
+      ;;
+      [nN]o|[nN])
+        return 1
+      ;;
+      *)
+        msg_error "Please enter yes or no."
+      ;;
+    esac
+  done
+}
+
+apt_install() {
+  msg_info "Installing packages..."
+  apt install -y "${packages[@]}"
+}
+
+apt_clean() {
+  msg_info "Autoremoving..."
+  apt autoremove
+
+  msg_info "Autocleaning..."
+  apt autoclean
+
+  msg_info "Cleaning..."
+  apt clean
+}
+# }}}
+# check if running on raspberrypi
+[[ ! $(uname -n) == raspberrypi ]] && { msg_error "Please run this script on the server."; exit 1; } 
+# Initial setup {{{
+# =============
+initial_setup() {
+  check_is_sudo
+
+  if [ "$SUDO_USER" != "pi" ]; then
+    confirm "You're under user '$SUDO_USER'. Do you wish to delete pi?" && {
+      deluser --remove-home pi
+      groupdel pi
+    }
+    msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers"
+    echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    echo
+  fi
+
+  msg_info "Disabling root account for security..."
+  passwd --delete root
+  passwd --lock root
+
+  msg_info "Setting up timezone..."
+  dpkg-reconfigure tzdata
+
+  msg_info "Setting up locales..."
+  dpkg-reconfigure locales
+
+  msg_info "Changing memory split to 16 for GPU..."
+  echo 'gpu_mem=16' >> /boot/config.txt
+
+  msg_info "Expanding filesystem"
+  raspi-config --expand-rootfs
+}
+# }}}
+# Apt base {{{
+# ========
+apt_base() {
+  check_is_sudo
+
+  msg_info "Disabling translations to speed-up updates..."
+  mkdir -vp /etc/apt/apt.conf.d
+  echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/99disable-translations
+
+  msg_info "First update of the machine..."
+  apt update
+
+  msg_info "First upgrade of the machine..."
+  apt upgrade
+
+  local packages=(
+    fail2ban
+    harden-clients
+    harden-servers
+    iptables-persistent
+    jq
+    logwatch
+    rng-tools
+    tor
+  )
+
+  for p in "${packages[@]}"; do
+    confirm "Install $p?" && apt install -y "$p"
+  done
+
+  apt_clean
+}
+# }}}
+# Rkhunter {{{
+# ========
+install_rkhunter() {
+  check_is_sudo
+
+  local packages=(
+    rkhunter
+    lsof
+  )
+
+  apt_install
+
+  msg_info "Running rkhunter update..."
+  rkhunter --update
+
+  msg_info "Running initial propupd..."
+  rkhunter --propupd
+
+  apt_clean
+}
+# }}}
+# Seafile {{{
+# =======
+install_seafile() {
+  check_is_not_sudo
+
+  sf_latest=$(curl -sSL "https://api.github.com/repos/haiwen/seafile-rpi/releases/latest" | jq --raw-output .tag_name)
+  sf_latest=${sf_latest#v}
+  repo="https://github.com/haiwen/seafile-rpi/releases/download/"
+  release="v${sf_latest}/seafile-server_${sf_latest}_stable_pi.tar.gz"
+  
+  tmpdir=$(mktemp -d)
+  
+  msg_info "Creating Seafile dir in home..."
+  mkdir -vp "$HOME"/Seafile
+
+  (
+  msg_info "Creating temporary folder..."
+  cd "$tmpdir" || exit 1
+
+  msg_info "Downloading and extracting Seafile ${sf_latest}"
+  curl -#L "${repo}${release}" | tar -C "$HOME"/Seafile -xzf -
+  )
+
+  msg_info "Deleting temp folder..."
+  rm -rf "$tmpdir"
+
+  local packages=(
+    python2.7
+    libpython2.7
+    python-setuptools
+    python-imaging
+    python-ldap
+    python-urllib3
+    sqlite3
+    python-requests
+  )
+
+  msg_info "Installing packages..."
+  sudo apt install -y "${packages[@]}"
+
+  msg_info "Setting Paris timezone in the config file..."
+  echo "TIME_ZONE = 'Europe/Paris'" >> "$HOME"/Seafile/conf/seahub_settings.py
+
+  (
+  cd "$HOME"/Seafile/seafile-server-"$sf_latest" || exit 1
+  msg_info "Launching setup script..."
+  ./setup-seafile.sh && \
+    ./seafile.sh start && \
+    ./seahub.sh start
+  )
+
+  msg_info "Adding to crontab for autostart on boot..."
+  (crontab -l ; echo "@reboot sleep 30 && $HOME/Seafile/seafile-server-latest/seafile.sh start") | crontab -
+  (crontab -l ; echo "@reboot sleep 60 && $HOME/Seafile/seafile-server-latest/seahub.sh start") | crontab -
+  msg_info "Confirm with 'crontab -l'"
+
+  msg_info "Autoremoving..."
+  sudo apt autoremove
+
+  msg_info "Autocleaning..."
+  sudo apt autoclean
+
+  msg_info "Cleaning..."
+  sudo apt clean
+}
+# }}}
+# PSAD {{{
+# ========
+install_psad() {
+  check_is_sudo
+
+  local packages=(
+    psad
+  )
+
+  apt_install
+
+  msg_info "Updating and restarting..."
+  psad --sig-update && /etc/init.d/psad restart
+}
+# }}}
+# Msmtp {{{
+# =====
+install_msmtp() {
+  check_is_sudo
+
+  local packages=(
+    msmtp
+    msmtp-mta
+    ca-certificates
+  )
+
+  apt_install
+
+  msg_info "Creating log folder at /var/log/msmtp"
+  mkdir -vp /var/log/msmtp
+
+  apt_clean
+
+  msg_info "Don't forget to add/symlink .msmtprc to your root home folder."
+}
+# }}}
+# Zsh {{{
+# ===
+install_zsh() {
+  check_is_not_sudo
+
+  sudo apt install -y zsh
+
+  msg_info "Appending SSH_CONNECTION environment variable to /etc/sudoers"
+  if sudo grep -xqFe 'Defaults env_keep += "SSH_CONNECTION"' /etc/sudoers
+  then
+    msg_info "Already present, good."
+  else
+    sudo echo 'Defaults env_keep += "SSH_CONNECTION"' | sudo tee -a /etc/sudoers > /dev/null
+  fi
+
+  msg_info "Installing Spaceship's prompt..."
+  git clone https://github.com/denysdovhan/spaceship-prompt.git "$HOME"/spaceship-prompt
+  sudo ln -sfv "$HOME/spaceship-prompt/spaceship.zsh" "/usr/local/share/zsh/site-functions/prompt_spaceship_setup"
+
+  # zsh for user
+  confirm "Change shell to zsh for $USER?" && {
+    chsh -s "/bin/zsh"
+  }
+
+  # zsh for root
+  confirm "Change shell to zsh for ROOT?" && {
+    sudo chsh -s "/bin/zsh"
+  }
+
+  msg_info "Symlink $USER shell configs to root..."
+  sudo ln -sniv ~/.zshrc /root/.zshrc
+  sudo ln -sniv ~/.aliases /root/.aliases
+  sudo ln -sniv ~/.dircolors /root/.dircolors
+
+  apt_clean
+}
+# }}}
+# Vim {{{
+# ===
+install_vim() {
+  check_is_sudo
+
+  local packages=(
+    vim
+  )
+
+  apt_install
+
+  msg_info "Symlink $SUDO_USER vim config to root..."
+  ln -sniv ~/.vimrc /root/.vimrc
+
+  apt_clean
+}
+# }}}
+# Tmux {{{
+# ====
+install_tmux() {
+  check_is_not_sudo
+  
+  local packages=(
+    tmux
+  )
+
+  msg_info "Installing packages..."
+  sudo apt install -y "${packages[@]}"
+
+  msg_info "Compiling fresh terminfo files fo italics in tmux..."
+  tic -o "$HOME"/.terminfo .terminfo/tmux.terminfo
+  tic -o "$HOME"/.terminfo .terminfo/tmux-256color.terminfo
+  tic -o "$HOME"/.terminfo .terminfo/xterm-256color.terminfo
+
+  msg_info "Autoremoving..."
+  sudo apt autoremove
+
+  msg_info "Autocleaning..."
+  sudo apt autoclean
+
+  msg_info "Cleaning..."
+  sudo apt clean
+}  
+# }}}
+# Weechat {{{
+# =======
+install_weechat() {
+  check_is_sudo
+
+  msg_info "Installing https transport if not present..."
+  apt install apt-transport-https
+
+  msg_info "Adding Weechat repository to apt sources list..."
+  echo 'deb https://weechat.org/raspbian stretch main' > /etc/apt/sources.list.d/weechat.list && \
+    msg_info "Updating..."
+    apt update
+
+  local packages=(
+    weechat-curses
+    weechat-plugins
+  )
+
+  apt_install
+  apt_clean
+}
+# }}}
+# Lynis {{{
+# =====
+install_lynis() {
+  check_is_sudo
+
+  msg_info "Importing key to apt..."
+  wget -O - https://packages.cisofy.com/keys/cisofy-software-public.key | apt-key add -
+
+  msg_info "Installing https transport if not present..."
+  apt install apt-transport-https
+
+  msg_info "Adding Lynis repository to apt sources list..."
+  echo 'deb https://packages.cisofy.com/community/lynis/deb/ stable main' > /etc/apt/sources.list.d/cisofy-lynis.list && \
+    msg_info "Updating..."
+    apt update
+
+  local packages=(
+    lynis
+  )
+
+  apt_install
+  apt_clean
+}
+# }}}
+# Menu {{{
+# ====
+usage() {
+  echo
+  echo "This script installs my basic setup for a server."
+  echo
+  echo "Usage:"
+  echo "  isetup    (s) - delete pi user, passwordless sudo, lock root and run raspi-config"
+  echo "  aptbase   (s) - disable translations, update, upgrade and installs few packages"
+  echo "  rkhunter  (s) - installs rkhunter with lsof and initial propupd"
+  echo "  seafile       - downloads and deploys Seafile server"
+  echo "  psad      (s) - installs port scan attack detector and runs signatures update"
+  echo "  msmtp     (s) - installs msmtp and msmtp-mta"
+  echo "  zsh       (s) - installs zsh as default shell and symlinks to root"
+  echo "  vim       (s) - installs vim and symlinks to root"
+  echo "  tmux          - installs tmux and compils profiles for italic support"
+  echo "  weechat   (s) - setups weechat repository and installs"
+  echo "  lynis     (s) - installs Lynis audit from official repository"
+  echo
+}
+
+main() {
+  local cmd=$1
+  
+  # return error if nothing is specified
+	if [[ -z "$cmd" ]]; then
+    usage
+    exit 1
+	fi
+
+  if [[ $cmd == "isetup" ]]; then
+    initial_setup
+  elif [[ $cmd == "aptbase" ]]; then
+    apt_base
+  elif [[ $cmd == "rkhunter" ]]; then
+    install_rkhunter
+  elif [[ $cmd == "seafile" ]]; then
+    install_seafile
+  elif [[ $cmd == "psad" ]]; then
+    install_psad
+  elif [[ $cmd == "msmtp" ]]; then
+    install_msmtp
+  elif [[ $cmd == "zsh" ]]; then
+    install_zsh
+  elif [[ $cmd == "vim" ]]; then
+    install_vim
+  elif [[ $cmd == "tmux" ]]; then
+    install_tmux
+  elif [[ $cmd == "weechat" ]]; then
+    install_weechat
+  elif [[ $cmd == "lynis" ]]; then
+    install_lynis
+  else
+    usage
+  fi
+}
+
+main "$@"
+# }}}

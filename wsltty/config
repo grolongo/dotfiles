@@ -1,0 +1,23 @@
+# To use common configuration in %APPDATA%\mintty, simply remove this file
+BoldAsFont=yes
+Font=Consolas
+FontHeight=11
+CursorType=block
+CursorBlinks=no
+Term=xterm-256color
+BoldAsColour=no
+ThemeFile=solarized_dark
+CursorColour=0,128,255
+Columns=161
+Rows=40
+ForegroundColour=238,232,213
+BellType=0
+
+# options (default=locale): locale, unicode, ambig-wide
+Charwidth=unicode
+
+# options (default=none): none, emojione, noto, apple, google, twitter, facebook, samsung, windows 
+Emojis=apple
+
+# options (default=stretch): stretch, align, middle, full
+EmojiPlacement=full

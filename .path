@@ -1,0 +1,22 @@
+export PATH="/usr/local/bin:/usr/local/sbin:/bin:/usr/bin:/usr/sbin:/sbin:${PATH}"
+
+# add home bin if exists
+if [ -d "${HOME}/bin" ]; then
+  export PATH="${HOME}/bin:${PATH}"
+fi
+
+# add home gems
+if which ruby >/dev/null && which gem >/dev/null; then
+  export PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:${PATH}"
+fi
+
+## add python2 & pip2 binaries on macOS
+#if test "$(which brew)" && [ -e "/usr/local/opt/python@2" ]; then
+#  export PY2PATH="/usr/local/opt/python@2/libexec/bin:/usr/local/opt/python@2/bin"
+#  export PATH="${PY2PATH}:${PATH}"
+#fi
+
+# add pip3 binaries
+if [ -d "${HOME}/.local/bin" ]; then
+  export PATH="${HOME}/.local/bin:${PATH}"
+fi

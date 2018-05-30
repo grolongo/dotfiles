@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# GNU utils {{{
+# =========
+if [[ "$OSTYPE" = darwin* && -d /usr/local/Cellar/coreutils ]]; then
+  alias ls="gls -ANF --color=auto --group-directories-first --sort=extension"
+  alias l="gls -ANFlh --color=auto --group-directories-first --sort=extension"
+  alias rm="grm -I -v"
+  alias df="gdf -TH"
+  alias du="gdu -d 0 -h * | sort -hr"
+else
+  alias ls="ls -ANF --color=auto --group-directories-first --sort=extension"   # short, all
+  alias l="ls -ANFlh --color=auto --group-directories-first --sort=extension"  # long, all
+  alias rm="rm -I -v"
+  alias du="du -d 0 -h * | sort -hr"
+  alias df="df -TH"
+fi
+# }}}
+# macOS {{{
+# =====
+if [[ "$OSTYPE" = darwin* ]]; then
+  # hide/show dotfiles
+  alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+  alias hidedotfiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+
+  # hide/show all desktop icons (useful when presenting)
+  alias showdesktopicons="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+  alias hidedesktopicons="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+
+  # veracrypt path
+  alias veracrypt="/Applications/VeraCrypt.app/Contents/MacOS/VeraCrypt"
+
+  # edit TBB torrc
+  alias torrc="nvim /Applications/TorBrowser.app/Contents/Resources/TorBrowser/Tor/torrc"
+
+  # uses macvim's vim
+  #alias vim="mvim -v"
+
+  alias mutt="torify -P 9150 mutt 2>/dev/null"
+fi
+# }}}
+# WSL {{{
+# ===
+if [[ $(uname -r) =~ Microsoft ]]; then 
+  alias wh="cd \$WHOME"
+  #alias gpg="gpg2"
+  alias mutt="torify mutt 2>/dev/null"
+
+
+
+fi
+# }}}
+# i3 {{{
+# ==
+if [[ $OSTYPE = linux* ]]; then
+  alias feh="feh --scale-down --image-bg black --borderless"
+  alias afk="i3lock -c 000000"
+fi
+# }}}
+
+# Misc (blank space so its not in history)
+# ----------------------------------------
+alias :q="exit"
+alias :e="nvim"
+alias nv="nvim"
+alias tm="tmux"
+alias pwd=" pwd"
+alias clear=" clear"
+alias claer=" clear"
+alias exit=" exit"
+alias mv="mv -i -v"
+alias cp="cp -i -v"
+alias grep="grep --color"
+
+# Variables
+# ---------
+alias n='cd "$NOTES_DIR"'
+alias dot='cd "$DOTFILES_DIR"'
+alias doc='cd "$DOCUMENTS_DIR"'
+alias priv='cd "$PRIVATE_DIR"'
+alias proj='cd "$PROJECTS_DIR"'
+
+# IPs
+# ---
+alias ippub="dig +short myip.opendns.com @resolver1.opendns.com"
+alias iplocal="sudo ifconfig | grep -Eo 'inet (addr:)?([0-9]*\\.){3}[0-9]*' | grep -Eo '([0-9]*\\.){3}[0-9]*' | grep -v '127.0.0.1'"
+
+# Security/Privacy
+# ----------------
+alias clam-checkvirus="sudo freshclam && clamscan --recursive=yes --infected /"
+alias exif-removemeta="exiftool -all="
+
+# youtube-dl
+alias youtube-to-mp3="youtube-dl -x --audio-format mp3 --audio-quality 0"
+
+# chatty
+alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &; disown"
+
+# torrified seafile
+# -----------------
+alias ssh-tunnel-tor-rpi="ssh -D 9090 -f -C -N raspberrypi-tor"
+alias ssh-tunnel-tor-seafile="ssh -f -N -L 8000:127.0.0.1:8000 raspberrypi-tor && ssh -f -N -L 8082:127.0.0.1:8082 raspberrypi-tor"
