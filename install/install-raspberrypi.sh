@@ -392,7 +392,7 @@ usage() {
   echo "  seafile       - downloads and deploys Seafile server"
   echo "  psad      (s) - installs port scan attack detector and runs signatures update"
   echo "  msmtp     (s) - installs msmtp and msmtp-mta"
-  echo "  zsh       (s) - installs zsh as default shell and symlinks to root"
+  echo "  zsh           - installs zsh as default shell and symlinks to root"
   echo "  vim       (s) - installs vim and symlinks to root"
   echo "  tmux          - installs tmux and compils profiles for italic support"
   echo "  weechat   (s) - setups weechat repository and installs"
