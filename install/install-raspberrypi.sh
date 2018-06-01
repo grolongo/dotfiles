@@ -190,9 +190,6 @@ install_seafile() {
   msg_info "Installing packages..."
   sudo apt install -y "${packages[@]}"
 
-  msg_info "Setting Paris timezone in the config file..."
-  echo "TIME_ZONE = 'Europe/Paris'" >> "$HOME"/Seafile/conf/seahub_settings.py
-
   (
   cd "$HOME"/Seafile/seafile-server-"$sf_latest" || exit 1
   msg_info "Launching setup script..."
@@ -200,6 +197,9 @@ install_seafile() {
     ./seafile.sh start && \
     ./seahub.sh start
   )
+
+  msg_info "Setting Paris timezone in the config file..."
+  echo "TIME_ZONE = 'Europe/Paris'" >> "$HOME"/Seafile/conf/seahub_settings.py
 
   msg_info "Adding to crontab for autostart on boot..."
   (crontab -l ; echo "@reboot sleep 30 && $HOME/Seafile/seafile-server-latest/seafile.sh start") | crontab -
