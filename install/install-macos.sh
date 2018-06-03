@@ -397,7 +397,7 @@ install_hosts() {
   curl -sSL -o /etc/hosts https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
 
   msg_info "Flushing dns..."
-  dscacheutil -flushcache; killall -HUP mDNSResponder
+  killall -HUP mDNSResponder; killall mDNSResponderHelper; dscacheutil -flushcache
 }
 # }}}
 # Dotfiles {{{
