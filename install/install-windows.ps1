@@ -239,6 +239,23 @@ function set_network {
 }
 
 # }}}
+# Hosts {{{
+# =====
+
+function install_hosts {
+
+  Write-Host -ForegroundColor "yellow" "Backing up existing hosts file..."
+  Copy-Item "C:\Windows\System32\drivers\etc\hosts" -Destination "C:\Windows\System32\drivers\etc\hosts.bk"
+
+  Write-Host -ForegroundColor "yellow" "Downloading hosts file..."
+  Invoke-WebRequest -Uri https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts -OutFile C:\Windows\System32\drivers\etc\hosts
+
+  Write-Host -ForegroundColor "yellow" "Flushing dns..."
+  ipconfig /flushdns
+
+}
+
+# }}}
 # Explorer {{{
 # ========
 
@@ -380,6 +397,7 @@ function usage {
   Write-Host "  remove            - uninstall unecessary apps"
   Write-Host "  privacy           - wifi hotspot, xbox, etc."
   Write-Host "  network           - CloudFlare's DNS servers and firewall settings"
+  Write-Host "  hosts             - Downloads and installs hosts file"
   Write-Host "  explorersettings  - tweaking quick access, show extensions, hidden files in explorer"
   Write-Host "  taskbarsettings   - small taskbar, no combine, show all notification icons, locked"
   Write-Host "  powersettings     - disable power saving modes on AC power"
@@ -403,6 +421,7 @@ function main {
   elseif ($cmd -eq "remove") { remove_junk }
   elseif ($cmd -eq "privacy") { set_privacy }
   elseif ($cmd -eq "network") { set_network }
+  elseif ($cmd -eq "hosts") { install_hosts }
   elseif ($cmd -eq "explorersettings") { explorer_settings }
   elseif ($cmd -eq "taskbarsettings") { taskbar_settings }
   elseif ($cmd -eq "powersettings") { power_settings }

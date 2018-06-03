@@ -17,6 +17,13 @@ msg_error() {
   echo -e "${red}$1${nc}" >&2
 }
 
+check_is_sudo() {
+  if [ "$EUID" -ne 0 ]; then
+    msg_error "Requires root privileges. Use sudo."
+    exit 1
+  fi
+}
+
 check_is_not_sudo() {
   if [ ! "$EUID" -ne 0 ]; then
     msg_error "Don't run this as sudo."
@@ -378,6 +385,21 @@ install_fonts() {
   cp -vr "$base"/fonts/* "$HOME"/Library/Fonts
 }
 # }}}
+# Hosts {{{
+# =====
+install_hosts() {
+  check_is_sudo
+
+  msg_info "Backing up..."
+  sudo mv /etc/hosts /etc/hosts.bk
+
+  msg_info "Downloading hosts file to /etc/hosts..."
+  curl -sSL -o /etc/hosts https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+
+  msg_info "Flushing dns..."
+  dscacheutil -flushcache; killall -HUP mDNSResponder
+}
+# }}}
 # Dotfiles {{{
 # ========
 install_dotfiles() {
@@ -405,6 +427,7 @@ usage() {
   echo "  casks     - setup caskroom & installs softwares"
   echo "  chatty    - downloads and installs chatty with java runtime environment"
   echo "  fonts     - copy fonts"
+  echo "  hosts (s) - installs anti adware + malware hosts file"
   echo "  dotfiles  - setup dotfiles"
   echo
 }
@@ -436,6 +459,8 @@ main() {
     install_chatty
   elif [[ $cmd == "fonts" ]]; then
     install_fonts
+  elif [[ $cmd == "hosts" ]]; then
+    install_hosts
   elif [[ $cmd == "dotfiles" ]]; then
     install_dotfiles
   else
