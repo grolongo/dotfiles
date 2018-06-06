@@ -282,7 +282,7 @@ install_tmux() {
   # check if we are in the correct folder
   [[ -e install-macos.sh ]] || { msg_error "Please cd into the install dir before doing this."; exit 1; }
 
-  base="${PWD%/*}"
+  local base="${PWD%/*}"
 
   local packages=(
     tmux

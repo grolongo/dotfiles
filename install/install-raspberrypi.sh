@@ -216,6 +216,54 @@ install_seafile() {
   sudo apt clean
 }
 # }}}
+# Fail2ban {{{
+# ========
+install_fail2ban() {
+  check_is_not_sudo
+
+  f2b_latest=$(curl -sSL "https://api.github.com/repos/fail2ban/fail2ban/releases/latest" | jq --raw-output .tag_name)
+  repo="https://github.com/fail2ban/fail2ban/archive/"
+  release="${f2b_latest}.tar.gz"
+  
+  tmpdir=$(mktemp -d)
+  
+  (
+  msg_info "Creating temporary folder..."
+  cd "$tmpdir" || exit 1
+
+  msg_info "Downloading and extracting ${sf_latest}"
+  curl -#L "${repo}${release}" | tar -C "$HOME"/Seafile -xzf -
+  )
+
+  msg_info "Deleting temp folder..."
+  rm -rf "$tmpdir"
+
+  (
+  cd "$HOME"/Seafile/seafile-server-"$sf_latest" || exit 1
+  msg_info "Launching setup script..."
+  ./setup-seafile.sh && \
+    ./seafile.sh start && \
+    ./seahub.sh start
+  )
+
+  msg_info "Setting Paris timezone in the config file..."
+  echo "TIME_ZONE = 'Europe/Paris'" >> "$HOME"/Seafile/conf/seahub_settings.py
+
+  msg_info "Adding to crontab for autostart on boot..."
+  (crontab -l ; echo "@reboot sleep 30 && $HOME/Seafile/seafile-server-latest/seafile.sh start") | crontab -
+  (crontab -l ; echo "@reboot sleep 60 && $HOME/Seafile/seafile-server-latest/seahub.sh start") | crontab -
+  msg_info "Confirm with 'crontab -l'"
+
+  msg_info "Autoremoving..."
+  sudo apt autoremove
+
+  msg_info "Autocleaning..."
+  sudo apt autoclean
+
+  msg_info "Cleaning..."
+  sudo apt clean
+}
+# }}}
 # PSAD {{{
 # ========
 install_psad() {
@@ -310,6 +358,8 @@ install_vim() {
 # ====
 install_tmux() {
   check_is_not_sudo
+
+  local base="${PWD%/*}"
   
   local packages=(
     tmux
@@ -319,9 +369,9 @@ install_tmux() {
   sudo apt install -y "${packages[@]}"
 
   msg_info "Compiling fresh terminfo files fo italics in tmux..."
-  tic -o "$HOME"/.terminfo .terminfo/tmux.terminfo
-  tic -o "$HOME"/.terminfo .terminfo/tmux-256color.terminfo
-  tic -o "$HOME"/.terminfo .terminfo/xterm-256color.terminfo
+  tic -o "$HOME"/.terminfo "$base"/.terminfo/tmux.terminfo
+  tic -o "$HOME"/.terminfo "$base"/.terminfo/tmux-256color.terminfo
+  tic -o "$HOME"/.terminfo "$base"/.terminfo/xterm-256color.terminfo
 
   msg_info "Autoremoving..."
   sudo apt autoremove
@@ -390,6 +440,7 @@ usage() {
   echo "  aptbase   (s) - disable translations, update, upgrade and installs few packages"
   echo "  rkhunter  (s) - installs rkhunter with lsof and initial propupd"
   echo "  seafile       - downloads and deploys Seafile server"
+  echo "  fail2ban      - downloads and installs Fail2ban"
   echo "  psad      (s) - installs port scan attack detector and runs signatures update"
   echo "  msmtp     (s) - installs msmtp and msmtp-mta"
   echo "  zsh           - installs zsh as default shell and symlinks to root"
@@ -417,6 +468,8 @@ main() {
     install_rkhunter
   elif [[ $cmd == "seafile" ]]; then
     install_seafile
+  elif [[ $cmd == "fail2ban" ]]; then
+    install_fail2ban
   elif [[ $cmd == "psad" ]]; then
     install_psad
   elif [[ $cmd == "msmtp" ]]; then

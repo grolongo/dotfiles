@@ -310,7 +310,7 @@ install_tmux() {
   # check if we are in the correct folder
   [[ -e install-wsl-debian.sh ]] || { echo >&2 "Please cd into the install dir before running."; exit 1; }
 
-  base="${PWD%/*}"
+  local base="${PWD%/*}"
   
   local packages=(
     tmux
