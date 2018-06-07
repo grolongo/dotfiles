@@ -219,7 +219,7 @@ install_seafile() {
 # Fail2ban {{{
 # ========
 install_fail2ban() {
-  check_is_not_sudo
+  check_is_sudo
 
   f2b_latest=$(curl -sSL "https://api.github.com/repos/fail2ban/fail2ban/releases/latest" | jq --raw-output .tag_name)
   repo="https://github.com/fail2ban/fail2ban/archive/"
@@ -231,37 +231,29 @@ install_fail2ban() {
   msg_info "Creating temporary folder..."
   cd "$tmpdir" || exit 1
 
-  msg_info "Downloading and extracting ${sf_latest}"
-  curl -#L "${repo}${release}" | tar -C "$HOME"/Seafile -xzf -
+  msg_info "Downloading and extracting ${f2b_latest}"
+  curl -#L "${repo}${release}" | tar -xzf -
+
+  cd fail2ban-"${f2b_latest}" || exit 1
+
+  msg_info "Installing..."
+  python setup.py install
+
+  msg_info "Moving init file to location..."
+  cp files/debian-initd /etc/init.d/fail2ban
   )
+
+  msg_info "Updating the init script..."
+  update-rc.d fail2ban defaults
+
+  msg_info "Starting the service..."
+  service fail2ban start
 
   msg_info "Deleting temp folder..."
   rm -rf "$tmpdir"
 
-  (
-  cd "$HOME"/Seafile/seafile-server-"$sf_latest" || exit 1
-  msg_info "Launching setup script..."
-  ./setup-seafile.sh && \
-    ./seafile.sh start && \
-    ./seahub.sh start
-  )
-
-  msg_info "Setting Paris timezone in the config file..."
-  echo "TIME_ZONE = 'Europe/Paris'" >> "$HOME"/Seafile/conf/seahub_settings.py
-
-  msg_info "Adding to crontab for autostart on boot..."
-  (crontab -l ; echo "@reboot sleep 30 && $HOME/Seafile/seafile-server-latest/seafile.sh start") | crontab -
-  (crontab -l ; echo "@reboot sleep 60 && $HOME/Seafile/seafile-server-latest/seahub.sh start") | crontab -
-  msg_info "Confirm with 'crontab -l'"
-
-  msg_info "Autoremoving..."
-  sudo apt autoremove
-
-  msg_info "Autocleaning..."
-  sudo apt autoclean
-
-  msg_info "Cleaning..."
-  sudo apt clean
+  echo
+  echo "You can now add your own jail.local and filters to /etc/fail2ban"
 }
 # }}}
 # PSAD {{{
