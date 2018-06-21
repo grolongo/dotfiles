@@ -50,6 +50,7 @@ function install_packages {
   cinst python2                  # python2 for neovim-qt
   cinst ruby                     # ruby for neovim-qt
   cinst visualstudiocode
+  cinst wsltty
 
   # cloud
   cinst seafile-client
@@ -69,17 +70,6 @@ function get_wsl {
   Write-Host -ForegroundColor "yellow" "Installing Windows Subsystem Linux..."
   Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
   Write-Host -ForegroundColor "yellow" "Now download Debian from Microsoft Store."
-}
-
-# }}}
-# Wsltty {{{
-# ======
-
-function install_wsltty {
-  cinst wsltty
-
-  Write-Host -ForegroundColor "yellow" "Installing shortcuts..."
-  & "$HOME\AppData\Local\wsltty\configure WSL shortcuts.lnk"
 }
 
 # }}}
@@ -392,7 +382,6 @@ function usage {
   Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
   Write-Host "  packages          - downloads and installs listed packages"
   Write-Host "  wsl               - installs Windows Subsystem Linux"
-  Write-Host "  wsltty            - installs Wsltty and shortcuts"
   Write-Host "  chatty            - downloads and installs chatty"
   Write-Host "  remove            - uninstall unecessary apps"
   Write-Host "  privacy           - wifi hotspot, xbox, etc."
@@ -416,7 +405,6 @@ function main {
   if ($cmd -eq "chocolatey") { install_chocolatey }
   elseif ($cmd -eq "packages") { install_packages }
   elseif ($cmd -eq "wsl") { get_wsl }
-  elseif ($cmd -eq "wsltty") { install_wsltty }
   elseif ($cmd -eq "chatty") { install_chatty }
   elseif ($cmd -eq "remove") { remove_junk }
   elseif ($cmd -eq "privacy") { set_privacy }
