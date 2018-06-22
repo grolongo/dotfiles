@@ -183,7 +183,14 @@ install_zsh() {
     sudo chsh -s "/bin/zsh"
   }
 
-  apt_clean
+  msg_info "Autoremoving..."
+  sudo apt autoremove
+
+  msg_info "Autocleaning..."
+  sudo apt autoclean
+
+  msg_info "Cleaning..."
+  sudo apt clean
 }
 # }}}
 # Neovim {{{
