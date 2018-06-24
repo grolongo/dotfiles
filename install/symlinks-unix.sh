@@ -107,13 +107,13 @@ confirm "Install symlinks for $USER?" && {
     symlink ".rtorrent.rc"
   }
   
-  # weechat
-  confirm "link weechat files?" && {
-    mkdir -vp "$HOME"/.weechat
-    symlink ".weechat/irc.conf"
-    symlink ".weechat/weechat.conf"
-    symlink ".weechat/logger.conf"
-  }
+  ## weechat
+  #confirm "link weechat files?" && {
+  #  mkdir -vp "$HOME"/.weechat
+  #  symlink ".weechat/irc.conf"
+  #  symlink ".weechat/weechat.conf"
+  #  symlink ".weechat/logger.conf"
+  #}
   
   # vim
   confirm "link vim files?" && {
