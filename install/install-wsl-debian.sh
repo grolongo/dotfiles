@@ -200,7 +200,6 @@ install_neovim() {
 
   local packages=(
     git
-    neovim
     python3-pip
     python3-setuptools
     ruby
@@ -211,6 +210,7 @@ install_neovim() {
   sudo apt install -y "${packages[@]}" --no-install-recommends
 
   msg_info "Installing packagings missing in Testing from Unstable..."
+  sudo apt -t unstable install neovim
   sudo apt -t unstable install python3-neovim
 
   msg_info "Setting up wheel..."
