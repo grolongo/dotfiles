@@ -90,6 +90,9 @@ function install_chatty {
 
   Write-Host -ForegroundColor "yellow" "Adding malgun fallback font..."
   Copy-Item "$HOME\dotfiles\fonts\malgun.ttf" -Destination "C:\Program Files\Chatty\runtime\lib\fonts\fallback"
+
+  Write-Host -ForegroundColor "yellow" "Adding Chatty to Startup Menu..."
+  New-Item -Force -Path "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chatty" -ItemType SymbolicLink -Value "C:\Program Files\Chatty\Chatty.exe"
 }
 
 # }}}
