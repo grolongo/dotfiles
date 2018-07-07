@@ -95,23 +95,14 @@ if has('win32')
   highlight NonTest gui=NONE guibg=#00171d
 endif
 
-" iTerm2
-" ------
+" iTerm2 & WSL
+" ------------
 if has('mac') || isdirectory('/mnt/c/Windows')
   let g:solarized_term_italics     = 1            " 1 to enable italics (0 default)
   let g:solarized_extra_hi_groups  = 1            " can break some stuff (0 default)
   let g:solarized_termtrans        = 1            " because we use terminal background
   colorscheme solarized8_flat                     " solarized8(_low, _high, _flat) / seoul256(-light)
 endif
-
-" wsltty
-" ------
-"if isdirectory('/mnt/c/Windows')
-"  let g:seoul256_srgb       = 1             " for non iterm2 terminals
-"  let g:solarized_use16     = 1             " for terms with no truecolors, needs solarized palette on the term to work
-"  let g:solarized_termtrans = 1             " to use terminal bg
-"  colorscheme solarized8_flat
-"endif
 
 " }}}
 " General: statusline {{{
