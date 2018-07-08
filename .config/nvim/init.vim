@@ -3,15 +3,8 @@
 
 " auto-install
 " ------------
-if has('win32')
-  if !filereadable(expand('~/AppData/Local/nvim/autoload/plug.vim'))
-    silent call mkdir(expand('~/AppData/Local/nvim/autoload', 1), 'p')
-    execute '!curl -fLo '.expand('~/AppData/Local/nvim/autoload/plug.vim', 1).' https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  endif
-else
-  if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
-    silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  endif
+if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
+  silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 endif
 
 call plug#begin()
@@ -77,32 +70,19 @@ call plug#end()
 " General: colors {{{
 " ===============
 
-" settings
+" Settings
 " --------
 syntax on
 filetype plugin indent on
 set termguicolors
 set background=dark
 
-" nvim-qt
-" -------
-if has('win32')
-  let g:seoul256_srgb              = 1            " for non iterm2 terminals when using seoul256
-  let g:solarized_term_italics     = 1            " 1 to enable italics (0 default)
-  let g:solarized_extra_hi_groups  = 1            " can break some stuff (0 default)
-  colorscheme solarized8_flat
-  highlight Normal  gui=NONE guibg=#00171d
-  highlight NonTest gui=NONE guibg=#00171d
-endif
-
-" iTerm2 & WSL
-" ------------
-if has('mac') || isdirectory('/mnt/c/Windows')
-  let g:solarized_term_italics     = 1            " 1 to enable italics (0 default)
-  let g:solarized_extra_hi_groups  = 1            " can break some stuff (0 default)
-  let g:solarized_termtrans        = 1            " because we use terminal background
-  colorscheme solarized8_flat                     " solarized8(_low, _high, _flat) / seoul256(-light)
-endif
+" Solarized
+" ---------
+let g:solarized_term_italics     = 1            " 1 to enable italics (0 default)
+let g:solarized_extra_hi_groups  = 1            " can break some stuff (0 default)
+let g:solarized_termtrans        = 1            " because we use terminal background
+colorscheme solarized8_flat                     " solarized8(_low, _high, _flat) / seoul256(-light)
 
 " }}}
 " General: statusline {{{
@@ -277,20 +257,15 @@ augroup END
 " General: Python Support {{{
 " =======================
 
-" nvim-qt
-if has('win64')
-  let g:python_host_prog = 'C:\Python27\python.exe'
-  let g:python3_host_prog = 'C:\Users\Max\AppData\Local\Programs\Python\Python36-32\python.exe'
+" macOS
+" -----
+if has('mac')
+  let g:python3_host_prog = '/usr/local/bin/python3'
 endif
 
-" macOS
-if has('unix') && has('mac')
-  "let g:python_host_prog = '/usr/bin/python'
-  let g:python_host_prog = '/usr/local/opt/python@2/bin/python2'
-  let g:python3_host_prog = '/usr/local/bin/python3'
 " WSL
-elseif has('unix')
-  let g:python_host_prog = '/usr/bin/python'
+" ---
+if isdirectory('/mnt/c/Windows')
   let g:python3_host_prog = '/usr/bin/python3'
 endif
 
