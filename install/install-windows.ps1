@@ -16,50 +16,29 @@ function install_chocolatey {
 function install_packages {
   Write-Host -ForegroundColor "yellow" 'Installing packages...'
 
-  # multimedia
-  cinst firefox
-  cinst thunderbird
-  cinst mpv
-  cinst streamlink
-  cinst spotify
-  cinst steam
-  cinst itunes
-  
-  # utilities
+  cinst ccleaner
   cinst electrum
-  cinst gpg4win-vanilla           # needed for enigmail
+  cinst firefox
+  cinst gpg4win-vanilla
+  cinst itunes
   cinst keepass
-  cinst office365proplus
   cinst libreoffice
+  cinst logitechgaming
+  cinst malwarebytes
+  cinst mpv
+  cinst office365proplus
   cinst onionshare
   cinst pandoc
-  cinst tor-browser
-  cinst velocity
-  cinst veracrypt
-  cinst winrar
-  
-  # drivers
-  cinst logitechgaming
-  cinst realtek-hd-audio-driver  # 2.82 wasn't working so may have to download 2.81 from any driver website (which works)
-  cinst setpoint
-
-  # dev
-  cinst curl                     # for vim-plug in neovim-qt
-  cinst git                      # for vim-plug in neovim-qt
-  cinst python                   # python3 for neovim-qt
-  cinst python2                  # python2 for neovim-qt
-  cinst ruby                     # ruby for neovim-qt
-  cinst visualstudiocode
-  cinst wsltty
-
-  # cloud
   cinst seafile-client
-
-  # scan & cleaners
-  cinst adwcleaner
-  cinst ccleaner
-  cinst hitmanpro
-  cinst malwarebytes
+  cinst setpoint
+  cinst spotify
+  cinst steam
+  cinst streamlink
+  cinst thunderbird
+  cinst tor-browser
+  cinst veracrypt
+  cinst visualstudiocode
+  cinst winrar
 }
 
 # }}}
@@ -67,6 +46,8 @@ function install_packages {
 # ===
 
 function get_wsl {
+  Write-Host -ForegroundColor "yellow" 'Installing package...'
+  cinst wsltty
   Write-Host -ForegroundColor "yellow" "Installing Windows Subsystem Linux..."
   Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
   Write-Host -ForegroundColor "yellow" "Now download Debian from Microsoft Store."
