@@ -10,24 +10,6 @@ if ((Get-Location).path -ne $PSScriptRoot) { Write-Output "Exiting. Please cd to
 # Dossier racine des dotfiles : "Split-Path" considère le dossier parent par défaut.
 New-Variable -Name "base" -Value "$(Split-Path (Get-Location))"
 
-# vim
-# ---
-$confirmation = Read-Host "Symlink vim?"
-if ($confirmation -eq 'y') {
-  New-Item -Force -Path "$HOME\_vimrc" -ItemType SymbolicLink -Value "$base\.vimrc"
-}
-
-# neovim
-# ------
-$confirmation = Read-Host "Symlink neovim?"
-if ($confirmation -eq 'y') {
-  New-Item -Force -Path "$HOME\AppData\Local\nvim" -ItemType directory
-  New-Item -Force -Path "$HOME\AppData\Local\nvim\init.vim" -ItemType SymbolicLink -Value "$base\.config\nvim\init.vim"
-  New-Item -Force -Path "$HOME\AppData\Local\nvim\ultisnippets" -ItemType SymbolicLink -Value "$base\.config\nvim\ultisnippets"
-  New-Item -Force -Path "$HOME\AppData\Local\nvim\after" -ItemType directory
-  New-Item -Force -Path "$HOME\AppData\Local\nvim\after\syntax" -ItemType SymbolicLink -Value "$base\.config\nvim\after\syntax"
-}
-
 # mpv
 # ---
 $confirmation = Read-Host "Symlink mpv?"
