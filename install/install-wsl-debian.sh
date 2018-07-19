@@ -392,7 +392,7 @@ usage() {
   echo "  isetup      (s) - passwordless sudo and lock root"
   echo "  aptsources  (s) - disables translations, updates, upgrades and dist-upgrades to testing"
   echo "  aptbase     (s) - installs few packages"
-  echo "  zsh         (s) - installs zsh as default shell and symlinks to root"
+  echo "  zsh             - installs zsh as default shell and symlinks to root"
   echo "  neovim          - installs neovim with external dependencies, linters and markdown fix"
   echo "  emoji           - downloads apple emoji set to wsltty folder"
   echo "  ripgrep         - downloads and installs ripgrep from github"
