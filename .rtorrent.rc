@@ -1,11 +1,11 @@
-# vim: set syntax=conf:
-peer_exchange = yes
-directory = ~/Downloads
-session = ~/.rtorrent.session
-check_hash = yes
-port_range = 49164-49164
-use_udp_trackers = yes
-dht = auto
-dht_port = 6881
-encryption = require,allow_incoming,try_outgoing
-#system.method.set_key = event.download.finished,notify_me,"execute=notify-send,$d.get_name="
+directory.default.set         = ~/Downloads
+session.path.set              = ~/.rtorrent.session
+encoding.add                  = utf8
+protocol.pex.set              = 1
+pieces.hash.on_completion.set = yes
+network.port_range.set        = 49164-49164
+network.port_random.set       = no
+trackers.use_udp.set          = 1
+dht.mode.set                  = auto
+dht.port.set                  = 6881
+protocol.encryption.set       = require,allow_incoming,try_outgoing
