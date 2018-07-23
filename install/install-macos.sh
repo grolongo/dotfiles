@@ -183,6 +183,7 @@ install_base() {
   brew upgrade
 
   local packages=(
+    aria2
     coreutils
     dos2unix
     exiftool

@@ -129,6 +129,7 @@ apt_base() {
   check_is_sudo
 
   local packages=(
+    aria2
     curl
     exiftool
     git

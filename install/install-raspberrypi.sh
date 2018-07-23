@@ -112,6 +112,7 @@ apt_base() {
   apt upgrade
 
   local packages=(
+    aria2
     fail2ban
     harden-clients
     harden-servers
