@@ -106,6 +106,12 @@ confirm "Install symlinks for $USER?" && {
     mkdir -vp "$HOME"/Downloads
     symlink ".rtorrent.rc"
   }
+
+  # aria2
+  confirm "link aria2 config file?" && {
+    mkdir -vp "$HOME"/.aria2
+    symlink ".aria2/aria2.conf"
+  }
   
   # vim
   confirm "link vim files?" && {
