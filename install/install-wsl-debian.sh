@@ -120,6 +120,7 @@ apt_base() {
   local packages=(
     aria2
     curl
+    dos2unix
     exiftool
     git
     jq
