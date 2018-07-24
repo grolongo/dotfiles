@@ -205,7 +205,7 @@ install_neovim() {
   msg_info "Setting up wheel..."
   pip3 install --user --upgrade wheel
 
-  msg_info "Setting up python2 and python3 providers..."
+  msg_info "Setting up python3 providers..."
   pip3 install --user --upgrade neovim
 
   msg_info "Installing vimscript linter..."
