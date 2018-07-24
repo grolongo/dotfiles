@@ -100,17 +100,6 @@ apt_sources() {
 	deb-src http://security.debian.org/debian-security/ testing/updates main contrib non-free
 	EOF
 
-  msg_info "Adding unstable repository to the apt sources..."
-  cat <<-EOF > /etc/apt/sources.list.d/unstable.list
-	deb http://deb.debian.org/debian unstable main contrib non-free
-	deb-src http://deb.debian.org/debian unstable main contrib non-free
-	EOF
-
-  msg_info "Setting testing repository as default..."
-  cat <<-EOF > /etc/apt/apt.conf.d/default-release
-	APT::Default-Release "testing";
-	EOF
-
   msg_info "First update of the machine..."
   apt update
 
@@ -201,6 +190,8 @@ install_neovim() {
 
   local packages=(
     git
+    neovim
+    python3-neovim
     python3-pip
     python3-setuptools
     ruby
@@ -209,10 +200,6 @@ install_neovim() {
 
   msg_info "Installing neovim with dependencies..."
   sudo apt install -y "${packages[@]}" --no-install-recommends
-
-  msg_info "Installing packagings missing in Testing from Unstable..."
-  sudo apt -t unstable install neovim
-  sudo apt -t unstable install python3-neovim
 
   msg_info "Setting up wheel..."
   pip3 install --user --upgrade wheel
