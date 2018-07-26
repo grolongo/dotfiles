@@ -17,6 +17,7 @@ function install_packages {
   Write-Host -ForegroundColor "yellow" 'Installing packages...'
 
   cinst ccleaner
+  cinst discord
   cinst electrum
   cinst firefox
   cinst gpg4win-vanilla
