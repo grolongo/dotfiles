@@ -217,6 +217,14 @@ install_seafile() {
   sudo apt clean
 }
 # }}}
+# Pihole {{{
+# ======
+install_pihole() {
+  check_is_not_sudo
+
+  curl -sSL https://install.pi-hole.net | bash
+}
+# }}}
 # Fail2ban {{{
 # ========
 install_fail2ban() {
@@ -258,7 +266,7 @@ install_fail2ban() {
 }
 # }}}
 # PSAD {{{
-# ========
+# ====
 install_psad() {
   check_is_sudo
 
@@ -433,6 +441,7 @@ usage() {
   echo "  aptbase   (s) - disable translations, update, upgrade and installs few packages"
   echo "  rkhunter  (s) - installs rkhunter with lsof and initial propupd"
   echo "  seafile       - downloads and deploys Seafile server"
+  echo "  pihole        - runs Pihole bash script installer"
   echo "  fail2ban      - downloads and installs Fail2ban"
   echo "  psad      (s) - installs port scan attack detector and runs signatures update"
   echo "  msmtp     (s) - installs msmtp and msmtp-mta"
@@ -461,6 +470,8 @@ main() {
     install_rkhunter
   elif [[ $cmd == "seafile" ]]; then
     install_seafile
+  elif [[ $cmd == "pihole" ]]; then
+    install_pihole
   elif [[ $cmd == "fail2ban" ]]; then
     install_fail2ban
   elif [[ $cmd == "psad" ]]; then

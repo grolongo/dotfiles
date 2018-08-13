@@ -147,11 +147,23 @@ initial_setup() {
   defaults write NSGlobalDomain KeyRepeat -int 1
   defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
-  # Firewall (block all incoming)
+  confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
+}
+# }}}
+# Network {{{
+# =======
+setup_network() {
+  check_is_not_sudo
+
+  msg_info "Blocking all incoming connections"
   sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
 
+  msg_info "Changing DNS servers"
+  networksetup -setdnsservers Wi-Fi 192.168.1.11 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
+  networksetup -setdnsservers "Thunderbolt Ethernet" 192.168.1.11 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
 
-  confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
+  msg_info "Flushing DNS cache"
+  sudo killall -HUP mDNSResponder
 }
 # }}}
 # Homebrew installation {{{
@@ -386,21 +398,6 @@ install_fonts() {
   cp -vr "$base"/fonts/* "$HOME"/Library/Fonts
 }
 # }}}
-# Hosts {{{
-# =====
-install_hosts() {
-  check_is_sudo
-
-  msg_info "Backing up..."
-  sudo mv /etc/hosts /etc/hosts.bk
-
-  msg_info "Downloading hosts file to /etc/hosts..."
-  curl -sSL -o /etc/hosts https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-
-  msg_info "Flushing dns..."
-  killall -HUP mDNSResponder; killall mDNSResponderHelper; dscacheutil -flushcache
-}
-# }}}
 # Dotfiles {{{
 # ========
 install_dotfiles() {
@@ -428,7 +425,6 @@ usage() {
   echo "  casks     - setup caskroom & installs softwares"
   echo "  chatty    - downloads and installs chatty with java runtime environment"
   echo "  fonts     - copy fonts"
-  echo "  hosts (s) - installs anti adware + malware hosts file"
   echo "  dotfiles  - setup dotfiles"
   echo
 }
@@ -460,8 +456,6 @@ main() {
     install_chatty
   elif [[ $cmd == "fonts" ]]; then
     install_fonts
-  elif [[ $cmd == "hosts" ]]; then
-    install_hosts
   elif [[ $cmd == "dotfiles" ]]; then
     install_dotfiles
   else
