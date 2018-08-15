@@ -223,6 +223,11 @@ install_pihole() {
   check_is_not_sudo
 
   curl -sSL https://install.pi-hole.net | bash
+
+  msg_info "Change DNS addresses on all devices:"
+  msg_info "Either enter twice the same IP of the Pi for DNS1 and DNS2"
+  msg_info "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
+  msg_info "also don't forget IPv6."
 }
 # }}}
 # Fail2ban {{{
