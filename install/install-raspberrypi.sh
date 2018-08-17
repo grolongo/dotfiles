@@ -220,14 +220,25 @@ install_seafile() {
 # Pihole {{{
 # ======
 install_pihole() {
-  check_is_not_sudo
+  check_is_sudo
 
+  msg_info "Installing Pihole..."
   curl -sSL https://install.pi-hole.net | bash
 
-  msg_info "Change DNS addresses on all devices:"
-  msg_info "Either enter twice the same IP of the Pi for DNS1 and DNS2"
-  msg_info "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
-  msg_info "also don't forget IPv6."
+  msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
+  curl -sSL https://v.firebog.net/hosts/lists.php?type=all >> /etc/pihole/adlists.list
+  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt >> /etc/pihole/adlists.list
+  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt >> /etc/pihole/adlists.list
+  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt >> /etc/pihole/adlists.list
+
+  msg_info "Updating gravity..."
+  pihole -g
+
+  echo
+  echo "Change DNS addresses on all devices:"
+  echo "Either enter twice the same IP of the Pi for DNS1 and DNS2"
+  echo "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
+  echo "also don't forget IPv6."
 }
 # }}}
 # Fail2ban {{{
@@ -446,7 +457,7 @@ usage() {
   echo "  aptbase   (s) - disable translations, update, upgrade and installs few packages"
   echo "  rkhunter  (s) - installs rkhunter with lsof and initial propupd"
   echo "  seafile       - downloads and deploys Seafile server"
-  echo "  pihole        - runs Pihole bash script installer"
+  echo "  pihole    (s) - runs Pihole bash script installer"
   echo "  fail2ban      - downloads and installs Fail2ban"
   echo "  psad      (s) - installs port scan attack detector and runs signatures update"
   echo "  msmtp     (s) - installs msmtp and msmtp-mta"
