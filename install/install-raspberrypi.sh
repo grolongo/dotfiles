@@ -231,6 +231,11 @@ install_pihole() {
   echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt >> /etc/pihole/adlists.list
   echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt >> /etc/pihole/adlists.list
 
+  msg_info "Adding some urls to whitelist..."
+
+  # android app store
+  pihole -w android.clients.google.com
+
   msg_info "Updating gravity..."
   pihole -g
 
