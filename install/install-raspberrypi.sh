@@ -113,7 +113,6 @@ apt_base() {
 
   local packages=(
     aria2
-    fail2ban
     harden-clients
     harden-servers
     iptables-persistent
@@ -463,7 +462,7 @@ usage() {
   echo "  rkhunter  (s) - installs rkhunter with lsof and initial propupd"
   echo "  seafile       - downloads and deploys Seafile server"
   echo "  pihole    (s) - runs Pihole bash script installer"
-  echo "  fail2ban      - downloads and installs Fail2ban"
+  echo "  fail2ban  (s) - downloads and installs Fail2ban"
   echo "  psad      (s) - installs port scan attack detector and runs signatures update"
   echo "  msmtp     (s) - installs msmtp and msmtp-mta"
   echo "  zsh           - installs zsh as default shell and symlinks to root"
