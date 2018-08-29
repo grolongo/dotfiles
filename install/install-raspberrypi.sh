@@ -120,6 +120,7 @@ apt_base() {
     logwatch
     rng-tools
     tor
+    vim
   )
 
   for p in "${packages[@]}"; do
@@ -350,28 +351,6 @@ install_zsh() {
     sudo chsh -s "/bin/zsh"
   }
 
-  msg_info "Symlink $USER shell configs to root..."
-  sudo ln -sniv ~/.zshrc /root/.zshrc
-  sudo ln -sniv ~/.aliases /root/.aliases
-  sudo ln -sniv ~/.dircolors /root/.dircolors
-
-  apt_clean
-}
-# }}}
-# Vim {{{
-# ===
-install_vim() {
-  check_is_sudo
-
-  local packages=(
-    vim
-  )
-
-  apt_install
-
-  msg_info "Symlink $SUDO_USER vim config to root..."
-  ln -sniv ~/.vimrc /root/.vimrc
-
   apt_clean
 }
 # }}}
@@ -450,6 +429,17 @@ install_lynis() {
   apt_clean
 }
 # }}}
+# Dotfiles {{{
+# ========
+install_dotfiles() {
+  check_is_not_sudo
+
+  [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
+
+  msg_info "Launching external symlinks script..."
+  ./symlinks-unix.sh
+}
+# }}}
 # Menu {{{
 # ====
 usage() {
@@ -466,10 +456,10 @@ usage() {
   echo "  psad      (s) - installs port scan attack detector and runs signatures update"
   echo "  msmtp     (s) - installs msmtp and msmtp-mta"
   echo "  zsh           - installs zsh as default shell and symlinks to root"
-  echo "  vim       (s) - installs vim and symlinks to root"
   echo "  tmux          - installs tmux and compils profiles for italic support"
   echo "  weechat   (s) - setups weechat repository and installs"
   echo "  lynis     (s) - installs Lynis audit from official repository"
+  echo "  dotfiles      - setup dotfiles from external script"
   echo
 }
 
@@ -500,14 +490,14 @@ main() {
     install_msmtp
   elif [[ $cmd == "zsh" ]]; then
     install_zsh
-  elif [[ $cmd == "vim" ]]; then
-    install_vim
   elif [[ $cmd == "tmux" ]]; then
     install_tmux
   elif [[ $cmd == "weechat" ]]; then
     install_weechat
   elif [[ $cmd == "lynis" ]]; then
     install_lynis
+  elif [[ $cmd == "dotfiles" ]]; then
+    install_dotfiles
   else
     usage
   fi
