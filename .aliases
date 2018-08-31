@@ -21,6 +21,7 @@ fi
 if [[ "$OSTYPE" = darwin* ]]; then
   # exa
   alias l="exa -lah --colour=automatic --group-directories-first --sort=extension --git" 
+
   # hide/show dotfiles
   alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
   alias hidedotfiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
