@@ -69,6 +69,10 @@ apt_clean() {
 initial_setup() {
   check_is_sudo
 
+  read -r -p "What hostname for the machine?: " hostname
+  echo "$hostname" > /etc/hostname
+  sed -i "s/raspberrypi/$hostname/g" /etc/hosts
+
   if [ "$SUDO_USER" != "pi" ]; then
     confirm "You're under user '$SUDO_USER'. Do you wish to delete pi?" && {
       deluser --remove-home pi
