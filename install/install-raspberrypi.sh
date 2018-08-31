@@ -69,6 +69,10 @@ apt_clean() {
 initial_setup() {
   check_is_sudo
 
+  read -r -p "What hostname for the machine?: " hostname
+  echo "$hostname" > /etc/hostname
+  sed -i "s/raspberrypi/$hostname/g" /etc/hosts
+
   if [ "$SUDO_USER" != "pi" ]; then
     confirm "You're under user '$SUDO_USER'. Do you wish to delete pi?" && {
       deluser --remove-home pi
@@ -113,7 +117,6 @@ apt_base() {
 
   local packages=(
     aria2
-    fail2ban
     harden-clients
     harden-servers
     iptables-persistent
@@ -121,6 +124,7 @@ apt_base() {
     logwatch
     rng-tools
     tor
+    vim
   )
 
   for p in "${packages[@]}"; do
@@ -220,14 +224,30 @@ install_seafile() {
 # Pihole {{{
 # ======
 install_pihole() {
-  check_is_not_sudo
+  check_is_sudo
 
+  msg_info "Installing Pihole..."
   curl -sSL https://install.pi-hole.net | bash
 
-  msg_info "Change DNS addresses on all devices:"
-  msg_info "Either enter twice the same IP of the Pi for DNS1 and DNS2"
-  msg_info "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
-  msg_info "also don't forget IPv6."
+  msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
+  curl -sSL https://v.firebog.net/hosts/lists.php?type=all >> /etc/pihole/adlists.list
+  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt >> /etc/pihole/adlists.list
+  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt >> /etc/pihole/adlists.list
+  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt >> /etc/pihole/adlists.list
+
+  msg_info "Adding some urls to whitelist..."
+
+  # android app store
+  pihole -w android.clients.google.com
+
+  msg_info "Updating gravity..."
+  pihole -g
+
+  echo
+  echo "Change DNS addresses on all devices:"
+  echo "Either enter twice the same IP of the Pi for DNS1 and DNS2"
+  echo "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
+  echo "also don't forget IPv6."
 }
 # }}}
 # Fail2ban {{{
@@ -335,28 +355,6 @@ install_zsh() {
     sudo chsh -s "/bin/zsh"
   }
 
-  msg_info "Symlink $USER shell configs to root..."
-  sudo ln -sniv ~/.zshrc /root/.zshrc
-  sudo ln -sniv ~/.aliases /root/.aliases
-  sudo ln -sniv ~/.dircolors /root/.dircolors
-
-  apt_clean
-}
-# }}}
-# Vim {{{
-# ===
-install_vim() {
-  check_is_sudo
-
-  local packages=(
-    vim
-  )
-
-  apt_install
-
-  msg_info "Symlink $SUDO_USER vim config to root..."
-  ln -sniv ~/.vimrc /root/.vimrc
-
   apt_clean
 }
 # }}}
@@ -435,6 +433,17 @@ install_lynis() {
   apt_clean
 }
 # }}}
+# Dotfiles {{{
+# ========
+install_dotfiles() {
+  check_is_not_sudo
+
+  [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
+
+  msg_info "Launching external symlinks script..."
+  ./symlinks-unix.sh
+}
+# }}}
 # Menu {{{
 # ====
 usage() {
@@ -446,15 +455,15 @@ usage() {
   echo "  aptbase   (s) - disable translations, update, upgrade and installs few packages"
   echo "  rkhunter  (s) - installs rkhunter with lsof and initial propupd"
   echo "  seafile       - downloads and deploys Seafile server"
-  echo "  pihole        - runs Pihole bash script installer"
-  echo "  fail2ban      - downloads and installs Fail2ban"
+  echo "  pihole    (s) - runs Pihole bash script installer"
+  echo "  fail2ban  (s) - downloads and installs Fail2ban"
   echo "  psad      (s) - installs port scan attack detector and runs signatures update"
   echo "  msmtp     (s) - installs msmtp and msmtp-mta"
   echo "  zsh           - installs zsh as default shell and symlinks to root"
-  echo "  vim       (s) - installs vim and symlinks to root"
   echo "  tmux          - installs tmux and compils profiles for italic support"
   echo "  weechat   (s) - setups weechat repository and installs"
   echo "  lynis     (s) - installs Lynis audit from official repository"
+  echo "  dotfiles      - setup dotfiles from external script"
   echo
 }
 
@@ -485,14 +494,14 @@ main() {
     install_msmtp
   elif [[ $cmd == "zsh" ]]; then
     install_zsh
-  elif [[ $cmd == "vim" ]]; then
-    install_vim
   elif [[ $cmd == "tmux" ]]; then
     install_tmux
   elif [[ $cmd == "weechat" ]]; then
     install_weechat
   elif [[ $cmd == "lynis" ]]; then
     install_lynis
+  elif [[ $cmd == "dotfiles" ]]; then
+    install_dotfiles
   else
     usage
   fi
