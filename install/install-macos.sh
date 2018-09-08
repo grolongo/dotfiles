@@ -198,6 +198,7 @@ install_base() {
     aria2
     coreutils
     dos2unix
+    exa
     exiftool
     ffmpeg
     gnupg
@@ -351,6 +352,8 @@ install_casks() {
 # ======
 install_chatty() {
   check_is_not_sudo
+
+  command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
   msg_info "Tapping caskroom/cask"
   brew tap caskroom/cask

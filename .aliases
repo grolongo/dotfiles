@@ -19,8 +19,6 @@ fi
 # macOS {{{
 # =====
 if [[ "$OSTYPE" = darwin* ]]; then
-  # exa
-  alias l="exa -lah --colour=automatic --group-directories-first --sort=extension --git" 
 
   # hide/show dotfiles
   alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
@@ -60,6 +58,15 @@ if [[ $OSTYPE = linux* ]]; then
   alias afk="i3lock -c 000000"
 fi
 # }}}
+# common {{{
+# ======
+
+# exa
+# ---
+if [[ -x "$(command -v exa)" ]]; then
+  alias l="exa --long --grid --header --group --git --all --group-directories-first --classify --sort=name --color-scale"
+  alias ls="exa --all --group-directories-first --classify --sort=name"
+fi
 
 # Misc (blank space so its not in history)
 # ----------------------------------------
@@ -103,3 +110,4 @@ alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &;
 # -----------------
 alias ssh-tunnel-tor-rpi="ssh -D 9090 -f -C -N raspberrypi-tor"
 alias ssh-tunnel-tor-seafile="ssh -f -N -L 8000:127.0.0.1:8000 raspberrypi-tor && ssh -f -N -L 8082:127.0.0.1:8082 raspberrypi-tor"
+# }}}

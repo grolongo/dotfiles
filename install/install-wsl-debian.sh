@@ -184,6 +184,45 @@ install_zsh() {
   sudo apt clean
 }
 # }}}
+# Exa {{{
+# ===
+install_exa() {
+  check_is_not_sudo
+
+  command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+
+  exa_latest=$(curl -sSL "https://api.github.com/repos/ogham/exa/releases/latest" | jq --raw-output .tag_name)
+  exa_latest=${exa_latest#v}
+  repo="https://github.com/ogham/exa/releases/download/"
+  release="v${exa_latest}/exa-linux-x86_64-${exa_latest}.zip"
+
+  tmpdir=$(mktemp -d)
+
+  (
+  msg_info "Creating temporary folder..."
+  cd "$tmpdir" || exit 1
+
+  msg_info "Downloading and extracting exa ${exa_latest}"
+  curl -#L -O "${repo}${release}"
+  unzip "exa-linux-x86_64-${exa_latest}.zip"
+
+  msg_info "Moving exa binary to /usr/local/bin"
+  sudo mv exa-linux-x86_64 /usr/local/bin/exa
+
+  # exa manual (manpath)
+  sudo curl -sSL -o /usr/share/man/man1/exa.1 https://raw.githubusercontent.com/ogham/exa/master/contrib/man/exa.1
+
+  # completions
+  sudo curl -sSL -o /usr/local/share/zsh/site-functions/_exa https://raw.githubusercontent.com/ogham/exa/master/contrib/completions.zsh
+  )
+
+  msg_info "Deleting temp folder..."
+  rm -rf "$tmpdir"
+
+  msg_info "Rebuilding manual database..."
+  mandb
+}  
+# }}}
 # Neovim {{{
 # ======
 install_neovim() {
@@ -246,7 +285,7 @@ install_emojis() {
   chmod +x extractor
                                                                                 
   msg_info "Downloading full emoji list webpage..."
-  curl -sSL -o full-emoji-list.html https://www.unicode.org/emoji/charts-11.0/full-emoji-list.html
+  curl -sSL -O https://www.unicode.org/emoji/charts-11.0/full-emoji-list.html
 
   msg_info "Extracting Apple set emojis..."
   ./extractor full-emoji-list.html apple
@@ -263,6 +302,8 @@ install_emojis() {
 # =======
 install_ripgrep() {
   check_is_not_sudo
+
+  command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
   rg_latest=$(curl -sSL "https://api.github.com/repos/BurntSushi/ripgrep/releases/latest" | jq --raw-output .tag_name)
   repo="https://github.com/BurntSushi/ripgrep/releases/download/"
@@ -382,6 +423,7 @@ usage() {
   echo "  aptsources  (s) - disables translations, updates, upgrades and dist-upgrades to testing"
   echo "  aptbase     (s) - installs few packages"
   echo "  zsh             - installs zsh as default shell and symlinks to root"
+  echo "  exa             - installs exa to replace ls"
   echo "  neovim          - installs neovim with external dependencies, linters and markdown fix"
   echo "  emoji           - downloads apple emoji set to wsltty folder"
   echo "  ripgrep         - downloads and installs ripgrep from github"
@@ -408,6 +450,8 @@ main() {
     apt_base
   elif [[ $cmd == "zsh" ]]; then
     install_zsh
+  elif [[ $cmd == "exa" ]]; then
+    install_exa
   elif [[ $cmd == "neovim" ]]; then
     install_neovim
   elif [[ $cmd == "emoji" ]]; then
