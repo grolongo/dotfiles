@@ -391,45 +391,6 @@ install_tmux() {
   sudo apt clean
 }  
 # }}}
-# Exa {{{
-# ===
-install_exa() {
-  check_is_not_sudo
-
-  command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
-
-  exa_latest=$(curl -sSL "https://api.github.com/repos/ogham/exa/releases/latest" | jq --raw-output .tag_name)
-  exa_latest=${exa_latest#v}
-  repo="https://github.com/ogham/exa/releases/download/"
-  release="v${exa_latest}/exa-linux-x86_64-${exa_latest}.zip"
-
-  tmpdir=$(mktemp -d)
-
-  (
-  msg_info "Creating temporary folder..."
-  cd "$tmpdir" || exit 1
-
-  msg_info "Downloading and extracting exa ${exa_latest}"
-  curl -#L -O "${repo}${release}"
-  unzip "exa-linux-x86_64-${exa_latest}.zip"
-
-  msg_info "Moving exa binary to /usr/local/bin"
-  sudo mv exa-linux-x86_64 /usr/local/bin/exa
-
-  # exa manual (manpath)
-  sudo curl -sSL -o /usr/share/man/man1/exa.1 https://raw.githubusercontent.com/ogham/exa/master/contrib/man/exa.1
-
-  # completions
-  sudo curl -sSL -o /usr/local/share/zsh/site-functions/_exa https://raw.githubusercontent.com/ogham/exa/master/contrib/completions.zsh
-  )
-
-  msg_info "Deleting temp folder..."
-  rm -rf "$tmpdir"
-
-  msg_info "Rebuilding manual database..."
-  mandb
-}  
-# }}}
 # Weechat {{{
 # =======
 install_weechat() {
@@ -504,7 +465,6 @@ usage() {
   echo "  msmtp     (s) - installs msmtp and msmtp-mta"
   echo "  zsh           - installs zsh as default shell and symlinks to root"
   echo "  tmux          - installs tmux and compils profiles for italic support"
-  echo "  exa           - installs exa to replace ls"
   echo "  weechat   (s) - setups weechat repository and installs"
   echo "  lynis     (s) - installs Lynis audit from official repository"
   echo "  dotfiles      - setup dotfiles from external script"
@@ -540,8 +500,6 @@ main() {
     install_zsh
   elif [[ $cmd == "tmux" ]]; then
     install_tmux
-  elif [[ $cmd == "exa" ]]; then
-    install_exa
   elif [[ $cmd == "weechat" ]]; then
     install_weechat
   elif [[ $cmd == "lynis" ]]; then

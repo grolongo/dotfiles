@@ -64,7 +64,7 @@ fi
 # exa
 # ---
 if [[ -x "$(command -v exa)" ]]; then
-  alias l="exa --long --grid --header --group --git --all --group-directories-first --classify --sort=name --color-scale"
+  alias l="exa --long --grid --group --git --all --group-directories-first --classify --sort=name --color-scale"
   alias ls="exa --all --group-directories-first --classify --sort=name"
 fi
 
