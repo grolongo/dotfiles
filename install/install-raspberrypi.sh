@@ -63,7 +63,7 @@ apt_clean() {
 }
 # }}}
 # check if running on raspberrypi
-[[ ! $(uname -n) == raspberrypi ]] && { msg_error "Please run this script on the server."; exit 1; } 
+[[ ! $(uname -m) =~ arm ]] && { msg_error "Please run this script on the server."; exit 1; } 
 # Initial setup {{{
 # =============
 initial_setup() {
