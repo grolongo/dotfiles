@@ -182,6 +182,7 @@ install_nextcloud() {
   docker run -d \
   -p 4443:4443 -p 443:443 -p 80:80 \
   -v ncdata:/data \
+  --restart always \
   --name nextcloudpi \
   ownyourbits/nextcloudpi-armh \
   "$IP"
