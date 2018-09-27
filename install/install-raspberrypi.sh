@@ -134,6 +134,21 @@ apt_base() {
   apt_clean
 }
 # }}}
+# Docker {{{
+# ======
+install_Docker() {
+  check_is_not_sudo
+
+  curl -sSL https://get.docker.com | sh
+
+  msg_info "Adding $SUDO_USER to docker group..."
+  sudo usermod -aG docker "$SUDO_USER"
+
+  confirm "You need to restart to finish. Reboot now?" && {
+    sudo reboot
+  }
+}
+# }}}
 # Rkhunter {{{
 # ========
 install_rkhunter() {
@@ -153,6 +168,27 @@ install_rkhunter() {
   rkhunter --propupd
 
   apt_clean
+}
+# }}}
+# Nextcloud {{{
+# =========
+install_nextcloud() {
+  check_is_not_sudo
+  command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
+
+  local IP
+  IP="$(hostname -I | cut -f1 -d ' ')"
+
+  docker run -d \
+  -p 4443:4443 -p 443:443 -p 80:80 \
+  -v ncdata:/data \
+  --name nextcloudpi \
+  ownyourbits/nextcloudpi-armh \
+  "$IP"
+
+  echo "Wait until you see 'init done' with 'docker logs -f nextcloudpi'"
+  echo "Then go to (example) https://192.168.1.17 and activate."
+  echo "Verify the modem has DynDNS enabled for Let's Encrypt to work in case of dynamic IP."
 }
 # }}}
 # Seafile {{{
@@ -457,7 +493,9 @@ usage() {
   echo "Usage:"
   echo "  isetup    (s) - delete pi user, passwordless sudo, lock root and run raspi-config"
   echo "  aptbase   (s) - disable translations, update, upgrade and installs few packages"
+  echo "  docker        - installs docker"
   echo "  rkhunter  (s) - installs rkhunter with lsof and initial propupd"
+  echo "  nextcloud     - downloads and deploys nextcloudpi with Docker"
   echo "  seafile       - downloads and deploys Seafile server"
   echo "  pihole    (s) - runs Pihole bash script installer"
   echo "  fail2ban  (s) - downloads and installs Fail2ban"
@@ -484,8 +522,12 @@ main() {
     initial_setup
   elif [[ $cmd == "aptbase" ]]; then
     apt_base
+  elif [[ $cmd == "docker" ]]; then
+    install_docker
   elif [[ $cmd == "rkhunter" ]]; then
     install_rkhunter
+  elif [[ $cmd == "nextcloud" ]]; then
+    install_nextcloud
   elif [[ $cmd == "seafile" ]]; then
     install_seafile
   elif [[ $cmd == "pihole" ]]; then
