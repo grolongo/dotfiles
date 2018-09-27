@@ -184,7 +184,7 @@ install_nextcloud() {
   -v ncdata:/data \
   --restart always \
   --name nextcloudpi \
-  ownyourbits/nextcloudpi-armh \
+  ownyourbits/nextcloudpi-armhf \
   "$IP"
 
   echo "Wait until you see 'init done' with 'docker logs -f nextcloudpi'"
