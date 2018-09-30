@@ -27,6 +27,7 @@ function install_packages {
   cinst logitechgaming
   cinst malwarebytes
   cinst mpv
+  cinst nextcloud-client
   cinst office365proplus
   cinst onionshare
   cinst pandoc
