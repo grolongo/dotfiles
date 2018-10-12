@@ -25,6 +25,7 @@ cp "$HOME"/.ssh/id_rsa.pub "$sshbfold"
 echo "Creating tar file..."
 tar -zcf "$tarfile" \
   --exclude="Music" \
+  --exclude="Photos" \
   --exclude=".seafile-data" \
   --exclude="seafile-data" \
   --exclude="vz" \
