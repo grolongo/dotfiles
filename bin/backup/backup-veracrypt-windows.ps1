@@ -30,6 +30,14 @@ function backup_gpg {
   gpg --export-ownertrust > "$HOME\AppData\Local\Temp\gnupg-backup-files\ownertrust.txt"
 }
 
+function backup_ssh {
+  New-Item -Path "$HOME\AppData\Local\Temp\ssh-backup-files" -ItemType directory
+  Copy-Item "$HOME\.ssh\config" "$HOME\AppData\Local\Temp\ssh-backup-files"
+  Copy-Item "$HOME\.ssh\id_rsa" "$HOME\AppData\Local\Temp\ssh-backup-files"
+  Copy-Item "$HOME\.ssh\id_rsa-putty.ppk" "$HOME\AppData\Local\Temp\ssh-backup-files"
+  Copy-Item "$HOME\.ssh\id_rsa.pub" "$HOME\AppData\Local\Temp\ssh-backup-files"
+}
+
 function copy_files {
   Write-Host "Copying files..."
   robocopy /e "$HOME\dotfiles" ${vc_letter}:\dotfiles /xd ".git"
