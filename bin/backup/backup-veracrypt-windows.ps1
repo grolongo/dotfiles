@@ -39,6 +39,11 @@ function backup_ssh {
   Copy-Item "$HOME\.ssh\id_rsa.pub" "$HOME\AppData\Local\Temp\ssh-backup-files"
 }
 
+function delete_temp {
+  Remove-Item "$HOME\AppData\Local\Temp\ssh-backup-files" -Recurse -Force
+  Remove-Item "$HOME\AppData\Local\Temp\gnupg-backup-files" -Recurse -Force
+}
+
 function copy_files {
   Write-Host "Copying files..."
   robocopy /e "$HOME\dotfiles" ${vc_letter}:\dotfiles /xd ".git"
@@ -76,6 +81,10 @@ if ($pwd1_clear -ceq $pwd2_clear) {
   if ($?) {
     Start-Sleep -s 30
     close_container
+  }
+  if ($?) {
+    Start-Sleep -s 30
+    delete_temp
   }
 }
 else {
