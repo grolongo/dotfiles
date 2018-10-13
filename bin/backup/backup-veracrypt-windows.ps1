@@ -27,7 +27,8 @@ function backup_gpg {
   New-Item -Path "$HOME\AppData\Local\Temp\gnupg-backup-files" -ItemType directory
   Copy-Item "$env:APPDATA\gnupg\private-keys-v1.d" "$HOME\AppData\Local\Temp\gnupg-backup-files" -Recurse
   Copy-Item "$env:APPDATA\gnupg\pubring.kbx" "$HOME\AppData\Local\Temp\gnupg-backup-files"
-  gpg --export-ownertrust > "$HOME\AppData\Local\Temp\gnupg-backup-files\ownertrust.txt"
+  # commenting out for now since gpg version on windows is older
+  #gpg --export-ownertrust > "$HOME\AppData\Local\Temp\gnupg-backup-files\ownertrust.txt"
 }
 
 function backup_ssh {
@@ -63,6 +64,10 @@ if ($pwd1_clear -ceq $pwd2_clear) {
   if ($?) {
     Start-Sleep -s 30
     backup_gpg
+  }
+  if ($?) {
+    Start-Sleep -s 30
+    backup_ssh
   }
   if ($?) {
     Start-Sleep -s 30
