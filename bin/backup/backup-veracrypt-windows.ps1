@@ -46,6 +46,7 @@ function copy_files {
   Copy-Item "$HOME\Seafile\Private" ${vc_letter}:\ -Recurse
   Copy-Item "$HOME\Seafile\Notes" ${vc_letter}:\ -Recurse
   Copy-Item "$HOME\AppData\Local\Temp\gnupg-backup-files" ${vc_letter}:\ -Recurse
+  Copy-Item "$HOME\AppData\Local\Temp\ssh-backup-files" ${vc_letter}:\ -Recurse
 }
 
 function close_container {
