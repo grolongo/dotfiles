@@ -141,8 +141,8 @@ install_docker() {
 
   curl -sSL https://get.docker.com | sh
 
-  msg_info "Adding $SUDO_USER to docker group..."
-  sudo usermod -aG docker "$SUDO_USER"
+  msg_info "Adding $USER to docker group..."
+  sudo usermod -aG docker "$USER"
 
   confirm "You need to restart to finish. Reboot now?" && {
     sudo reboot
