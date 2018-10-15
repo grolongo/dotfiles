@@ -136,7 +136,7 @@ apt_base() {
 # }}}
 # Docker {{{
 # ======
-install_Docker() {
+install_docker() {
   check_is_not_sudo
 
   curl -sSL https://get.docker.com | sh
