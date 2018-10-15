@@ -328,7 +328,7 @@ install_casks() {
     electrum
     firefox
     iterm2
-    keepassx
+    keepassxc
     onionshare
     thunderbird
     torbrowser
