@@ -187,6 +187,7 @@ install_nextcloud() {
   ownyourbits/nextcloudpi-armhf \
   "$IP"
 
+  echo
   echo "Wait until you see 'init done' with 'docker logs -f nextcloudpi'"
   echo "Then go to (example) https://192.168.1.17 and activate."
   echo "Verify the modem has DynDNS enabled for Let's Encrypt to work in case of dynamic IP."
