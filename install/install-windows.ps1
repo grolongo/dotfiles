@@ -33,6 +33,7 @@ function install_packages {
   cinst pandoc
   cinst seafile-client
   cinst setpoint
+  cinst shellcheck
   cinst spotify
   cinst steam
   cinst streamlink
