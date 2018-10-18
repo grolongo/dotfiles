@@ -172,7 +172,7 @@ install_rkhunter() {
 # }}}
 # Nextcloud (docker) {{{
 # ==================
-install_nextcloud() {
+install_nextcloud_docker() {
   check_is_not_sudo
   command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
@@ -180,12 +180,12 @@ install_nextcloud() {
   IP="$(hostname -I | cut -f1 -d ' ')"
 
   docker run -d \
-  -p 4443:4443 -p 443:443 -p 80:80 \
-  -v ncdata:/data \
-  --restart always \
-  --name nextcloudpi \
-  ownyourbits/nextcloudpi-armhf \
-  "$IP"
+    -p 4443:4443 -p 443:443 -p 80:80 \
+    -v ncdata:/data \
+    --restart always \
+    --name nextcloudpi \
+    ownyourbits/nextcloudpi-armhf \
+    "$IP"
 
   echo
   echo "Wait until you see 'init done' with 'docker logs -f nextcloudpi'"
@@ -288,6 +288,74 @@ install_pihole() {
   echo "Either enter twice the same IP of the Pi for DNS1 and DNS2"
   echo "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
   echo "also don't forget IPv6."
+}
+# }}}
+# Pihole (docker) {{{
+# ===============
+install_pihole_docker() {
+  check_is_not_sudo
+  command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
+
+  local IP
+  IP="$(ip route get 8.8.8.8 | awk '{ print $NF; exit }')"
+
+  local IPv6
+  IPv6="$(ip -6 route get 2001:4860:4860::8888 | awk '{for(i=1;i<=NF;i++) if ($i=="src") print $(i+1)}')"
+
+  DOCKER_CONFIGS="$HOME"  # Default of directory you run this from, update to where ever.
+
+  echo
+  echo "Make sure your IPs are correct, hard code ServerIP ENV VARs if necessary."
+  echo
+  echo "IPv4: ${IP}"
+  echo "IPv6: ${IPv6}"
+
+  echo
+  while true; do
+    read -r -p "Do you want to use Pihole as your DHCP server? [y/n] " dockerchoice
+    case "$dockerchoice" in
+      [yY]es|[yY])
+        docker run -d \
+          --name pihole \
+          -p 53:53/tcp -p 53:53/udp \
+          -p 67:67/udp \
+          --cap-add=NET_ADMIN \
+          -p 80:80 \
+          -p 443:443 \
+          -v "${DOCKER_CONFIGS}/pihole/:/etc/pihole/" \
+          -v "${DOCKER_CONFIGS}/dnsmasq.d/:/etc/dnsmasq.d/" \
+          -e ServerIP="${IP}" \
+          -e ServerIPv6="${IPv6}" \
+          -e DNS1="1.1.1.1" \
+          -e DNS2="1.0.0.1" \
+          --restart=always \
+          --dns=127.0.0.1 --dns=1.1.1.1 \
+          pihole/pihole:v4.0_armhf
+        ;;
+        [nN]o|[nN])
+          docker run -d \
+            --name pihole \
+            -p 53:53/tcp -p 53:53/udp \
+            -p 80:80 \
+            -p 443:443 \
+            -v "${DOCKER_CONFIGS}/pihole/:/etc/pihole/" \
+            -v "${DOCKER_CONFIGS}/dnsmasq.d/:/etc/dnsmasq.d/" \
+            -e ServerIP="${IP}" \
+            -e ServerIPv6="${IPv6}" \
+            -e DNS1="1.1.1.1" \
+            -e DNS2="1.0.0.1" \
+            --restart=always \
+            --dns=127.0.0.1 --dns=1.1.1.1 \
+            pihole/pihole:v4.0_armhf
+        ;;
+        *)
+          echo "Please enter yes or no."
+        ;;
+    esac
+  done
+  
+  echo -n "Your password for https://${IP}/admin/ is "
+  docker logs pihole 2> /dev/null | grep 'password:'
 }
 # }}}
 # Fail2ban {{{
@@ -493,21 +561,22 @@ usage() {
   echo "This script installs my basic setup for a server."
   echo
   echo "Usage:"
-  echo "  isetup    (s)      - delete pi user, passwordless sudo, lock root and run raspi-config"
-  echo "  aptbase   (s)      - disable translations, update, upgrade and installs few packages"
-  echo "  docker             - installs docker"
-  echo "  rkhunter  (s)      - installs rkhunter with lsof and initial propupd"
-  echo "  nextcloud (docker) - downloads and deploys nextcloudpi with Docker"
-  echo "  seafile            - downloads and deploys Seafile server"
-  echo "  pihole    (s)      - runs Pihole bash script installer"
-  echo "  fail2ban  (s)      - downloads and installs Fail2ban"
-  echo "  psad      (s)      - installs port scan attack detector and runs signatures update"
-  echo "  msmtp     (s)      - installs msmtp and msmtp-mta"
-  echo "  zsh                - installs zsh as default shell and symlinks to root"
-  echo "  tmux               - installs tmux and compils profiles for italic support"
-  echo "  weechat   (s)      - setups weechat repository and installs"
-  echo "  lynis     (s)      - installs Lynis audit from official repository"
-  echo "  dotfiles           - setup dotfiles from external script"
+  echo "  isetup           (s) - delete pi user, passwordless sudo, lock root and run raspi-config"
+  echo "  aptbase          (s) - disable translations, update, upgrade and installs few packages"
+  echo "  docker               - installs docker"
+  echo "  rkhunter         (s) - installs rkhunter with lsof and initial propupd"
+  echo "  nextcloud_docker     - downloads and deploys nextcloudpi with Docker"
+  echo "  seafile              - downloads and deploys Seafile server"
+  echo "  pihole           (s) - runs Pihole bash script installer"
+  echo "  pihole_docker        - downloads and deploys Pihole with Docker"
+  echo "  fail2ban         (s) - downloads and installs Fail2ban"
+  echo "  psad             (s) - installs port scan attack detector and runs signatures update"
+  echo "  msmtp            (s) - installs msmtp and msmtp-mta"
+  echo "  zsh                  - installs zsh as default shell and symlinks to root"
+  echo "  tmux                 - installs tmux and compils profiles for italic support"
+  echo "  weechat          (s) - setups weechat repository and installs"
+  echo "  lynis            (s) - installs Lynis audit from official repository"
+  echo "  dotfiles             - setup dotfiles from external script"
   echo
 }
 
@@ -528,12 +597,14 @@ main() {
     install_docker
   elif [[ $cmd == "rkhunter" ]]; then
     install_rkhunter
-  elif [[ $cmd == "nextcloud" ]]; then
-    install_nextcloud
+  elif [[ $cmd == "nextcloud_docker" ]]; then
+    install_nextcloud_docker
   elif [[ $cmd == "seafile" ]]; then
     install_seafile
   elif [[ $cmd == "pihole" ]]; then
     install_pihole
+  elif [[ $cmd == "pihole_docker" ]]; then
+    install_pihole_docker
   elif [[ $cmd == "fail2ban" ]]; then
     install_fail2ban
   elif [[ $cmd == "psad" ]]; then
