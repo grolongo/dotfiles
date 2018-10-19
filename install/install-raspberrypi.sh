@@ -311,15 +311,30 @@ install_pihole_docker() {
   echo "IPv6: ${IPv6}"
 
   echo
-  while true; do
-    read -r -p "Do you want to use Pihole as your DHCP server? [y/n] " dockerchoice
-    case "$dockerchoice" in
-      [yY]es|[yY])
+  read -r -p "Do you want to use Pihole as your DHCP server? [y/n] " dockerchoice
+  case "$dockerchoice" in
+    [yY]es|[yY])
+      docker run -d \
+        --name pihole \
+        -p 53:53/tcp -p 53:53/udp \
+        -p 67:67/udp \
+        --cap-add=NET_ADMIN \
+        -p 80:80 \
+        -p 443:443 \
+        -v "${DOCKER_CONFIGS}/pihole/:/etc/pihole/" \
+        -v "${DOCKER_CONFIGS}/dnsmasq.d/:/etc/dnsmasq.d/" \
+        -e ServerIP="${IP}" \
+        -e ServerIPv6="${IPv6}" \
+        -e DNS1="1.1.1.1" \
+        -e DNS2="1.0.0.1" \
+        --restart=always \
+        --dns=127.0.0.1 --dns=1.1.1.1 \
+        pihole/pihole:v4.0_armhf
+      ;;
+      [nN]o|[nN])
         docker run -d \
           --name pihole \
           -p 53:53/tcp -p 53:53/udp \
-          -p 67:67/udp \
-          --cap-add=NET_ADMIN \
           -p 80:80 \
           -p 443:443 \
           -v "${DOCKER_CONFIGS}/pihole/:/etc/pihole/" \
@@ -331,28 +346,12 @@ install_pihole_docker() {
           --restart=always \
           --dns=127.0.0.1 --dns=1.1.1.1 \
           pihole/pihole:v4.0_armhf
-        ;;
-        [nN]o|[nN])
-          docker run -d \
-            --name pihole \
-            -p 53:53/tcp -p 53:53/udp \
-            -p 80:80 \
-            -p 443:443 \
-            -v "${DOCKER_CONFIGS}/pihole/:/etc/pihole/" \
-            -v "${DOCKER_CONFIGS}/dnsmasq.d/:/etc/dnsmasq.d/" \
-            -e ServerIP="${IP}" \
-            -e ServerIPv6="${IPv6}" \
-            -e DNS1="1.1.1.1" \
-            -e DNS2="1.0.0.1" \
-            --restart=always \
-            --dns=127.0.0.1 --dns=1.1.1.1 \
-            pihole/pihole:v4.0_armhf
-        ;;
-        *)
-          echo "Please enter yes or no."
-        ;;
-    esac
-  done
+      ;;
+      *)
+        echo "You didn't choose yes or no, exiting."
+        exit 1
+      ;;
+  esac
   
   echo -n "Your password for https://${IP}/admin/ is "
   docker logs pihole 2> /dev/null | grep 'password:'
