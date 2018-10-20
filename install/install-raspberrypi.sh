@@ -352,7 +352,28 @@ install_pihole_docker() {
         exit 1
       ;;
   esac
-  
+
+  msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
+  docker exec pihole bash -c "curl -sSL https://v.firebog.net/hosts/lists.php?type=all >> /etc/pihole/adlists.list"
+  docker exec pihole bash -c "echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt >> /etc/pihole/adlists.list"
+  docker exec pihole bash -c "echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt >> /etc/pihole/adlists.list"
+  docker exec pihole bash -c "echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt >> /etc/pihole/adlists.list"
+
+  msg_info "Adding some urls to whitelist..."
+                                              
+  # android app store
+  docker exec pihole pihole -w android.clients.google.com
+                                              
+  msg_info "Updating gravity..."
+  docker exec pihole pihole -g                                    
+
+  echo
+  echo "Change DNS addresses on all devices:"
+  echo "Either enter twice the same IP of the Pi for DNS1 and DNS2"
+  echo "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
+  echo "also don't forget IPv6."
+  echo
+
   echo -n "Your password for https://${IP}/admin/ is "
   docker logs pihole 2> /dev/null | grep 'password:'
 }
