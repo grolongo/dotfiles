@@ -329,7 +329,7 @@ install_pihole_docker() {
         -e DNS2="1.0.0.1" \
         --restart=always \
         --dns=127.0.0.1 --dns=1.1.1.1 \
-        pihole/pihole:v4.0_armhf
+        pihole/pihole:latest
       ;;
       [nN]o|[nN])
         docker run -d \
@@ -345,7 +345,7 @@ install_pihole_docker() {
           -e DNS2="1.0.0.1" \
           --restart=always \
           --dns=127.0.0.1 --dns=1.1.1.1 \
-          pihole/pihole:v4.0_armhf
+          pihole/pihole:latest
       ;;
       *)
         echo "You didn't choose yes or no, exiting."
