@@ -353,6 +353,11 @@ install_pihole_docker() {
       ;;
   esac
 
+  echo
+  until [ "$(docker inspect -f '{{json .State.Health.Status}}' pihole)" == '"healthy"' ]; do
+    msg_info "First init not finished yet, waiting 10 seconds more..." && sleep 10;
+  done;
+
   msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
   docker exec pihole bash -c "curl -sSL https://v.firebog.net/hosts/lists.php?type=all >> /etc/pihole/adlists.list"
   docker exec pihole bash -c "echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt >> /etc/pihole/adlists.list"
