@@ -12,6 +12,7 @@ Columns=161
 Rows=40
 ForegroundColour=238,232,213
 BellType=0
+Scrollbar=none
 
 # options (default=locale): locale, unicode, ambig-wide
 Charwidth=unicode
