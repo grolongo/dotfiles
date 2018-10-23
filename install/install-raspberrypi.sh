@@ -489,8 +489,6 @@ install_zsh() {
   confirm "Change shell to zsh for ROOT?" && {
     sudo chsh -s "/bin/zsh"
   }
-
-  apt_clean
 }
 # }}}
 # Tmux {{{
