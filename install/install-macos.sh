@@ -159,8 +159,8 @@ setup_network() {
   sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
 
   msg_info "Changing DNS servers"
-  networksetup -setdnsservers Wi-Fi 192.168.1.11 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
-  networksetup -setdnsservers "Thunderbolt Ethernet" 192.168.1.11 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
+  networksetup -setdnsservers Wi-Fi 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
+  networksetup -setdnsservers "Thunderbolt Ethernet" 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
 
   msg_info "Flushing DNS cache"
   sudo killall -HUP mDNSResponder
