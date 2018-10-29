@@ -63,7 +63,7 @@ function get_wsl {
 function install_chatty {
   $CHATTY_LATEST = Read-Host -Prompt "Enter Chatty version, this can be found on https://github.com/chatty/chatty/releases (ex: 0.9)"
   $REPO = "https://github.com/chatty/chatty/releases/download/"
-  $RELEASE = "v$CHATTY_LATEST/Chatty_$CHATTY_LATEST`_windows_standalone.zip"
+  $RELEASE = "v$CHATTY_LATEST/Chatty_$CHATTY_LATEST`_win_standalone.zip"
 
   Write-Host -ForegroundColor "yellow" "Downloading zip file..."
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
