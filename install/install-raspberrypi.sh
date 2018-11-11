@@ -458,7 +458,8 @@ install_msmtp() {
 
   apt_clean
 
-  msg_info "Don't forget to add/symlink .msmtprc to your root home folder."
+  msg_info "Don't forget to add/symlink .msmtprc to your root home folder also."
+  msg_info "Make sure the file has permission of 600"
 }
 # }}}
 # Zsh {{{
