@@ -194,6 +194,7 @@ SPACESHIP_HOST_PREFIX="%F{white}at "
 # ---------
 SPACESHIP_DIR_COLOR="green"
 SPACESHIP_DIR_PREFIX="%F{white}in "
+SPACESHIP_DIR_LOCK_SYMBOL=""
 
 # ---
 # git
