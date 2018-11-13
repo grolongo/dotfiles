@@ -164,6 +164,7 @@ SPACESHIP_PROMPT_ORDER=(
   host
   dir
   git
+  docker
   line_sep
   char
 )
@@ -201,8 +202,10 @@ SPACESHIP_DIR_LOCK_SYMBOL=""
 # ---
 if [[ $(uname -r) =~ Microsoft ]]; then
   BCOLOR="magenta"
-else
+elif [[ $OSTYPE = darwin* ]]; then
   BCOLOR="13"
+else
+  BCOLOR="5"
 fi
 SPACESHIP_GIT_PREFIX="%F{white}on "
 SPACESHIP_GIT_BRANCH_PREFIX=""
