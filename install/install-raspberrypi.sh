@@ -452,14 +452,10 @@ install_msmtp() {
   )
 
   apt_install
-
-  msg_info "Creating log folder at /var/log/msmtp"
-  mkdir -vp /var/log/msmtp
-
   apt_clean
 
-  msg_info "Don't forget to add/symlink .msmtprc to your root home folder also."
-  msg_info "Make sure the file has permission of 600"
+  msg_info "Now add custom /etc/msmtprc"
+  msg_info "Then try with: 'echo test | msmtp <email recipient>'"
 }
 # }}}
 # Zsh {{{
