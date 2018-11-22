@@ -98,6 +98,23 @@ initial_setup() {
 
   msg_info "Expanding filesystem"
   raspi-config --expand-rootfs
+
+  confirm "Disable Bluetooth and WiFi?" && {
+    cat <<-EOF > /etc/modprobe.d/raspi-blacklist.conf
+		# disable WLAN
+		blacklist brcmfmac
+		blacklist brcmutil
+		blacklist cfg80211
+		blacklist rfkill
+		# disable bluetooth
+		blacklist btbcm
+		blacklist hci_uart
+		EOF
+
+    systemctl disable hciuart
+  }
+
+  msg_info "Reboot now."
 }
 # }}}
 # Apt base {{{
