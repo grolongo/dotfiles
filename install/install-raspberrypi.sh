@@ -144,6 +144,18 @@ install_docker() {
   msg_info "Adding $USER to docker group..."
   sudo usermod -aG docker "$USER"
 
+  confirm "Enable IPv6?" && {
+    sudo bash -c 'cat <<-EOF > /etc/docker/daemon.json
+		{
+		  "ipv6": true,
+		  "fixed-cidr-v6": "2001:db8:1::/64"
+		}
+		EOF'
+
+    msg_info "Restarting Docker..."
+    sudo systemctl restart docker
+  }
+
   confirm "You need to restart to finish. Reboot now?" && {
     sudo reboot
   }
@@ -302,13 +314,12 @@ install_pihole_docker() {
   local IPv6
   IPv6="$(ip -6 route get 2001:4860:4860::8888 | awk '{for(i=1;i<=NF;i++) if ($i=="src") print $(i+1)}')"
 
-  DOCKER_CONFIGS="$HOME"  # Default of directory you run this from, update to where ever.
-
   echo
   echo "Make sure your IPs are correct, hard code ServerIP ENV VARs if necessary."
   echo
   echo "IPv4: ${IP}"
   echo "IPv6: ${IPv6}"
+  echo
 
   echo
   read -r -p "Do you want to use Pihole as your DHCP server? [y/n] " dockerchoice
@@ -321,8 +332,8 @@ install_pihole_docker() {
         --cap-add=NET_ADMIN \
         -p 80:80 \
         -p 443:443 \
-        -v "${DOCKER_CONFIGS}/pihole/:/etc/pihole/" \
-        -v "${DOCKER_CONFIGS}/dnsmasq.d/:/etc/dnsmasq.d/" \
+        -v pihole:/etc/pihole \
+        -v dnsmasq:/etc/dnsmasq.d \
         -e ServerIP="${IP}" \
         -e ServerIPv6="${IPv6}" \
         -e DNS1="1.1.1.1" \
@@ -337,8 +348,8 @@ install_pihole_docker() {
           -p 53:53/tcp -p 53:53/udp \
           -p 80:80 \
           -p 443:443 \
-          -v "${DOCKER_CONFIGS}/pihole/:/etc/pihole/" \
-          -v "${DOCKER_CONFIGS}/dnsmasq.d/:/etc/dnsmasq.d/" \
+          -v pihole:/etc/pihole \
+          -v dnsmasq:/etc/dnsmasq.d \
           -e ServerIP="${IP}" \
           -e ServerIPv6="${IPv6}" \
           -e DNS1="1.1.1.1" \
@@ -374,11 +385,9 @@ install_pihole_docker() {
 
   echo
   echo "Change DNS addresses on all devices:"
-  echo "Either enter twice the same IP of the Pi for DNS1 and DNS2"
-  echo "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
-  echo "also don't forget IPv6."
+  echo "IPv4: ${IP}"
+  echo "IPv6: ${IPv6}"
   echo
-
   echo -n "Your password for https://${IP}/admin/ is "
   docker logs pihole 2> /dev/null | grep 'password:'
 }
