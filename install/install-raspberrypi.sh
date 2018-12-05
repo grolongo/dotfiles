@@ -199,9 +199,66 @@ install_rkhunter() {
   apt_clean
 }
 # }}}
-# Nextcloud (docker) {{{
-# ==================
-install_nextcloud_docker() {
+# Nextcloud local only (docker) {{{
+# ====================
+install_nextcloud_local() {
+  check_is_not_sudo
+  command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
+
+  local IP
+  IP="$(hostname -I | cut -f1 -d ' ')"
+
+  echo
+  read -r -p "Enter username for admin account: " ncadmin
+  read -r -s -p "Enter password for admin account: " ncpass
+  echo
+
+  docker run -d \
+    -p 8080:80 \
+    -v ncvanilla:/var/www/html \
+    -e SQLITE_DATABASE="ncvanilla" \
+    -e NEXTCLOUD_ADMIN_USER="${ncadmin}" \
+    -e NEXTCLOUD_ADMIN_PASSWORD="${ncpass}" \
+    -e NEXTCLOUD_TRUSTED_DOMAINS="${IP}" \
+    --restart always \
+    --name ncvanilla \
+    nextcloud
+
+  msg_info "Waiting for initial install to finish..."
+  sleep 60
+  
+  msg_info "Disabling unecessary apps..."
+  docker exec --user www-data ncvanilla php occ app:disable accessibility
+  docker exec --user www-data ncvanilla php occ app:disable systemtags
+  docker exec --user www-data ncvanilla php occ app:disable comments
+  docker exec --user www-data ncvanilla php occ app:disable federation
+  docker exec --user www-data ncvanilla php occ app:disable firstrunwizard
+  docker exec --user www-data ncvanilla php occ app:disable nextcloud_announcements
+  docker exec --user www-data ncvanilla php occ app:disable survey_client
+  docker exec --user www-data ncvanilla php occ app:disable support
+  docker exec --user www-data ncvanilla php occ app:disable theming
+  
+  msg_info "Enabling and installing some apps..."
+  docker exec --user www-data ncvanilla php occ app:enable admin_audit
+  docker exec --user www-data ncvanilla php occ app:install apporder
+  docker exec --user www-data ncvanilla php occ app:install limit_login_to_ip
+  docker exec --user www-data ncvanilla php occ app:install bruteforcesettings
+  docker exec --user www-data ncvanilla php occ app:install calendar
+  docker exec --user www-data ncvanilla php occ app:install contacts
+  docker exec --user www-data ncvanilla php occ app:install notes
+  
+  msg_info "Enabling encryption..."
+  docker exec --user www-data ncvanilla php occ app:enable encryption
+  docker exec --user www-data ncvanilla php occ encryption:enable
+  docker exec --user www-data ncvanilla php occ encryption:enable-master-key
+  
+  msg_info "Encrypting files..."
+  docker exec -it --user www-data ncvanilla php occ encryption:encrypt-all
+}
+# }}}
+# NextcloudPi internet (docker) {{{
+# ====================
+install_nextcloudpi_internet() {
   check_is_not_sudo
   command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
@@ -607,22 +664,23 @@ usage() {
   echo "This script installs my basic setup for a server."
   echo
   echo "Usage:"
-  echo "  isetup           (s) - delete pi user, passwordless sudo, lock root and run raspi-config"
-  echo "  aptbase          (s) - disable translations, update, upgrade and installs few packages"
-  echo "  docker               - installs docker"
-  echo "  rkhunter         (s) - installs rkhunter with lsof and initial propupd"
-  echo "  nextcloud_docker     - downloads and deploys nextcloudpi with Docker"
-  echo "  seafile              - downloads and deploys Seafile server"
-  echo "  pihole           (s) - runs Pihole bash script installer"
-  echo "  pihole_docker        - downloads and deploys Pihole with Docker"
-  echo "  fail2ban         (s) - downloads and installs Fail2ban"
-  echo "  psad             (s) - installs port scan attack detector and runs signatures update"
-  echo "  msmtp            (s) - installs msmtp and msmtp-mta"
-  echo "  zsh                  - installs zsh as default shell and symlinks to root"
-  echo "  tmux                 - installs tmux and compils profiles for italic support"
-  echo "  weechat          (s) - setups weechat repository and installs"
-  echo "  lynis            (s) - installs Lynis audit from official repository"
-  echo "  dotfiles             - setup dotfiles from external script"
+  echo "  isetup                        (s) - delete pi user, passwordless sudo, lock root and run raspi-config"
+  echo "  aptbase                       (s) - disable translations, update, upgrade and installs few packages"
+  echo "  docker                            - installs docker"
+  echo "  rkhunter                      (s) - installs rkhunter with lsof and initial propupd"
+  echo "  nextcloud_docker_local            - downloads and deploys nextcloudpi with Docker"
+  echo "  nextcloudpi_docker_internet       - downloads and deploys nextcloudpi with Docker"
+  echo "  seafile                           - downloads and deploys Seafile server"
+  echo "  pihole                        (s) - runs Pihole bash script installer"
+  echo "  pihole_docker                     - downloads and deploys Pihole with Docker"
+  echo "  fail2ban                      (s) - downloads and installs Fail2ban"
+  echo "  psad                          (s) - installs port scan attack detector and runs signatures update"
+  echo "  msmtp                         (s) - installs msmtp and msmtp-mta"
+  echo "  zsh                               - installs zsh as default shell and symlinks to root"
+  echo "  tmux                              - installs tmux and compils profiles for italic support"
+  echo "  weechat                       (s) - setups weechat repository and installs"
+  echo "  lynis                         (s) - installs Lynis audit from official repository"
+  echo "  dotfiles                          - setup dotfiles from external script"
   echo
 }
 
@@ -643,8 +701,10 @@ main() {
     install_docker
   elif [[ $cmd == "rkhunter" ]]; then
     install_rkhunter
-  elif [[ $cmd == "nextcloud_docker" ]]; then
-    install_nextcloud_docker
+  elif [[ $cmd == "nextcloud_docker_local" ]]; then
+    install_nextcloud_local
+  elif [[ $cmd == "nextcloudpi_docker_internet" ]]; then
+    install_nextcloudpi_internet
   elif [[ $cmd == "seafile" ]]; then
     install_seafile
   elif [[ $cmd == "pihole" ]]; then

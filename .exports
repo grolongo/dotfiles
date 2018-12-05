@@ -20,11 +20,11 @@ else
   export HOUSE=$HOME
 fi
 
-export CLOUD_DIR=$HOUSE/Seafile
-export PROJECTS_DIR=$HOUSE/Seafile/Projects
-export DOCUMENTS_DIR=$HOUSE/Seafile/Documents
-export PRIVATE_DIR=$HOUSE/Seafile/Private
-export NOTES_DIR=$HOUSE/Seafile/Notes
+export CLOUD_DIR=$HOUSE/Nextcloud
+export PROJECTS_DIR=$HOUSE/Nextcloud/Projects
+export DOCUMENTS_DIR=$HOUSE/Nextcloud/Documents
+export PRIVATE_DIR=$HOUSE/Nextcloud/Private
+export NOTES_DIR=$HOUSE/Nextcloud/Notes
 
 # Dotfiles
 export DOTFILES_DIR=$HOME/dotfiles
