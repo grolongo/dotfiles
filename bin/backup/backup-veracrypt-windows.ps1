@@ -15,7 +15,7 @@ $vc_letter = "X"
 
 function create_container {
   Write-Host "Creating container..."
-  & "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create $vc_volume /size 210M /password $pwd1_clear /hash whirlpool /encryption "AES(Twofish(Serpent))" /filesystem FAT /silent
+  & "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create $vc_volume /size 999M /password $pwd1_clear /hash whirlpool /encryption "AES(Twofish(Serpent))" /filesystem FAT /silent
 }
 
 function open_container {
@@ -51,7 +51,7 @@ function copy_files {
   Copy-Item "$HOME\Nextcloud\Documents" ${vc_letter}:\ -Recurse
   Copy-Item "$HOME\Nextcloud\Private" ${vc_letter}:\ -Recurse
   Copy-Item "$HOME\Nextcloud\Notes" ${vc_letter}:\ -Recurse
-  Copy-Item "$HOME\Nextcloud\Photos" ${vc_letter}:\ -Recurse
+  #Copy-Item "$HOME\Nextcloud\Photos" ${vc_letter}:\ -Recurse
   Copy-Item "$HOME\AppData\Local\Temp\gnupg-backup-files" ${vc_letter}:\ -Recurse
   Copy-Item "$HOME\AppData\Local\Temp\ssh-backup-files" ${vc_letter}:\ -Recurse
 }
