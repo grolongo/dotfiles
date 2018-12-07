@@ -47,10 +47,11 @@ function delete_temp {
 function copy_files {
   Write-Host "Copying files..."
   robocopy /e "$HOME\dotfiles" ${vc_letter}:\dotfiles /xd ".git"
-  Copy-Item "$HOME\Seafile\Projects" ${vc_letter}:\ -Recurse
-  Copy-Item "$HOME\Seafile\Documents" ${vc_letter}:\ -Recurse
-  Copy-Item "$HOME\Seafile\Private" ${vc_letter}:\ -Recurse
-  Copy-Item "$HOME\Seafile\Notes" ${vc_letter}:\ -Recurse
+  Copy-Item "$HOME\Nextcloud\Projects" ${vc_letter}:\ -Recurse
+  Copy-Item "$HOME\Nextcloud\Documents" ${vc_letter}:\ -Recurse
+  Copy-Item "$HOME\Nextcloud\Private" ${vc_letter}:\ -Recurse
+  Copy-Item "$HOME\Nextcloud\Notes" ${vc_letter}:\ -Recurse
+  Copy-Item "$HOME\Nextcloud\Photos" ${vc_letter}:\ -Recurse
   Copy-Item "$HOME\AppData\Local\Temp\gnupg-backup-files" ${vc_letter}:\ -Recurse
   Copy-Item "$HOME\AppData\Local\Temp\ssh-backup-files" ${vc_letter}:\ -Recurse
 }

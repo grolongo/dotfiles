@@ -25,6 +25,7 @@ export PROJECTS_DIR=$HOUSE/Nextcloud/Projects
 export DOCUMENTS_DIR=$HOUSE/Nextcloud/Documents
 export PRIVATE_DIR=$HOUSE/Nextcloud/Private
 export NOTES_DIR=$HOUSE/Nextcloud/Notes
+export IMAGES_DIR=$HOUSE/Nextcloud/Photos
 
 # Dotfiles
 export DOTFILES_DIR=$HOME/dotfiles

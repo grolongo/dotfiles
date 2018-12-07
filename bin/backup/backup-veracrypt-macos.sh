@@ -10,7 +10,7 @@ $veracrypt_path --text \
   --encryption=aes-twofish-serpent \
   --hash=whirlpool \
   --random-source=/dev/urandom \
-  --size=210M \
+  --size=500M \
   --volume-type=normal \
   --filesystem=exFAT \
   --pim=0 \
@@ -44,6 +44,9 @@ cp -r "$PROJECTS_DIR" $volume_path
 
 echo "Copying private dir..."
 cp -r "$PRIVATE_DIR" $volume_path
+
+echo "Copying images dir..."
+cp -r "$IMAGES_DIR" $volume_path
 
 echo "Copying and exporting GPG files..."
 mkdir "$volume_path"/gnupg-backup-files
