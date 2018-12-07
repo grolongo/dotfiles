@@ -329,6 +329,7 @@ install_casks() {
     firefox
     iterm2
     keepassxc
+    nextcloud
     onionshare
     thunderbird
     torbrowser
