@@ -5,7 +5,7 @@ mnt_folder=/mnt/luksvol
 vol_name=backup
 
 echo "Creating container at '$backup_container'"
-fallocate -l 150M "$backup_container"
+fallocate -l 500M "$backup_container"
 
 sleep 5
 

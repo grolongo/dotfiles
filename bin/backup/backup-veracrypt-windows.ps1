@@ -15,7 +15,7 @@ $vc_letter = "X"
 
 function create_container {
   Write-Host "Creating container..."
-  & "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create $vc_volume /size 999M /password $pwd1_clear /hash whirlpool /encryption "AES(Twofish(Serpent))" /filesystem FAT /silent
+  & "C:\Program Files\VeraCrypt\VeraCrypt Format.exe" /create $vc_volume /size 500M /password $pwd1_clear /hash whirlpool /encryption "AES(Twofish(Serpent))" /filesystem FAT /silent
 }
 
 function open_container {
