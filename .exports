@@ -8,7 +8,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
-# Seafile
+# Seafile/Nextcloud
 if [[ $(uname -r) =~ Microsoft ]]; then
   export win_userprofile="$(cmd.exe /c "<nul set /p=%UserProfile%" 2>/dev/null)"
   export win_userprofile_drive="${win_userprofile%%:*}:"
@@ -33,3 +33,11 @@ export DOTFILES_DIR=$HOME/dotfiles
 # GPG
 GPG_TTY=$(tty)
 export GPG_TTY
+
+# Homebrew
+if test "$(command -v brew >/dev/null 2>&1)"
+then
+  export HOMEBREW_NO_INSECURE_REDIRECT=1
+  export HOMEBREW_CASK_OPTS=--require-sha
+  export HOMEBREW_NO_ANALYTICS=1
+fi
