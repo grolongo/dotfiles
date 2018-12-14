@@ -113,6 +113,11 @@ confirm "Install symlinks for $USER?" && {
     symlink ".aria2/aria2.conf"
   }
   
+  # curl
+  confirm "link curl config file?" && {
+    symlink ".curlrc"
+  }
+
   # vim
   confirm "link vim files?" && {
     mkdir -vp "$HOME"/.vim
