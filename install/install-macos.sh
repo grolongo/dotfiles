@@ -105,8 +105,9 @@ initial_setup() {
   # Disable window animations and Get Info animations
   defaults write com.apple.finder DisableAllAnimations -bool true
 
-  # Desktop background
-  osascript -e 'tell application "Finder" to set desktop picture to POSIX file "/Library/Desktop Pictures/Solid Colors/Solid Gray Pro Ultra Dark.png"'
+  # Don't default to saving documents to iCloud
+  defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
 
   msg_info "Restarting Finder..."
   killall -KILL Finder
@@ -150,20 +151,39 @@ initial_setup() {
   confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
 }
 # }}}
-# Network {{{
-# =======
-setup_network() {
+# Network & Security {{{
+# ==================
+setup_network_n_sec() {
   check_is_not_sudo
 
-  msg_info "Blocking all incoming connections"
+  msg_info "Blocking all incoming connections..."
   sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
 
-  msg_info "Changing DNS servers"
+  msg_info "Enabling stealth mode..."
+  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+
+  msg_info "Changing DNS servers..."
   networksetup -setdnsservers Wi-Fi 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
   networksetup -setdnsservers "Thunderbolt Ethernet" 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
 
-  msg_info "Flushing DNS cache"
+  msg_info "Flushing DNS cache..."
   sudo killall -HUP mDNSResponder
+
+  msg_info "Disabling Bonjour multicast advertisements"
+  sudo defaults write /Library/Preferences/com.apple.mDNSResponder.plist NoMulticastAdvertisements -bool YES
+
+  msg_info "Disabling crash reporting to Cupertino..."
+  defaults write com.apple.CrashReporter DialogType none
+
+  msg_info "Disabling captive portal..."
+  sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false
+
+  msg_info "Enabling APPs hardening..."
+  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off
+  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsignedapp off
+
+  msg_info "Flushing APPs cache..."
+  sudo pkill -HUP socketfilterfw
 }
 # }}}
 # Homebrew installation {{{
@@ -420,16 +440,17 @@ usage() {
   echo "This script installs my basic setup for a macOS laptop."
   echo
   echo "Usage:"
-  echo "  isetup    - docker, finder and mouse preferences"
-  echo "  homebrew  - setup homebrew if not installed"
-  echo "  base      - installs base packages"
-  echo "  zsh       - installs zsh as default shell with spaceship's prompt"
-  echo "  neovim    - installs neovim and python/linters dependencies"
-  echo "  tmux      - installs tmux with italics support"
-  echo "  casks     - setup caskroom & installs softwares"
-  echo "  chatty    - downloads and installs chatty with java runtime environment"
-  echo "  fonts     - copy fonts"
-  echo "  dotfiles  - setup dotfiles"
+  echo "  isetup     - docker, finder and mouse preferences"
+  echo "  networksec - docker, finder and mouse preferences"
+  echo "  homebrew   - setup homebrew if not installed"
+  echo "  base       - installs base packages"
+  echo "  zsh        - installs zsh as default shell with spaceship's prompt"
+  echo "  neovim     - installs neovim and python/linters dependencies"
+  echo "  tmux       - installs tmux with italics support"
+  echo "  casks      - setup caskroom & installs softwares"
+  echo "  chatty     - downloads and installs chatty with java runtime environment"
+  echo "  fonts      - copy fonts"
+  echo "  dotfiles   - setup dotfiles"
   echo
 }
 
@@ -444,6 +465,8 @@ main() {
 
   if [[ $cmd == "isetup" ]]; then
     initial_setup
+  elif [[ $cmd == "networksec" ]]; then
+    setup_network_n_sec
   elif [[ $cmd == "homebrew" ]]; then
     install_homebrew
   elif [[ $cmd == "base" ]]; then
