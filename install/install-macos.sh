@@ -244,6 +244,42 @@ install_base() {
   brew_clean
 }
 # }}}
+# Casks {{{
+# =====
+install_casks() {
+  check_is_not_sudo
+
+  msg_info "Tapping caskroom/cask"
+  brew tap caskroom/cask
+
+  local packages=(
+    adobe-acrobat-reader
+    adobe-creative-cloud
+    dash
+    electrum
+    firefox
+    iterm2
+    keepassxc
+    nextcloud
+    onionshare
+    thunderbird
+    tor-browser
+    seafile-client
+    spotify
+    veracrypt
+    visual-studio-code
+  )
+
+  msg_info "Installing cask packages..."
+  for p in "${packages[@]}"; do
+    confirm "Install $p?" && brew cask install "$p"
+  done
+
+  echo
+  msg_info "Cleaning up install files..."
+  brew cleanup
+}
+# }}}
 # Zsh {{{
 # ===
 install_zsh() {
@@ -331,44 +367,6 @@ install_tmux() {
   tic -o "$HOME"/.terminfo "$base"/.terminfo/xterm-256color.terminfo
 }
 # }}}
-# Casks {{{
-# =====
-install_casks() {
-  check_is_not_sudo
-
-  msg_info "Tapping caskroom/cask"
-  brew tap caskroom/cask
-
-  local packages=(
-    adobe-acrobat-reader
-    adobe-illustrator-cc
-    adobe-indesign-cc
-    adobe-photoshop-cc
-    dash
-    electrum
-    firefox
-    iterm2
-    keepassxc
-    nextcloud
-    onionshare
-    thunderbird
-    torbrowser
-    seafile-client
-    spotify
-    veracrypt
-    visual-studio-code
-  )
-
-  msg_info "Installing cask packages..."
-  for p in "${packages[@]}"; do
-    confirm "Install $p?" && brew cask install "$p"
-  done
-
-  echo
-  msg_info "Cleaning up install files..."
-  brew cask cleanup
-}
-# }}}
 # Chatty {{{
 # ======
 install_chatty() {
@@ -444,10 +442,10 @@ usage() {
   echo "  networksec - docker, finder and mouse preferences"
   echo "  homebrew   - setup homebrew if not installed"
   echo "  base       - installs base packages"
+  echo "  casks      - setup caskroom & installs softwares"
   echo "  zsh        - installs zsh as default shell with spaceship's prompt"
   echo "  neovim     - installs neovim and python/linters dependencies"
   echo "  tmux       - installs tmux with italics support"
-  echo "  casks      - setup caskroom & installs softwares"
   echo "  chatty     - downloads and installs chatty with java runtime environment"
   echo "  fonts      - copy fonts"
   echo "  dotfiles   - setup dotfiles"
