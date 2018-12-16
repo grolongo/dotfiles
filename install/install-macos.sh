@@ -306,10 +306,9 @@ install_zsh() {
     fi
   }
 
-  msg_info "Setting up zsh shell for your users..."
   # zsh for user
-  confirm "Default shell to zsh for your $USER?" && {
-    checkShell; chsh -s "$(which zsh)"
+  confirm "Default shell to zsh for $USER?" && {
+    checkShell; chsh -s "$(command -v zsh)"
   }
   # zsh for root (we keep built-in zsh because we have errors with homebrew's zsh with root)
   echo
