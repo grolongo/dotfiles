@@ -108,7 +108,6 @@ initial_setup() {
   # Don't default to saving documents to iCloud
   defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
-
   msg_info "Restarting Finder..."
   killall -KILL Finder
 
