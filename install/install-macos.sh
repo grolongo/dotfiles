@@ -116,6 +116,7 @@ initial_setup() {
   
   # Show only open applications in the Dock
   defaults write com.apple.dock static-only -bool true
+  defaults write ~/Library/Preferences/com.apple.dock.plist show-recents -bool false
   
   # Turn off indicator lights for open applications in the Dock
   defaults write com.apple.dock show-process-indicators -bool false
