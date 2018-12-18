@@ -162,13 +162,6 @@ setup_network_n_sec() {
   msg_info "Enabling stealth mode..."
   sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 
-  msg_info "Changing DNS servers..."
-  networksetup -setdnsservers Wi-Fi 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
-  networksetup -setdnsservers "Thunderbolt Ethernet" 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
-
-  msg_info "Flushing DNS cache..."
-  sudo killall -HUP mDNSResponder
-
   msg_info "Disabling Bonjour multicast advertisements"
   sudo defaults write /Library/Preferences/com.apple.mDNSResponder.plist NoMulticastAdvertisements -bool YES
 
