@@ -156,6 +156,14 @@ initial_setup() {
 setup_network_n_sec() {
   check_is_not_sudo
 
+  read -p "Change mac hostname/computer name? " -n 1 -r
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    read -r -p "Choose a new name: " newname
+    sudo scutil --set ComputerName "$newname"
+    sudo scutil --set LocalHostName "$newname"
+  fi
+
   msg_info "Blocking all incoming connections..."
   sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
 

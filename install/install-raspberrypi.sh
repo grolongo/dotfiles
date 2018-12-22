@@ -356,10 +356,12 @@ install_pihole() {
   curl -sSL https://install.pi-hole.net | bash
 
   msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
-  curl -sSL https://v.firebog.net/hosts/lists.php?type=all >> /etc/pihole/adlists.list
-  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt >> /etc/pihole/adlists.list
-  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt >> /etc/pihole/adlists.list
-  echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt >> /etc/pihole/adlists.list
+  {
+    curl -sSL https://v.firebog.net/hosts/lists.php?type=all
+    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt
+    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt
+    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt
+  } >> /etc/pihole/adlists.list
 
   msg_info "Adding some urls to whitelist..."
 
@@ -444,13 +446,14 @@ install_pihole_docker() {
   done;
 
   msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
-  docker exec pihole bash -c "curl -sSL https://v.firebog.net/hosts/lists.php?type=all >> /etc/pihole/adlists.list"
-  docker exec pihole bash -c "echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt >> /etc/pihole/adlists.list"
-  docker exec pihole bash -c "echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt >> /etc/pihole/adlists.list"
-  docker exec pihole bash -c "echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt >> /etc/pihole/adlists.list"
+  docker exec pihole bash -c "{
+    curl -sSL https://v.firebog.net/hosts/lists.php?type=all
+    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt
+    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt
+    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt
+  } >> /etc/pihole/adlists.list"
 
   msg_info "Adding some urls to whitelist..."
-                                              
   # android app store
   docker exec pihole pihole -w android.clients.google.com
                                               
