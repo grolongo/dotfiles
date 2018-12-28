@@ -156,8 +156,14 @@ initial_setup() {
 setup_network_n_sec() {
   check_is_not_sudo
 
-  read -p "Change mac hostname/computer name? " -n 1 -r
-  if [[ $REPLY =~ ^[Yy]$ ]]
+  read -p "Set firmware password? " -n 1 -r firmwarepass
+  if [[ $firmwarepass =~ ^[Yy]$ ]]
+  then
+    sudo firmwarepasswd -setpasswd -setmode full
+  fi
+
+  read -p "Change mac hostname/computer name? " -n 1 -r userpass
+  if [[ $userpass =~ ^[Yy]$ ]]
   then
     read -r -p "Choose a new name: " newname
     sudo scutil --set ComputerName "$newname"
