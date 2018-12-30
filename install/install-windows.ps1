@@ -16,6 +16,7 @@ function install_chocolatey {
 function install_packages {
   Write-Host -ForegroundColor "yellow" 'Installing packages...'
 
+  cinst 7zip
   cinst ccleaner
   cinst chatty
   cinst discord
@@ -42,7 +43,7 @@ function install_packages {
   cinst tor-browser
   cinst veracrypt
   cinst visualstudiocode
-  cinst winrar
+  #cinst winrar
 }
 
 # }}}
