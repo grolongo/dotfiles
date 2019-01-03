@@ -156,6 +156,9 @@ initial_setup() {
 setup_network_n_sec() {
   check_is_not_sudo
 
+  msg_info "Setting CMD+L to lock screen, Windows like..."
+  defaults write -g NSUserKeyEquivalents -dict-add "Lock Screen" -string "@l"
+
   read -p "Set firmware password? " -n 1 -r firmwarepass
   if [[ $firmwarepass =~ ^[Yy]$ ]]
   then
@@ -191,6 +194,13 @@ setup_network_n_sec() {
 
   msg_info "Flushing APPs cache..."
   sudo pkill -HUP socketfilterfw
+
+  msg_info "Changing DNS servers to CloudFlare's..."
+  networksetup -setdnsservers Wi-Fi 1.0.0.1 2606:4700:4700::1001
+  networksetup -setdnsservers "Thunderbolt Ethernet" 1.0.0.1 2606:4700:4700::1001
+
+  msg_info "Flushing DNS cache..."
+  sudo killall -HUP mDNSResponder
 }
 # }}}
 # Homebrew installation {{{
