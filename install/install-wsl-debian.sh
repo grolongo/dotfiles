@@ -122,6 +122,7 @@ apt_base() {
     curl
     dos2unix
     exiftool
+    ffmpeg
     git
     jq
     man-db

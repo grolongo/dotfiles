@@ -17,6 +17,7 @@ function install_packages {
   Write-Host -ForegroundColor "yellow" 'Installing packages...'
 
   cinst 7zip
+  cinst audacity
   cinst ccleaner
   cinst chatty
   cinst discord
