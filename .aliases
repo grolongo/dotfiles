@@ -89,6 +89,7 @@ alias dot='cd "$DOTFILES_DIR"'
 alias doc='cd "$DOCUMENTS_DIR"'
 alias priv='cd "$PRIVATE_DIR"'
 alias proj='cd "$PROJECTS_DIR"'
+alias todo='nvim "$NOTES_DIR"/TODO.md'
 
 # IPs
 # ---

@@ -104,6 +104,7 @@ initial_setup() {
 
   # Disable window animations and Get Info animations
   defaults write com.apple.finder DisableAllAnimations -bool true
+  defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
 
   # Don't default to saving documents to iCloud
   defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
@@ -147,6 +148,14 @@ initial_setup() {
   # Set a blazingly fast keyboard repeat rate
   defaults write NSGlobalDomain KeyRepeat -int 1
   defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+  # Appearance
+  # ----------
+
+  # Enable dark mode
+  defaults write com.apple.universalaccess.plist reduceTransparency -bool true
+  defaults write com.apple.universalaccess.plist reduceMotion -bool true
+  osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
 
   confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
 }
