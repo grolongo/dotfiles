@@ -283,6 +283,7 @@ install_casks() {
     adobe-creative-cloud
     dash
     electrum
+    emacs
     firefox
     iterm2
     keepassxc
