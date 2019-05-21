@@ -285,6 +285,7 @@ install_casks() {
     electrum
     emacs
     firefox
+    homebrew/cask-fonts/font-iosevka
     iterm2
     keepassxc
     nextcloud
