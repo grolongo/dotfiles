@@ -44,6 +44,7 @@ function install_packages {
   cinst tor-browser
   cinst veracrypt
   cinst visualstudiocode
+  cinst vlc
   #cinst winrar
 }
 
