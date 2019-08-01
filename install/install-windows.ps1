@@ -23,6 +23,7 @@ function install_packages {
   cinst discord
   cinst electrum
   cinst firefox
+  cinst git
   cinst gpg4win
   cinst itunes
   cinst keepass
