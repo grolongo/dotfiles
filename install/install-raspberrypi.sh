@@ -237,14 +237,14 @@ install_nextcloud_local() {
   docker exec --user www-data ncvanilla php occ app:disable survey_client
   docker exec --user www-data ncvanilla php occ app:disable support
   docker exec --user www-data ncvanilla php occ app:disable theming
+  docker exec --user www-data ncvanilla php occ app:disable calendar
+  docker exec --user www-data ncvanilla php occ app:disable contacts
+  docker exec --user www-data ncvanilla php occ app:disable apporder
   
   msg_info "Enabling and installing some apps..."
   docker exec --user www-data ncvanilla php occ app:enable admin_audit
-  docker exec --user www-data ncvanilla php occ app:install apporder
   docker exec --user www-data ncvanilla php occ app:install limit_login_to_ip
   docker exec --user www-data ncvanilla php occ app:install bruteforcesettings
-  docker exec --user www-data ncvanilla php occ app:install calendar
-  docker exec --user www-data ncvanilla php occ app:install contacts
   docker exec --user www-data ncvanilla php occ app:install notes
   
   msg_info "Enabling encryption..."
