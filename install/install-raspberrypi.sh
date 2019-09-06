@@ -225,7 +225,7 @@ install_nextcloud_local() {
     nextcloud
 
   msg_info "Waiting for initial install to finish..."
-  sleep 60
+  sleep 180
   
   msg_info "Disabling unecessary apps..."
   docker exec --user www-data ncvanilla php occ app:disable accessibility
@@ -237,9 +237,6 @@ install_nextcloud_local() {
   docker exec --user www-data ncvanilla php occ app:disable survey_client
   docker exec --user www-data ncvanilla php occ app:disable support
   docker exec --user www-data ncvanilla php occ app:disable theming
-  docker exec --user www-data ncvanilla php occ app:disable calendar
-  docker exec --user www-data ncvanilla php occ app:disable contacts
-  docker exec --user www-data ncvanilla php occ app:disable apporder
   
   msg_info "Enabling and installing some apps..."
   docker exec --user www-data ncvanilla php occ app:enable admin_audit
