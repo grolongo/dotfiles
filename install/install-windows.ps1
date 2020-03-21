@@ -1,17 +1,15 @@
 # Restriction: use "Set-ExecutionPolicy Unrestricted" as admin to allow this script to be run
 
 #Requires -RunAsAdministrator
-# Chocolatey {{{
-# ==========
+
+### Chocolatey
 
 function install_chocolatey {
   Write-Host -ForegroundColor "yellow" 'Downloading and installing chocolatey...'
   Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 }
 
-# }}}
-# Packages {{{
-# ========
+### Packages
 
 function install_packages {
   Write-Host -ForegroundColor "yellow" 'Installing packages...'
@@ -49,9 +47,7 @@ function install_packages {
   #cinst winrar
 }
 
-# }}}
-# WSL {{{
-# ===
+### WSL
 
 function get_wsl {
   Write-Host -ForegroundColor "yellow" 'Installing package...'
@@ -61,9 +57,7 @@ function get_wsl {
   Write-Host -ForegroundColor "yellow" "Now download Debian from Microsoft Store."
 }
 
-# }}}
-# Chatty {{{
-# ======
+### Chatty
 
 function install_chatty {
   $CHATTY_LATEST = Read-Host -Prompt "Enter Chatty version, this can be found on https://github.com/chatty/chatty/releases (ex: 0.9)"
@@ -84,9 +78,8 @@ function install_chatty {
   New-Item -Force -Path "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chatty" -ItemType SymbolicLink -Value "C:\Program Files\Chatty\Chatty.exe"
 }
 
-# }}}
-# Uninstall {{{
-# =========
+### Uninstall
+
 function remove_junk {
   # To list all packages:
   # Get-AppxPackage -AllUsers | Select Name, PackageFullName
@@ -145,9 +138,8 @@ function remove_junk {
   	start-process "C:\Program Files\McAfee\MSC\mcuihost.exe" -arg "$mcafee" -Wait
   }
 }
-# }}}
-# Privacy {{{
-# =======
+
+### Privacy
 
 function set_privacy {
 
@@ -198,9 +190,8 @@ function set_privacy {
   Write-Host -ForegroundColor "yellow" "Delog and relog for changes to take effect."
 }
 
-# }}}
-# Network {{{
-# =======
+
+### Network
 
 function set_network {
 
@@ -220,9 +211,7 @@ function set_network {
 
 }
 
-# }}}
-# Explorer {{{
-# ========
+### Explorer
 
 # options mostly taken from boxstarter winconfig options
 function explorer_settings {
@@ -253,9 +242,7 @@ function explorer_settings {
   Write-Host -ForegroundColor "yellow" "Delog and relog for changes to take effect."
 }
 
-# }}}
-# Taskbar {{{
-# =======
+### Taskbar
 
 # options mostly taken from boxstarter winconfig options
 function taskbar_settings {
@@ -291,9 +278,7 @@ function taskbar_settings {
   Write-Host -ForegroundColor "yellow" "Delog and relog for changes to take effect."
 }
 
-# }}}
-# Power Saving {{{
-# ============
+### Power Saving
 
 function power_settings {
   Write-Host -ForegroundColor "yellow" "Turning off all power saving mode when on AC power..."
@@ -304,9 +289,7 @@ function power_settings {
   powercfg.exe /HIBERNATE off
 }
 
-# }}}
-# Environment Variables {{{
-# =====================
+### Environment Variables
 
 function install_envar {
   $confirmation = Read-Host "yellow" "Appliquer les variables d'environnement ? (pour les dossiers dotfiles, notes et code)"
@@ -321,9 +304,7 @@ function install_envar {
   }
 }
 
-# }}}
-# Rename Computer {{{
-# ===============
+### Rename Computer
 
 function rename_pc {
   $computername = Read-Host -Prompt "What name do you want? (e.g. 'windesk')"
@@ -334,9 +315,7 @@ function rename_pc {
   Write-Host -ForegroundColor "yellow" "Restart to take effect."
 }
 
-# }}}
-# Dotfiles {{{
-# ========
+### Dotfiles
 
 function set_dotfiles {
 
@@ -347,9 +326,7 @@ function set_dotfiles {
   .\symlinks-windows
 }
 
-# }}}
-# Menu {{{
-# ====
+### Menu
 
 function usage {
   Write-Host
@@ -393,5 +370,3 @@ function main {
 }
 
 main $args[0]
-
-# }}}

@@ -1,10 +1,9 @@
-! ENVIRONMENT {{{
+!!! ENVIRONMENT
 
 *termName: rxvt-unicode-256color
 *iconFile: /usr/share/icons/hicolor/scalable/apps/xterm-color.svg
 
-! }}}
-! SOLARIZED {{{ 
+!!! SOLARIZED
 
 URxvt*intensityStyles: false
 
@@ -88,8 +87,7 @@ URxvt*intensityStyles: false
 *color7:                S_base2
 *color15:               S_base3
 
-! }}}
-! FONTS {{{
+!!! FONTS
 
 Xft.antialias:          1
 Xft.hinting:            1
@@ -102,8 +100,7 @@ URxvt.font:xft:Inconsolata:style=Regular:pixelsize=17
 URxvt.boldFont:xft:Inconsolata:style=Bold:pixelsize=17
 !*faceSize:              10
 
-! }}}
-! INTERFACE {{{
+!!! INTERFACE
 
 *scrollBar: false
 *visualBell:  true
@@ -113,25 +110,20 @@ URxvt.boldFont:xft:Inconsolata:style=Bold:pixelsize=17
 ! Utilise Tmux pour le scrollback buffer
 *saveLines: 999999
 
-# }}}
-! SCROLLING {{{
+!!! SCROLLING
 
 URxvt*scrollTtyOutput:      false
 URxvt*scrollWithBuffer:     true
 URxvt*scrollTtyKeypress:    true
 
-! }}}
-! COPY PASTE {{{
+!!! COPY PASTE
 
 URxvt*clipboard.copycmd:    xclip -i -selection clipboard
 URxvt*clipboard.pastecmd:   xclip -o -selection clipboard
 
-! }}}
-! PERL PLUGINS {{{
+!!! PERL PLUGINS
 
 URxvt.perl-ext-common:          default,matcher,selection-to-clipboard
 URxvt.url-launcher:             /usr/bin/chromium
 URxvt.matcher.button:           1
 URxvt.url-select.underline:     true
-
-! }}}

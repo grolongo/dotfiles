@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# GNU utils {{{
-# =========
+### GNU utils
+
 if [[ "$OSTYPE" = darwin* && -d /usr/local/Cellar/coreutils ]]; then
   alias ls="gls -ANF --color=auto --group-directories-first --sort=extension"
   alias l="gls -ANFlh --color=auto --group-directories-first --sort=extension"
@@ -15,9 +15,9 @@ else
   alias du="du -d 0 -h * | sort -hr"
   alias df="df -TH"
 fi
-# }}}
-# macOS {{{
-# =====
+
+### macOS
+
 if [[ "$OSTYPE" = darwin* ]]; then
 
   # hide/show dotfiles
@@ -39,37 +39,25 @@ if [[ "$OSTYPE" = darwin* ]]; then
 
   alias mutt="torify -P 9150 mutt 2>/dev/null"
 fi
-# }}}
-# WSL {{{
-# ===
+
+### WSL
+
 if [[ $(uname -r) =~ Microsoft ]]; then 
   alias wh="cd \$WHOME"
   #alias gpg="gpg2"
   alias mutt="torify mutt 2>/dev/null"
-
-
-
 fi
-# }}}
-# i3 {{{
-# ==
+
+### i3
+
 if [[ $OSTYPE = linux* ]]; then
   alias feh="feh --scale-down --image-bg black --borderless"
   alias afk="i3lock -c 000000"
 fi
-# }}}
-# common {{{
-# ======
 
-# exa
-# ---
-if [[ -x "$(command -v exa)" ]]; then
-  alias l="exa --long --grid --group --git --all --group-directories-first --classify --sort=name --color-scale"
-  alias ls="exa --all --group-directories-first --classify --sort=name"
-fi
+### common
 
 # Misc (blank space so its not in history)
-# ----------------------------------------
 alias :q="exit"
 alias :e="nvim"
 alias nv="nvim"
@@ -83,7 +71,6 @@ alias cp="cp -i -v"
 alias grep="grep --color"
 
 # Variables
-# ---------
 alias n='cd "$NOTES_DIR"'
 alias dot='cd "$DOTFILES_DIR"'
 alias doc='cd "$DOCUMENTS_DIR"'
@@ -92,12 +79,10 @@ alias proj='cd "$PROJECTS_DIR"'
 alias todo='nvim "$NOTES_DIR"/TODO.md'
 
 # IPs
-# ---
 alias ippub="dig +short myip.opendns.com @resolver1.opendns.com"
 alias iplocal="sudo ifconfig | grep -Eo 'inet (addr:)?([0-9]*\\.){3}[0-9]*' | grep -Eo '([0-9]*\\.){3}[0-9]*' | grep -v '127.0.0.1'"
 
 # Security/Privacy
-# ----------------
 alias clam-checkvirus="sudo freshclam && clamscan --recursive=yes --infected /"
 alias exif-removemeta="exiftool -all="
 
@@ -108,7 +93,5 @@ alias youtube-to-mp3="youtube-dl -x --audio-format mp3 --audio-quality 0"
 alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &; disown"
 
 # torrified seafile
-# -----------------
 alias ssh-tunnel-tor-rpi="ssh -D 9090 -f -C -N raspberrypi-tor"
 alias ssh-tunnel-tor-seafile="ssh -f -N -L 8000:127.0.0.1:8000 raspberrypi-tor && ssh -f -N -L 8082:127.0.0.1:8082 raspberrypi-tor"
-# }}}

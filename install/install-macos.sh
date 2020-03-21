@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Install setup for macOS
+### Recurring functions
 
-# Recurring functions {{{
-# ===================
 msg_info() {
   yellow='\033[33m'
   nc='\033[0m'
@@ -57,11 +55,12 @@ brew_clean() {
   msg_info "Cleaning up install files..."
   brew cleanup
 }
-# }}}
+
 # check if running macOS
 [[ ! $OSTYPE = darwin* ]] && { msg_error "You are not running macOS, exiting."; exit 1; }
-# Initial setup {{{
-# =============
+
+### Initial setup
+
 initial_setup() {
   check_is_not_sudo
 
@@ -159,9 +158,9 @@ initial_setup() {
 
   confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
 }
-# }}}
-# Network & Security {{{
-# ==================
+
+### Network & Security
+
 setup_network_n_sec() {
   check_is_not_sudo
 
@@ -211,9 +210,9 @@ setup_network_n_sec() {
   msg_info "Flushing DNS cache..."
   sudo killall -HUP mDNSResponder
 }
-# }}}
-# Homebrew installation {{{
-# =====================
+
+### Homebrew installation
+
 install_homebrew() {
   check_is_not_sudo
 
@@ -228,9 +227,9 @@ install_homebrew() {
   msg_info "Turning analytics off..."
   brew analytics off
 }
-# }}}
-# Brew packages {{{
-# =============
+
+### Brew packages
+
 install_base() {
   check_is_not_sudo
 
@@ -269,9 +268,9 @@ install_base() {
 
   brew_clean
 }
-# }}}
-# Casks {{{
-# =====
+
+### Casks
+
 install_casks() {
   check_is_not_sudo
 
@@ -307,9 +306,9 @@ install_casks() {
   msg_info "Cleaning up install files..."
   brew cleanup
 }
-# }}}
-# Zsh {{{
-# ===
+
+### Zsh
+
 install_zsh() {
   check_is_not_sudo
 
@@ -344,9 +343,9 @@ install_zsh() {
     sudo chsh -s "/bin/zsh"
   }
 }
-# }}}
-# Neovim {{{
-# ======
+
+### Neovim
+
 install_neovim() {
   check_is_not_sudo
 
@@ -370,9 +369,9 @@ install_neovim() {
   msg_info "Installing markdown linter..."
   gem install --user-install mdl
 }
-# }}}
-# Tmux {{{
-# ====
+
+### Tmux
+
 install_tmux() {
   check_is_not_sudo
 
@@ -393,9 +392,9 @@ install_tmux() {
   tic -o "$HOME"/.terminfo "$base"/.terminfo/tmux-256color.terminfo
   tic -o "$HOME"/.terminfo "$base"/.terminfo/xterm-256color.terminfo
 }
-# }}}
-# Chatty {{{
-# ======
+
+### Chatty
+
 install_chatty() {
   check_is_not_sudo
 
@@ -435,9 +434,9 @@ install_chatty() {
   base="${PWD%/*}"
   cp -vr "$base"/.chatty/malgun.ttf "$HOME"/Library/Fonts
 }
-# }}}
-# Fonts {{{
-# =====
+
+### Fonts
+
 install_fonts() {
   check_is_not_sudo
 
@@ -446,9 +445,9 @@ install_fonts() {
   base="${PWD%/*}"
   cp -vr "$base"/fonts/* "$HOME"/Library/Fonts
 }
-# }}}
-# Dotfiles {{{
-# ========
+
+### Dotfiles
+
 install_dotfiles() {
   check_is_not_sudo
 
@@ -457,9 +456,9 @@ install_dotfiles() {
   msg_info "Launching external symlinks script..."
   ./symlinks-unix.sh
 }
-# }}}
-# Menu {{{
-# ====
+
+### Menu
+
 usage() {
   echo
   echo "This script installs my basic setup for a macOS laptop."
@@ -516,4 +515,3 @@ main() {
 }
 
 main "$@"
-# }}}

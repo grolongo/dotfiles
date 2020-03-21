@@ -2,7 +2,8 @@
 # Un commentaire unique par ligne uniquement.
 
 font pango:Monospace 8
-# FLOATING APPS {{{
+
+### FLOATING APPS
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -16,8 +17,7 @@ for_window [class="KeePass"]        floating enable
 for_window [class="Seafile"]        floating enable
 for_window [class="Veracrypt"]      floating enable
 
-# }}}
-# BINDINGS {{{
+### BINDINGS
 
 # -------
 # General
@@ -124,8 +124,7 @@ bindsym $mod+Shift+8        move container to workspace 8: twitch
 bindsym $mod+Shift+ccedilla move container to workspace 9: spotify
 bindsym $mod+Shift+agrave   move container to workspace 10
 
-# }}}
-# ASSIGNMENTS {{{
+### ASSIGNMENTS
 
 assign [class="Steam"] 4: steam
 assign [class="Tor Browser"] 5: tor
@@ -135,8 +134,7 @@ assign [class="Icedove"] 7: mail
 assign [class="chatty-Chatty"] 8: twitch
 assign [class="spotify"] 9: spotify
 
-# }}}
-# CUSTOM {{{
+### CUSTOM
 
 # ---------
 # Functions
@@ -186,15 +184,13 @@ bindsym XF86AudioPlay exec "playerctl play-pause"
 bindsym XF86AudioNext exec "playerctl next"
 bindsym XF86AudioPrev exec "playerctl previous"
 
-# }}}
-# STARTUP {{{
+### STARTUP
 
 #exec_always --no-startup-id mpd
 #exec_always --no-startup-id volumeicon
 exec_always --no-startup-id seafile-applet
 
-# }}}
-# I3BAR {{{
+### I3BAR
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
@@ -202,5 +198,3 @@ bar {
         font pango:monospace 8
         status_command i3status --config ~/.i3/status.conf
 }
-
-# }}}

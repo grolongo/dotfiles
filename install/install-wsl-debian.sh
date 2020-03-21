@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Recurring functions {{{
-# ===================
+### Recurring functions
+
 msg_info() {
   yellow='\033[33m'
   nc='\033[0m'
@@ -61,11 +61,12 @@ apt_clean() {
   msg_info "Cleaning..."
   apt clean
 }
-# }}}
+
 # check if running WSL
 [[ ! $(uname -r) =~ Microsoft ]] && { msg_error "You are not running WSL, exiting."; exit 1; }
-# Initial setup {{{
-# =============
+
+### Initial setup
+
 initial_setup() {
   check_is_sudo
 
@@ -78,9 +79,9 @@ initial_setup() {
     passwd --lock root
   }
 }
-# }}}
-# Apt sources {{{
-# ===========
+
+### Apt sources
+
 apt_sources() {
   check_is_sudo
 
@@ -111,9 +112,9 @@ apt_sources() {
 
   apt_clean
 }
-# }}}
-# Apt base {{{
-# ========
+
+### Apt base
+
 apt_base() {
   check_is_sudo
 
@@ -153,9 +154,9 @@ apt_base() {
 
   apt_clean
 }
-# }}}
-# Zsh {{{
-# ===
+
+### Zsh
+
 install_zsh() {
   check_is_not_sudo
 
@@ -184,9 +185,9 @@ install_zsh() {
   msg_info "Cleaning..."
   sudo apt clean
 }
-# }}}
-# Exa {{{
-# ===
+
+### Exa
+
 install_exa() {
   check_is_not_sudo
 
@@ -223,9 +224,9 @@ install_exa() {
   msg_info "Rebuilding manual database..."
   mandb
 }  
-# }}}
-# Neovim {{{
-# ======
+
+### Neovim
+
 install_neovim() {
   check_is_not_sudo
 
@@ -263,9 +264,9 @@ install_neovim() {
   msg_info "Cleaning..."
   sudo apt clean
 }
-# }}}
-# Emoji support {{{
-# =============
+
+### Emoji support
+
 install_emojis() {
   check_is_not_sudo
 
@@ -298,9 +299,9 @@ install_emojis() {
   msg_info "Deleting temp folder..."
   rm -rf "$tmpdir"
 }
-# }}}
-# Ripgrep {{{
-# =======
+
+### Ripgrep
+
 install_ripgrep() {
   check_is_not_sudo
 
@@ -339,9 +340,9 @@ install_ripgrep() {
   msg_info "Rebuilding manual database..."
   mandb
 }
-# }}}
-# Tmux {{{
-# ====
+
+### Tmux
+
 install_tmux() {
   check_is_not_sudo
 
@@ -371,9 +372,9 @@ install_tmux() {
   msg_info "Cleaning..."
   sudo apt clean
 }  
-# }}}
-# Veracrypt {{{
-# =========
+
+### Veracrypt
+
 install_veracrypt() {
   check_is_not_sudo
 
@@ -401,9 +402,9 @@ install_veracrypt() {
   msg_info "Deleting temp folder..."
   rm -rf "$tmpdir"
 }
-# }}}
-# Dotfiles {{{
-# ========
+
+### Dotfiles
+
 install_dotfiles() {
   check_is_not_sudo
 
@@ -412,9 +413,9 @@ install_dotfiles() {
   msg_info "Launching external symlinks script..."
   ./symlinks-unix.sh
 }
-# }}}
-# Menu {{{
-# ====
+
+### Menu
+
 usage() {
   echo
   echo "This script installs my basic setup for a server."
@@ -471,4 +472,4 @@ main() {
 }
 
 main "$@"
-# }}}
+

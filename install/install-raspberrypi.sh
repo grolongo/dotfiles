@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Recurring functions {{{
-# ===================
+### Recurring functions
+
 msg_info() {
   yellow='\033[33m'
   nc='\033[0m'
@@ -61,11 +61,12 @@ apt_clean() {
   msg_info "Cleaning..."
   apt clean
 }
-# }}}
+
 # check if running on raspberrypi
-[[ ! $(uname -m) =~ arm ]] && { msg_error "Please run this script on the server."; exit 1; } 
-# Initial setup {{{
-# =============
+[[ ! $(uname -m) =~ arm ]] && { msg_error "Please run this script on the server."; exit 1; }
+
+### Initial setup
+
 initial_setup() {
   check_is_sudo
 
@@ -116,9 +117,9 @@ initial_setup() {
 
   msg_info "Reboot now."
 }
-# }}}
-# Apt base {{{
-# ========
+
+### Apt base
+
 apt_base() {
   check_is_sudo
 
@@ -150,9 +151,9 @@ apt_base() {
 
   apt_clean
 }
-# }}}
-# Docker {{{
-# ======
+
+# Docker
+
 install_docker() {
   check_is_not_sudo
 
@@ -177,9 +178,9 @@ install_docker() {
     sudo reboot
   }
 }
-# }}}
-# Rkhunter {{{
-# ========
+
+### Rkhunter
+
 install_rkhunter() {
   check_is_sudo
 
@@ -198,9 +199,9 @@ install_rkhunter() {
 
   apt_clean
 }
-# }}}
-# Nextcloud local only (docker) {{{
-# ====================
+
+### Nextcloud local only (docker)
+
 install_nextcloud_local() {
   check_is_not_sudo
   command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
@@ -252,9 +253,9 @@ install_nextcloud_local() {
   msg_info "Encrypting files..."
   docker exec -it --user www-data ncvanilla php occ encryption:encrypt-all
 }
-# }}}
-# NextcloudPi internet (docker) {{{
-# ====================
+
+### NextcloudPi internet (docker)
+
 install_nextcloudpi_internet() {
   check_is_not_sudo
   command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
@@ -275,9 +276,9 @@ install_nextcloudpi_internet() {
   echo "Then go to (example) https://192.168.1.17 and activate."
   echo "Verify the modem has DynDNS enabled for Let's Encrypt to work in case of dynamic IP."
 }
-# }}}
-# Seafile {{{
-# =======
+
+### Seafile
+
 install_seafile() {
   check_is_not_sudo
 
@@ -343,9 +344,9 @@ install_seafile() {
   msg_info "Cleaning..."
   sudo apt clean
 }
-# }}}
-# Pihole {{{
-# ======
+
+### Pihole
+
 install_pihole() {
   check_is_sudo
 
@@ -374,9 +375,9 @@ install_pihole() {
   echo "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)"
   echo "also don't forget IPv6."
 }
-# }}}
-# Pihole (docker) {{{
-# ===============
+
+### Pihole (docker)
+
 install_pihole_docker() {
   check_is_not_sudo
   command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
@@ -465,9 +466,9 @@ install_pihole_docker() {
   echo -n "Your password for https://${IP}/admin/ is "
   docker logs pihole 2> /dev/null | grep 'password:'
 }
-# }}}
-# Fail2ban {{{
-# ========
+
+### Fail2ban
+
 install_fail2ban() {
   check_is_sudo
 
@@ -507,9 +508,9 @@ install_fail2ban() {
   echo
   echo "You can now add your own jail.local and filters to /etc/fail2ban"
 }
-# }}}
-# PSAD {{{
-# ====
+
+### PSAD
+
 install_psad() {
   check_is_sudo
 
@@ -522,9 +523,9 @@ install_psad() {
   msg_info "Updating and restarting..."
   psad --sig-update && /etc/init.d/psad restart
 }
-# }}}
-# Msmtp {{{
-# =====
+
+### Msmtp
+
 install_msmtp() {
   check_is_sudo
 
@@ -540,9 +541,9 @@ install_msmtp() {
   msg_info "Now add custom /etc/msmtprc"
   msg_info "Then try with: 'echo test | msmtp <email recipient>'"
 }
-# }}}
-# Zsh {{{
-# ===
+
+### Zsh
+
 install_zsh() {
   check_is_not_sudo
 
@@ -570,9 +571,9 @@ install_zsh() {
     sudo chsh -s "/bin/zsh"
   }
 }
-# }}}
-# Tmux {{{
-# ====
+
+### Tmux
+
 install_tmux() {
   check_is_not_sudo
 
@@ -599,9 +600,9 @@ install_tmux() {
   msg_info "Cleaning..."
   sudo apt clean
 }  
-# }}}
-# Weechat {{{
-# =======
+
+### Weechat
+
 install_weechat() {
   check_is_sudo
 
@@ -621,9 +622,9 @@ install_weechat() {
   apt_install
   apt_clean
 }
-# }}}
-# Lynis {{{
-# =====
+
+### Lynis
+
 install_lynis() {
   check_is_sudo
 
@@ -645,9 +646,9 @@ install_lynis() {
   apt_install
   apt_clean
 }
-# }}}
-# Dotfiles {{{
-# ========
+
+### Dotfiles
+
 install_dotfiles() {
   check_is_not_sudo
 
@@ -656,9 +657,9 @@ install_dotfiles() {
   msg_info "Launching external symlinks script..."
   ./symlinks-unix.sh
 }
-# }}}
-# Menu {{{
-# ====
+
+### Menu
+
 usage() {
   echo
   echo "This script installs my basic setup for a server."
@@ -733,4 +734,3 @@ main() {
 }
 
 main "$@"
-# }}}
