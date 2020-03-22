@@ -1,24 +1,29 @@
-# Install
+## Install
 
-## For you
+### https
 
 ```bash
 cd ~
 git clone https://github.com/grolongo/dotfiles.git
 ```
 
-## For me (ssh auth)
+### ssh
 
 ```bash
 cd ~
 git clone git@github.com:grolongo/dotfiles.git
+```
+
+### config
+
+```bash
 cd dotfiles
 git config user.name "grolongo"
-git config user.email "foo@users.noreply.github.com"
+git config user.email "<noreply github email>"
 git config github.user "grolongo"
 ```
 
-## Git-free
+### Git-free
 
 `curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv`
 
