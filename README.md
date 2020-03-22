@@ -23,7 +23,7 @@ git config user.email "<noreply github email>"
 git config github.user "grolongo"
 ```
 
-### Git-free
+### git-free
 
 `curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv`
 
