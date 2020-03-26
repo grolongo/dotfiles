@@ -15,14 +15,15 @@ function install_packages {
   Write-Host -ForegroundColor "yellow" 'Installing packages...'
 
   cinst 7zip
+  cinst aria2
   cinst audacity
   cinst ccleaner
   cinst chatty
   cinst discord
   cinst electrum
   cinst firefox
-  cinst git
-  cinst gpg4win
+  cinst git --params "/GitOnlyOnPath /NoShellIntegration /NoCredentialManager /NoGitLfs /SChannel"
+  cinst gnupg
   cinst itunes
   cinst keepass
   cinst libreoffice
@@ -44,14 +45,11 @@ function install_packages {
   cinst veracrypt
   cinst visualstudiocode
   cinst vlc
-  #cinst winrar
 }
 
 ### WSL
 
 function get_wsl {
-  Write-Host -ForegroundColor "yellow" 'Installing package...'
-  cinst wsltty
   Write-Host -ForegroundColor "yellow" "Installing Windows Subsystem Linux..."
   Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
   Write-Host -ForegroundColor "yellow" "Now download Debian from Microsoft Store."
@@ -190,20 +188,23 @@ function set_privacy {
   Write-Host -ForegroundColor "yellow" "Delog and relog for changes to take effect."
 }
 
+### Services
+
+function set_services {
+  Set-Service ssh-agent -StartupType Automatic
+}
 
 ### Network
 
 function set_network {
 
   # Firewall
-  # --------
   Write-Host -ForegroundColor "yellow" "Setting up firewall..."
   Set-NetConnectionProfile -NetworkCategory Public
   netsh advfirewall set allprofiles state on
   netsh advfirewall set domainprofile firewallpolicy blockinboundalways,allowoutbound
 
   # DNS
-  # ---
   Write-Host -ForegroundColor "yellow" "Changing Ethernet IPv4 & IPv6 DNS servers to CloudFlare's..."
   Write-Host -ForegroundColor "yellow" "change this script to tweak Ethernet to WiFi if needed."
   Set-DnsClientServerAddress -InterfaceAlias Ethernet -ServerAddresses "1.1.1.1","1.0.0.1"
@@ -337,6 +338,7 @@ function usage {
   Write-Host "  chatty            - downloads and installs chatty"
   Write-Host "  remove            - uninstall unecessary apps"
   Write-Host "  privacy           - wifi hotspot, xbox, etc."
+  Write-Host "  services          - enable various startup Windows services"
   Write-Host "  network           - CloudFlare's DNS servers and firewall settings"
   Write-Host "  explorersettings  - tweaking quick access, show extensions, hidden files in explorer"
   Write-Host "  taskbarsettings   - small taskbar, no combine, show all notification icons, locked"
@@ -359,6 +361,7 @@ function main {
   elseif ($cmd -eq "chatty") { install_chatty }
   elseif ($cmd -eq "remove") { remove_junk }
   elseif ($cmd -eq "privacy") { set_privacy }
+  elseif ($cmd -eq "services") { set_services }
   elseif ($cmd -eq "network") { set_network }
   elseif ($cmd -eq "explorersettings") { explorer_settings }
   elseif ($cmd -eq "taskbarsettings") { taskbar_settings }
