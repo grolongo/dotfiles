@@ -40,6 +40,7 @@ function install_packages {
   cinst spotify
   cinst steam
   cinst streamlink
+  cinst synologydrive
   cinst thunderbird
   cinst tor-browser
   cinst veracrypt
