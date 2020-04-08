@@ -14,7 +14,12 @@ cd ~
 git clone git@github.com:grolongo/dotfiles.git
 ```
 
-### config
+### git-free
+
+`curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv`
+(to update later on, run the command again)
+
+## Config
 
 ```bash
 cd dotfiles
@@ -23,8 +28,10 @@ git config user.email "<noreply github email>"
 git config github.user "grolongo"
 ```
 
-### git-free
+### windows 10 native and external ssh/gpg
 
-`curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv`
-
-(to update later on, run the command again)
+```bash
+cd dotfiles
+git config core.sshCommand "'C:\Windows\System32\OpenSSH\ssh.exe'"
+git config gpg.program $(Resolve-Path (Get-Command gpg | Select-Object -Expand Source) | Select-Object -Expand Path)
+```
