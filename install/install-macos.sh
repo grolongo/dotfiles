@@ -219,7 +219,7 @@ install_homebrew() {
   if test ! "$(command -v brew >/dev/null 2>&1)"
   then
     msg_info "Downloading and installing Homebrew..."
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   else
     msg_error "Homebrew is already installed, exiting."
   fi
