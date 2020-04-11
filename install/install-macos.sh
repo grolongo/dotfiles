@@ -269,9 +269,6 @@ install_base() {
 install_casks() {
   check_is_not_sudo
 
-  msg_info "Tapping caskroom/cask"
-  brew tap caskroom/cask
-
   local packages=(
     adobe-acrobat-reader
     adobe-creative-cloud
