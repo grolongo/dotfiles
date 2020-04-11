@@ -243,22 +243,17 @@ install_base() {
     aria2
     coreutils
     dos2unix
-    exa
     exiftool
     ffmpeg
     gnupg
     jq
     lynis
     m-cli
-    mas
     mpv
     pandoc
-    screenfetch
     speedtest-cli
     streamlink
-    tldr
     tor
-    wifi-password
     youtube-dl
   )
 
