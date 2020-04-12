@@ -426,17 +426,6 @@ install_chatty() {
   cp -vr "$base"/.chatty/malgun.ttf "$HOME"/Library/Fonts
 }
 
-### Fonts
-
-install_fonts() {
-  check_is_not_sudo
-
-  [[ -e install-macos.sh ]] || { msg_error "Please cd into the directory where the install script is."; exit 1; }
-
-  base="${PWD%/*}"
-  cp -vr "$base"/fonts/* "$HOME"/Library/Fonts
-}
-
 ### Dotfiles
 
 install_dotfiles() {
@@ -464,7 +453,6 @@ usage() {
   echo "  neovim     - installs neovim and python/linters dependencies"
   echo "  tmux       - installs tmux with italics support"
   echo "  chatty     - downloads and installs chatty with java runtime environment"
-  echo "  fonts      - copy fonts"
   echo "  dotfiles   - setup dotfiles"
   echo
 }
@@ -496,8 +484,6 @@ main() {
     install_casks
   elif [[ $cmd == "chatty" ]]; then
     install_chatty
-  elif [[ $cmd == "fonts" ]]; then
-    install_fonts
   elif [[ $cmd == "dotfiles" ]]; then
     install_dotfiles
   else
