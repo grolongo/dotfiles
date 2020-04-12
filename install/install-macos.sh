@@ -289,7 +289,14 @@ install_casks() {
     confirm "Install $p?" && brew cask install "$p"
   done
 
-  confirm "Install synology-drive?" && brew tap homebrew/cask-drivers && brew cask install synology-drive
+  while true; do
+    read -p "Install synology-drive?" yn
+      case $yn in
+        [Yy]* ) brew tap homebrew/cask-drivers && brew cask install synology-drive;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+      esac
+  done
 
   echo
   msg_info "Cleaning up install files..."
