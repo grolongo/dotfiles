@@ -289,9 +289,7 @@ install_casks() {
     confirm "Install $p?" && brew cask install "$p"
   done
 
-  confirm "Install synology-drive?" &&
-    brew tap homebrew/cask-drivers &&
-    brew cask install synology-drive
+  confirm "Install synology-drive?" && brew tap homebrew/cask-drivers && brew cask install synology-drive
 
   echo
   msg_info "Cleaning up install files..."
