@@ -272,27 +272,26 @@ install_casks() {
   local packages=(
     adobe-acrobat-reader
     adobe-creative-cloud
-    dash
     electrum
     emacs
     firefox
-    homebrew/cask-fonts/font-iosevka
-    iterm2
     keepassxc
     nextcloud
     onionshare
     thunderbird
     tor-browser
-    seafile-client
     spotify
     veracrypt
-    visual-studio-code
   )
 
   msg_info "Installing cask packages..."
   for p in "${packages[@]}"; do
     confirm "Install $p?" && brew cask install "$p"
   done
+
+  confirm "Install synology-drive?" &&
+    brew tap homebrew/cask-drivers &&
+    brew cask install synology-drive
 
   echo
   msg_info "Cleaning up install files..."
