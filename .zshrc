@@ -9,11 +9,31 @@ for file in ~/.{zsh_prompt,aliases,functions}; do
 done
 unset file
 
-# prompt
-autoload -U promptinit; promptinit
-
 # emacs keybindings
 bindkey -e
+
+### PROMPT
+
+if [[ -n $SSH_CONNECTION ]]; then
+  hostStyle="%F{yellow}"
+else
+  hostStyle="%F{cyan}"
+fi
+
+PROMPT=$'\n'
+PROMPT+=%B
+PROMPT+="%(!.%F{red}.%F{blue})%n%f"
+PROMPT+="%F{white} at %f"
+PROMPT+="$hostStyle%m%f"
+PROMPT+="%F{white} in %f"
+PROMPT+="%F{green}%~%f"
+#PROMPT+="%F{105}%~%f"
+PROMPT+=$'\n'
+PROMPT+="%F{white}%#%f "
+PROMPT+=%b
+#PROMPT+="%(?..%F{red}● )%f"    # return status
+
+autoload -U promptinit; promptinit
 
 ### OPTIONS
 
@@ -82,24 +102,3 @@ fi
 if [[ $#h -gt 0 ]]; then
     zstyle ':completion:*:(ssh|scp|sftp|slogin):*' hosts $h
 fi
-
-### PROMPT
-
-if [[ -n $SSH_CONNECTION ]]; then
-  hostStyle="%F{yellow}"
-else
-  hostStyle="%F{cyan}"
-fi
-
-PROMPT=$'\n'
-PROMPT+=%B
-PROMPT+="%(!.%F{red}.%F{blue})%n%f"
-PROMPT+="%F{white} at %f"
-PROMPT+="$hostStyle%m%f"
-PROMPT+="%F{white} in %f"
-PROMPT+="%F{green}%~%f"
-#PROMPT+="%F{105}%~%f"
-PROMPT+=$'\n'
-PROMPT+="%F{white}%#%f "
-PROMPT+=%b
-#PROMPT+="%(?..%F{red}● )%f"    # return status

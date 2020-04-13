@@ -7,6 +7,21 @@ for file in ~/.{path,exports,extra}; do
     source "$file"
   fi
 done
+
+### PATH
+
+export PATH="/usr/local/bin:/usr/local/sbin:/bin:/usr/bin:/usr/sbin:/sbin:${PATH}"
+
+# add home bin if exists
+if [ -d "${HOME}/bin" ]; then
+  export PATH="${HOME}/bin:${PATH}"
+fi
+
+# add pip3 binaries
+if [ -d "${HOME}/.local/bin" ]; then
+  export PATH="${HOME}/.local/bin:${PATH}"
+fi
+
 unset file
 
 # Réduire le temps de démarrage
