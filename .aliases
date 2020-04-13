@@ -95,3 +95,14 @@ alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &;
 # torrified seafile
 alias ssh-tunnel-tor-rpi="ssh -D 9090 -f -C -N raspberrypi-tor"
 alias ssh-tunnel-tor-seafile="ssh -f -N -L 8000:127.0.0.1:8000 raspberrypi-tor && ssh -f -N -L 8082:127.0.0.1:8082 raspberrypi-tor"
+
+### functions
+
+# Read markdown files like manpages                 
+md () {
+  pandoc -s -f markdown -t man "$*" | man -l -
+}
+                                                    
+hex10 () {
+  hexdump -n 5 -v -e '4/4 "%x" 1 "\n"' /dev/urandom;
+}
