@@ -1,13 +1,7 @@
-# If not running interactively, don't do anything
-[[ -z "$PS1" ]] && return
-
 # Load the shell dotfiles, and then some:
-for file in ~/.{zsh_prompt,aliases,functions}; do
-	if [[ -r "$file" ]] && [[ -f "$file" ]]; then
-		source "$file"
-	fi
-done
-unset file
+if [[ -r "~/.aliases" ]] && [[ -f "~/.aliases" ]]; then
+    source "~/.aliases"
+fi
 
 # emacs keybindings
 bindkey -e
@@ -17,30 +11,18 @@ bindkey -e
 if [[ -n $SSH_CONNECTION ]]; then
   hostStyle="%F{yellow}"
 else
-  hostStyle="%F{cyan}"
+  hostStyle="%F{green}"
 fi
 
-PROMPT=$'\n'
-PROMPT+=%B
-PROMPT+="%(!.%F{red}.%F{blue})%n%f"
-PROMPT+="%F{white} at %f"
-PROMPT+="$hostStyle%m%f"
-PROMPT+="%F{white} in %f"
-PROMPT+="%F{green}%~%f"
-#PROMPT+="%F{105}%~%f"
-PROMPT+=$'\n'
-PROMPT+="%F{white}%#%f "
-PROMPT+=%b
-#PROMPT+="%(?..%F{red}● )%f"    # return status
+PROMPT="%(!.%F{red}.%F{green})%n@%m%f %F{blue}%~%f %# "
+# PROMPT+="$hostStyle%m%f"
 
-autoload -U promptinit; promptinit
+#autoload -U promptinit; promptinit
 
 ### OPTIONS
 
 ## Misc
-setopt AUTO_CD               # no need to type "cd"
 setopt CHASE_LINKS           # cd into the exact symlink path
-setopt CORRECT               # corrects wrong command
 setopt PROMPT_SUBST
 
 ## Glob
