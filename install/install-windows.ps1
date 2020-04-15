@@ -37,6 +37,7 @@ function install_packages {
   cinst seafile-client
   cinst setpoint
   cinst shellcheck
+  cinst signal
   cinst spotify
   cinst steam
   cinst streamlink

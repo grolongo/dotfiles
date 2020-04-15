@@ -278,6 +278,7 @@ install_casks() {
     keepassxc
     nextcloud
     onionshare
+    signal
     thunderbird
     tor-browser
     spotify
