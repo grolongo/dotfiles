@@ -58,6 +58,7 @@ fi
 ### common
 
 # Misc (blank space so its not in history)
+alias em="emacs -nw"
 alias :q="exit"
 alias :e="nvim"
 alias nv="nvim"
