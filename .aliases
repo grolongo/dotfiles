@@ -19,7 +19,6 @@ fi
 ### macOS
 
 if [[ "$OSTYPE" = darwin* ]]; then
-
   # hide/show dotfiles
   alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
   alias hidedotfiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
@@ -27,32 +26,6 @@ if [[ "$OSTYPE" = darwin* ]]; then
   # hide/show all desktop icons (useful when presenting)
   alias showdesktopicons="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
   alias hidedesktopicons="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
-
-  # veracrypt path
-  alias veracrypt="/Applications/VeraCrypt.app/Contents/MacOS/VeraCrypt"
-
-  # edit TBB torrc
-  alias torrc="nvim /Applications/TorBrowser.app/Contents/Resources/TorBrowser/Tor/torrc"
-
-  # uses macvim's vim
-  #alias vim="mvim -v"
-
-  alias mutt="torify -P 9150 mutt 2>/dev/null"
-fi
-
-### WSL
-
-if [[ $(uname -r) =~ Microsoft ]]; then 
-  alias wh="cd \$WHOME"
-  #alias gpg="gpg2"
-  alias mutt="torify mutt 2>/dev/null"
-fi
-
-### i3
-
-if [[ $OSTYPE = linux* ]]; then
-  alias feh="feh --scale-down --image-bg black --borderless"
-  alias afk="i3lock -c 000000"
 fi
 
 ### common
@@ -70,18 +43,6 @@ alias exit=" exit"
 alias mv="mv -i -v"
 alias cp="cp -i -v"
 alias grep="grep --color"
-
-# Variables
-alias n='cd "$NOTES_DIR"'
-alias dot='cd "$DOTFILES_DIR"'
-alias doc='cd "$DOCUMENTS_DIR"'
-alias priv='cd "$PRIVATE_DIR"'
-alias proj='cd "$PROJECTS_DIR"'
-alias todo='nvim "$NOTES_DIR"/TODO.md'
-
-# IPs
-alias ippub="dig +short myip.opendns.com @resolver1.opendns.com"
-alias iplocal="sudo ifconfig | grep -Eo 'inet (addr:)?([0-9]*\\.){3}[0-9]*' | grep -Eo '([0-9]*\\.){3}[0-9]*' | grep -v '127.0.0.1'"
 
 # Security/Privacy
 alias clam-checkvirus="sudo freshclam && clamscan --recursive=yes --infected /"
