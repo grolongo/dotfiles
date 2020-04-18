@@ -1,7 +1,7 @@
 # Load the shell dotfiles, and then some:
-if [[ -r "~/.aliases" ]] && [[ -f "~/.aliases" ]]; then
-    source "~/.aliases"
-fi
+#if [[ -r "~/.aliases" ]] && [[ -f "~/.aliases" ]]; then
+source ~/.aliases
+#fi
 
 # emacs keybindings
 bindkey -e
