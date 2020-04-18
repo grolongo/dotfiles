@@ -2,19 +2,26 @@
 
 ### GNU utils
 
+# if [[ "$OSTYPE" = darwin* && -d /usr/local/Cellar/coreutils ]]; then
+#   alias ls="gls -ANF --color=auto --group-directories-first --sort=extension"
+#   alias l="gls -ANFlh --color=auto --group-directories-first --sort=extension"
+#   alias rm="grm -I -v"
+#   alias df="gdf -TH"
+#   alias du="gdu -d 0 -h * | sort -hr"
+# else
+#   alias ls="ls -ANF --color=auto --group-directories-first --sort=extension"   # short, all
+#   alias l="ls -ANFlh --color=auto --group-directories-first --sort=extension"  # long, all
+#   alias rm="rm -I -v"
+#   alias du="du -d 0 -h * | sort -hr"
+#   alias df="df -TH"
+# fi
+
 if [[ "$OSTYPE" = darwin* && -d /usr/local/Cellar/coreutils ]]; then
-  alias ls="gls -ANF --color=auto --group-directories-first --sort=extension"
-  alias l="gls -ANFlh --color=auto --group-directories-first --sort=extension"
-  alias rm="grm -I -v"
-  alias df="gdf -TH"
-  alias du="gdu -d 0 -h * | sort -hr"
-else
-  alias ls="ls -ANF --color=auto --group-directories-first --sort=extension"   # short, all
-  alias l="ls -ANFlh --color=auto --group-directories-first --sort=extension"  # long, all
-  alias rm="rm -I -v"
-  alias du="du -d 0 -h * | sort -hr"
-  alias df="df -TH"
+    alias ls=gls
 fi
+
+alias ls="ls -ANF --color=auto --group-directories-first --sort=extension"
+
 
 ### macOS
 
