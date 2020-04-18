@@ -20,9 +20,9 @@ if [[ "$OSTYPE" = darwin* ]]; then
   alias hidedesktopicons="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 
   # utils
-  l="ls -AFG"
-  ls="ls -AFGlhS"
-  rm="rm -Pv"
+  alias l="ls -AFG"
+  alias ls="ls -AFGlhS"
+  alias rm="rm -Pv"
 fi
 
 ### common
