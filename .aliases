@@ -1,27 +1,12 @@
 #!/bin/bash
 
-### GNU utils
+### Linux
 
-# if [[ "$OSTYPE" = darwin* && -d /usr/local/Cellar/coreutils ]]; then
-#   alias ls="gls -ANF --color=auto --group-directories-first --sort=extension"
-#   alias l="gls -ANFlh --color=auto --group-directories-first --sort=extension"
-#   alias rm="grm -I -v"
-#   alias df="gdf -TH"
-#   alias du="gdu -d 0 -h * | sort -hr"
-# else
-#   alias ls="ls -ANF --color=auto --group-directories-first --sort=extension"   # short, all
-#   alias l="ls -ANFlh --color=auto --group-directories-first --sort=extension"  # long, all
-#   alias rm="rm -I -v"
-#   alias du="du -d 0 -h * | sort -hr"
-#   alias df="df -TH"
-# fi
-
-if [[ "$OSTYPE" = darwin* && -d /usr/local/Cellar/coreutils ]]; then
-    alias ls=gls
+if [[ "$OSTYPE" = linux* ]]; then
+  alias ls="ls -ANF --color=auto --group-directories-first --sort=extension"
+  alias l="ls -ANFlh --color=auto --group-directories-first --sort=extension"
+  alias rm="rm -Iv"
 fi
-
-alias ls="ls -ANF --color=auto --group-directories-first --sort=extension"
-
 
 ### macOS
 
@@ -33,25 +18,27 @@ if [[ "$OSTYPE" = darwin* ]]; then
   # hide/show all desktop icons (useful when presenting)
   alias showdesktopicons="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
   alias hidedesktopicons="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+
+  # utils
+  l="ls -AFG"
+  ls="ls -AFGlhS"
+  rm="rm -Pv"
 fi
 
 ### common
 
-# Misc (blank space so its not in history)
+# utils (blank space so its not in history)
 alias em="emacs -nw"
-alias :q="exit"
-alias :e="nvim"
 alias nv="nvim"
-alias tm="tmux"
 alias pwd=" pwd"
 alias clear=" clear"
 alias claer=" clear"
 alias exit=" exit"
-alias mv="mv -i -v"
-alias cp="cp -i -v"
+alias mv="mv -iv"
+alias cp="cp -iv"
 alias grep="grep --color"
 
-# Security/Privacy
+# security/privacy
 alias clam-checkvirus="sudo freshclam && clamscan --recursive=yes --infected /"
 alias exif-removemeta="exiftool -all="
 
