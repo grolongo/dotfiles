@@ -47,12 +47,8 @@ confirm "Install symlinks for $USER?" && {
   confirm "link zsh files?" && {
     symlink ".zshrc"
     symlink ".zshenv"
-    symlink ".dircolors"
     symlink ".aliases"
-    symlink ".functions"
-    symlink ".path"
     symlink ".exports"
-    #symlink ".zsh_prompt"
     #symlink ".zlogin" # pour i3
   }
 
@@ -164,24 +160,5 @@ confirm "Install symlinks for $USER?" && {
     symlink "bin/extract"
     chmod +x "$HOME"/bin/*
   }
-
-}
-
-# root symlinks
-confirm "Install symlinks for ROOT?" && {
-
-  # root folder variable
-  # --------------------
-  if [[ $OSTYPE = darwin* ]]; then
-    rhome="/private/var/root"
-  else
-    rhome="/root"
-  fi
-  
-  # root dotfiles
-  # -------------
-  for file in .zshrc .aliases .dircolors .vimrc; do
-    sudo ln -sniv "$base"/"$file" "$rhome"/"$file"
-  done
 
 }
