@@ -241,7 +241,6 @@ install_base() {
 
   local packages=(
     aria2
-    coreutils
     dos2unix
     exiftool
     ffmpeg
