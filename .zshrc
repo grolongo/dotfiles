@@ -1,29 +1,36 @@
-# Load the shell dotfiles, and then some:
-#if [[ -r "~/.aliases" ]] && [[ -f "~/.aliases" ]]; then
-source ~/.aliases
-#fi
+# aliases
+if [[ -r "${HOME}/.aliases" ]] && [[ -f "${HOME}/.aliases" ]]; then
+    source "${HOME}/.aliases"
+fi
 
 # emacs keybindings
 bindkey -e
 
 ### PROMPT
 
-if [[ -n $SSH_CONNECTION ]]; then
-  hostStyle="%F{yellow}"
-else
-  hostStyle="%F{green}"
-fi
+autoload -Uz vcs_info
+setopt PROMPT_SUBST
 
-PROMPT="%(!.%F{red}.%F{green})%n@%m%f %F{blue}%~%f %# "
+zstyle ':vcs_info:*' actionformats \ 
+    '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{3}|%F{1}%a%F{5}]%f '
+zstyle ':vcs_info:*' formats       \ 
+    '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{5}]%f '
+zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{3}%r'
+zstyle ':vcs_info:*' enable git cvs svn
+
+# if [[ -n $SSH_CONNECTION ]]; then
+  # hostStyle="%F{yellow}"
+# else
+  # hostStyle="%F{green}"
+# fi
+
+PROMPT="%(!.%F{red}.%F{green})%n@%m%f %F{blue}%~%f ${vcs_info_msg_0_} %# "
 # PROMPT+="$hostStyle%m%f"
-
-#autoload -U promptinit; promptinit
 
 ### OPTIONS
 
 ## Misc
 setopt CHASE_LINKS           # cd into the exact symlink path
-setopt PROMPT_SUBST
 
 ## Glob
 setopt NO_NOMATCH            # bash like no warning on no matching glob files
