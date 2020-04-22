@@ -64,77 +64,8 @@ brew_clean() {
 initial_setup() {
   check_is_not_sudo
 
-  msg_info "Updating softwares..."
-  softwareupdate -i -a
-  
   msg_info "Closing System Preferences to avoid conflicts..."
   osascript -e 'tell application "System Preferences" to quit'
-
-  # Finder
-  # ------
-
-  # Show status bar
-  defaults write com.apple.finder ShowStatusBar -bool true
-
-  # Show path bar
-  defaults write com.apple.finder ShowPathbar -bool true
-
-  # Display full POSIX path as Finder window title
-  defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
-
-  # Keep folders on top when sorting by name
-  defaults write com.apple.finder _FXSortFoldersFirst -bool true
-
-  # Avoid creating .DS_Store files on network or USB volumes
-  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
-  defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
-
-  # Show icons for hard drives, servers, and removable media on the desktop
-  defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
-  defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
-  defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
-
-  # Use list view in all Finder windows by default
-  # Four-letter codes for the other view modes: `icnv`, `clmv`, `Flwv`
-  defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
-
-  # Show all filename extensions
-  defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-
-  # Disable window animations and Get Info animations
-  defaults write com.apple.finder DisableAllAnimations -bool true
-  defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
-
-  # Don't default to saving documents to iCloud
-  defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
-
-  msg_info "Restarting Finder..."
-  killall -KILL Finder
-
-  # Dock
-  # ----
-  
-  # Show only open applications in the Dock
-  defaults write com.apple.dock static-only -bool true
-  defaults write ~/Library/Preferences/com.apple.dock.plist show-recents -bool false
-  
-  # Turn off indicator lights for open applications in the Dock
-  defaults write com.apple.dock show-process-indicators -bool false
-
-  # Change minimize/maximize window effect
-  defaults write com.apple.dock mineffect -string "scale"
-  
-  msg_info "Restarting the dock..."
-  killall -KILL Dock
-
-  # MenuBar
-  # -------
-
-  # Show battery percentage
-  defaults write com.apple.menuextra.battery ShowPercent true
-
-  msg_info "Restarting the menu bar..."
-  killall -KILL SystemUIServer
 
   # Trackpad and Keyboard
   # ---------------------
@@ -148,14 +79,6 @@ initial_setup() {
   defaults write NSGlobalDomain KeyRepeat -int 1
   defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
-  # Appearance
-  # ----------
-
-  # Enable dark mode
-  defaults write com.apple.universalaccess.plist reduceTransparency -bool true
-  defaults write com.apple.universalaccess.plist reduceMotion -bool true
-  osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
-
   confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
 }
 
@@ -163,9 +86,6 @@ initial_setup() {
 
 setup_network_n_sec() {
   check_is_not_sudo
-
-  msg_info "Setting CMD+L to lock screen, Windows like..."
-  defaults write -g NSUserKeyEquivalents -dict-add "Lock Screen" -string "@l"
 
   read -p "Set firmware password? " -n 1 -r firmwarepass
   if [[ $firmwarepass =~ ^[Yy]$ ]]
@@ -186,29 +106,6 @@ setup_network_n_sec() {
 
   msg_info "Enabling stealth mode..."
   sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
-
-  msg_info "Disabling Bonjour multicast advertisements"
-  sudo defaults write /Library/Preferences/com.apple.mDNSResponder.plist NoMulticastAdvertisements -bool YES
-
-  msg_info "Disabling crash reporting to Cupertino..."
-  defaults write com.apple.CrashReporter DialogType none
-
-  msg_info "Disabling captive portal..."
-  sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false
-
-  msg_info "Enabling APPs hardening..."
-  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off
-  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsignedapp off
-
-  msg_info "Flushing APPs cache..."
-  sudo pkill -HUP socketfilterfw
-
-  msg_info "Changing DNS servers to CloudFlare's..."
-  networksetup -setdnsservers Wi-Fi 1.0.0.1 2606:4700:4700::1001
-  networksetup -setdnsservers "Thunderbolt Ethernet" 1.0.0.1 2606:4700:4700::1001
-
-  msg_info "Flushing DNS cache..."
-  sudo killall -HUP mDNSResponder
 }
 
 ### Homebrew installation
