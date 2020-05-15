@@ -83,19 +83,24 @@ confirm "Install symlinks for $USER?" && {
     mkdir -vp "$HOME"/.chatty
     symlink ".chatty/settings"
   }
-  
+
   # mpv
   confirm "link mpv files?" && {
     mkdir -vp "$HOME"/.config/mpv
     symlink ".config/mpv/input.conf"
     symlink ".config/mpv/mpv.conf"
   }
-  
+
+  # screen
+  confirm "link screen config file?" && {
+      symlink ".screenrc"
+  }
+
   # tmux
   confirm "link tmux config file?" && {
     symlink ".tmux.conf"
   }
-  
+
   # rtorrent
   confirm "link rtorrent config file?" && {
     mkdir -vp "$HOME"/.rtorrent.session
@@ -108,7 +113,7 @@ confirm "Install symlinks for $USER?" && {
     mkdir -vp "$HOME"/.aria2
     symlink ".aria2/aria2.conf"
   }
-  
+
   # curl
   confirm "link curl config file?" && {
     symlink ".curlrc"
@@ -140,20 +145,20 @@ confirm "Install symlinks for $USER?" && {
   confirm "link streamlink config file?" && {
     symlink ".streamlinkrc"
   }
-  
+
   # dunst
   confirm "link dunst config file?" && {
     mkdir -vp "$HOME"/.config/dunst
     symlink ".config/dunst/dunstrc"
   }
-  
+
   # i3
   confirm "link i3 files?" && {
     mkdir -vp "$HOME"/.i3
     symlink ".i3/config"
     symlink ".i3/status.conf"
   }
-  
+
   # bin
   confirm "link binary files?" && {
     mkdir -vp "$HOME"/bin
