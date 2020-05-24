@@ -11,21 +11,56 @@ bindkey -e
 setopt PROMPT_SUBST
 autoload -Uz vcs_info
 
-zstyle ':vcs_info:*' actionformats '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{3}|%F{1}%a%F{5}]%f '
-zstyle ':vcs_info:*' formats '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{5}]%f '
-zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{3}%r'
 zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git*' check-for-changes true
+zstyle ':vcs_info:git*' get-revision false
+zstyle ':vcs_info:git*' stagedstr '+'
+zstyle ':vcs_info:git*' unstagedstr '!'
+zstyle ':vcs_info:git*' formats '%b%u%c%m '
+zstyle ':vcs_info:git*' actionformats '(%a) %b%u%c%m '
+zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-stash git-st
+
+function +vi-git-untracked() {
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+           git status --porcelain | grep '??' &> /dev/null ; then
+        hook_com[misc]+='?'
+    fi
+}
+
+function +vi-git-stash() {
+    if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
+        hook_com[misc]+='$'
+    fi
+}
+
+function +vi-git-st() {
+    local ahead behind remote
+    local -a gitstatus
+
+    # Are we on a remote-tracking branch?
+    remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} \
+                             --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+
+    if [[ -n ${remote} ]] ; then
+        ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l)
+        (( $ahead )) && gitstatus+=( "${c3}+${ahead}${c2}" )
+
+        behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l)
+        (( $behind )) && gitstatus+=( "${c4}-${behind}${c2}" )
+
+        hook_com[misc]+="${(j:/:)gitstatus}"
+    fi
+}
 
 function precmd() { vcs_info }
 
-# if [[ -n $SSH_CONNECTION ]]; then
-  # hostStyle="%F{yellow}"
-# else
-  # hostStyle="%F{green}"
-# fi
-
-PROMPT="%(!.%F{red}.%F{green})%n@%m%f %F{blue}%~%f ${vcs_info_msg_0_} %# "
-# PROMPT+="$hostStyle%m%f"
+PROMPT='%B'
+PROMPT+='%(!.%F{red}.%F{green})%n'
+PROMPT+='@%m%f '
+PROMPT+='%F{blue}%~%f '
+PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
+PROMPT+='%# '
+PROMPT+='%b%f%E'
 
 ### OPTIONS
 
