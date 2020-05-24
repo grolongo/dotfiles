@@ -1,2 +1,6 @@
+[alias]
+        f = fetch
+        s = status -s
+
 [commit]
-  gpgsign = true
+          gpgsign = true
