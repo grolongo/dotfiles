@@ -1,6 +1,10 @@
 [alias]
         f = fetch
         s = status -s
+        st = status
 
 [commit]
-          gpgsign = true
+        gpgsign = true
+
+[core]
+        # autocrlf = false
