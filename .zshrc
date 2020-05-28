@@ -38,17 +38,16 @@ function +vi-git-st() {
     local -a gitstatus
 
     # Are we on a remote-tracking branch?
-    remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} \
-                             --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+    remote=${$(command git rev-parse --verify ${hook_com[branch]}@{upstream} --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
 
     if [[ -n ${remote} ]] ; then
-        ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l)
-        (( $ahead )) && gitstatus+=( "${c3}+${ahead}${c2}" )
+        ahead=$(git rev-list --count ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null)
+        (( $ahead )) && gitstatus+=( "+${ahead}" )
 
-        behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l)
-        (( $behind )) && gitstatus+=( "${c4}-${behind}${c2}" )
+        behind=$(git rev-list --count HEAD..${hook_com[branch]}@{upstream} 2>/dev/null)
+        (( $behind )) && gitstatus+=( "-${behind}" )
 
-        hook_com[misc]+="${(j:/:)gitstatus}"
+        hook_com[misc]+=${(j:/:)gitstatus}
     fi
 }
 
