@@ -51,6 +51,7 @@ function +vi-git-st() {
     fi
 }
 
+# test
 function precmd() { vcs_info }
 
 PROMPT='%B'
