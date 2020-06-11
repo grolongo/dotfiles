@@ -13,17 +13,16 @@ autoload -Uz vcs_info
 
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git*' check-for-changes true
-zstyle ':vcs_info:git*' get-revision false
 zstyle ':vcs_info:git*' stagedstr '+'
 zstyle ':vcs_info:git*' unstagedstr '!'
-zstyle ':vcs_info:git*' formats '%b%u%c%m '
-zstyle ':vcs_info:git*' actionformats '(%a) %b%u%c%m '
+zstyle ':vcs_info:git*' formats ' %b%u%c%m'
+zstyle ':vcs_info:git*' actionformats ' (%a) %b%u%c%m'
 zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-stash git-st
 
 function +vi-git-untracked() {
     if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
            git status --porcelain | grep '??' &> /dev/null ; then
-        hook_com[misc]+='?'
+        hook_com[unstaged]+='?'
     fi
 }
 
@@ -51,16 +50,27 @@ function +vi-git-st() {
     fi
 }
 
-# test
+# Highlight the hostname when connected via SSH.
+if [ -n "${SSH_TTY}" ] || \
+   [ -n "${SSH_CONNECTION}" ] || \
+   [ -n "${SSH_CLIENT}" ]; then
+    hostStyle="%F{yellow}%m"       # yellow
+else
+    hostStyle="%b%m%B"             # grey
+fi
+
 function precmd() { vcs_info }
 
-PROMPT='%B'
-PROMPT+='%(!.%F{red}.%F{green})%n'
-PROMPT+='@%m%f '
-PROMPT+='%F{blue}%~%f '
+PROMPT='['
+PROMPT+='%B'
+PROMPT+='%(!.%F{red}.%F{green})%n%f'
+PROMPT+='@'
+PROMPT+='$hostStyle '
+PROMPT+='%F{blue}%~%f'
 PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
+PROMPT+='%b]%B'
 PROMPT+='%# '
-PROMPT+='%b%f%E'
+PROMPT+='%b%E'
 
 ### OPTIONS
 
