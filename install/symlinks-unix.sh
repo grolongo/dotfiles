@@ -52,6 +52,11 @@ confirm "Install symlinks for $USER?" && {
     #symlink ".zlogin" # pour i3
   }
 
+  # bash
+  confirm "link .bashrc?" && {
+      symlink ".bashrc"
+  }
+
   # gnupg
   confirm "link gpg files?" && {
     mkdir -vp "$HOME"/.gnupg
