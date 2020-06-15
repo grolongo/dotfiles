@@ -57,6 +57,12 @@ confirm "Install symlinks for $USER?" && {
       symlink ".bashrc"
   }
 
+  # emacs
+  confirm "link emacs config?" && {
+      mkdir -vp "$HOME"/.emacs.d
+      symlink ".emacs.d/init.el"
+  }
+
   # gnupg
   confirm "link gpg files?" && {
     mkdir -vp "$HOME"/.gnupg
