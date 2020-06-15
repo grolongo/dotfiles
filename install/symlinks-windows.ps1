@@ -10,6 +10,13 @@ if ((Get-Location).path -ne $PSScriptRoot) { Write-Output "Exiting. Please cd to
 # Dossier racine des dotfiles : "Split-Path" considère le dossier parent par défaut.
 New-Variable -Name "base" -Value "$(Split-Path (Get-Location))"
 
+# Emacs
+$confirmation = Read-Host "Symlink emacs?"
+if ($confirmation -eq 'y') {
+    New-Item -Force -Path "$env:APPDATA\.emacs.d" -ItemType directory
+    New-Item -Force -Path "$env:APPDATA\.emacs.d\init.el" -ItemType SymbolicLink -Value "$base\.emacs.d\init.el"
+}
+
 # mpv
 $confirmation = Read-Host "Symlink mpv?"
 if ($confirmation -eq 'y') {
