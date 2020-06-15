@@ -56,19 +56,18 @@ if [ -n "${SSH_TTY}" ] || \
    [ -n "${SSH_CLIENT}" ]; then
     hostStyle="%F{yellow}%m"       # yellow
 else
-    hostStyle="%b%m%B"             # grey
+    hostStyle="%F{8}%m"            # grey
 fi
 
 function precmd() { vcs_info }
 
-PROMPT='['
-PROMPT+='%B'
+PROMPT='%B['
 PROMPT+='%(!.%F{red}.%F{green})%n%f'
 PROMPT+='@'
 PROMPT+='$hostStyle '
 PROMPT+='%F{blue}%~%f'
 PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
-PROMPT+='%b]%B'
+PROMPT+=']'
 PROMPT+='%# '
 PROMPT+='%b%E'
 
