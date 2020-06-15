@@ -136,17 +136,16 @@ if [ -n "${SSH_TTY}" ] || \
    [ -n "${SSH_CLIENT}" ]; then
     hostStyle="\[\e[1;33m\]";       # yellow
 else
-    hostStyle="\[\e[0m\]";       # grey
+    hostStyle="\[\e[1;30m\]";       # grey
 fi;
 
-PS1="\[\e[0;37m\][";                # [
+PS1="\[\e[1;37m\][";                # [
 PS1+="${userStyle}\u";              # username
 PS1+="\[\e[1;37m\]@";               # @
 PS1+="${hostStyle}\h ";             # hostname
-PS1+="\[\e[1;34m\]\w"               # working dir
+PS1+="\[\e[1;34m\]\w";              # working dir
 PS1+="\[\e[1;36m\]\$(prompt_git)";  # git repository details
-PS1+="\[\e[0;37m\]]";               # ]
-PS1+="\[\e[1;37m\]\$";              # $
-PS1+="\[\e[0m\] ";
+PS1+="\[\e[1;37m\]]\$";             # ]$
+PS1+="\[\e[0m\] ";                  # reset colors
 
 export PS1;
