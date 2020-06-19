@@ -30,10 +30,10 @@ fi
 # utils (blank space so its not in history)
 alias em="emacs -nw"
 alias nv="nvim"
-alias pwd=" pwd"
-alias clear=" clear"
-alias claer=" clear"
-alias exit=" exit"
+alias pwd="pwd"
+alias clear="clear"
+alias claer="clear"
+alias exit="exit"
 alias mv="mv -iv"
 alias cp="cp -iv"
 alias grep="grep --color"
@@ -54,11 +54,11 @@ alias ssh-tunnel-tor-seafile="ssh -f -N -L 8000:127.0.0.1:8000 raspberrypi-tor &
 
 ### functions
 
-# Read markdown files like manpages                 
+# Read markdown files like manpages
 md () {
   pandoc -s -f markdown -t man "$*" | man -l -
 }
-                                                    
+
 hex10 () {
   hexdump -n 5 -v -e '4/4 "%x" 1 "\n"' /dev/urandom;
 }

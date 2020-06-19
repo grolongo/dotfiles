@@ -11,16 +11,16 @@ bindkey -e
 ## Misc
 setopt CHASE_LINKS           # cd into the exact symlink path
 
-## Glob
-setopt NO_NOMATCH            # bash like no warning on no matching glob files
-setopt GLOB_COMPLETE         # when "*", generates matches for completion but not inserts all the results
-setopt EXTENDED_GLOB         # enables #, ~ and ^ for filenames generation
-
 ## History
-setopt APPEND_HISTORY        # sessions append their history to the file rather than replace it
-setopt HIST_IGNORE_ALL_DUPS  # deletes any duplicates
-setopt HIST_IGNORE_SPACE     # doesnt add <space>ls to the history
-setopt SHARE_HISTORY         # imports and appends cmds from different sessions
+HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+HISTSIZE=9999
+SAVEHIST=9999
+HISTORY_IGNORE="(ls|pwd|exit|clear)"
+setopt SHARE_HISTORY
+setopt HIST_FIND_NO_DUPS
+setopt HIST_NO_STORE
+#setopt HIST_IGNORE_SPACE     # doesnt add <space>ls to the history
+
 unsetopt LIST_BEEP           # no beep when no hist entry
 
 ### Completion
