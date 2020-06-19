@@ -15,11 +15,11 @@ setopt CHASE_LINKS           # cd into the exact symlink path
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
 HISTSIZE=9999
 SAVEHIST=9999
-HISTORY_IGNORE="(ls|pwd|exit|clear)"
+HISTORY_IGNORE="(cd|cd ..|clear|exit|l|ls |pwd)"
+setopt HIST_IGNORE_SPACE # doesnt add <space>ls to the history
+setopt HIST_NO_STORE     # doesnt add history cmd to the history
+setopt HIST_IGNORE_DUPS  # doesnt add cmd if duplicate as previous event
 setopt SHARE_HISTORY
-setopt HIST_FIND_NO_DUPS
-setopt HIST_NO_STORE
-#setopt HIST_IGNORE_SPACE     # doesnt add <space>ls to the history
 
 unsetopt LIST_BEEP           # no beep when no hist entry
 
