@@ -9,7 +9,8 @@ bindkey -e
 ### Misc Options
 
 ## Misc
-setopt CHASE_LINKS           # cd into the exact symlink path
+setopt CHASE_LINKS # cd into the exact symlink path
+unsetopt BEEP
 
 ## History
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
@@ -20,8 +21,6 @@ setopt HIST_IGNORE_SPACE # doesnt add <space>ls to the history
 setopt HIST_NO_STORE     # doesnt add history cmd to the history
 setopt HIST_IGNORE_DUPS  # doesnt add cmd if duplicate as previous event
 setopt SHARE_HISTORY
-
-unsetopt LIST_BEEP           # no beep when no hist entry
 
 ### Completion
 
@@ -35,7 +34,7 @@ autoload -Uz compinit && compinit -i
 setopt HASH_LIST_ALL        # hashes cmd path before completion or spelling correction
 setopt COMPLETE_IN_WORD     # allow autocomplete from missing characters
 setopt GLOB_DOTS            # dont need to insert a "." for completion
-setopt NO_BEEP              # no beep on error in ZLE
+
 
 # Utilise les couleurs de $LS_COLORS pour la completion
 zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"

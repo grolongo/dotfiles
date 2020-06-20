@@ -53,8 +53,9 @@ confirm "Install symlinks for $USER?" && {
   }
 
   # bash
-  confirm "link .bashrc?" && {
+  confirm "link bash shell files?" && {
       symlink ".bashrc"
+      symlink ".inputrc"
   }
 
   # emacs
