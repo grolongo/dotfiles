@@ -6,17 +6,16 @@ fi
 # emacs keybindings
 bindkey -e
 
-### Misc Options
-
-## Misc
 setopt CHASE_LINKS # cd into the exact symlink path
 unsetopt BEEP
 
-## History
+### History
+
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
 HISTSIZE=9999
 SAVEHIST=9999
 HISTORY_IGNORE="(cd|cd ..|clear|exit|l|ls |pwd)"
+
 setopt HIST_IGNORE_SPACE # doesnt add <space>ls to the history
 setopt HIST_NO_STORE     # doesnt add history cmd to the history
 setopt HIST_IGNORE_DUPS  # doesnt add cmd if duplicate as previous event
@@ -31,30 +30,22 @@ autoload -Uz compinit && compinit -i
 #fpath=(/usr/local/share/zsh-completions $fpath)
 
 ## Options
-setopt HASH_LIST_ALL        # hashes cmd path before completion or spelling correction
-setopt COMPLETE_IN_WORD     # allow autocomplete from missing characters
 setopt GLOB_DOTS            # dont need to insert a "." for completion
 
-
 # Utilise les couleurs de $LS_COLORS pour la completion
+eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
+autoload colors && colors
 
 ## General
-zstyle ':completion:*' menu select                                          # enables completion list selection
-zstyle ':completion:*' verbose yes
-zstyle ':completion:*' use-cache true                                       # uses cache file
-zstyle ':completion:*' accept-exact-dirs true                               # disables comp. check for existing path
-zstyle ':completion:*' select-prompt %SScrolling: %p                        # % counter on long lists
-zstyle ':completion:*' completer _complete _correct _approximate            # completers to use (no _ignored)
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'   # no case sensitive
-
-## Display
-zstyle ':completion:*' group-name ''                                            # seperates aliases, functions, parameters etc.
-zstyle ':completion:*' list-dirs-first true                                     # shows folders before other files
-zstyle ':completion:*' auto-description '%d'                                    # ajoute une description automatique pour les options de commande
-zstyle ':completion:*:descriptions' format '%B-- %d%b'                          # e.g. -- directory or -- file
-zstyle ':completion:*:warnings' format '%F{red}%BNo matches found%b%f'          # e.g. when <TAB> after inexistant folder
-zstyle ':completion:*:messages' format '%F{red}%B-- %d%b%f'
+zstyle ':completion:*' use-cache true
+zstyle ':completion:*' menu select
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list-dirs-first true
+zstyle ':completion:*' select-prompt '%p'
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
+zstyle ':completion:*:descriptions' format '%B-- %d%b'
+zstyle ':completion:*:warnings' format 'no matches found'
 
 ## Kill
 zstyle ':completion:*:*:kill:*:processes' list-colors "=(#b) #([0-9]#)*=0=01;31"        # kill completion PIDS in red
