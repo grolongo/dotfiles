@@ -1,10 +1,13 @@
-# aliases
+# External files
 if [[ -r "${HOME}/.aliases" ]] && [[ -f "${HOME}/.aliases" ]]; then
-    source "${HOME}/.aliases"
+    . "${HOME}/.aliases"
 fi
 
-# emacs keybindings
+# Emacs keybinds
 bindkey -e
+
+# Disable the log builtin, so we don't conflict with /usr/bin/log
+disable log
 
 setopt CHASE_LINKS # cd into the exact symlink path
 unsetopt BEEP
@@ -35,7 +38,6 @@ setopt GLOB_DOTS            # dont need to insert a "." for completion
 # Utilise les couleurs de $LS_COLORS pour la completion
 eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
-autoload colors && colors
 
 ## General
 zstyle ':completion:*' use-cache true
@@ -46,12 +48,14 @@ zstyle ':completion:*' select-prompt '%p'
 zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
 zstyle ':completion:*:descriptions' format '%B-- %d%b'
 zstyle ':completion:*:warnings' format 'no matches found'
-
-## Kill
-zstyle ':completion:*:*:kill:*:processes' list-colors "=(#b) #([0-9]#)*=0=01;31"        # kill completion PIDS in red
-zstyle ':completion:*:*:*:*:processes' command "ps -u $(whoami) -o pid,user,comm -w -w"  # e.g. "1337 max chromium"
+zstyle ':completion:*:processes' command "ps -u $(whoami) -o pid,user,comm -w -w"
 
 ## SSH
+
+# hide login names because we dont need them
+zstyle ':completion:*:ssh:argument-1:*' tag-order hosts
+
+# only pick hostnames from our ssh config file
 h=()
 if [[ -r ~/.ssh/config ]]; then
     h=($h ${${${(@M)${(f)"$(< ~/.ssh/config)"}:#Host *}#Host }:#*[*?]*})
