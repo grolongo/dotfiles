@@ -1,7 +1,9 @@
 # External files
-if [[ -r "${HOME}/.aliases" ]] && [[ -f "${HOME}/.aliases" ]]; then
-    . "${HOME}/.aliases"
-fi
+for file in ~/.{aliases,exports}; do
+    if [[ -r "$file" ]] && [[ -f "$file" ]]; then
+        . "$file"
+    fi
+done
 
 # Emacs keybinds
 bindkey -e
