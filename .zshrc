@@ -1,9 +1,7 @@
 # External files
-for file in ~/.{aliases,exports}; do
-    if [[ -r "$file" ]] && [[ -f "$file" ]]; then
-        . "$file"
-    fi
-done
+if [[ -r "${HOME}"/.aliases ]] && [[ -f "${HOME}"/.aliases ]]; then
+    . "${HOME}"/.aliases
+fi
 
 # Emacs keybinds
 bindkey -e
@@ -43,7 +41,7 @@ if [ -z "$INSIDE_EMACS" ]; then
 	    done
 	}
 
-	printf '\e]7;%s\a' "file://$HOST$url_path"
+        printf '\e]7;%s\a' "file://$HOST$url_path"
     }
 
     # Register the function so it is called at each prompt.

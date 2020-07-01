@@ -1,6 +1,6 @@
 # Viewer/Editors
-export VISUAL=vi
-export EDITOR=vi
+export VISUAL="emacs -nw"
+export EDITOR="emacs -nw"
 export PAGER=less
 
 # Language environment
@@ -18,4 +18,18 @@ then
   export HOMEBREW_NO_INSECURE_REDIRECT=1
   export HOMEBREW_CASK_OPTS=--require-sha
   export HOMEBREW_NO_ANALYTICS=1
+fi
+
+# PATH
+
+export PATH="/usr/local/bin:/usr/local/sbin:/bin:/usr/bin:/usr/sbin:/sbin:${PATH}"
+
+# add home bin if exists
+if [ -d "${HOME}/bin" ]; then
+  export PATH="${HOME}/bin:${PATH}"
+fi
+
+# add pip3 binaries
+if [ -d "${HOME}/.local/bin" ]; then
+  export PATH="${HOME}/.local/bin:${PATH}"
 fi
