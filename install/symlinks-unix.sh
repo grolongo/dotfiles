@@ -53,7 +53,7 @@ confirm "Install symlinks for $USER?" && {
   }
 
   # bash
-  confirm "link bash shell files?" && {
+  confirm "link bash files?" && {
       symlink ".bashrc"
       symlink ".inputrc"
   }
