@@ -1,6 +1,6 @@
 # External files
-if [[ -r "${HOME}/.aliases" ]] && [[ -f "${HOME}/.aliases" ]]; then
-    . "${HOME}/.aliases"
+if [[ -r "$HOME/.aliases" ]] && [[ -f "$HOME/.aliases" ]]; then
+    . "$HOME/.aliases"
 fi
 
 setopt CHASE_LINKS # cd into the exact symlink path
@@ -20,17 +20,18 @@ setopt SHARE_HISTORY
 
 ### Completion
 
-# using -i to ignore warnings when logging as root
-autoload -Uz compinit && compinit -i
-
-# Enables Homebrew zsh-completion package
-#fpath=(/usr/local/share/zsh-completions $fpath)
+# use compaudit to see insecure folders and fix them
+# usually just need to fix group writing permissions
+# at /usr/local/share/zsh/site-functions
+# we also can use "compinit -u" to ignore those warnings
+# instead of fixing them...
+autoload -Uz compinit && compinit
 
 ## Options
 setopt GLOB_DOTS            # dont need to insert a "." for completion
 
 # Utilise les couleurs de $LS_COLORS pour la completion
-eval "$(dircolors -b)"
+#eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
 
 ## General
@@ -41,8 +42,8 @@ zstyle ':completion:*' list-dirs-first true
 zstyle ':completion:*' select-prompt '%p'
 zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
 zstyle ':completion:*:descriptions' format '%B-- %d%b'
-zstyle ':completion:*:warnings' format 'no matches found'
-zstyle ':completion:*:processes' command "ps -u $(whoami) -o pid,user,comm -w -w"
+zstyle ':completion:*:warnings' format 'no match found'
+zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,user,%cpu,comm,cmd'
 
 ## SSH
 
