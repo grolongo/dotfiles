@@ -15,10 +15,6 @@ if [[ "$OSTYPE" = darwin* ]]; then
   alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
   alias hidedotfiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
 
-  # hide/show all desktop icons (useful when presenting)
-  alias showdesktopicons="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
-  alias hidedesktopicons="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
-
   # utils
   alias ls="ls -AFG"
   alias l="ls -AFGlhS"
