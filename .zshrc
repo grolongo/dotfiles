@@ -18,6 +18,13 @@ setopt HIST_NO_STORE     # doesnt add history cmd to the history
 setopt HIST_IGNORE_DUPS  # doesnt add cmd if duplicate as previous event
 setopt SHARE_HISTORY
 
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
+
 ### Completion
 
 # use compaudit to see insecure folders and fix them
