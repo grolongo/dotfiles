@@ -1,24 +1,21 @@
-export VISUAL="emacs -nw"
-export EDITOR="emacs -nw"
-export PAGER=less
-
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
+export VISUAL="emacs -nw"
+export EDITOR="emacs -nw"
+export PAGER=less
+
 #GPG_TTY=$(tty)
 #export GPG_TTY
 
-if test "$(command -v brew >/dev/null 2>&1)"
-then
-  export HOMEBREW_NO_INSECURE_REDIRECT=1
-  export HOMEBREW_CASK_OPTS=--require-sha
-  export HOMEBREW_NO_ANALYTICS=1
-fi
+export HOMEBREW_NO_INSECURE_REDIRECT=1
+export HOMEBREW_CASK_OPTS=--require-sha
+export HOMEBREW_NO_ANALYTICS=1
 
 ### Path
 
 # add home bin if exists
-if [ -d "${HOME}/bin" ]; then
-  export PATH="${HOME}/bin:${PATH}"
+if [ -d "${HOME}/Downloads" ]; then
+    export PATH="${HOME}/bin:${PATH}"
 fi
