@@ -16,6 +16,6 @@ export HOMEBREW_NO_ANALYTICS=1
 ### Path
 
 # add home bin if exists
-if [ -d "${HOME}/Downloads" ]; then
+if [ -d "${HOME}/bin" ]; then
     export PATH="${HOME}/bin:${PATH}"
 fi
