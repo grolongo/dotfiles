@@ -108,6 +108,17 @@ setup_network_n_sec() {
     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 }
 
+### Dotfiles
+
+install_dotfiles() {
+    check_is_not_sudo
+
+    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
+
+    msg_info "Launching external symlinks script..."
+    ./symlinks-unix.sh
+}
+
 ### Homebrew installation
 
 install_homebrew() {
@@ -239,17 +250,6 @@ install_chatty() {
     cp -vr "$base"/.chatty/malgun.ttf "$HOME"/Library/Fonts
 }
 
-### Dotfiles
-
-install_dotfiles() {
-    check_is_not_sudo
-
-    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
-
-    msg_info "Launching external symlinks script..."
-    ./symlinks-unix.sh
-}
-
 ### Menu
 
 usage() {
@@ -258,8 +258,8 @@ usage() {
     echo
     echo "Usage:"
     echo "  isetup     - docker, finder and mouse preferences"
-    echo "  dotfiles   - setup dotfiles"
     echo "  networksec - firewall settings"
+    echo "  dotfiles   - setup dotfiles"
     echo "  homebrew   - setup homebrew if not installed"
     echo "  base       - installs base packages"
     echo "  casks      - setup caskroom & installs softwares"
@@ -278,10 +278,10 @@ main() {
 
     if [[ $cmd == "isetup" ]]; then
         initial_setup
-    elif [[ $cmd == "dotfiles" ]]; then
-        install_dotfiles
     elif [[ $cmd == "networksec" ]]; then
         setup_network_n_sec
+    elif [[ $cmd == "dotfiles" ]]; then
+        install_dotfiles
     elif [[ $cmd == "homebrew" ]]; then
         install_homebrew
     elif [[ $cmd == "base" ]]; then
