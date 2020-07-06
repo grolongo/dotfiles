@@ -273,7 +273,7 @@ function install_chocolatey {
 function install_packages {
     Write-Host -ForegroundColor "yellow" 'Installing packages...'
 
-    cinst 7zip
+    #cinst 7zip
     cinst aria2
     cinst audacity
     cinst ccleaner
