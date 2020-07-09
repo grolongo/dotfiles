@@ -11,3 +11,8 @@ set visible-stats on
 set colored-stats on
 set colored-completion-prefix on
 TAB:menu-complete
+
+# UTF-8
+set input-meta on
+set output-meta on
+set convert-meta off
