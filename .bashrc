@@ -1,3 +1,7 @@
+if [[ -r "$HOME/.aliases" ]] && [[ -r "$HOME/.aliases" ]]; then
+    source "$HOME/.aliases"
+fi
+
 ### Misc
 
 # If not running interactively, don't do anything
@@ -16,7 +20,6 @@ shopt -s histappend
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=9999
 HISTFILESIZE=9999
-
 HISTIGNORE="cd:cd ..:clear:exit:l:ls :pwd"
 
 # check the window size after each command and, if necessary,
@@ -62,6 +65,9 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 ### Completion
+
+# only complete directories when using cd
+complete -d cd
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile

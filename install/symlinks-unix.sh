@@ -54,6 +54,7 @@ confirm "Install symlinks for $USER?" && {
 
     # bash
     confirm "link bash files?" && {
+        symlink ".bash_profile"
         symlink ".bashrc"
         symlink ".inputrc"
     }
