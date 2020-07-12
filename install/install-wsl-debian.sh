@@ -131,6 +131,7 @@ apt_base() {
 
     local packages=(
         aria2
+        bash-completion
         curl
         dos2unix
         exiftool

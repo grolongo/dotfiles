@@ -146,6 +146,7 @@ apt_base() {
 
     local packages=(
         aria2
+        bash-completion
         harden-clients
         harden-servers
         iptables-persistent
