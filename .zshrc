@@ -107,13 +107,13 @@ function +vi-git-st() {
     local -a gitstatus
 
     # are we on a remote-tracking branch?
-    remote=${$(command git rev-parse --verify ${hook_com[branch]}@{upstream} --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+    remote=${$(command git rev-parse --verify ${hook_com[branch]}@"{upstream}" --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
 
     if [[ -n ${remote} ]] ; then
-        ahead=$(git rev-list --count ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null)
+        ahead=$(git rev-list --count ${hook_com[branch]}@"{upstream}"..HEAD 2>/dev/null)
         (( $ahead )) && gitstatus+=( "+${ahead}" )
 
-        behind=$(git rev-list --count HEAD..${hook_com[branch]}@{upstream} 2>/dev/null)
+        behind=$(git rev-list --count HEAD..${hook_com[branch]}@"{upstream}" 2>/dev/null)
         (( $behind )) && gitstatus+=( "-${behind}" )
 
         hook_com[misc]+=${(j::)gitstatus}
