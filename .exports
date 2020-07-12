@@ -13,12 +13,6 @@ export HOMEBREW_NO_INSECURE_REDIRECT=1
 export HOMEBREW_CASK_OPTS=--require-sha
 export HOMEBREW_NO_ANALYTICS=1
 
-# This variable is used to allow using
-# up-line-or-beginning-search (and down)
-# commands with the arrow keys to scroll
-# history on Debian like systems.
-export DEBIAN_PREVENT_KEYBOARD_CHANGES=yes
-
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
