@@ -187,8 +187,9 @@ install_docker() {
         sudo systemctl restart docker
     }
 
-confirm "You need to restart to finish. Reboot now?" && {
-sudo reboot
+    confirm "You need to restart to finish. Reboot now?" && {
+        sudo reboot
+    }
 }
 
 ### Nextcloud local only (docker)
