@@ -123,5 +123,6 @@ export PS1;
 ### External
 
 if [[ -r "$HOME/.aliases" ]] && [[ -f "$HOME/.aliases" ]]; then
+    # shellcheck source=/dev/null
     source "$HOME/.aliases"
 fi
