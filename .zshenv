@@ -7,5 +7,3 @@ fi
 # commands with the arrow keys to scroll
 # history on Debian like systems.
 DEBIAN_PREVENT_KEYBOARD_CHANGES=yes
-
-#umask 022
