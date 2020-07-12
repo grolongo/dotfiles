@@ -1,5 +1,3 @@
-#!/bin/bash
-
 ### Linux
 
 if [[ "$OSTYPE" = linux* ]]; then
