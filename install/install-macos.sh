@@ -179,7 +179,6 @@ install_casks() {
     check_is_not_sudo
 
     local packages=(
-        adobe-acrobat-reader
         adobe-creative-cloud
         electrum
         emacs
