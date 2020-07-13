@@ -116,6 +116,7 @@ change_hostname() {
     read -r -p "Enter a new name: " newname
     scutil --set ComputerName "$newname"
     scutil --set LocalHostName "$newname"
+    scutil --set HostName "$newname"
 }
 
 ### Homebrew installation
