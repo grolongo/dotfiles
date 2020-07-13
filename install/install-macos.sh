@@ -59,6 +59,17 @@ brew_clean() {
 # check if running macOS
 [[ ! $OSTYPE = darwin* ]] && { msg_error "You are not running macOS, exiting."; exit 1; }
 
+### Dotfiles
+
+install_dotfiles() {
+    check_is_not_sudo
+
+    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
+
+    msg_info "Launching external symlinks script..."
+    ./symlinks-unix.sh
+}
+
 ### Initial setup
 
 initial_setup() {
@@ -82,41 +93,30 @@ initial_setup() {
     confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
 }
 
-### Network & Security
+### Firewall
 
-setup_network_n_sec() {
-    check_is_not_sudo
+setup_firewall() {
+    check_is_sudo
 
-    read -p "Set firmware password? " -n 1 -r firmwarepass
-    if [[ $firmwarepass =~ ^[Yy]$ ]]
-    then
-        sudo firmwarepasswd -setpasswd -setmode full
-    fi
+    msg_info "Blocking all incoming connections..."
+    defaults write /Library/Preferences/com.apple.alf globalstate -int 2
+
+    msg_info "Enabling stealth mode..."
+    /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+}
+
+### Hostname
+
+change_hostname() {
+    check_is_sudo
 
     read -p "Change mac hostname/computer name? " -n 1 -r userpass
     if [[ $userpass =~ ^[Yy]$ ]]
     then
         read -r -p "Choose a new name: " newname
-        sudo scutil --set ComputerName "$newname"
-        sudo scutil --set LocalHostName "$newname"
+        scutil --set ComputerName "$newname"
+        scutil --set LocalHostName "$newname"
     fi
-
-    msg_info "Blocking all incoming connections..."
-    sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
-
-    msg_info "Enabling stealth mode..."
-    sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
-}
-
-### Dotfiles
-
-install_dotfiles() {
-    check_is_not_sudo
-
-    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
-
-    msg_info "Launching external symlinks script..."
-    ./symlinks-unix.sh
 }
 
 ### Homebrew installation
@@ -256,13 +256,14 @@ usage() {
     echo "This script installs my basic setup for a macOS laptop."
     echo
     echo "Usage:"
-    echo "  isetup     - docker, finder and mouse preferences"
-    echo "  networksec - firewall settings"
-    echo "  dotfiles   - setup dotfiles"
-    echo "  homebrew   - setup homebrew if not installed"
-    echo "  base       - installs base packages"
-    echo "  casks      - setup caskroom & installs softwares"
-    echo "  chatty     - downloads and installs chatty with java runtime environment"
+    echo "  dotfiles     - setup dotfiles"
+    echo "  isetup       - docker, finder and mouse preferences"
+    echo "  firewall (s) - blocks incoming connection, stealth mode"
+    echo "  hostname (s) - changes computer hostname"
+    echo "  homebrew     - setup homebrew if not installed"
+    echo "  base         - installs base packages"
+    echo "  casks        - setup caskroom & installs softwares"
+    echo "  chatty       - downloads and installs chatty with java runtime environment"
     echo
 }
 
@@ -275,12 +276,14 @@ main() {
         exit 1
     fi
 
-    if [[ $cmd == "isetup" ]]; then
-        initial_setup
-    elif [[ $cmd == "networksec" ]]; then
-        setup_network_n_sec
-    elif [[ $cmd == "dotfiles" ]]; then
+    if [[ $cmd == "dotfiles" ]]; then
         install_dotfiles
+    elif [[ $cmd == "isetup" ]]; then
+        initial_setup
+    elif [[ $cmd == "firewall" ]]; then
+        setup_firewall
+    elif [[ $cmd == "hostname" ]]; then
+        change_hostname
     elif [[ $cmd == "homebrew" ]]; then
         install_homebrew
     elif [[ $cmd == "base" ]]; then

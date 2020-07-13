@@ -65,6 +65,17 @@ apt_clean() {
 # check if running on raspberrypi
 [[ ! $(uname -m) =~ arm ]] && { msg_error "Please run this script on the server."; exit 1; }
 
+### Dotfiles
+
+install_dotfiles() {
+    check_is_not_sudo
+
+    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
+
+    msg_info "Launching external symlinks script..."
+    ./symlinks-unix.sh
+}
+
 ### Initial setup
 
 initial_setup() {
@@ -116,17 +127,6 @@ initial_setup() {
   }
 
   msg_info "Reboot now."
-}
-
-### Dotfiles
-
-install_dotfiles() {
-    check_is_not_sudo
-
-    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
-
-    msg_info "Launching external symlinks script..."
-    ./symlinks-unix.sh
 }
 
 ### Apt base
@@ -550,8 +550,8 @@ usage() {
     echo "This script installs my basic setup for a server."
     echo
     echo "Usage:"
-    echo "  isetup                        (s) - delete pi user, passwordless sudo, lock root and run raspi-config"
     echo "  dotfiles                          - setup dotfiles from external script"
+    echo "  isetup                        (s) - delete pi user, passwordless sudo, lock root and run raspi-config"
     echo "  aptbase                       (s) - disable translations, update, upgrade and installs few packages"
     echo "  docker                            - installs docker"
     echo "  nextcloud_docker_local            - downloads and deploys nextcloudpi with Docker"
@@ -573,12 +573,12 @@ main() {
             exit 1
 	fi
 
-        if [[ $cmd == "isetup" ]]; then
-            initial_setup
+        if [[ $cmd == "dotfiles" ]]; then
+            install_dotfiles
         elif [[ $cmd == "aptbase" ]]; then
             apt_base
-        elif [[ $cmd == "dotfiles" ]]; then
-            install_dotfiles
+        elif [[ $cmd == "isetup" ]]; then
+            initial_setup
         elif [[ $cmd == "docker" ]]; then
             install_docker
         elif [[ $cmd == "nextcloud_docker_local" ]]; then

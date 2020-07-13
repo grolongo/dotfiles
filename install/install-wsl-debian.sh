@@ -65,6 +65,17 @@ apt_clean() {
 # check if running WSL
 [[ ! $(uname -r) =~ Microsoft ]] && { msg_error "You are not running WSL, exiting."; exit 1; }
 
+### Dotfiles
+
+install_dotfiles() {
+  check_is_not_sudo
+
+  [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
+
+  msg_info "Launching external symlinks script..."
+  ./symlinks-unix.sh
+}
+
 ### Initial setup
 
 initial_setup() {
@@ -78,17 +89,6 @@ initial_setup() {
         passwd --delete root
         passwd --lock root
     }
-}
-
-### Dotfiles
-
-install_dotfiles() {
-  check_is_not_sudo
-
-  [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
-
-  msg_info "Launching external symlinks script..."
-  ./symlinks-unix.sh
 }
 
 ### Apt sources
@@ -205,8 +205,8 @@ usage() {
     echo "This script installs my basic setup for a server."
     echo
     echo "Usage:"
-    echo "  isetup      (s) - passwordless sudo and lock root"
     echo "  dotfiles        - setup dotfiles from external script"
+    echo "  isetup      (s) - passwordless sudo and lock root"
     echo "  aptsources  (s) - disables translations, updates, upgrades and dist-upgrades to testing"
     echo "  aptbase     (s) - installs few packages"
     echo "  veracrypt       - installs VeraCrypt command line"
@@ -223,10 +223,10 @@ main() {
         exit 1
     fi
 
-    if [[ $cmd == "isetup" ]]; then
-        initial_setup
-    elif [[ $cmd == "dotfiles" ]]; then
+    if [[ $cmd == "dotfiles" ]]; then
         install_dotfiles
+    elif [[ $cmd == "isetup" ]]; then
+        initial_setup
     elif [[ $cmd == "aptsources" ]]; then
         apt_sources
     elif [[ $cmd == "aptbase" ]]; then
