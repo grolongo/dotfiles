@@ -75,14 +75,11 @@ install_dotfiles() {
 
 ### Initial setup
 
-initial_setup() {
+setup_trackpadkeyboard() {
     check_is_not_sudo
 
     msg_info "Closing System Preferences to avoid conflicts..."
     osascript -e 'tell application "System Preferences" to quit'
-
-    # Trackpad and Keyboard
-    # ---------------------
 
     # Trackpad: enable tap to click for this user and for the login screen
     defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
@@ -94,6 +91,30 @@ initial_setup() {
     defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
     confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
+}
+
+### Dock
+
+setup_dock() {
+    check_is_not_sudo
+
+    msg_info "Closing System Preferences to avoid conflicts..."
+    osascript -e 'tell application "System Preferences" to quit'
+
+    # scale window effect
+    defaults write com.apple.dock mineffect -string "scale"
+
+    # remove defaults apps from the dock
+    defaults write com.apple.dock persistent-apps -array
+
+    # don't show recent apps in the dock
+    defaults write com.apple.dock show-recents -bool false
+
+    # only show active apps in the dock
+    defaults write com.apple.dock static-only -bool true
+
+    msg_info "Restarting the Dock."
+    killall -KILL Dock
 }
 
 ### Firewall
@@ -257,7 +278,8 @@ usage() {
     echo
     echo "Usage:"
     echo "  dotfiles     - setup dotfiles"
-    echo "  isetup       - docker, finder and mouse preferences"
+    echo "  trackpadkbd  - single touch and faster kbd repeat rate"
+    echo "  dock         - only show active apps only"
     echo "  firewall (s) - blocks incoming connection, stealth mode"
     echo "  hostname (s) - changes computer hostname"
     echo "  homebrew     - setup homebrew if not installed"
@@ -278,8 +300,10 @@ main() {
 
     if [[ $cmd == "dotfiles" ]]; then
         install_dotfiles
-    elif [[ $cmd == "isetup" ]]; then
-        initial_setup
+    elif [[ $cmd == "trackpadkbd" ]]; then
+        setup_trackpadkeyboard
+    elif [[ $cmd == "dock" ]]; then
+        setup_dock
     elif [[ $cmd == "firewall" ]]; then
         setup_firewall
     elif [[ $cmd == "hostname" ]]; then
