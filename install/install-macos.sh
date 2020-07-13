@@ -113,13 +113,9 @@ setup_firewall() {
 change_hostname() {
     check_is_sudo
 
-    read -p "Change mac hostname/computer name? " -n 1 -r userpass
-    if [[ $userpass =~ ^[Yy]$ ]]
-    then
-        read -r -p "Choose a new name: " newname
-        scutil --set ComputerName "$newname"
-        scutil --set LocalHostName "$newname"
-    fi
+    read -r -p "Enter a new name: " newname
+    scutil --set ComputerName "$newname"
+    scutil --set LocalHostName "$newname"
 }
 
 ### Homebrew installation
