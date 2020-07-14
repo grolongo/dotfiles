@@ -73,33 +73,34 @@ install_dotfiles() {
     ./symlinks-unix.sh
 }
 
-### Initial setup
+### macOS preferences settings
 
-setup_trackpadkeyboard() {
+setup_prefsettings() {
     check_is_not_sudo
 
     msg_info "Closing System Preferences to avoid conflicts..."
     osascript -e 'tell application "System Preferences" to quit'
 
-    # Trackpad: enable tap to click for this user and for the login screen
+    msg_info "Setting Finder prefs..."
+
+    # show hidden files by default
+    defaults write com.apple.finder AppleShowAllFiles -bool true
+
+    # show all files extensions
+    defaults write com.apple.finder AppleShowAllExtensions -bool true
+
+    msg_info "Setting trackpad and keyboard..."
+
+    # Trackpad: enable tap to click
     defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
     defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
     defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-    # Set a blazingly fast keyboard repeat rate
-    defaults write NSGlobalDomain KeyRepeat -int 1
-    defaults write NSGlobalDomain InitialKeyRepeat -int 10
+    # Keyboard: fast keyboard repeat rate
+    defaults write NSGlobalDomain KeyRepeat -int 2
+    defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
-    confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
-}
-
-### Dock
-
-setup_dock() {
-    check_is_not_sudo
-
-    msg_info "Closing System Preferences to avoid conflicts..."
-    osascript -e 'tell application "System Preferences" to quit'
+    msg_info "Setting Dock prefs..."
 
     # scale window effect
     defaults write com.apple.dock mineffect -string "scale"
@@ -115,6 +116,16 @@ setup_dock() {
 
     msg_info "Restarting the Dock."
     killall -KILL Dock
+
+    msg_info "Setting Terminal prefs..."
+
+    # hide line marks
+    defaults write com.apple.Terminal ShowLineMarks -int 0
+
+    # enable secure keyboard entry
+    defaults write com.apple.Terminal SecureKeyboardEntry -bool true
+
+    confirm "Some options require reboot to take effect. Reboot now?" && shutdown -r now
 }
 
 ### Firewall
@@ -278,8 +289,7 @@ usage() {
     echo
     echo "Usage:"
     echo "  dotfiles     - setup dotfiles"
-    echo "  trackpadkbd  - single touch and faster kbd repeat rate"
-    echo "  dock         - only show active apps only"
+    echo "  prefsettings - setup finder, trackpad, keyboard and dock settings"
     echo "  firewall (s) - blocks incoming connection, stealth mode"
     echo "  hostname (s) - changes computer hostname"
     echo "  homebrew     - setup homebrew if not installed"
@@ -300,10 +310,8 @@ main() {
 
     if [[ $cmd == "dotfiles" ]]; then
         install_dotfiles
-    elif [[ $cmd == "trackpadkbd" ]]; then
-        setup_trackpadkeyboard
-    elif [[ $cmd == "dock" ]]; then
-        setup_dock
+    elif [[ $cmd == "prefsettings" ]]; then
+        setup_prefsettings
     elif [[ $cmd == "firewall" ]]; then
         setup_firewall
     elif [[ $cmd == "hostname" ]]; then
