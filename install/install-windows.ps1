@@ -50,30 +50,14 @@ function set_preferences {
     Write-Host -ForegroundColor "yellow" "Delog and relog for changes to take effect."
 }
 
-### Firewall & DNS
+### Firewall
 
-function set_network {
+function set_firewall {
     $confirmation = Read-Host "yellow" "Block incoming connections and allow outgoing?"
     if ($confirmation -eq 'y') {
         Set-NetConnectionProfile -NetworkCategory Public
         netsh advfirewall set allprofiles state on
         netsh advfirewall set domainprofile firewallpolicy blockinboundalways,allowoutbound
-    }
-
-    $confirmation = Read-Host "yellow" "Change default DNS settings?"
-    if ($confirmation -eq 'y') {
-        $ipv4addr1 = Read-Host 'Enter IPv4 DNS (1)'
-        $ipv4addr2 = Read-Host 'Enter IPv4 DNS (2)'
-        $ipv6addr1 = Read-Host 'Enter IPv6 DNS (1)'
-        $ipv6addr2 = Read-Host 'Enter IPv6 DNS (2)'
-
-        Set-DnsClientServerAddress -InterfaceAlias Ethernet -ServerAddresses "$ipv4addr1","$ipv4addr2"
-        Set-DnsClientServerAddress -InterfaceAlias Ethernet -ServerAddresses "$ipv6addr1","$ipv6addr2"
-        Set-DnsClientServerAddress -InterfaceAlias WiFi -ServerAddresses "$ipv4addr1","$ipv4addr2"
-        Set-DnsClientServerAddress -InterfaceAlias WiFi -ServerAddresses "$ipv6addr1","$ipv6addr2"
-
-        Write-Host -ForegroundColor "yellow" "Flushing DNS cache..."
-        Clear-DnsClientCache
     }
 }
 
@@ -303,7 +287,7 @@ function usage {
     Write-Host "  preferences       - windows explorer & taskbar preferences"
     Write-Host "  remove            - uninstall unecessary apps"
     Write-Host "  privacy           - wifi hotspot, xbox, etc."
-    Write-Host "  network           - firewall rules and dns servers"
+    Write-Host "  firewall          - firewall rules"
     Write-Host "  services          - enable various startup Windows services"
     Write-Host "  powersettings     - disable power saving modes on AC power"
     Write-Host "  envar             - setups environment variables"
@@ -324,7 +308,7 @@ function main {
     elseif ($cmd -eq "preferences") { set_preferences }
     elseif ($cmd -eq "remove") { remove_junk }
     elseif ($cmd -eq "privacy") { set_privacy }
-    elseif ($cmd -eq "network") { set_network }
+    elseif ($cmd -eq "firewall") { set_firewall }
     elseif ($cmd -eq "services") { set_services }
     elseif ($cmd -eq "powersettings") { power_settings }
     elseif ($cmd -eq "envar") { install_envar }
