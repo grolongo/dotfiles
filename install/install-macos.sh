@@ -128,7 +128,7 @@ setup_prefsettings() {
     confirm "Some options require reboot to take effect. Reboot now?" && shutdown -r now
 }
 
-### Firewall & DNS
+### Firewall
 
 setup_firewall() {
     check_is_sudo
@@ -138,13 +138,6 @@ setup_firewall() {
 
     msg_info "Enabling stealth mode..."
     /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
-
-    msg_info "Changing DNS servers to CloudFlare's..."
-    networksetup -setdnsservers Wi-Fi 1.0.0.1 2606:4700:4700::1001
-    networksetup -setdnsservers "Thunderbolt Ethernet" 1.0.0.1 2606:4700:4700::1001
-    
-    msg_info "Flushing DNS cache..."
-    sudo killall -HUP mDNSResponder
 }
 
 ### Hostname
