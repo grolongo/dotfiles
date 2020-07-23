@@ -7,14 +7,12 @@
 function set_dotfiles {
     # check if we're in the correct install dir
     if (-not (Test-Path "symlinks-windows.ps1")) { Write-Host -ForegroundColor "red" "Exiting. Please cd into the install directory or make sure symlinks-windows.ps1 is here."; exit }
-
-    Write-Host -ForegroundColor "yellow" "Launching external symlinks script..."
     .\symlinks-windows
 }
 
-### Preferences
+### UI Preferences
 
-function set_preferences {
+function set_uipreferences {
     $hiddenext = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
 
     if(Test-Path -Path $hiddenext) {
@@ -61,9 +59,9 @@ function set_firewall {
     }
 }
 
-### Services
+### SSH
 
-function set_services {
+function set_ssh {
     Set-Service ssh-agent -StartupType Automatic
 }
 
@@ -104,12 +102,29 @@ function change_hostname {
     Write-Host -ForegroundColor "yellow" "Restart to take effect."
 }
 
+### Hyper-V
+
+function enable_hyperv {
+    Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All -NoRestart
+}
+
+### Sandbox
+
+function enable_sandbox {
+    Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All -NoRestart
+}
+
 ### WSL
 
 function get_wsl {
     Write-Host -ForegroundColor "yellow" "Installing Windows Subsystem Linux..."
-    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
-    Write-Host -ForegroundColor "yellow" "Now download Debian from Microsoft Store."
+    Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -All -NoRestart
+
+    Write-Host -ForegroundColor "yellow" "Enabling Virtual Machine Platform for WSL2"
+    Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -All -NoRestart
+
+    Write-Host -ForegroundColor "yellow" "After reboot: > wsl --set-default-version 2, then follow instructions to update kernel if needed"
+    Write-Host -ForegroundColor "yellow" "After setting WSL2, download Debian from the Microsoft Store."
 }
 
 ### Privacy
@@ -176,8 +191,6 @@ function remove_junk {
     # To list all packages:
     # Get-AppxPackage -AllUsers | Select Name, PackageFullName
 
-    Write-Host -ForegroundColor "yellow" "Removing unecessary bloat..."
-
     Get-AppxPackage Microsoft.3DBuilder | Remove-AppxPackage
     Get-AppxPackage Microsoft.BingFinance | Remove-AppxPackage
     Get-AppxPackage Microsoft.BingNews | Remove-AppxPackage
@@ -206,7 +219,6 @@ function remove_junk {
     Get-AppxPackage Microsoft.XboxSpeechToTextOverlay | Remove-AppxPackage
     Get-AppxPackage Microsoft.ZuneMusic | Remove-AppxPackage
     Get-AppxPackage Microsoft.ZuneVideo | Remove-AppxPackage
-
     Get-AppxPackage *Autodesk* | Remove-AppxPackage
     Get-AppxPackage *BubbleWitch* | Remove-AppxPackage
     Get-AppxPackage king.com.CandyCrush* | Remove-AppxPackage
@@ -234,21 +246,16 @@ function remove_junk {
 ### Chocolatey
 
 function install_chocolatey {
-    Write-Host -ForegroundColor "yellow" 'Downloading and installing chocolatey...'
-    Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
 }
 
 ### Packages
 
 function install_packages {
-    Write-Host -ForegroundColor "yellow" 'Installing packages...'
-
-    #cinst 7zip
+    cinst 7zip
     cinst aria2
     cinst audacity
-    cinst ccleaner
     cinst chatty
-    cinst discord
     cinst electrum
     cinst firefox
     cinst git --params "/GitOnlyOnPath /NoShellIntegration /NoCredentialManager /NoGitLfs /SChannel"
@@ -283,16 +290,18 @@ function install_packages {
 function usage {
     Write-Host
     Write-Host "Usage:"
-    Write-Host "  dotfiles          - launch external dotfiles script"
-    Write-Host "  preferences       - windows explorer & taskbar preferences"
-    Write-Host "  remove            - uninstall unecessary apps"
-    Write-Host "  privacy           - wifi hotspot, xbox, etc."
-    Write-Host "  firewall          - firewall rules"
-    Write-Host "  services          - enable various startup Windows services"
-    Write-Host "  powersettings     - disable power saving modes on AC power"
+    Write-Host "  dotfiles          - launches external dotfiles script"
+    Write-Host "  uipreferences     - windows explorer & taskbar preferences"
+    Write-Host "  firewall          - firewall rules: block incoming, allow outgoing"
+    Write-Host "  ssh               - automatic startup of ssh agent"
+    Write-Host "  powersettings     - disables power saving modes on AC power"
     Write-Host "  envar             - setups environment variables"
-    Write-Host "  hostname          - change hostname"
-    Write-Host "  wsl               - installs Windows Subsystem Linux"
+    Write-Host "  hostname          - changes hostname"
+    Write-Host "  hyperv            - enables native Windows Hyper-V virtualization"
+    Write-Host "  sandbox           - enables disposable Windows sandbox"
+    Write-Host "  wsl               - installs Windows Subsystem Linux with WSL2"
+    Write-Host "  privacy           - wifi hotspot, xbox, etc."
+    Write-Host "  remove            - uninstalls unecessary apps"
     Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
     Write-Host "  packages          - downloads and installs listed packages"
     Write-Host
@@ -305,15 +314,17 @@ function main {
     if (!$cmd) { usage; exit 1 }
 
     if ($cmd -eq "dotfiles") { set_dotfiles }
-    elseif ($cmd -eq "preferences") { set_preferences }
-    elseif ($cmd -eq "remove") { remove_junk }
-    elseif ($cmd -eq "privacy") { set_privacy }
+    elseif ($cmd -eq "uipreferences") { set_uipreferences }
     elseif ($cmd -eq "firewall") { set_firewall }
-    elseif ($cmd -eq "services") { set_services }
+    elseif ($cmd -eq "ssh") { set_ssh }
     elseif ($cmd -eq "powersettings") { power_settings }
     elseif ($cmd -eq "envar") { install_envar }
     elseif ($cmd -eq "hostname") { change_hostname }
+    elseif ($cmd -eq "hyperv") { enable_hyperv }
+    elseif ($cmd -eq "sandbox") { enable_sandbox }
     elseif ($cmd -eq "wsl") { get_wsl }
+    elseif ($cmd -eq "privacy") { set_privacy }
+    elseif ($cmd -eq "remove") { remove_junk }
     elseif ($cmd -eq "chocolatey") { install_chocolatey }
     elseif ($cmd -eq "packages") { install_packages }
     else { usage }
