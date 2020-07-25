@@ -121,7 +121,7 @@ apt_sources() {
     msg_info "First upgrade of the machine..."
     apt upgrade
 
-    msg_info "doing a final dist-upgrade..."
+    msg_info "Doing a final dist-upgrade..."
     apt dist-upgrade
 
     apt_clean
@@ -171,36 +171,6 @@ apt_base() {
     apt_clean
 }
 
-### Veracrypt
-
-install_veracrypt() {
-    check_is_not_sudo
-
-    echo
-    echo "Please go to veracrypt.fr and get the latest version number."
-    echo "Example: 1.21"
-    read -r -p "Enter version: " vc_latest
-
-    repo="https://launchpad.net/veracrypt/trunk/"
-    release="${vc_latest}/+download/veracrypt-${vc_latest}-setup.tar.bz2"
-
-    tmpdir=$(mktemp -d)
-
-    (
-        msg_info "Creating temporary folder..."
-        cd "$tmpdir" || exit 1
-
-        msg_info "Downloading and extracting VeraCrypt ${vc_latest}"
-        curl -#L "${repo}${release}" | tar -xjf -
-
-        msg_info "Installing..."
-        ./veracrypt-"${vc_latest}"-setup-console-x64
-    )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "$tmpdir"
-}
-
 ### Menu
 
 usage() {
@@ -212,7 +182,6 @@ usage() {
     echo "  isetup      (s) - passwordless sudo and lock root"
     echo "  aptsources  (s) - disables translations, updates, upgrades and dist-upgrades to testing"
     echo "  aptbase     (s) - installs few packages"
-    echo "  veracrypt       - installs VeraCrypt command line"
 
     echo
 }
@@ -234,8 +203,6 @@ main() {
         apt_sources
     elif [[ $cmd == "aptbase" ]]; then
         apt_base
-    elif [[ $cmd == "veracrypt" ]]; then
-        install_veracrypt
     else
         usage
     fi
