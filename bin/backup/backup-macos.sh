@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # check if running compatible OS
-[[ $OSTYPE = darwin* || $OSTYPE = linux* ]] || { echo >&2 "You are not running macOS or Linux. Exiting."; exit 1; }
+[[ $OSTYPE = darwin* ]] || { echo >&2 "You are not running macOS or Linux. Exiting."; exit 1; }
 
 ### Compression
 compress_backup () {
