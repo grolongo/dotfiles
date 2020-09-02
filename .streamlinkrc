@@ -1,6 +1,6 @@
 # when mpv isn't in the path i use exact path
 #player="C:\Program Files\mpv\mpv.exe"
-player=mpv
+player=mpv --cache=no
 
 # RTMP streams are downloaded using rtmpdump. Full path or relative path
 # to the rtmpdump exe should be specified here.
@@ -12,4 +12,8 @@ rtmpdump=C:\Program Files (x86)\Streamlink\rtmpdump\rtmpdump.exe
 ffmpeg-ffmpeg=C:\Program Files (x86)\Streamlink\ffmpeg\ffmpeg.exe
 
 hls-segment-threads=10
-hds-segment-threads=10
+
+# Twitch settings
+twitch-disable-ads
+twitch-low-latency
+hls-live-edge=1
