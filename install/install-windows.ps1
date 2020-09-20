@@ -292,6 +292,7 @@ function install_devtools {
     Write-Host -ForegroundColor "yellow" "installing lsp languages and linters..."
     npm i -g bash-language-server
     cinst shellcheck
+    pip install -U setuptools
     pip install python-language-server
     pip install bandit
 }
