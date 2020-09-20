@@ -257,7 +257,6 @@ function install_packages {
     cinst chatty
     cinst electrum
     cinst firefox
-    cinst git --params "/GitOnlyOnPath /NoShellIntegration /NoCredentialManager /NoGitLfs /SChannel"
     cinst gnupg
     cinst itunes
     cinst keepass
@@ -271,7 +270,6 @@ function install_packages {
     cinst pandoc
     cinst seafile-client
     cinst setpoint
-    cinst shellcheck
     cinst signal
     cinst spotify
     cinst steam
@@ -280,8 +278,22 @@ function install_packages {
     cinst thunderbird
     cinst tor-browser
     cinst veracrypt
-    cinst visualstudiocode
     cinst vlc
+}
+
+### Dev
+
+function install_devtools {
+    cinst emacs
+    cinst git --params "/GitOnlyOnPath /NoShellIntegration /NoCredentialManager /NoGitLfs /SChannel"
+    cinst nodejs
+    cinst python
+
+    Write-Host -ForegroundColor "yellow" "installing lsp languages and linters..."
+    npm i -g bash-language-server
+    cinst shellcheck
+    pip install python-language-server
+    pip install bandit
 }
 
 ### Menu
@@ -303,6 +315,7 @@ function usage {
     Write-Host "  remove            - uninstalls unecessary apps"
     Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
     Write-Host "  packages          - downloads and installs listed packages"
+    Write-Host "  devtools          - downloads and installs devtools"
     Write-Host
 }
 
@@ -326,6 +339,7 @@ function main {
     elseif ($cmd -eq "remove") { remove_junk }
     elseif ($cmd -eq "chocolatey") { install_chocolatey }
     elseif ($cmd -eq "packages") { install_packages }
+    elseif ($cmd -eq "devtools") { install_devtools }
     else { usage }
 }
 
