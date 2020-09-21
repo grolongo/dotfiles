@@ -286,15 +286,15 @@ function install_packages {
 function install_devtools {
     cinst emacs
     cinst git --params "/GitOnlyOnPath /NoShellIntegration /NoCredentialManager /NoGitLfs /SChannel"
-    cinst nodejs
-    cinst python
 
-    Write-Host -ForegroundColor "yellow" "installing lsp languages and linters..."
-    npm i -g bash-language-server
-    cinst shellcheck
-    pip install -U setuptools
+    cinst python
     pip install python-language-server
     pip install bandit
+
+    cinst nodejs
+    npm i -g bash-language-server
+
+    cinst shellcheck
 }
 
 ### Menu
