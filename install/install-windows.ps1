@@ -288,7 +288,7 @@ function install_devtools {
     cinst git --params "/GitOnlyOnPath /NoShellIntegration /NoCredentialManager /NoGitLfs /SChannel"
 
     cinst python
-    pip install python-language-server
+    pip install 'python-language-server[all]'
     pip install bandit
 
     cinst nodejs
