@@ -256,6 +256,7 @@ function install_packages {
     cinst audacity
     cinst chatty
     cinst electrum
+    cinst ffmpeg
     cinst firefox
     cinst gnupg
     cinst itunes
