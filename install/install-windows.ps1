@@ -280,6 +280,7 @@ function install_packages {
     cinst tor-browser
     cinst veracrypt
     cinst vlc
+    cinst youtube-dl
 }
 
 ### Dev
