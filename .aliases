@@ -1,43 +1,44 @@
 ### Linux
-
 if [[ "$OSTYPE" = linux* ]]; then
-    alias ls="ls -ANF --color=auto --group-directories-first --sort=extension"
-    alias l="ls -ANFlh --color=auto --group-directories-first --sort=extension"
-    alias rm="rm -Iv"
+    # GNU utils
+    alias cp="cp --interactive --verbose"
+    alias grep="grep --color"
+    alias ls="ls --almost-all --classify --color=auto --group-directories-first --literal --sort=extension"
+    alias l="ls --almost-all --classify --color=auto --group-directories-first --human-readable -l --literal --sort=extension"
+    alias mv="mv --interactive --verbose"
+    alias rm="rm --interactive=once --verbose"
 fi
 
 ### macOS
-
 if [[ "$OSTYPE" = darwin* ]]; then
     # hide/show dotfiles
     alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
     alias hidedotfiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
 
-    # utils
+    # BSD utils
+    alias cp="cp -iv"
+    alias grep="grep --color"
     alias ls="ls -AFG"
     alias l="ls -AFGlhS"
+    alias mv="mv -iv"
     alias rm="rm -Pv"
 fi
 
-### common
+### commons
 
 # utils (blank space so its not in history)
-alias em="emacs -nw"
+alias em="emacs --no-window-system"
 alias nv="nvim"
-alias pwd="pwd"
 alias clear="clear"
 alias claer="clear"
 alias exit="exit"
-alias mv="mv -iv"
-alias cp="cp -iv"
-alias grep="grep --color"
 
 # security/privacy
 alias clam-checkvirus="sudo freshclam && clamscan --recursive=yes --infected /"
 alias exif-removemeta="exiftool -all="
 
 # youtube-dl
-alias youtube-to-mp3="youtube-dl -x --audio-format mp3 --audio-quality 0"
+alias youtube-to-mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
 
 # chatty
 alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &; disown"
