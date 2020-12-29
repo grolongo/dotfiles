@@ -48,6 +48,10 @@ alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &;
 
 ### functions
 
+rfind () {
+    find "$2" -iname "*$1*";
+}
+
 hex10 () {
     hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom;
 }
