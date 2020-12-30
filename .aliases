@@ -48,8 +48,8 @@ alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &;
 
 ### functions
 
-rfind () {
-    find "$2" -iname "*$1*";
+cfind () {
+    find "$1" -iname "*$2*" | grep --color=auto --ignore-case -e "$2";
 }
 
 hex10 () {
