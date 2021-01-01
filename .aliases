@@ -41,7 +41,7 @@ alias youtube-to-mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-
 alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &; disown"
 
 ### functions
-lgrep () { grep --color=auto --ignore-case --line-number -e "$1" .; }
+lgrep () { grep --color=auto --directories=skip --ignore-case --line-number -e "$1" ./*; }
 rgrep () { grep --color=auto --ignore-case --line-number -R -e "$1" .; }
 lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
 rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
