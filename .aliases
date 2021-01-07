@@ -29,21 +29,22 @@ alias em="emacs --no-window-system"
 alias clear="clear"
 alias claer="clear"
 alias exit="exit"
+alias grep="grep --color=auto --ignore-case --line-number"
 
 # security/privacy
-alias clam-checkvirus="sudo freshclam && clamscan --recursive=yes --infected /"
-alias exif-removemeta="exiftool -all="
+alias my_chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
+alias my_rmmeta="exiftool -all="
 
 # youtube-dl
-alias youtube-to-mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
+alias my_youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
 
 # chatty
 alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &; disown"
 
 ### functions
-lgrep () { grep --color=auto --directories=skip --ignore-case --line-number -e "$1" ./*; }
-rgrep () { grep --color=auto --ignore-case --line-number -R -e "$1" .; }
-lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
-rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
-cfind () { find . -iname "*$1*" | grep --color=auto --ignore-case -e "$1"; }
+my_lgrep () { grep --directories=skip -e "$1" ./*; }
+my_rgrep () { grep -R -e "$1" .; }
+my_lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
+my_rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
+my_find () { find . -iname "*$1*" | grep --color=auto --ignore-case -e "$1"; }
 hex10 () { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
