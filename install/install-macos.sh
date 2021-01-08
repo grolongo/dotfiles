@@ -101,28 +101,22 @@ setup_prefsettings() {
     defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
     msg_info "Setting Dock prefs..."
-
-    # scale window effect
     defaults write com.apple.dock mineffect -string "scale"
-
-    # remove defaults apps from the dock
     defaults write com.apple.dock persistent-apps -array
-
-    # don't show recent apps in the dock
     defaults write com.apple.dock show-recents -bool false
-
-    # only show active apps in the dock
     defaults write com.apple.dock static-only -bool true
+    defaults write com.apple.dock autohide -bool true
+    defaults write com.apple.dock launchanim -bool false
 
     msg_info "Restarting the Dock."
     killall -KILL Dock
 
+    msg_info "Setting Accessibility performance..."
+    defaults write com.apple.universalaccess reduceMotion 1
+    defaults write com.apple.universalaccess reduceTransparency 1
+
     msg_info "Setting Terminal prefs..."
-
-    # hide line marks
     defaults write com.apple.Terminal ShowLineMarks -int 0
-
-    # enable secure keyboard entry
     defaults write com.apple.Terminal SecureKeyboardEntry -bool true
 
     confirm "Some options require reboot to take effect. Reboot now?" && shutdown -r now
@@ -218,6 +212,7 @@ install_casks() {
         keepassxc
         nextcloud
         onionshare
+        rectangle
         signal
         thunderbird
         tor-browser
