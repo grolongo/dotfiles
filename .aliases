@@ -43,8 +43,8 @@ alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &;
 
 ### functions
 my_lgrep () { grep --directories=skip -e "$1" ./*; }
-my_rgrep () { grep -R -e "$1" .; }
+my_grep () { grep -R -e "$1" .; }
 my_lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
-my_rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
+my_rg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
 my_find () { find . -iname "*$1*" | grep --color=auto --ignore-case -e "$1"; }
 hex10 () { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
