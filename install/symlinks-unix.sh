@@ -65,32 +65,6 @@ confirm "Install symlinks for $USER?" && {
         symlink ".emacs.d/init.el"
     }
 
-    # gnupg
-    confirm "link gpg files?" && {
-        mkdir -vp "$HOME"/.gnupg
-        chmod 700 "$HOME"/.gnupg
-        symlink ".gnupg/gpg.conf"
-        chmod 600 "$HOME"/.gnupg/gpg.conf
-        symlink ".gnupg/gpg-agent.conf"
-        chmod 600 "$HOME"/.gnupg/gpg-agent.conf
-        symlink ".gnupg/dirmngr.conf"
-        chmod 600 "$HOME"/.gnupg/dirmngr.conf
-    }
-
-    # ssh
-    confirm "link ssh files?" && {
-        if [[ $(uname -r) =~ Microsoft ]]; then
-            echo "Please use './install-wsl ssh' to copy SSH files. Can't use symlinks because of permission issues with Windows SSH files."
-        else
-            mkdir -vp "$HOME"/.ssh
-            chmod 700 "$HOME"/.ssh
-            symlink ".ssh/config"
-            symlink ".ssh/id_rsa"
-            symlink ".ssh/id_rsa.pub"
-            chmod 600 "$HOME"/.ssh/*
-        fi
-    }
-
     # chatty
     confirm "link chatty files?" && {
         mkdir -vp "$HOME"/.chatty
