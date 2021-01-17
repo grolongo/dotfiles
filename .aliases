@@ -25,11 +25,12 @@ fi
 ### commons
 
 # utils (blank space so its not in history)
-alias em="emacs --no-window-system"
 alias clear="clear"
 alias claer="clear"
+alias em="emacs --no-window-system"
 alias exit="exit"
 alias grep="grep --color=auto --ignore-case --line-number"
+alias rmf="rm -rf"
 
 # security/privacy
 alias my_chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
