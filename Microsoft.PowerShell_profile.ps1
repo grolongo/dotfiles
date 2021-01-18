@@ -14,14 +14,23 @@ function Get-Filename2 {
 }
 New-Alias -Name My-Find2 -Value Get-Filename2
 
-## linux grep functions like
-function Get-String {findstr /S /I /P /N $args[0] *}
+## linux grep functions like (local and recursive)
+
+### using findstr.exe
+function Get-LocalString {findstr /i /p /n $args[0] *}
+New-Alias -Name My-LocalGrep -Value Get-LocalString
+
+function Get-String {findstr /s /i /p /n $args[0] *}
 New-Alias -Name My-Grep -Value Get-String
+
+### using powershell cmdlets
+function Get-LocalString2 {Get-ChildItem | Select-String -Pattern $args[0]}
+New-Alias -Name My-LocalGrep2 -Value Get-LocalString2
 
 function Get-String2 {Get-ChildItem -Recurse | Select-String -Pattern $args[0]}
 New-Alias -Name My-Grep2 -Value Get-String2
 
-## ripgrep
+### using third-party ripgrep
 function Get-LocalRipgrep {rg --follow --hidden --max-depth 1 --search-zip --smart-case -e $args[0]}
 New-Alias -Name My-LRg -Value Get-LocalRipgrep
 
