@@ -105,7 +105,6 @@ setup_prefsettings() {
     defaults write com.apple.dock persistent-apps -array
     defaults write com.apple.dock show-recents -bool false
     defaults write com.apple.dock static-only -bool true
-    defaults write com.apple.dock autohide -bool true
     defaults write com.apple.dock launchanim -bool false
 
     msg_info "Restarting the Dock."
