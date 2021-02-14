@@ -174,7 +174,6 @@ install_base() {
 
     local packages=(
         aria2
-        dos2unix
         exiftool
         ffmpeg
         gnupg
