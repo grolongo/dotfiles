@@ -136,7 +136,6 @@ apt_base() {
         aria2
         bash-completion
         curl
-        dos2unix
         exiftool
         ffmpeg
         git
