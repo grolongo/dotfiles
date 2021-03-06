@@ -134,16 +134,21 @@ confirm "Install symlinks for $USER?" && {
     }
 
     # dunst
-    confirm "link dunst config file?" && {
-        mkdir -vp "$HOME"/.config/dunst
-        symlink ".config/dunst/dunstrc"
-    }
+    # confirm "link dunst config file?" && {
+        # mkdir -vp "$HOME"/.config/dunst
+        # symlink ".config/dunst/dunstrc"
+    # }
 
     # i3
     confirm "link i3 files?" && {
         mkdir -vp "$HOME"/.i3
         symlink ".i3/config"
         symlink ".i3/status.conf"
+    }
+
+    # X
+    confirm "link Xresources config file?" && {
+        symlink ".Xresources"
     }
 
     # bin
