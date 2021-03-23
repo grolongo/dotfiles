@@ -258,7 +258,6 @@ function install_packages {
     cinst electrum
     cinst ffmpeg
     cinst firefox
-    cinst gnupg
     cinst itunes
     cinst keepass
     cinst libreoffice
