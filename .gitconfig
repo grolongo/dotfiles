@@ -1,13 +1,13 @@
-#[includeIf "gitdir:/home"]
+#[includeIf "gitdir:/home/"]
 #  path = ~/.gitconfig-linux
 
-#[includeIf "gitdir:/Users"]
+#[includeIf "gitdir:/Users/"]
 #  path = ~/.gitconfig-macos
 
-[includeIf "gitdir:C:"]
+[includeIf "gitdir:C:/"]
   path = ~/.gitconfig-windows
 
-[includeIf "gitdir:D:"]
+[includeIf "gitdir:D:/"]
   path = ~/.gitconfig-windows
 
 [commit]
