@@ -49,6 +49,7 @@ if ($confirmation -eq 'y') {
 $confirmation = Read-Host "Symlink gitconfig?"
 if ($confirmation -eq 'y') {
     New-Item -Force -Path "$HOME\.gitconfig" -ItemType SymbolicLink -Value "$base\.gitconfig"
+    New-Item -Force -Path "$HOME\.gitconfig-windows" -ItemType SymbolicLink -Value "$base\.gitconfig-windows"
 }
 
 # curl
