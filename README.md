@@ -35,4 +35,4 @@ git config github.user "grolongo"
 ```powershell
 cd dotfiles
 git config core.sshCommand "'C:\Windows\System32\OpenSSH\ssh.exe'"
-```
+````
