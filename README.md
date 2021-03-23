@@ -1,20 +1,20 @@
 ## Install
 
-### https
+### HTTPS
 
 ```bash
 cd ~
 git clone https://github.com/grolongo/dotfiles.git
 ```
 
-### ssh
+### SSH
 
 ```bash
 cd ~
 git clone git@github.com:grolongo/dotfiles.git
 ```
 
-### git-free
+### Git-free
 
 `curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv`  
 (to update later on, run the command again)
@@ -30,9 +30,8 @@ git config user.email "<noreply github email>"
 git config github.user "grolongo"
 ```
 
-### windows 10 native ssh (instead of Git Bash one)
+### Windows 10 native SSH (instead of Git for Windows one)
 
 ```powershell
-cd dotfiles
-git config core.sshCommand "'C:\Windows\System32\OpenSSH\ssh.exe'"
+git config --global core.sshCommand "'C:\Windows\System32\OpenSSH\ssh.exe'"
 ```
