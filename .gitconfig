@@ -1,10 +1,19 @@
-[alias]
-        f = fetch
-        s = status -s
-        st = status
+#[includeIf "gitdir:/home"]
+#  path = ~/.gitconfig-linux
+
+#[includeIf "gitdir:/Users"]
+#  path = ~/.gitconfig-macos
+
+[includeIf "gitdir:C:"]
+  path = ~/.gitconfig-windows
+
+[includeIf "gitdir:D:"]
+  path = ~/.gitconfig-windows
 
 [commit]
-        gpgsign = true
+  gpgsign = true
 
-[core]
-        # autocrlf = false
+[alias]
+  st = status
+  f = fetch
+  s = status -s
