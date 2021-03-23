@@ -30,10 +30,9 @@ git config user.email "<noreply github email>"
 git config github.user "grolongo"
 ```
 
-### windows 10 native and external ssh/gpg
+### windows 10 native ssh (instead of Git Bash one)
 
 ```powershell
 cd dotfiles
 git config core.sshCommand "'C:\Windows\System32\OpenSSH\ssh.exe'"
-git config gpg.program $(Resolve-Path (Get-Command gpg | Select-Object -Expand Source) | Select-Object -Expand Path)
 ```
