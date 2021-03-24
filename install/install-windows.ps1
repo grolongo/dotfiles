@@ -286,7 +286,7 @@ function install_packages {
 
 function install_devtools {
     cinst emacs
-    cinst git --params "/GitOnlyOnPath /NoShellIntegration /NoCredentialManager /NoGitLfs /SChannel"
+    cinst git --params "/GitAndUnixToolsOnPath /NoShellIntegration"
 
     cinst python
     pip install 'python-language-server[all]'
