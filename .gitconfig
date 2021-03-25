@@ -10,6 +10,13 @@
 [includeIf "gitdir:D:/"]
   path = ~/.gitconfig-windows
 
+[user]
+  name = grolongo
+  email = 34292770+grolongo@users.noreply.github.com
+
+[github]
+  user = grolongo
+
 [commit]
   gpgsign = true
 
