@@ -220,12 +220,12 @@ install_casks() {
 
     msg_info "Installing cask packages..."
     for p in "${packages[@]}"; do
-        confirm "Install $p?" && brew cask install "$p"
+        confirm "Install $p?" && brew install --cask "$p"
     done
 
     confirm "Install synology-drive?" &&
         brew tap homebrew/cask-drivers &&
-        brew cask install synology-drive
+        brew install --cask synology-drive
 
     echo
     msg_info "Cleaning up install files..."
@@ -243,7 +243,7 @@ install_chatty() {
     brew tap caskroom/cask
 
     msg_info "Installing java runtime environment..."
-    brew cask install java
+    brew install --cask java
 
     chatty_latest=$(curl -sSL "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
     chatty_latest=${chatty_latest#v}
