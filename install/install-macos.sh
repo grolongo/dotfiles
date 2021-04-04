@@ -205,7 +205,6 @@ install_casks() {
     local packages=(
         adobe-creative-cloud
         electrum
-        emacs
         firefox
         keepassxc
         nextcloud
@@ -230,6 +229,21 @@ install_casks() {
     echo
     msg_info "Cleaning up install files..."
     brew cleanup
+}
+
+### Emacs
+
+install_emacs() {
+    check_is_not_sudo
+
+    msg_info "Tapping railwaycat/emacsmacport"
+    brew tap railwaycat/emacsmacport
+
+    msg_info "Building our Emacs with custom flags..."
+    brew install emacs-mac --with-emacs-big-sur-icon --with-imagemagick --with-mac-metal --with-natural-title-bar
+
+    msg_info "Making Emacs's titlebar transparent..."
+    defaults write org.gnu.Emacs TransparentTitleBar DARK
 }
 
 ### Chatty
@@ -281,14 +295,15 @@ usage() {
     echo "This script installs my basic setup for a macOS laptop."
     echo
     echo "Usage:"
-    echo "  dotfiles     - setup dotfiles"
+    echo "  dotfiles     - setting up dotfiles"
     echo "  prefsettings - setup finder, trackpad, keyboard and dock settings"
     echo "  firewall (s) - blocks incoming connection, stealth mode"
     echo "  hostname (s) - changes computer hostname"
     echo "  homebrew     - setup homebrew if not installed"
     echo "  base         - installs base packages"
     echo "  casks        - setup caskroom & installs softwares"
-    echo "  chatty       - downloads and installs chatty with java runtime environment"
+    echo "  emacs        - building our own Emacs"
+    echo "  chatty       - downloads and installs Chatty with Java runtime environment"
     echo
 }
 
@@ -315,6 +330,8 @@ main() {
         install_base
     elif [[ $cmd == "casks" ]]; then
         install_casks
+    elif [[ $cmd == "emacs" ]]; then
+        install_emacs
     elif [[ $cmd == "chatty" ]]; then
         install_chatty
     else
