@@ -27,7 +27,7 @@ fi
 # utils (blank space so its not in history)
 alias clear="clear"
 alias claer="clear"
-alias em="emacs --no-window-system"
+alias em="emacs --quick"
 alias exit="exit"
 alias grep="grep --color=auto --ignore-case --line-number"
 alias rmf="rm -rf"
