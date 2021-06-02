@@ -29,7 +29,7 @@ alias clear=" clear"
 alias claer=" clear"
 alias exit=" exit"
 alias grep="grep --color=auto --ignore-case --line-number"
-alias fd="fd --hidden --type f"
+alias fd="fd --hidden"
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
