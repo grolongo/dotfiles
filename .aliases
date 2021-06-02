@@ -25,19 +25,18 @@ fi
 ### commons
 
 # utils (blank space so its not in history)
-alias clear="clear"
-alias claer="clear"
-alias em="emacs --quick"
-alias exit="exit"
+alias clear=" clear"
+alias claer=" clear"
+alias exit=" exit"
 alias grep="grep --color=auto --ignore-case --line-number"
-alias rmf="rm -rf"
+alias fd="fd --hidden --type f"
 
 # security/privacy
-alias my_chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
-alias my_rmmeta="exiftool -all="
+alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
+alias rmmeta="exiftool -all="
 
 # youtube-dl
-alias my_youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
+alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
 
 # chatty
 alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &; disown"
