@@ -21,6 +21,7 @@ if [[ "$OSTYPE" = darwin* ]]; then
     alias mv="mv -iv"
     alias rm="rm -Pv"
     alias em="emacs -nw"
+    alias emq="emacs -Q -nw"
 fi
 
 ### commons
