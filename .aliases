@@ -20,6 +20,7 @@ if [[ "$OSTYPE" = darwin* ]]; then
     alias l="ls -AFGlhS"
     alias mv="mv -iv"
     alias rm="rm -Pv"
+    alias em="emacs -nw"
 fi
 
 ### commons
@@ -28,8 +29,8 @@ fi
 alias clear=" clear"
 alias claer=" clear"
 alias exit=" exit"
-alias grep="grep --color=auto --ignore-case --line-number"
 alias fd="fd --hidden"
+alias tsmr="transmission-remote"
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
@@ -42,9 +43,9 @@ alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-aud
 alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &; disown"
 
 ### functions
-my_lgrep () { grep --directories=skip -e "$1" ./*; }
-my_grep () { grep --recursive -e "$1" .; }
-my_lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
-my_rg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
-my_find () { find . -iname "*$1*" | grep --color=auto --ignore-case -e "$1"; }
 hex10 () { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
+fnd () { find . -iname "*$1*" | grep --color=auto --ignore-case -e "$1"; }
+lgrep () { grep --color=auto --ignore-case --line-number --directories=skip -e "$1" ./*; }
+rgrep () { grep --color=auto --ignore-case --line-number --recursive -e "$1" .; }
+lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
+rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
