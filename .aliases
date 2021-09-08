@@ -45,8 +45,12 @@ alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &;
 
 ### functions
 hex10 () { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
-fnd () { find . -iname "*$1*" | grep --color=auto --ignore-case -e "$1"; }
-lgrep () { grep --color=auto --ignore-case --line-number --directories=skip -e "$1" ./*; }
-rgrep () { grep --color=auto --ignore-case --line-number --recursive -e "$1" .; }
-lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
-rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
+find () { find . -iname "*$1*" 2>/dev/null | grep --color=auto --ignore-case -e "$1"; }
+
+# GNU grep
+grep () { grep --color=auto --ignore-case --line-number --directories=skip -e "$1" ./*; }
+rgrep () { \grep --color=auto --ignore-case --line-number --recursive -e "$1" .; }
+
+# ripgrep
+rg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
+lrg () { \rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
