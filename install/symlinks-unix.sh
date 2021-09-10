@@ -130,14 +130,18 @@ confirm "Install symlinks for $USER?" && {
 
     # streamlink
     confirm "link streamlink config file?" && {
-        symlink ".streamlinkrc"
+        if [[ $OSTYPE = darwin* ]]; then
+            ln -sniv "$base/.config/streamlink/config" "$HOME/Library/Application Support/streamlink/config"
+        else
+            symlink ".config/streamlink/config"
+        fi
     }
 
     # dunst
-    # confirm "link dunst config file?" && {
-        # mkdir -vp "$HOME"/.config/dunst
-        # symlink ".config/dunst/dunstrc"
-    # }
+    confirm "link dunst config file?" && {
+        mkdir -vp "$HOME"/.config/dunst
+        symlink ".config/dunst/dunstrc"
+    }
 
     # i3
     confirm "link i3 files?" && {
