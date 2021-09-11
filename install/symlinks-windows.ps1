@@ -29,7 +29,7 @@ if ($confirmation -eq 'y') {
 $confirmation = Read-Host "Symlink streamlink?"
 if ($confirmation -eq 'y') {
     New-Item -Force -Path "$env:APPDATA\streamlink" -ItemType directory
-    New-Item -Force -Path "$env:APPDATA\streamlink\streamlinkrc" -ItemType SymbolicLink -Value "$base\.streamlinkrc"
+    New-Item -Force -Path "$env:APPDATA\streamlink\config" -ItemType SymbolicLink -Value "$base\.config\streamlink\config"
 }
 
 # markdownlinter
