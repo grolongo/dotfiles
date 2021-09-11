@@ -90,9 +90,9 @@ confirm "Install symlinks for $USER?" && {
 
     # rtorrent
     confirm "link rtorrent config file?" && {
-        mkdir -vp "$HOME"/.rtorrent.session
         mkdir -vp "$HOME"/Downloads
-        symlink ".rtorrent.rc"
+        mkdir -vp "$HOME"/Downloads/rtorrent.session
+        symlink ".config/rtorrent/rtorrent.rc"
     }
 
     # aria2
