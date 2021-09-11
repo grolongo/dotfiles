@@ -14,7 +14,8 @@ New-Variable -Name "base" -Value "$(Split-Path (Get-Location))"
 $confirmation = Read-Host "Symlink emacs?"
 if ($confirmation -eq 'y') {
     New-Item -Force -Path "$env:APPDATA\.emacs.d" -ItemType directory
-    New-Item -Force -Path "$env:APPDATA\.emacs.d\init.el" -ItemType SymbolicLink -Value "$base\.emacs.d\init.el"
+    New-Item -Force -Path "$env:APPDATA\.emacs.d\init.el" -ItemType SymbolicLink -Value "$base\.config\emacs\init.el"
+    New-Item -Force -Path "$env:APPDATA\.emacs.d\early-init.el" -ItemType SymbolicLink -Value "$base\.config\emacs\early-init.el"
 }
 
 # mpv

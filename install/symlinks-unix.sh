@@ -61,8 +61,9 @@ confirm "Install symlinks for $USER?" && {
 
     # emacs
     confirm "link emacs config?" && {
-        mkdir -vp "$HOME"/.emacs.d
-        symlink ".emacs.d/init.el"
+        mkdir -vp "$HOME"/.config/emacs
+        symlink ".config/emacs/init.el"
+        symlink ".config/emacs/early-init.el"
     }
 
     # chatty
