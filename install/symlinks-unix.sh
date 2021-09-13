@@ -146,9 +146,9 @@ confirm "Install symlinks for $USER?" && {
 
     # i3
     confirm "link i3 files?" && {
-        mkdir -vp "$HOME"/.i3
-        symlink ".i3/config"
-        symlink ".i3/status.conf"
+        mkdir -vp "$HOME"/.config/i3
+        symlink ".config/i3/config"
+        symlink ".config/i3/status.conf"
     }
 
     # X
