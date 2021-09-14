@@ -63,7 +63,7 @@ if ($confirmation -eq 'y') {
 $confirmation = Read-Host "Symlink aria2 conf?"
 if ($confirmation -eq 'y') {
     New-Item -Force -Path "$HOME\aria2" -ItemType directory
-    New-Item -Force -Path "$HOME\aria2\aria2.conf" -ItemType SymbolicLink -Value "$base\aria2\aria2.conf"
+    New-Item -Force -Path "$HOME\aria2\aria2.conf" -ItemType SymbolicLink -Value "$base\.config\aria2\aria2.conf"
 }
 
 $confirmation = Read-Host "Symlink PowerShell profile?"

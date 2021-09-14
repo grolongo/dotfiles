@@ -98,8 +98,8 @@ confirm "Install symlinks for $USER?" && {
 
     # aria2
     confirm "link aria2 config file?" && {
-        mkdir -vp "$HOME"/.aria2
-        symlink ".aria2/aria2.conf"
+        mkdir -vp "$HOME"/.config/aria2
+        symlink ".config/aria2/aria2.conf"
     }
 
     # curl
