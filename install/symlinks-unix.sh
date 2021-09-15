@@ -127,7 +127,8 @@ confirm "Install symlinks for $USER?" && {
 
     # git
     confirm "link gitconfig file?" && {
-        symlink ".gitconfig"
+        mkdir -vp "$HOME"/.config/git
+        symlink ".config/git/config"
     }
 
     # streamlink

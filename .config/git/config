@@ -1,8 +1,8 @@
 #[includeIf "gitdir:/home/"]
-#  path = ~/.gitconfig-linux
+#  path = ~/.config/git/config-linux
 
 #[includeIf "gitdir:/Users/"]
-#  path = ~/.gitconfig-macos
+#  path = ~/.config/git/config-macos
 
 [includeIf "gitdir:C:/"]
   path = ~/.gitconfig-windows
