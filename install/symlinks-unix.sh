@@ -86,7 +86,8 @@ confirm "Install symlinks for $USER?" && {
 
     # tmux
     confirm "link tmux config file?" && {
-        symlink ".tmux.conf"
+        mkdir -vp "$HOME"/.config/tmux
+        symlink ".config/tmux/tmux.conf"
     }
 
     # rtorrent
