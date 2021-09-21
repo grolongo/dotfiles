@@ -7,7 +7,7 @@ unsetopt BEEP
 
 ### History
 
-HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+HISTFILE=${HOME}/.cache/zsh/history
 HISTSIZE=9999
 SAVEHIST=9999
 HISTORY_IGNORE="(cd|cd ..|clear|exit|l|ls |pwd)"
@@ -134,8 +134,8 @@ vterm_printf(){
 }
 
 if [ -n "${SSH_TTY}" ] || \
-   [ -n "${SSH_CONNECTION}" ] || \
-   [ -n "${SSH_CLIENT}" ]; then
+       [ -n "${SSH_CONNECTION}" ] || \
+       [ -n "${SSH_CLIENT}" ]; then
     hostStyle="%F{yellow}%m" # yellow
 else
     hostStyle="%F{8}%m" # grey

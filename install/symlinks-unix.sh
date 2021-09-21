@@ -45,6 +45,7 @@ confirm "Install symlinks for $USER?" && {
 
     # zsh
     confirm "link zsh files?" && {
+        mkdir -vp "$HOME"/.cache/zsh
         symlink ".zshrc"
         symlink ".zshenv"
         symlink ".aliases"
