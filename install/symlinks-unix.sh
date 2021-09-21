@@ -55,6 +55,7 @@ confirm "Install symlinks for $USER?" && {
 
     # bash
     confirm "link bash files?" && {
+        mkdir -vp "$HOME"/.cache/bash
         symlink ".bash_profile"
         symlink ".bashrc"
         symlink ".inputrc"

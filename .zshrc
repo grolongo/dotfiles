@@ -6,12 +6,6 @@ setopt CHASE_LINKS # cd into the exact symlink path
 unsetopt BEEP
 
 ### History
-
-HISTFILE=${HOME}/.cache/zsh/history
-HISTSIZE=9999
-SAVEHIST=9999
-HISTORY_IGNORE="(cd|cd ..|clear|exit|l|ls |pwd)"
-
 setopt HIST_IGNORE_SPACE # doesnt add <space>ls to the history
 setopt HIST_NO_STORE     # doesnt add history cmd to the history
 setopt HIST_IGNORE_DUPS  # doesnt add cmd if duplicate as previous event
@@ -34,7 +28,7 @@ setopt GLOB_DOTS
 # We also can use "compinit -u" to ignore those warnings
 # instead of fixing them (not recommended).
 
-autoload -Uz compinit && compinit
+autoload -Uz compinit && compinit -d ~/.cache/zsh/zcompdump
 
 # On GNU Linux with coreutils, just uses dircolors
 # as expected with the variable $LS_COLORS and default
