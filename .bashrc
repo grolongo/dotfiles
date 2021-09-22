@@ -14,6 +14,11 @@ fi
 
 ### History
 shopt -s histappend
+HISTFILE=~/.cache/bash/history
+HISTCONTROL=ignoreboth
+HISTSIZE=9999
+HISTFILESIZE=9999
+HISTIGNORE="cd:cd ..:clear:exit:l:ls :pwd"
 
 ### Completion
 
@@ -110,8 +115,8 @@ fi;
 
 # Highlight the hostname when connected via SSH.
 if [ -n "${SSH_TTY}" ] || \
-   [ -n "${SSH_CONNECTION}" ] || \
-   [ -n "${SSH_CLIENT}" ]; then
+       [ -n "${SSH_CONNECTION}" ] || \
+       [ -n "${SSH_CLIENT}" ]; then
     hostStyle="\[\e[1;33m\]";       # yellow
 else
     hostStyle="\[\e[1;30m\]";       # grey

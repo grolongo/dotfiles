@@ -8,20 +8,6 @@ export VISUAL="emacs -nw"
 export EDITOR="emacs -nw"
 export PAGER=less
 
-# HISTORY
-export HISTSIZE=9999
-
-if [ -n "${BASH_VERSION}" ]; then
-    export HISTFILE=${HOME}/.cache/bash/history
-    export HISTCONTROL=ignoreboth
-    export HISTFILESIZE=9999
-    export HISTIGNORE="cd:cd ..:clear:exit:l:ls :pwd"
-elif [ -n "${ZSH_VERSION}" ]; then
-    export HISTFILE=${HOME}/.cache/zsh/history
-    export SAVEHIST=9999
-    export HISTORY_IGNORE="(cd|cd ..|clear|exit|l|ls |pwd)"
-fi
-
 # GPG
 GPG_TTY=$(tty)
 export GPG_TTY

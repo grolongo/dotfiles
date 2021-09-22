@@ -6,6 +6,10 @@ setopt CHASE_LINKS # cd into the exact symlink path
 unsetopt BEEP
 
 ### History
+HISTSIZE=9999
+HISTFILE=~/.cache/zsh/history
+SAVEHIST=9999
+HISTORY_IGNORE="(cd|cd ..|clear|exit|l|ls |pwd)"
 setopt HIST_IGNORE_SPACE # doesnt add <space>ls to the history
 setopt HIST_NO_STORE     # doesnt add history cmd to the history
 setopt HIST_IGNORE_DUPS  # doesnt add cmd if duplicate as previous event
@@ -45,6 +49,8 @@ fi
 
 zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' use-cache true
+# zstyle cache-path "~/.cache/zsh/zcompcache"
+zstyle ':completion::complete:*' cache-path "$HOME/.cache/zsh/zcompcache"
 zstyle ':completion:*' menu select
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list-dirs-first true
