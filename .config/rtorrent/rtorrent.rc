@@ -1,5 +1,5 @@
 directory.default.set         = ~/Downloads
-session.path.set              = ~/.config/rtorrent/rtorrent.session
+session.path.set              = ~/.cache/rtorrent
 encoding.add                  = utf8
 protocol.pex.set              = 1
 pieces.hash.on_completion.set = yes

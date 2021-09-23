@@ -95,7 +95,7 @@ confirm "Install symlinks for $USER?" && {
     # rtorrent
     confirm "link rtorrent config file?" && {
         mkdir -vp "$HOME"/Downloads
-        mkdir -vp "$HOME"/Downloads/rtorrent.session
+        mkdir -vp "$HOME"/.cache/rtorrent
         symlink ".config/rtorrent/rtorrent.rc"
     }
 
