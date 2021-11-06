@@ -19,7 +19,6 @@ set laststatus=2  " always visible
 " }}}
 " settings {{{
 set hidden                     " so I can switch between buffers even if I didn't save the file
-set ruler
 set title                      " titre fenêtre dans un terminal
 set number                     " left rule
 set showcmd                    " show command in bottom bar
