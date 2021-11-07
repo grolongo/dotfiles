@@ -164,7 +164,7 @@ confirm "Install symlinks for $USER?" && {
     confirm "link binary files?" && {
         mkdir -vp "$HOME"/.local/bin
         symlink ".local/bin/extract"
-        chmod +x "$HOME"/bin/*
+        chmod +x "$HOME"/.local/bin/*
     }
 
 }

@@ -24,8 +24,6 @@ bindkey "^[[B" down-line-or-beginning-search
 
 ### Completion
 
-setopt GLOB_DOTS
-
 # Use compaudit to see insecure folders and fix them.
 # Usually just need to fix group writing permissions
 # at /usr/local/share/zsh/site-functions etc.
@@ -33,6 +31,7 @@ setopt GLOB_DOTS
 # instead of fixing them (not recommended).
 
 autoload -Uz compinit && compinit -d ~/.cache/zsh/zcompdump
+_comp_options+=(globdots) # include hidden files on <tab>
 
 # On GNU Linux with coreutils, just uses dircolors
 # as expected with the variable $LS_COLORS and default
@@ -82,57 +81,15 @@ setopt PROMPT_SUBST
 autoload -Uz vcs_info
 
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git*' check-for-changes true
-zstyle ':vcs_info:git*' stagedstr '+'
-zstyle ':vcs_info:git*' unstagedstr '!'
-zstyle ':vcs_info:git*' formats ' %b%u%c%m'
-zstyle ':vcs_info:git*' actionformats ' (%a) %b%u%c%m'
-zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-stash git-st
+zstyle ':vcs_info:git*' check-for-changes false
+zstyle ':vcs_info:git*' check-for-staged-changes false
+zstyle ':vcs_info:git*' formats ' %b'
 
-function +vi-git-untracked() {
-    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
-           git status --porcelain | grep '??' &> /dev/null ; then
-        hook_com[unstaged]+='?'
-    fi
+function precmd() {
+    vcs_info
 }
 
-function +vi-git-stash() {
-    if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
-        hook_com[misc]+='$'
-    fi
-}
-
-function +vi-git-st() {
-    local ahead behind remote
-    local -a gitstatus
-
-    # are we on a remote-tracking branch?
-    remote=${$(command git rev-parse --verify ${hook_com[branch]}@"{upstream}" --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
-
-    if [[ -n ${remote} ]] ; then
-        ahead=$(git rev-list --count ${hook_com[branch]}@"{upstream}"..HEAD 2>/dev/null)
-        (( $ahead )) && gitstatus+=( "+${ahead}" )
-
-        behind=$(git rev-list --count HEAD..${hook_com[branch]}@"{upstream}" 2>/dev/null)
-        (( $behind )) && gitstatus+=( "-${behind}" )
-
-        hook_com[misc]+=${(j::)gitstatus}
-    fi
-}
-
-# Emacs vterm
-vterm_printf(){
-    if [ -n "$TMUX" ] && ([ "${TERM%%-*}" = "tmux" ] || [ "${TERM%%-*}" = "screen" ] ); then
-        # Tell tmux to pass the escape sequences through
-        printf "\ePtmux;\e\e]%s\007\e\\" "$1"
-    elif [ "${TERM%%-*}" = "screen" ]; then
-        # GNU screen (screen, screen-256color, screen-256color-bce)
-        printf "\eP\e]%s\007\e\\" "$1"
-    else
-        printf "\e]%s\e\\" "$1"
-    fi
-}
-
+# Hostname coloring local/remote
 if [ -n "${SSH_TTY}" ] || \
        [ -n "${SSH_CONNECTION}" ] || \
        [ -n "${SSH_CLIENT}" ]; then
@@ -140,8 +97,6 @@ if [ -n "${SSH_TTY}" ] || \
 else
     hostStyle="%F{8}%m" # grey
 fi
-
-function precmd() { vcs_info }
 
 PROMPT='%B['
 PROMPT+='%(!.%F{red}.%F{green})%n%f'

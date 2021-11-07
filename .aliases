@@ -1,4 +1,7 @@
-### Linux
+#############
+### Linux ###
+#############
+
 if [[ "$OSTYPE" = linux* ]]; then
     # GNU utils
     alias cp="cp --interactive --verbose"
@@ -8,7 +11,10 @@ if [[ "$OSTYPE" = linux* ]]; then
     alias rm="rm --interactive=once --verbose"
 fi
 
-### macOS
+#############
+### macOS ###
+#############
+
 if [[ "$OSTYPE" = darwin* ]]; then
     # hide/show dotfiles
     alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
@@ -24,12 +30,16 @@ if [[ "$OSTYPE" = darwin* ]]; then
     alias emq="emacs -Q -nw"
 fi
 
-### commons
+###############
+### commons ###
+###############
 
 # utils (blank space so its not in history)
 alias clear=" clear"
 alias claer=" clear"
 alias exit=" exit"
+#alias grep="grep --color=auto --ignore-case --line-number --directories=skip"
+#alias rgrep="grep --color=auto --ignore-case --line-number --recursive"
 alias fd="fd --hidden"
 alias tsmr="transmission-remote"
 
@@ -43,14 +53,30 @@ alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-aud
 # chatty
 alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null &; disown"
 
-### functions
-hex10 () { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
-find () { find . -iname "*$1*" 2>/dev/null | grep --color=auto --ignore-case -e "$1"; }
+#################
+### functions ###
+#################
 
-# GNU grep
-grep () { grep --color=auto --ignore-case --line-number --directories=skip -e "$1" ./*; }
-rgrep () { \grep --color=auto --ignore-case --line-number --recursive -e "$1" .; }
+hex10 () { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
+fnd () { find . -iname "*$1*" 2>/dev/null | grep --color=auto --ignore-case -e "$1"; }
+
+# grep
+lgrep () { find . -maxdepth 1 -type f -exec grep \
+                --binary-file=without-match \
+                --color=auto \
+                --ignore-case \
+                --line-number \
+                --null "$1" {} +; }
+
+rgrep () { find . -type f -exec grep \
+                --binary-file=without-match \
+                --color=auto \
+                --ignore-case \
+                --line-number \
+                --null "$1" {} +; }
+
+rgrep2 () { grep --binary-file=without-match --color=auto --ignore-case --line-number --no-messages --null --recursive "$1" .; }
 
 # ripgrep
-rg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
-lrg () { \rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
+lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
+rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }

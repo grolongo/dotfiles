@@ -42,67 +42,21 @@ fi
                                          grep -v "[?*]" | cut -d " " -f2 | \
                                          tr ' ' '\n')" scp sftp ssh
 
-### Emacs vterm
-vterm_printf(){
-    if [ -n "$TMUX" ] && ([ "${TERM%%-*}" = "tmux" ] || [ "${TERM%%-*}" = "screen" ] ); then
-        # Tell tmux to pass the escape sequences through
-        printf "\ePtmux;\e\e]%s\007\e\\" "$1"
-    elif [ "${TERM%%-*}" = "screen" ]; then
-        # GNU screen (screen, screen-256color, screen-256color-bce)
-        printf "\eP\e]%s\007\e\\" "$1"
-    else
-        printf "\e]%s\e\\" "$1"
-    fi
-}
-
 ### Prompt
 
-prompt_git() {
-    local s='';
-    local branchName='';
-
+function git_branch_name()
+{
     # Check if the current directory is in a Git repository.
     if [ "$(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}")" == '0' ]; then
+        branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
+			git rev-parse --short HEAD 2> /dev/null || \
+			echo '(unknown)')";
 
-        # check if the current directory is in .git before running git checks
-        if [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" == 'false' ]; then
-
-            if [[ -O "$(git rev-parse --show-toplevel)/.git/index" ]]; then
-                git update-index --really-refresh -q &> /dev/null;
-            fi;
-
-            # Check for uncommitted changes in the index.
-            if ! git diff --quiet --ignore-submodules --cached; then
-                s+='+';
-            fi;
-
-            # Check for unstaged changes.
-            if ! git diff-files --quiet --ignore-submodules --; then
-                s+='!';
-            fi;
-
-            # Check for untracked files.
-            if [ -n "$(git ls-files --others --exclude-standard)" ]; then
-                s+='?';
-            fi;
-
-            # Check for stashed files.
-            if git rev-parse --verify refs/stash &>/dev/null; then
-                s+='$';
-            fi;
-
-        fi;
-
-        # Get the short symbolic ref.
-        # If HEAD isn’t a symbolic ref, get the short SHA for the latest commit
-        # Otherwise, just give up.
-        branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || git rev-parse --short HEAD 2> /dev/null || echo '(unknown)')";
-
-        [ -n "${s}" ] && s="${s}";
+        [ -n "${s}" ] && s=" [${s}]";
 
         echo -e " ${1}${branchName}${s}";
     else
-        return;
+	return;
     fi;
 }
 
@@ -122,14 +76,14 @@ else
     hostStyle="\[\e[1;30m\]";       # grey
 fi;
 
-PS1="\[\e[1;37m\][";                # [
-PS1+="${userStyle}\u";              # username
-PS1+="\[\e[1;37m\]@";               # @
-PS1+="${hostStyle}\h ";             # hostname
-PS1+="\[\e[1;34m\]\w";              # working dir
-PS1+="\[\e[1;36m\]\$(prompt_git)";  # git repository details
-PS1+="\[\e[1;37m\]]\$";             # ]$
-PS1+="\[\e[0m\] ";                  # reset colors
+PS1="\[\e[1;37m\][";                    # [
+PS1+="${userStyle}\u";                  # username
+PS1+="\[\e[1;37m\]@";                   # @
+PS1+="${hostStyle}\h ";                 # hostname
+PS1+="\[\e[1;34m\]\w";                  # working dir
+PS1+="\[\e[1;36m\]\$(git_branch_name)"; # git repository details
+PS1+="\[\e[1;37m\]]\$";                 # ]$
+PS1+="\[\e[0m\] ";                      # reset colors
 
 export PS1;
 
