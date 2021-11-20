@@ -1,42 +1,55 @@
-!!! ENVIRONMENT
-*termName: rxvt-unicode-256color
-
-!!! SOLARIZED
-
-URxvt*intensityStyles: false
-
-!!! FONTS
-Xft.antialias:          1
-Xft.hinting:            1
-Xft.hintstyle:          hintslight
-Xft.autohint:           0
-Xft.lcdfilter:          lcddefault
-Xft.rgba:               rgb
-!URxvt.letterSpace:      -1
-URxvt.font:xft:DejaVuSansMono:style=Regular:pixelsize=17
-URxvt.boldFont:xft:DejaVuSansMono:style=Bold:pixelsize=17
-!*faceSize:              10
-
-!!! INTERFACE
-*scrollBar: false
-*visualBell:  true
+!!!!!!!!!!!!!!!
+!!! Commons !!!
+!!!!!!!!!!!!!!!
+ 
+*scrollBar:    false
+*visualBell:   true
 *urgentOnBell: true
-! Montre ou la fin d'une ligne s'arrête dans une sélection
-*highlightSelection: true
-! Utilise Tmux pour le scrollback buffer
+! using Tmux scrollback buffer
 *saveLines: 999999
-
-!!! SCROLLING
-URxvt*scrollTtyOutput:      false
-URxvt*scrollWithBuffer:     true
-URxvt*scrollTtyKeypress:    true
-
-!!! COPY PASTE
-URxvt*clipboard.copycmd:    xclip -i -selection clipboard
-URxvt*clipboard.pastecmd:   xclip -o -selection clipboard
-
-!!! PERL PLUGINS
-URxvt.perl-ext-common:          default,matcher,selection-to-clipboard
-URxvt.url-launcher:             /usr/bin/firefox
-URxvt.matcher.button:           1
-URxvt.url-select.underline:     true
+ 
+!!!!!!!!!!!!!
+!!! xterm !!!
+!!!!!!!!!!!!!
+ 
+xterm.termName:                 xterm-256color
+xterm.vt100.background:         black
+xterm.vt100.foreground:         lightgray
+xterm.vt100.font:               xft:DejaVu Sans Mono:style=Book:size=10
+xterm.vt100.boldFont:           xft:DejaVu Sans Mono:style=Bold:size=10
+xterm.vt100.italicFont:         xft:DejaVu Sans Mono:style=Italic:size=10
+xterm.vt100.boldItalicFont:     xft:Dejavu Sans Mono:style=Bold Italic:size=10
+xterm.vt100.highlightSelection: false
+xterm.vt100.selectToClipboard:  true
+ 
+! force utf8
+xterm.vt100.locale:             false
+xterm.vt100.utf8:               true
+ 
+! emacs
+xterm.vt100.backarrowKey:       false
+xterm.ttyModes:                 erase ^?
+xterm.vt100.metaSendsEscape:    true
+ 
+!!!!!!!!!!!!!
+!!! URxvt !!!
+!!!!!!!!!!!!!
+ 
+URxvt.reverseVideo:         true
+URxvt.letterSpace:          -1
+URxvt.font:                 xft:DejaVu Sans Mono:style=Book:size=10
+URxvt.boldFont:             xft:DejaVu Sans Mono:style=Bold:size=10
+URxvt.italicFont:           xft:DejaVu Sans Mono:style=Italic:size=10
+URxvt.boldItalicFont:       xft:Dejavu Sans Mono:style=Bold Italic:size=10
+ 
+URxvt.scrollTtyOutput:      false
+URxvt.scrollWithBuffer:     true
+URxvt.scrollTtyKeypress:    true
+ 
+URxvt.clipboard.copycmd:    xclip -i -selection clipboard
+URxvt.clipboard.pastecmd:   xclip -o -selection clipboard
+ 
+URxvt.perl-ext-common:      default,matcher,selection-to-clipboard
+URxvt.url-launcher:         /usr/bin/firefox
+URxvt.matcher.button:       1
+URxvt.url-select.underline: true
