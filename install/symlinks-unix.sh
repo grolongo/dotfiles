@@ -59,6 +59,8 @@ confirm "Install symlinks for $USER?" && {
         symlink ".bash_profile"
         symlink ".bashrc"
         symlink ".inputrc"
+        symlink ".aliases"
+        symlink ".exports"
     }
 
     # emacs
@@ -151,8 +153,9 @@ confirm "Install symlinks for $USER?" && {
     # i3
     confirm "link i3 files?" && {
         mkdir -vp "$HOME"/.config/i3
+        mkdir -vp "$HOME"/.config/i3status
         symlink ".config/i3/config"
-        symlink ".config/i3/status.conf"
+        symlink ".config/i3status/config"
     }
 
     # X
