@@ -36,8 +36,6 @@ fi
 alias clear=" clear"
 alias claer=" clear"
 alias exit=" exit"
-#alias grep="grep --color=auto --ignore-case --line-number --directories=skip"
-#alias rgrep="grep --color=auto --ignore-case --line-number --recursive"
 alias fd="fd --hidden"
 alias tsmr="transmission-remote"
 alias em="emacs -nw"
