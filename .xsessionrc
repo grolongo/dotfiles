@@ -1,0 +1,20 @@
+# better keyboard repeat rate
+xset r rate 300 50
+
+# fr layout & caps/ctrl switch
+# this is better set in /etc/default/keyboard
+# in Debian and maybe other distros
+#setxbmap -layout fr -option ctrl:swapcaps
+
+xrdb -load $HOME/.Xresources
+
+# Debian reads ~/.xsessionrc if it exists.
+# Then Debian reads ~/.xsession if it exists.
+# If ~/.xsession is not present, it looks for:
+# first /usr/bin/x-session-manager
+# then /usr/bin/x-window-manager
+# then /usr/bin/x-terminal-emulator
+# reading the first it finds.
+
+# always last, our window manager
+#exec i3
