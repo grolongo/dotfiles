@@ -41,6 +41,7 @@ alias tsmr="transmission-remote"
 alias em="emacs -nw"
 alias emq="emacs -Q -nw"
 alias logo="sudo pkill -u $USER"
+alias curldl="curl --location --progress-bar --remote-name"
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
