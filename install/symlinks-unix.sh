@@ -140,6 +140,7 @@ confirm "Install symlinks for $USER?" && {
         if [[ $OSTYPE = darwin* ]]; then
             ln -sniv "$base/.config/streamlink/config" "$HOME/Library/Application Support/streamlink/config"
         else
+            mkdir -vp "$HOME"/.config/streamlink
             symlink ".config/streamlink/config"
         fi
     }
