@@ -240,10 +240,7 @@ install_emacs() {
     brew tap railwaycat/emacsmacport
 
     msg_info "Building our Emacs with custom flags..."
-    brew install emacs-mac --with-emacs-big-sur-icon --with-imagemagick --with-mac-metal --with-natural-title-bar
-
-    msg_info "Making Emacs's titlebar transparent..."
-    defaults write org.gnu.Emacs TransparentTitleBar DARK
+    brew install emacs-mac --with-emacs-big-sur-icon --with-imagemagick --with-mac-metal
 }
 
 ### Chatty
