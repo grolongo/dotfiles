@@ -1,0 +1,12 @@
+S-d exec
+bind CM-r reload
+bind CM-l label
+
+mousebind M-1 window_move
+mousebind CM-1 window-resize
+
+command terminal uxterm
+command firefox firefox
+command emacs emacs
+
+color activeborder '#39ff14'
