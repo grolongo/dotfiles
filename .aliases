@@ -51,7 +51,7 @@ alias rmmeta="exiftool -all="
 alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
 
 # chatty
-alias chatty="nohup java -jar \$HOME/Chatty/Chatty.jar </dev/null &>/dev/null & disown;"
+alias chatty="nohup java -jar \$HOME/.local/bin/Chatty/Chatty.jar </dev/null &>/dev/null & disown;"
 
 #################
 ### functions ###

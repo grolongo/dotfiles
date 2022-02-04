@@ -204,6 +204,7 @@ install_casks() {
 
     local packages=(
         adobe-creative-cloud
+        chatty
         electrum
         firefox
         keepassxc
@@ -243,48 +244,6 @@ install_emacs() {
     brew install emacs-mac --with-emacs-big-sur-icon --with-imagemagick --with-mac-metal
 }
 
-### Chatty
-
-install_chatty() {
-    check_is_not_sudo
-
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
-
-    msg_info "Tapping caskroom/cask"
-    brew tap caskroom/cask
-
-    msg_info "Installing java runtime environment..."
-    brew install --cask java
-
-    chatty_latest=$(curl -sSL "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
-    chatty_latest=${chatty_latest#v}
-    repo="https://github.com/chatty/chatty/releases/download/"
-    release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
-
-    tmpdir=$(mktemp -d)
-
-    (
-        msg_info "Creating temporary folder..."
-        cd "$tmpdir" || exit 1
-
-        msg_info "Creating Chatty dir in home folder..."
-        mkdir -vp "$HOME"/Chatty
-
-        msg_info "Downloading and extracting Chatty..."
-        curl -#OL "${repo}${release}"
-        unzip Chatty_"${chatty_latest}".zip -d "$HOME"/Chatty
-    )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "$tmpdir"
-
-    msg_info "Installing malgun fallback font for special characters..."
-    [[ -e install-macos.sh ]] || { msg_error "Please cd into the directory where the install script is."; exit 1; }
-
-    base="${PWD%/*}"
-    cp -vr "$base"/.chatty/malgun.ttf "$HOME"/Library/Fonts
-}
-
 ### Menu
 
 usage() {
@@ -300,7 +259,6 @@ usage() {
     echo "  base         - installs base packages"
     echo "  casks        - setup caskroom & installs softwares"
     echo "  emacs        - building our own Emacs"
-    echo "  chatty       - downloads and installs Chatty with Java runtime environment"
     echo
 }
 
@@ -329,8 +287,6 @@ main() {
         install_casks
     elif [[ $cmd == "emacs" ]]; then
         install_emacs
-    elif [[ $cmd == "chatty" ]]; then
-        install_chatty
     else
         usage
     fi
