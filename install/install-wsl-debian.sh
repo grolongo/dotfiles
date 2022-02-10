@@ -105,7 +105,7 @@ apt_sources() {
 
     msg_info "Adding testing repository to the apt sources..."
     cat <<-EOF > /etc/apt/sources.list
-    	deb http://deb.debian.org/debian testing main contrib non-free
+   	deb http://deb.debian.org/debian testing main contrib non-free
 	deb-src http://deb.debian.org/debian testing main contrib non-free
 
 	deb http://deb.debian.org/debian testing-updates main contrib non-free
