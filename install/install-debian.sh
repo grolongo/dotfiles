@@ -134,6 +134,7 @@ apt_common() {
         emacs
         exiftool
         ffmpeg
+        fonts-dejavu
         git
         imagemagick
         jq
@@ -279,8 +280,10 @@ set_cwm() {
 
     local packages=(
         cwm
+        network-manager
+        # pulseaudio
         sxiv
-        tint2
+        # tint2
     )
 
     for p in "${packages[@]}"; do
