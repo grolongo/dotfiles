@@ -111,8 +111,8 @@ apt_sources() {
 	deb http://deb.debian.org/debian testing-updates main contrib non-free
 	deb-src http://deb.debian.org/debian testing-updates main contrib non-free
 
-	deb http://security.debian.org/debian-security/ testing/updates main contrib non-free
-	deb-src http://security.debian.org/debian-security/ testing/updates main contrib non-free
+    deb http://security.debian.org/debian-security testing-security main contrib non-free
+    deb-src http://security.debian.org/debian-security testing-security main contrib non-free
 	EOF
 
     msg_info "First update of the machine..."
@@ -121,15 +121,15 @@ apt_sources() {
     msg_info "First upgrade of the machine..."
     apt upgrade
 
-    msg_info "Doing a final dist-upgrade..."
-    apt dist-upgrade
+    msg_info "Doing a final full-upgrade..."
+    apt full-upgrade
 
     apt_clean
 }
 
 ### Apt base
 
-apt_base() {
+apt_common() {
     check_is_sudo
 
     local packages=(
@@ -179,8 +179,8 @@ usage() {
     echo "Usage:"
     echo "  dotfiles        - setup dotfiles from external script"
     echo "  isetup      (s) - passwordless sudo and lock root"
-    echo "  aptsources  (s) - disables translations, updates, upgrades and dist-upgrades to testing"
-    echo "  aptbase     (s) - installs few packages"
+    echo "  aptsources  (s) - disables translations, updates, upgrades and full-upgrades to testing"
+    echo "  aptcommon   (s) - installs few packages"
 
     echo
 }
@@ -200,8 +200,8 @@ main() {
         initial_setup
     elif [[ $cmd == "aptsources" ]]; then
         apt_sources
-    elif [[ $cmd == "aptbase" ]]; then
-        apt_base
+    elif [[ $cmd == "aptcommon" ]]; then
+        apt_common
     else
         usage
     fi
