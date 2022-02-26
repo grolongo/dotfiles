@@ -264,6 +264,7 @@ set_gnome() {
     gsettings set org.gnome.shell.extensions.dash-to-panel show-favorites false
     gsettings set org.gnome.shell.extensions.dash-to-panel group-apps false
     gsettings set org.gnome.shell.extensions.dash-to-panel stockgs-keep-top-panel true
+    gsettings set org.gnome.shell.extensions.dash-to-panel show-window-previews false
 
     # Desktop Icon NG
     gsettings set org.gnome.shell.extensions.ding show-home true
