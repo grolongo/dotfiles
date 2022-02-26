@@ -238,6 +238,9 @@ set_gnome() {
     gsettings set org.gnome.desktop.session idle-delay 0
     gsettings set org.gnome.desktop.screensaver lock-enabled false
     gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type nothing
+    gsettings set org.gnome.mutter dynamic-workspaces false
+    gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
+    gsettings set org.gnome.shell.app-switcher current-workspace-only true
 
     # Tweaks
     gsettings set org.gnome.desktop.interface enable-animations false
