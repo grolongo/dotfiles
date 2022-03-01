@@ -64,11 +64,11 @@ confirm "Install symlinks for $USER?" && {
     }
 
     # emacs
-    confirm "link emacs config?" && {
-        mkdir -vp "$HOME"/.config/emacs
-        symlink ".config/emacs/init.el"
-        symlink ".config/emacs/early-init.el"
-    }
+    # confirm "link emacs config?" && {
+    #     mkdir -vp "$HOME"/.config/emacs
+    #     symlink ".config/emacs/init.el"
+    #     symlink ".config/emacs/early-init.el"
+    # }
 
     # chatty
     confirm "link chatty files?" && {
@@ -114,26 +114,10 @@ confirm "Install symlinks for $USER?" && {
         symlink ".config/aria2/aria2.conf"
     }
 
-    # curl
-    confirm "link curl config file?" && {
-        symlink ".curlrc"
-    }
-
     # vim
     confirm "link vim files?" && {
         mkdir -vp "$HOME"/.vim
         symlink ".vimrc"
-    }
-
-    # neovim
-    confirm "link neovim files?" && {
-        mkdir -vp "$HOME"/.config/nvim
-        symlink ".config/nvim/init.vim"
-        symlink ".config/nvim/ultisnippets"
-        mkdir -vp "$HOME"/.config/nvim/after
-        symlink ".config/nvim/after/syntax"
-        symlink ".mdlrc"
-        symlink ".vintrc.yaml"
     }
 
     # git

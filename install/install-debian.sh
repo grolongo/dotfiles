@@ -134,6 +134,8 @@ apt_common() {
         emacs
         exiftool
         ffmpeg
+        ffmpegthumbnailer
+        firefox
         fonts-dejavu
         git
         imagemagick
@@ -142,7 +144,6 @@ apt_common() {
         mpv
         mu4e
         netcat-openbsd
-        obs-studio
         pandoc
         rtorrent
         screenfetch
