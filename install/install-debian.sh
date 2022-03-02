@@ -232,10 +232,11 @@ set_gsettings() {
 
     msg_info "Applying custom settings..."
 
-    # Files
+    # Files (Nautilus)
     dconf write /org/gtk/settings/file-chooser/show-hidden true
     dconf write /org/gtk/settings/file-chooser/sort-directories-first true
     gsettings set org.gnome.nautilus.preferences show-image-thumbnails always
+    gsettings set org.gnome.nautilus.icon-view default-zoom-level standard
 
     # Settings
     gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/gnome/blobs-d.svg'
