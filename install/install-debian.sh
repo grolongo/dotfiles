@@ -257,11 +257,11 @@ set_gsettings() {
     gsettings set org.gnome.desktop.input-sources xkb-options [\'caps:ctrl_modifier\']
 
     # Just Perfection
-    gsettings set org.gnome.shell.extensions.just-perfection startup-status 0
-    gsettings set org.gnome.shell.extensions.just-perfection panel-size 24
-    gsettings set org.gnome.shell.extensions.just-perfection panel-corner-size 1
-    gsettings set org.gnome.shell.extensions.just-perfection panel-button-padding-size 5
-    gsettings set org.gnome.shell.extensions.just-perfection panel-indicator-padding-size 1
+    dconf write /org/gnome/shell/extensions/just-perfection/startup-status 0
+    dconf write /org/gnome/shell/extensions/just-perfection/panel-size 24
+    dconf write /org/gnome/shell/extensions/just-perfection/panel-corner-size 1
+    dconf write /org/gnome/shell/extensions/just-perfection/panel-button-padding-size 5
+    dconf write /org/gnome/shell/extensions/just-perfection/panel-indicator-padding-size 1
 
     # Dash to Panel
     gsettings set org.gnome.shell.extensions.dash-to-panel panel-sizes '{"0":24}'
