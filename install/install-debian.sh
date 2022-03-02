@@ -207,9 +207,9 @@ install_graphics() {
     apt_clean
 }
 
-### Gnome
+### Gnome extensions
 
-set_gnome() {
+install_gextensions() {
     check_is_sudo
 
     local packages=(
@@ -225,8 +225,12 @@ set_gnome() {
     done
 
     apt_clean
+}
 
-    msg_info "Applying custom settings (ignore 'No such schema' errors)..."
+set_gsettings() {
+    check_is_not_sudo
+
+    msg_info "Applying custom settings..."
 
     # Files
     dconf write /org/gtk/settings/file-chooser/show-hidden true
@@ -234,7 +238,7 @@ set_gnome() {
     gsettings set org.gnome.nautilus.preferences show-image-thumbnails always
 
     # Settings
-    gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/gnome/Blobs.svg'
+    gsettings set org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/gnome/blobs-d.svg'
     gsettings set org.gnome.desktop.notifications show-in-lock-screen false
     gsettings set org.gnome.desktop.session idle-delay 0
     gsettings set org.gnome.desktop.screensaver lock-enabled false
@@ -406,7 +410,8 @@ usage() {
     echo "  aptcommon   (s) - installs few packages"
     echo "  graphics    (s) - installs graphics drivers for X"
     echo "  driveclient (s) - downloads and installs Synology Drive Client"
-    echo "  gnome       (s) - installs and sets up Gnome related configs"
+    echo "  gextensions (s) - installs Gnome extensions"
+    echo "  gsettings       - configures Gnome extensions"
     echo "  i3          (s) - installs and sets up i3wm related configs"
     echo "  steam       (s) - enables i386 and installs Steam"
     echo "  signal      (s) - installs the Signal messenger app"
@@ -436,8 +441,10 @@ main() {
         install_graphics
     elif [[ $cmd == "driveclient" ]]; then
         install_driveclient
-    elif [[ $cmd == "gnome" ]]; then
-        set_gnome
+    elif [[ $cmd == "gextensions" ]]; then
+        install_gextensions
+    elif [[ $cmd == "gsettings" ]]; then
+        set_gsettings
     elif [[ $cmd == "i3" ]]; then
         set_i3wm
     elif [[ $cmd == "steam" ]]; then
