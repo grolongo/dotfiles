@@ -267,6 +267,7 @@ set_gsettings() {
     gsettings set org.gnome.shell.extensions.dash-to-panel show-window-previews false
 
     # Desktop Icon NG
+    gsettings set org.gnome.shell.extensions.ding icon-size 'small'
     gsettings set org.gnome.shell.extensions.ding show-home true
     gsettings set org.gnome.shell.extensions.ding show-volumes true
     gsettings set org.gnome.shell.extensions.ding show-network-volumes true
