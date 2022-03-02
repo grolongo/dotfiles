@@ -96,7 +96,7 @@ initial_setup() {
 
 ### Apt sources
 
-apt_sources() {
+repo_sources() {
     check_is_sudo
 
     msg_info "Disabling translations to speed-up updates..."
@@ -105,7 +105,7 @@ apt_sources() {
 
     msg_info "Adding sid repository to the apt sources..."
     cat <<-EOF > /etc/apt/sources.list
-   	deb http://deb.debian.org/debian unstable main contrib non-free
+	deb http://deb.debian.org/debian unstable main contrib non-free
 	deb-src http://deb.debian.org/debian unstable main contrib non-free
 	EOF
 
@@ -229,8 +229,8 @@ set_gnome() {
     msg_info "Applying custom settings (ignore 'No such schema' errors)..."
 
     # Files
-    gsettings set org.gtk.settings.file-chooser show-hidden true
-    gsettings set org.gtk.settings.file-chooser sort-directories-first true
+    dconf write /org/gtk/settings/file-chooser/show-hidden true
+    dconf write /org/gtk/settings/file-chooser/sort-directories-first true
     gsettings set org.gnome.nautilus.preferences show-image-thumbnails always
 
     # Settings
@@ -278,9 +278,9 @@ set_gnome() {
     gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-input-devices false
 }
 
-### cwm
+### i3wm
 
-set_cwm() {
+set_i3wm() {
     check_is_sudo
 
     local packages=(
@@ -402,12 +402,12 @@ usage() {
     echo "Usage:"
     echo "  dotfiles        - setup dotfiles from external script"
     echo "  isetup      (s) - passwordless sudo and lock root"
-    echo "  aptsources  (s) - disables translations, updates, upgrades and full-upgrades to testing"
+    echo "  repo        (s) - disables translations, updates, upgrades and full-upgrades to unstable"
     echo "  aptcommon   (s) - installs few packages"
     echo "  graphics    (s) - installs graphics drivers for X"
     echo "  driveclient (s) - downloads and installs Synology Drive Client"
     echo "  gnome       (s) - installs and sets up Gnome related configs"
-    echo "  cwm         (s) - installs and sets up cwm related configs"
+    echo "  i3          (s) - installs and sets up i3wm related configs"
     echo "  steam       (s) - enables i386 and installs Steam"
     echo "  signal      (s) - installs the Signal messenger app"
     echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
@@ -428,8 +428,8 @@ main() {
         install_dotfiles
     elif [[ $cmd == "isetup" ]]; then
         initial_setup
-    elif [[ $cmd == "aptsources" ]]; then
-        apt_sources
+    elif [[ $cmd == "repo" ]]; then
+        repo_sources
     elif [[ $cmd == "aptcommon" ]]; then
         apt_common
     elif [[ $cmd == "graphics" ]]; then
@@ -438,8 +438,8 @@ main() {
         install_driveclient
     elif [[ $cmd == "gnome" ]]; then
         set_gnome
-    elif [[ $cmd == "cwm" ]]; then
-        set_cwm
+    elif [[ $cmd == "i3" ]]; then
+        set_i3wm
     elif [[ $cmd == "steam" ]]; then
         install_steam
     elif [[ $cmd == "signal" ]]; then
