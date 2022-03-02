@@ -257,15 +257,8 @@ set_gsettings() {
     gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.input-sources xkb-options [\'caps:ctrl_modifier\']
 
-    # Just Perfection
-    dconf write /org/gnome/shell/extensions/just-perfection/startup-status 0
-    dconf write /org/gnome/shell/extensions/just-perfection/panel-size 24
-    dconf write /org/gnome/shell/extensions/just-perfection/panel-corner-size 1
-    dconf write /org/gnome/shell/extensions/just-perfection/panel-button-padding-size 5
-    dconf write /org/gnome/shell/extensions/just-perfection/panel-indicator-padding-size 1
-
     # Dash to Panel
-    gsettings set org.gnome.shell.extensions.dash-to-panel panel-sizes '{"0":24}'
+    gsettings set org.gnome.shell.extensions.dash-to-panel panel-sizes '{"0":32}'
     gsettings set org.gnome.shell.extensions.dash-to-panel appicon-margin 4
     gsettings set org.gnome.shell.extensions.dash-to-panel show-favorites false
     gsettings set org.gnome.shell.extensions.dash-to-panel group-apps false
