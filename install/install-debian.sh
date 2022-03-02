@@ -248,6 +248,7 @@ set_gsettings() {
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
 
     # Tweaks
+    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
     gsettings set org.gnome.desktop.interface enable-animations false
     gsettings set org.gnome.desktop.interface gtk-key-theme Emacs
     gsettings set org.gnome.desktop.peripherals.mouse accel-profile flat
@@ -369,8 +370,8 @@ install_chatty() {
 
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
-    # msg_info "Installing java runtime environment..."
-    # apt install default-jre
+    msg_info "Installing java runtime environment..."
+    apt install default-jre
 
     chatty_latest=$(curl -sSL "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
     chatty_latest=${chatty_latest#v}
@@ -384,14 +385,12 @@ install_chatty() {
         cd "$tmpdir" || exit 1
 
         msg_info "Creating Chatty dir in home folder..."
-        mkdir -vp /home/"$SUDO_USER"/.local/bin/Chatty
+        mkdir -vp /opt/Chatty
 
         msg_info "Downloading and extracting Chatty..."
         curl -#OL "${repo}${release}"
-        unzip Chatty_"${chatty_latest}".zip -d /home/"$SUDO_USER"/.local/bin/Chatty
+        unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
     )
-
-    chown -R "$SUDO_USER":"$SUDO_USER" /home/"$SUDO_USER"/.local/bin/Chatty
 
     msg_info "Deleting temp folder..."
     rm -rf "$tmpdir"
