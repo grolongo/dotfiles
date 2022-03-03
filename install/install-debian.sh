@@ -121,6 +121,7 @@ apt_common() {
         alsa-utils
         aria2
         bash-completion
+        chrome
         curl
         emacs
         exiftool
