@@ -204,6 +204,9 @@ install_graphics() {
 install_gnome() {
     check_is_sudo
 
+    msg_info "Installing Gnome without recommends..."
+	apt install -y gnome --no-install-recommends
+
     local packages=(
         gnome-shell-extension-desktop-icons-ng
         gnome-shell-extension-hide-activities
@@ -215,9 +218,6 @@ install_gnome() {
     for p in "${packages[@]}"; do
         confirm "Install $p?" && apt install -y "$p"
     done
-
-    msg_info "Installing Gnome without recommends..."
-	apt install -y gnome --no-install-recommends
 
     apt_clean
 }
