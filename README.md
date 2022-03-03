@@ -16,7 +16,10 @@ git clone git@github.com:grolongo/dotfiles.git
 
 ### Git-free
 
-`curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv`  
+`curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv`
+`wget -O - https://github.com/grolongo/dotfiles/tarball/master | tar -xzv`  
+`mv grolongo-dotfiles* dotfiles`
+
 (to update later on, run the command again)
 
 ## Config
