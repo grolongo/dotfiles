@@ -17,6 +17,7 @@ git clone git@github.com:grolongo/dotfiles.git
 ### Git-free
 
 ```bash
+cd ~
 curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv
 # or
 wget -O - https://github.com/grolongo/dotfiles/tarball/master | tar -xzv
