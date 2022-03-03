@@ -267,6 +267,9 @@ set_gsettings() {
     gsettings set org.gnome.shell.extensions.ding show-volumes true
     gsettings set org.gnome.shell.extensions.ding show-network-volumes true
 
+    # Ubuntu AppIndicator
+    gsettings set org.gnome.shell.extensions.appindicator icon-opacity 255
+
     # Sound & Input Device Chooser
     # gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-profiles false
     # gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-input-devices false
