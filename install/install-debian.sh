@@ -227,6 +227,12 @@ set_gsettings() {
 
     msg_info "Applying custom settings..."
 
+    # Shortcuts
+    gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name 'uxterm'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command '/usr/bin/uxterm'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding '<Alt><Enter>'
+
     # Files (Nautilus)
     dconf write /org/gtk/settings/file-chooser/show-hidden true
     dconf write /org/gtk/settings/file-chooser/sort-directories-first true
@@ -260,6 +266,9 @@ set_gsettings() {
     gsettings set org.gnome.shell.extensions.dash-to-panel group-apps false
     gsettings set org.gnome.shell.extensions.dash-to-panel stockgs-keep-top-panel true
     gsettings set org.gnome.shell.extensions.dash-to-panel show-window-previews false
+    gsettings set org.gnome.shell.extensions.dash-to-panel group-apps-underline-unfocused false
+    gsettings set org.gnome.shell.extensions.dash-to-panel focus-highlight-dominant true
+    gsettings set org.gnome.shell.extensions.dash-to-panel dot-size 2
 
     # Desktop Icon NG
     gsettings set org.gnome.shell.extensions.ding icon-size 'small'
