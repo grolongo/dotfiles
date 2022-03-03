@@ -263,7 +263,7 @@ set_gsettings() {
 
     # Desktop Icon NG
     gsettings set org.gnome.shell.extensions.ding icon-size 'small'
-    gsettings set org.gnome.shell.extensions.ding show-home true
+    gsettings set org.gnome.shell.extensions.ding show-home false
     gsettings set org.gnome.shell.extensions.ding show-volumes true
     gsettings set org.gnome.shell.extensions.ding show-network-volumes true
 
