@@ -68,32 +68,6 @@ apt_clean() {
 # check if running Linux
 [[ ! $OSTYPE = linux* ]] && { msg_error "You are not running GNU/linux, exiting."; exit 1; }
 
-### Dotfiles
-
-install_dotfiles() {
-    check_is_not_sudo
-
-    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
-
-    msg_info "Launching external symlinks script..."
-    ./symlinks-unix.sh
-}
-
-### Initial setup
-
-initial_setup() {
-    check_is_sudo
-
-    msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers"
-    echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-    echo
-
-    confirm "Disable ROOT account for security?" && {
-        passwd --delete root
-        passwd --lock root
-    }
-}
-
 ### Apt sources
 
 repo_sources() {
@@ -119,6 +93,23 @@ repo_sources() {
     apt full-upgrade
 
     apt_clean
+
+    msg_info "Please reboot the computer."
+}
+
+### Initial setup
+
+initial_setup() {
+    check_is_sudo
+
+    msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers"
+    echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    echo
+
+    confirm "Disable ROOT account for security?" && {
+        passwd --delete root
+        passwd --lock root
+    }
 }
 
 ### Apt common
@@ -137,6 +128,7 @@ apt_common() {
         ffmpegthumbnailer
         firefox
         fonts-dejavu
+        fonts-noto-color-emoji
         git
         imagemagick
         jq
@@ -145,8 +137,8 @@ apt_common() {
         mu4e
         netcat-openbsd
         pandoc
+        qbittorrent
         rtorrent
-        screenfetch
         shellcheck
         streamlink
         speedtest-cli
@@ -179,7 +171,7 @@ install_graphics() {
 	local system=$1
 
 	if [[ -z "$system" ]]; then
-		echo "You need to specify whether it's intel, geforce or optimus"
+		echo "You need to specify whether it's intel, nvidia or optimus"
 		exit 1
 	fi
 
@@ -189,7 +181,7 @@ install_graphics() {
 		"intel")
 			pkgs+=( xserver-xorg-video-intel )
 			;;
-		"geforce")
+		"nvidia")
 			pkgs+=( nvidia-driver )
 			;;
 		"optimus")
@@ -207,9 +199,9 @@ install_graphics() {
     apt_clean
 }
 
-### Gnome extensions
+### Gnome
 
-install_gextensions() {
+install_gnome() {
     check_is_sudo
 
     local packages=(
@@ -223,6 +215,9 @@ install_gextensions() {
     for p in "${packages[@]}"; do
         confirm "Install $p?" && apt install -y "$p"
     done
+
+    msg_info "Installing Gnome without recommends..."
+	apt install -y gnome --no-install-recommends
 
     apt_clean
 }
@@ -271,11 +266,10 @@ set_gsettings() {
     gsettings set org.gnome.shell.extensions.ding show-home true
     gsettings set org.gnome.shell.extensions.ding show-volumes true
     gsettings set org.gnome.shell.extensions.ding show-network-volumes true
-    gsettings set org.gnome.shell.extensions.ding show-hidden true
 
     # Sound & Input Device Chooser
-    gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-profiles false
-    gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-input-devices false
+    # gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-profiles false
+    # gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-input-devices false
 }
 
 ### i3wm
@@ -391,6 +385,17 @@ install_chatty() {
     rm -rf "$tmpdir"
 }
 
+### Dotfiles
+
+install_dotfiles() {
+    check_is_not_sudo
+
+    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
+
+    msg_info "Launching external symlinks script..."
+    ./symlinks-unix.sh
+}
+
 ### Menu
 
 usage() {
@@ -398,18 +403,18 @@ usage() {
     echo "This script installs my basic setup for a server."
     echo
     echo "Usage:"
-    echo "  dotfiles        - setup dotfiles from external script"
-    echo "  isetup      (s) - passwordless sudo and lock root"
     echo "  repo        (s) - disables translations, updates, upgrades and full-upgrades to unstable"
+    echo "  isetup      (s) - passwordless sudo and lock root"
     echo "  aptcommon   (s) - installs few packages"
     echo "  graphics    (s) - installs graphics drivers for X"
-    echo "  driveclient (s) - downloads and installs Synology Drive Client"
-    echo "  gextensions (s) - installs Gnome extensions"
+    echo "  gnome       (s) - installs Gnome extensions"
     echo "  gsettings       - configures Gnome extensions"
     echo "  i3          (s) - installs and sets up i3wm related configs"
+    echo "  driveclient (s) - downloads and installs Synology Drive Client"
     echo "  steam       (s) - enables i386 and installs Steam"
     echo "  signal      (s) - installs the Signal messenger app"
     echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
+    echo "  dotfiles        - setup dotfiles from external script"
 
     echo
 }
@@ -423,30 +428,30 @@ main() {
         exit 1
     fi
 
-    if [[ $cmd == "dotfiles" ]]; then
-        install_dotfiles
+    if [[ $cmd == "repo" ]]; then
+        repo_sources
     elif [[ $cmd == "isetup" ]]; then
         initial_setup
-    elif [[ $cmd == "repo" ]]; then
-        repo_sources
     elif [[ $cmd == "aptcommon" ]]; then
         apt_common
     elif [[ $cmd == "graphics" ]]; then
         install_graphics
-    elif [[ $cmd == "driveclient" ]]; then
-        install_driveclient
-    elif [[ $cmd == "gextensions" ]]; then
-        install_gextensions
+    elif [[ $cmd == "gnome" ]]; then
+        install_gnome
     elif [[ $cmd == "gsettings" ]]; then
         set_gsettings
     elif [[ $cmd == "i3" ]]; then
         set_i3wm
+    elif [[ $cmd == "driveclient" ]]; then
+        install_driveclient
     elif [[ $cmd == "steam" ]]; then
         install_steam
     elif [[ $cmd == "signal" ]]; then
         install_signalapp
     elif [[ $cmd == "chatty" ]]; then
         install_chatty
+    elif [[ $cmd == "dotfiles" ]]; then
+        install_dotfiles
     else
         usage
     fi
