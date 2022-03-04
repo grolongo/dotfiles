@@ -129,6 +129,8 @@ apt_common() {
         ffmpegthumbnailer
         firefox
         fonts-dejavu
+        fonts-hanazono
+        fonts-noto
         fonts-noto-color-emoji
         git
         imagemagick
@@ -365,6 +367,27 @@ install_signalapp() {
     apt update && apt install signal-desktop
 }
 
+### Veracrypt
+
+install_veracrypt() {
+    check_is_sudo
+
+    source="https://launchpad.net/veracrypt/trunk/1.25.9/+download/veracrypt-1.25.9-Debian-11-amd64.deb"
+    tmpdir=$(mktemp -d)
+
+    (
+        msg_info "Creating temporary folder..."
+        cd "$tmpdir" || exit 1
+
+        msg_info "Downloading and installing Veracrypt"
+        curl -#L "$source" --output veracrypt.deb
+        apt install ./veracrypt.deb
+    )
+
+    msg_info "Deleting temp folder..."
+    rm -rf "$tmpdir"
+}
+
 ### Chatty
 
 install_chatty() {
@@ -426,6 +449,7 @@ usage() {
     echo "  driveclient (s) - downloads and installs Synology Drive Client"
     echo "  steam       (s) - enables i386 and installs Steam"
     echo "  signal      (s) - installs the Signal messenger app"
+    echo "  veracrypt   (s) - downloads and installs Veracrypt"
     echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
     echo "  dotfiles        - setup dotfiles from external script"
 
@@ -461,6 +485,8 @@ main() {
         install_steam
     elif [[ $cmd == "signal" ]]; then
         install_signalapp
+    elif [[ $cmd == "veracrypt" ]]; then
+        install_veracrypt
     elif [[ $cmd == "chatty" ]]; then
         install_chatty
     elif [[ $cmd == "dotfiles" ]]; then
