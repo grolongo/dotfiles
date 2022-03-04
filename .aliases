@@ -42,16 +42,13 @@ alias em="emacs -nw"
 alias emq="emacs -Q -nw"
 alias logo="sudo pkill -u $USER"
 alias curldl="curl --location --progress-bar --remote-name"
+alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
+alias chatty="nohup java -jar /opt/Chatty/Chatty.jar </dev/null &>/dev/null & disown;"
+alias cdtbb="cd ~/.local/share/torbrowser/tbb/x86_64/tor-browser_en-US/Browser/Downloads/"
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
 alias rmmeta="exiftool -all="
-
-# youtube-dl
-alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
-
-# chatty
-alias chatty="nohup java -jar /opt/Chatty/Chatty.jar </dev/null &>/dev/null & disown;"
 
 #################
 ### functions ###
