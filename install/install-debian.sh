@@ -146,6 +146,7 @@ apt_common() {
         tmux
         torbrowser-launcher
         virt-manager
+        wget
         xterm
         youtube-dl
     )
