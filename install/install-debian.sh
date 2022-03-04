@@ -129,9 +129,7 @@ apt_common() {
         ffmpegthumbnailer
         firefox
         fonts-dejavu
-        fonts-hanazono
         fonts-noto
-        fonts-noto-color-emoji
         git
         imagemagick
         jq
