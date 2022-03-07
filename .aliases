@@ -9,6 +9,7 @@ if [[ "$OSTYPE" = linux* ]]; then
     alias l="ls --almost-all --classify --color=auto --group-directories-first --human-readable -l --literal --sort=extension"
     alias mv="mv --interactive --verbose"
     alias rm="rm --interactive=once --verbose"
+    alias fstabshow="column -t /etc/fstab"
 fi
 
 #############
