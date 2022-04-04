@@ -20,6 +20,10 @@ HISTSIZE=9999
 HISTFILESIZE=9999
 HISTIGNORE="cd:cd ..:clear:exit:l:ls :pwd"
 
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
 ### Completion
 
 # only complete directories when using cd
@@ -89,7 +93,10 @@ export PS1;
 
 ### External
 
-if [[ -r "$HOME/.aliases" ]] && [[ -f "$HOME/.aliases" ]]; then
-    # shellcheck source=/dev/null
-    source "$HOME/.aliases"
-fi
+for file in ~/.{aliases,exports}; do
+    if [[ -r "$file" ]] && [[ -f "$file" ]]; then
+	    source "$file"
+    fi
+done
+unset file
+

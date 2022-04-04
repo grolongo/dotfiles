@@ -49,11 +49,13 @@ alias cdtbb="cd ~/.local/share/torbrowser/tbb/x86_64/tor-browser_en-US/Browser/D
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
-alias rmmeta="exiftool -all="
+alias metaimgremove="exiftool -overwrite_original -all="
 
 #################
 ### functions ###
 #################
+
+metavideoremove () { ffmpeg -i "$1" -vcodec copy -acodec copy -map 0 -map_metadata -1 cleaned-"$1"; }
 
 hex10 () { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
 fnd () { find . -iname "*$1*" 2>/dev/null | grep --color=auto --ignore-case -e "$1"; }
@@ -78,3 +80,4 @@ rgrep2 () { grep --binary-file=without-match --color=auto --ignore-case --line-n
 # ripgrep
 lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
 rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
+
