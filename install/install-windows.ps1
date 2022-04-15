@@ -127,175 +127,41 @@ function get_wsl {
     Write-Host -ForegroundColor "yellow" "After setting WSL2, download Debian from the Microsoft Store."
 }
 
-### Privacy
-
-function set_privacy {
-
-    Write-Host -ForegroundColor "yellow" "Disabling advertising ID..."
-
-    If (-Not (Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo")) {
-        New-Item -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo | Out-Null
-    }
-    Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo -Name Enabled -Type DWord -Value 0
-
-    Write-Host -ForegroundColor "yellow" "Disabling WiFi HotSpot sharing..."
-
-    If (-Not (Test-Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting")) {
-        New-Item -Path HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting | Out-Null
-    }
-    Set-ItemProperty -Path HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting -Name value -Type DWord -Value 0
-
-    Write-Host -ForegroundColor "yellow" "Disabling Shared HotSpot Auto-Connect..."
-
-    Set-ItemProperty -Path HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots -Name value -Type DWord -Value 0
-
-    Write-Host -ForegroundColor "yellow" "Disabling Bing search results..."
-
-    $bing = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search"
-    if(!(Test-Path $bing)) {
-        New-Item $bing
-    }
-
-    New-ItemProperty -LiteralPath $bing -Name "BingSearchEnabled" -Value 0 -PropertyType "DWord" -ErrorAction SilentlyContinue
-    Set-ItemProperty -LiteralPath $bing -Name "BingSearchEnabled" -Value 0
-
-    Write-Host -ForegroundColor "yellow" "Disabling Telemetry..."
-
-    Set-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection -Name AllowTelemetry -Type DWord -Value 0
-    Get-Service DiagTrack,Dmwappushservice | Stop-Service | Set-Service -StartupType Disabled
-
-    Write-Host -ForegroundColor "yellow" "Disabling Cortana..."
-
-    New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Windows Search' -ItemType Key
-    New-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name AllowCortana -Type DWORD -Value 0
-
-    Write-Host -ForegroundColor "yellow" "Disabling XBox gamebar..."
-
-    $xbox = "HKCU:\SOFTWARE\Microsoft\GameBar"
-    if(!(Test-Path $xbox)) {
-        New-Item $xbox
-    }
-
-    New-ItemProperty -LiteralPath $xbox -Name "ShowStartupPanel" -Value 0 -PropertyType "DWord" -ErrorAction SilentlyContinue
-    Set-ItemProperty -LiteralPath $xbox -Name "ShowStartupPanel" -Value 0
-
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" -Name AppCaptureEnabled -Type DWord -Value 0
-    Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name GameDVR_Enabled -Type DWord -Value 0
-
-    Write-Host -ForegroundColor "yellow" "Reboot for changes to take effect."
-}
-
-### Uninstall Bloat
-
-function remove_junk {
-    # To list all packages:
-    # Get-AppxPackage -AllUsers | Select Name, PackageFullName
-
-    Get-AppxPackage Microsoft.3DBuilder | Remove-AppxPackage
-    Get-AppxPackage Microsoft.BingFinance | Remove-AppxPackage
-    Get-AppxPackage Microsoft.BingNews | Remove-AppxPackage
-    Get-AppxPackage Microsoft.BingSports | Remove-AppxPackage
-    Get-AppxPackage Microsoft.BingWeather | Remove-AppxPackage
-    Get-AppxPackage Microsoft.CommsPhone | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Getstarted | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Messaging | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Microsoft3DViewer | Remove-AppxPackage
-    Get-AppxPackage Microsoft.MicrosoftOfficeHub | Remove-AppxPackage
-    Get-AppxPackage Microsoft.MicrosoftSolitaireCollection | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Office.OneNote | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Office.Sway | Remove-AppxPackage
-    Get-AppxPackage Microsoft.OneConnect | Remove-AppxPackage
-    Get-AppxPackage Microsoft.People | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Print3D | Remove-AppxPackage
-    Get-AppxPackage Microsoft.SkypeApp | Remove-AppxPackage
-    Get-AppxPackage Microsoft.Wallet | Remove-AppxPackage
-    Get-AppxPackage Microsoft.WindowsCamera | Remove-AppxPackage
-    Get-AppxPackage Microsoft.WindowsCommunicationsApps | Remove-AppxPackage
-    Get-AppxPackage Microsoft.WindowsFeedbackHub | Remove-AppxPackage
-    Get-AppxPackage Microsoft.WindowsMaps | Remove-AppxPackage
-    Get-AppxPackage Microsoft.WindowsPhone | Remove-AppxPackage
-    Get-AppxPackage Microsoft.XboxIdentityProvider | Remove-AppxPackage
-    Get-AppxPackage Microsoft.XboxSpeechToTextOverlay | Remove-AppxPackage
-    Get-AppxPackage Microsoft.ZuneMusic | Remove-AppxPackage
-    Get-AppxPackage Microsoft.ZuneVideo | Remove-AppxPackage
-    Get-AppxPackage *Autodesk* | Remove-AppxPackage
-    Get-AppxPackage *BubbleWitch* | Remove-AppxPackage
-    Get-AppxPackage king.com.CandyCrush* | Remove-AppxPackage
-    Get-AppxPackage *Dell* | Remove-AppxPackage
-    Get-AppxPackage *Dropbox* | Remove-AppxPackage
-    Get-AppxPackage *Facebook* | Remove-AppxPackage
-    Get-AppxPackage *Keeper* | Remove-AppxPackage
-    Get-AppxPackage *MarchofEmpires* | Remove-AppxPackage
-    Get-AppxPackage *McAfee* | Remove-AppxPackage
-    Get-AppxPackage *Minecraft* | Remove-AppxPackage
-    Get-AppxPackage *Netflix* | Remove-AppxPackage
-    Get-AppxPackage *Plex* | Remove-AppxPackage
-    Get-AppxPackage *Solitaire* | Remove-AppxPackage
-    Get-AppxPackage *Twitter* | Remove-AppxPackage
-
-    # Uninstall McAfee Security App
-    $mcafee = Get-ChildItem "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall" | ForEach-Object { Get-ItemProperty $_.PSPath } | Where-Object { $_ -match "McAfee Security" } | Select-Object UninstallString
-    if ($mcafee) {
-  	$mcafee = $mcafee.UninstallString -Replace "C:\Program Files\McAfee\MSC\mcuihost.exe",""
-  	Write-Output -ForegroundColor "yellow" "Uninstalling McAfee..."
-  	start-process "C:\Program Files\McAfee\MSC\mcuihost.exe" -arg "$mcafee" -Wait
-    }
-}
-
 ### Chocolatey
 
 function install_chocolatey {
-    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-WebRequest https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 }
+
 
 ### Packages
 
 function install_packages {
-    cinst 7zip
-    cinst aria2
-    cinst audacity
-    cinst chatty
-    cinst electrum
-    cinst ffmpeg
-    cinst firefox
-    cinst itunes
-    cinst keepass
-    cinst libreoffice
-    cinst logitechgaming
-    cinst malwarebytes
-    cinst mpv
-    cinst nextcloud-client
-    cinst office365proplus
-    cinst onionshare
-    cinst pandoc
-    cinst seafile-client
-    cinst setpoint
-    cinst signal
-    cinst spotify
-    cinst steam
-    cinst streamlink
-    cinst synologydrive
-    cinst thunderbird
-    cinst tor-browser
-    cinst veracrypt
-    cinst vlc
-    cinst youtube-dl
-}
+    choco install 7zip
+    choco install aria2
+    choco install chatty
+    choco install electrum
+    choco install emacs
+    choco install ffmpeg
+    choco install git --params "/GitAndUnixToolsOnPath /NoShellIntegration /NoOpenSSH /NoAutoCrlf /SChannel"
+    choco install librewolf
+    choco install keepass
+    choco install mpv
+    choco install shellcheck
+    choco install signal
+    choco install steam
+    choco install streamlink
+    choco install synologydrive
+    choco install thunderbird
+    choco install tor-browser
+    choco install veracrypt
+    choco install youtube-dl
 
-### Dev
-
-function install_devtools {
-    cinst emacs
-    cinst git --params "/GitAndUnixToolsOnPath /NoShellIntegration"
-
-    cinst python
-    pip install 'python-language-server[all]'
-    pip install bandit
-
-    cinst nodejs
-    npm i -g bash-language-server
-
-    cinst shellcheck
+    choco pin add -n chatty
+    choco pin add -n librewolf
+    choco pin add -n signal
+    choco pin add -n steam
+    choco pin add -n tor-browser
 }
 
 ### Menu
@@ -313,11 +179,8 @@ function usage {
     Write-Host "  hyperv            - enables native Windows Hyper-V virtualization"
     Write-Host "  sandbox           - enables disposable Windows sandbox"
     Write-Host "  wsl               - installs Windows Subsystem Linux with WSL2"
-    Write-Host "  privacy           - wifi hotspot, xbox, etc."
-    Write-Host "  remove            - uninstalls unecessary apps"
     Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
     Write-Host "  packages          - downloads and installs listed packages"
-    Write-Host "  devtools          - downloads and installs devtools"
     Write-Host
 }
 
@@ -337,11 +200,8 @@ function main {
     elseif ($cmd -eq "hyperv") { enable_hyperv }
     elseif ($cmd -eq "sandbox") { enable_sandbox }
     elseif ($cmd -eq "wsl") { get_wsl }
-    elseif ($cmd -eq "privacy") { set_privacy }
-    elseif ($cmd -eq "remove") { remove_junk }
     elseif ($cmd -eq "chocolatey") { install_chocolatey }
     elseif ($cmd -eq "packages") { install_packages }
-    elseif ($cmd -eq "devtools") { install_devtools }
     else { usage }
 }
 
