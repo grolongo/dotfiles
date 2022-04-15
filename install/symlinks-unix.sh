@@ -89,11 +89,6 @@ confirm "Install symlinks for $USER?" && {
         symlink ".config/mpv/script-opts/encode_webm.conf"
     }
 
-    # screen
-    confirm "link screen config file?" && {
-        symlink ".screenrc"
-    }
-
     # tmux
     confirm "link tmux config file?" && {
         mkdir -vp "$HOME"/.config/tmux
