@@ -102,29 +102,23 @@ function change_hostname {
     Write-Host -ForegroundColor "yellow" "Restart to take effect."
 }
 
-### Hyper-V
+### Windows Optional Features
 
-function enable_hyperv {
+function enable_wof {
+    # Hyper-V
+    Write-Host -ForegroundColor "yellow" "Enabling Microsoft Hyper-V..."
     Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All -NoRestart
-}
 
-### Sandbox
-
-function enable_sandbox {
+    # Disposable Virtual Desktop
+    Write-Host -ForegroundColor "yellow" "Enabling Windows Disposable Container Desktop..."
     Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All -NoRestart
 }
 
 ### WSL
 
-function get_wsl {
-    Write-Host -ForegroundColor "yellow" "Installing Windows Subsystem Linux..."
-    Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -All -NoRestart
-
-    Write-Host -ForegroundColor "yellow" "Enabling Virtual Machine Platform for WSL2"
-    Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -All -NoRestart
-
-    Write-Host -ForegroundColor "yellow" "After reboot: > wsl --set-default-version 2, then follow instructions to update kernel if needed"
-    Write-Host -ForegroundColor "yellow" "After setting WSL2, download Debian from the Microsoft Store."
+function install_wsl {
+    # to change default Ubuntu: "wsl.exe --install -d Debian"
+    wsl.exe --install
 }
 
 ### Chocolatey
@@ -142,14 +136,19 @@ function install_packages {
     choco install chatty
     choco install electrum
     choco install emacs
+    choco install everything --params "/client-service /efu-association /folder-context-menu /run-on-system-startup /start-menu-shortcuts"
     choco install ffmpeg
     choco install git --params "/GitAndUnixToolsOnPath /NoShellIntegration /NoOpenSSH /NoAutoCrlf /SChannel"
+    choco install imagemagick
     choco install librewolf
     choco install keepass
+    choco install microsoft-windows-terminal
     choco install mpv
+    choco install nomacs
+    choco install obs-studio
     choco install shellcheck
-    choco install signal
-    choco install steam
+    choco install signal --params "/NoShortcut"
+    choco install steam-client
     choco install streamlink
     choco install synologydrive
     choco install thunderbird
@@ -176,9 +175,8 @@ function usage {
     Write-Host "  powersettings     - disables power saving modes on AC power"
     Write-Host "  envar             - setups environment variables"
     Write-Host "  hostname          - changes hostname"
-    Write-Host "  hyperv            - enables native Windows Hyper-V virtualization"
-    Write-Host "  sandbox           - enables disposable Windows sandbox"
-    Write-Host "  wsl               - installs Windows Subsystem Linux with WSL2"
+    Write-Host "  features          - enables several Windows Optional Features (WSL)"
+    Write-Host "  wsl               - enables WSL2 and installs Ubuntu or Debian"
     Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
     Write-Host "  packages          - downloads and installs listed packages"
     Write-Host
@@ -197,9 +195,8 @@ function main {
     elseif ($cmd -eq "powersettings") { power_settings }
     elseif ($cmd -eq "envar") { install_envar }
     elseif ($cmd -eq "hostname") { change_hostname }
-    elseif ($cmd -eq "hyperv") { enable_hyperv }
-    elseif ($cmd -eq "sandbox") { enable_sandbox }
-    elseif ($cmd -eq "wsl") { get_wsl }
+    elseif ($cmd -eq "features") { enable_wof }
+    elseif ($cmd -eq "wsl") { install_wsl }
     elseif ($cmd -eq "chocolatey") { install_chocolatey }
     elseif ($cmd -eq "packages") { install_packages }
     else { usage }
