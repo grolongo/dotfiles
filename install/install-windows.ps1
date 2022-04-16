@@ -13,39 +13,45 @@ function set_dotfiles {
 ### UI Preferences
 
 function set_uipreferences {
-    $hiddenext = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    $explorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
+    $exploreradvanced = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    $searchcortana = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search'
 
-    if(Test-Path -Path $hiddenext) {
-        Write-Host -ForegroundColor "yellow" "Showing hidden files and file extensions..."
-        Set-ItemProperty $hiddenext Hidden 1
-        Set-ItemProperty $hiddenext HideFileExt 0
-    }
-
-    $righticons = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
-
-    if(Test-Path -Path $righticons) {
+    if(Test-Path -Path $explorer) {
         # show icons notification area (always show = 0, not showing = 1)
-        Write-Host -ForegroundColor "yellow" "Setting tray icons..."
-        Set-ItemProperty -Path $righticons -Name 'EnableAutoTray' -Value 0
+        Write-Host -ForegroundColor "yellow" "Showing all tray icons..."
+        Set-ItemProperty -Path $explorer -Name 'EnableAutoTray' -Value 0
     }
 
-    $mainbar = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if(Test-Path -Path $exploreradvanced) {
+        Write-Host -ForegroundColor "yellow" "Showing hidden files and file extensions..."
+        Set-ItemProperty -Path $exploreradvanced -Name 'Hidden' -Value 1
+        Set-ItemProperty -Path $exploreradvanced -Name 'HideFileExt' -Value 0
 
-    if(Test-Path -Path $mainbar) {
+        # task view button (show = 1, hide = 0)
+        Write-Host -ForegroundColor "yellow" "Hiding task view button..."
+        Set-ItemProperty -Path $exploreradvanced -Name 'ShowTaskViewButton' -Value 0
+
         # taskbar size (small = 1, large = 0)
         Write-Host -ForegroundColor "yellow" "Setting taskbar height size..."
-        Set-ItemProperty $mainbar TaskbarSmallIcons 1
+        Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSmallIcons' -Value 1
 
         # taskbar combine (always = 0, when full = 1, never = 2)
         Write-Host -ForegroundColor "yellow" "Setting taskbar combine when full mode..."
-        Set-ItemProperty $mainbar TaskbarGlomLevel 1
+        Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarGlomLevel' -Value 1
 
         # lock taskbar (lock = 0, unlock = 1)
         Write-Host -ForegroundColor "yellow" "Locking the taskbar..."
-        Set-ItemProperty $mainbar TaskbarSizeMove 0
+        Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
     }
 
-    Write-Host -ForegroundColor "yellow" "Delog and relog for changes to take effect."
+    if(Test-Path -Path $searchcortana) {
+        # search box (bar = 2, icon = 1, nothing = 0)
+        Write-Host -ForegroundColor "yellow" "Removing Cortana search bar..."
+        Set-ItemProperty -Path $searchcortana -Name 'SearchboxTaskbarMode' -Value 0
+    }
+
+    Write-Host -ForegroundColor "yellow" "Relog for changes to take effect."
 }
 
 ### Firewall
