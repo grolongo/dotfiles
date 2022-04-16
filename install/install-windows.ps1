@@ -16,6 +16,8 @@ function set_uipreferences {
     $explorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
     $exploreradvanced = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
     $searchcortana = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search'
+    $desktopicons = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu'
+    $desktopicons2 = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel'
 
     if(Test-Path -Path $explorer) {
         # show icons notification area (always show = 0, not showing = 1)
@@ -49,6 +51,16 @@ function set_uipreferences {
         # search box (bar = 2, icon = 1, nothing = 0)
         Write-Host -ForegroundColor "yellow" "Removing Cortana search bar..."
         Set-ItemProperty -Path $searchcortana -Name 'SearchboxTaskbarMode' -Value 0
+    }
+
+    # My Computer desktop icon
+    if(Test-Path -Path $desktopicons) {
+        Write-Host -ForegroundColor "yellow" "Adding 'My Computer' on the desktop..."
+        Set-ItemProperty -Path $desktopicons -Name '{20D04FE0-3AEA-1069-A2D8-08002B30309D}' -Value 0
+    }
+
+    if(Test-Path -Path $desktopicons2) {
+        Set-ItemProperty -Path $desktopicons2 -Name '{20D04FE0-3AEA-1069-A2D8-08002B30309D}' -Value 0
     }
 
     Write-Host -ForegroundColor "yellow" "Relog for changes to take effect."
