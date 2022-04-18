@@ -10,7 +10,7 @@ if ((Get-Location).path -ne $PSScriptRoot) { Write-Output "Exiting. Please cd to
 # Dossier racine des dotfiles : "Split-Path" considère le dossier parent par défaut.
 New-Variable -Name "base" -Value "$(Split-Path (Get-Location))"
 
-# Emacs
+# emacs
 $confirmation = Read-Host "Symlink emacs?"
 if ($confirmation -eq 'y') {
     New-Item -Force -Path "$env:APPDATA\.emacs.d" -ItemType directory
@@ -24,6 +24,13 @@ if ($confirmation -eq 'y') {
     New-Item -Force -Path "$env:APPDATA\mpv" -ItemType directory
     New-Item -Force -Path "$env:APPDATA\mpv\mpv.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\mpv.conf"
     New-Item -Force -Path "$env:APPDATA\mpv\input.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\input.conf"
+    New-Item -Force -Path "$env:APPDATA\mpv\scripts" -ItemType directory
+    New-Item -Force -Path "$env:APPDATA\mpv\scripts\crop.lua" -ItemType SymbolicLink -Value "$base\.config\mpv\scripts\crop.lua"
+    New-Item -Force -Path "$env:APPDATA\mpv\scripts\encode.lua" -ItemType SymbolicLink -Value "$base\.config\mpv\scripts\encode.lua"
+    New-Item -Force -Path "$env:APPDATA\mpv\script-opts" -ItemType directory
+    New-Item -Force -Path "$env:APPDATA\mpv\script-opts\encode_gif.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts\encode_gif.conf"
+    New-Item -Force -Path "$env:APPDATA\mpv\script-opts\encode_mp4.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts\encode_mp4.conf"
+    New-Item -Force -Path "$env:APPDATA\mpv\script-opts\encode_webm.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts\encode_webm.conf"
 }
 
 # streamlink
@@ -33,30 +40,11 @@ if ($confirmation -eq 'y') {
     New-Item -Force -Path "$env:APPDATA\streamlink\config" -ItemType SymbolicLink -Value "$base\.config\streamlink\config"
 }
 
-# markdownlinter
-$confirmation = Read-Host "Symlink mdlrc?"
-if ($confirmation -eq 'y') {
-    New-Item -Force -Path "$HOME\.mdlrc" -ItemType SymbolicLink -Value "$base\.mdlrc"
-}
-
-# wsltty
-$confirmation = Read-Host "Symlink wsltty?"
-if ($confirmation -eq 'y') {
-    New-Item -Force -Path "$env:APPDATA\wsltty\config" -ItemType SymbolicLink -Value "$base\wsltty\config"
-    New-Item -Force -Path "$env:APPDATA\wsltty\themes\solarized_dark" -ItemType SymbolicLink -Value "$base\wsltty\themes\solarized_dark"
-}
-
 # git
 $confirmation = Read-Host "Symlink gitconfig?"
 if ($confirmation -eq 'y') {
     New-Item -Force -Path "$HOME\.gitconfig" -ItemType SymbolicLink -Value "$base\.config\git\config"
-    New-Item -Force -Path "$HOME\.gitconfig-windows" -ItemType SymbolicLink -Value "$base\.config\git\config-windows"
-}
-
-# curl
-$confirmation = Read-Host "Symlink curlrc?"
-if ($confirmation -eq 'y') {
-    New-Item -Force -Path "$HOME\_curlrc" -ItemType SymbolicLink -Value "$base\.curlrc"
+    #New-Item -Force -Path "$HOME\.gitconfig-windows" -ItemType SymbolicLink -Value "$base\.config\git\config-windows"
 }
 
 # aria2
@@ -66,6 +54,7 @@ if ($confirmation -eq 'y') {
     New-Item -Force -Path "$HOME\aria2\aria2.conf" -ItemType SymbolicLink -Value "$base\.config\aria2\aria2.conf"
 }
 
+# powershell profile
 $confirmation = Read-Host "Symlink PowerShell profile?"
 if ($confirmation -eq 'y') {
     New-Item -Force -Path "$PROFILE" -ItemType SymbolicLink -Value "$base\Microsoft.PowerShell_profile.ps1"

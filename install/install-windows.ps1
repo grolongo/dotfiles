@@ -2,22 +2,12 @@
 
 #Requires -RunAsAdministrator
 
-### Dotfiles
-
-function set_dotfiles {
-    # check if we're in the correct install dir
-    if (-not (Test-Path "symlinks-windows.ps1")) { Write-Host -ForegroundColor "red" "Exiting. Please cd into the install directory or make sure symlinks-windows.ps1 is here."; exit }
-    .\symlinks-windows
-}
-
 ### UI Preferences
 
 function set_uipreferences {
     $explorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
     $exploreradvanced = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
     $searchcortana = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search'
-    $desktopicons = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu'
-    $desktopicons2 = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel'
 
     if(Test-Path -Path $explorer) {
         # show icons notification area (always show = 0, not showing = 1)
@@ -51,16 +41,6 @@ function set_uipreferences {
         # search box (bar = 2, icon = 1, nothing = 0)
         Write-Host -ForegroundColor "yellow" "Removing Cortana search bar..."
         Set-ItemProperty -Path $searchcortana -Name 'SearchboxTaskbarMode' -Value 0
-    }
-
-    # My Computer desktop icon
-    if(Test-Path -Path $desktopicons) {
-        Write-Host -ForegroundColor "yellow" "Adding 'My Computer' on the desktop..."
-        Set-ItemProperty -Path $desktopicons -Name '{20D04FE0-3AEA-1069-A2D8-08002B30309D}' -Value 0
-    }
-
-    if(Test-Path -Path $desktopicons2) {
-        Set-ItemProperty -Path $desktopicons2 -Name '{20D04FE0-3AEA-1069-A2D8-08002B30309D}' -Value 0
     }
 
     Write-Host -ForegroundColor "yellow" "Relog for changes to take effect."
@@ -132,6 +112,17 @@ function enable_wof {
     Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All -NoRestart
 }
 
+### Ctrl to Caps
+
+function remap_ctrltocaps {
+    $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
+    $kbLayout = 'HKLM:\System\CurrentControlSet\Control\Keyboard Layout';
+
+    New-ItemProperty -Path $kbLayout -Name "Scancode Map" -PropertyType Binary -Value ([byte[]]$hexified);
+
+    Write-Host -ForegroundColor "yellow" "You need to reboot to take effect."
+}
+
 ### WSL
 
 function install_wsl {
@@ -145,12 +136,12 @@ function install_chocolatey {
     Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 }
 
-
 ### Packages
 
 function install_packages {
     choco install 7zip
     choco install aria2
+    choco install autohotkey
     choco install chatty
     choco install electrum
     choco install emacs
@@ -181,12 +172,19 @@ function install_packages {
     choco pin add -n tor-browser
 }
 
+### Dotfiles
+
+function set_dotfiles {
+    # check if we're in the correct install dir
+    if (-not (Test-Path "symlinks-windows.ps1")) { Write-Host -ForegroundColor "red" "Exiting. Please cd into the install directory or make sure symlinks-windows.ps1 is here."; exit }
+    .\symlinks-windows
+}
+
 ### Menu
 
 function usage {
     Write-Host
     Write-Host "Usage:"
-    Write-Host "  dotfiles          - launches external dotfiles script"
     Write-Host "  uipreferences     - windows explorer & taskbar preferences"
     Write-Host "  firewall          - firewall rules: block incoming, allow outgoing"
     Write-Host "  ssh               - automatic startup of ssh agent"
@@ -194,9 +192,11 @@ function usage {
     Write-Host "  envar             - setups environment variables"
     Write-Host "  hostname          - changes hostname"
     Write-Host "  features          - enables several Windows Optional Features (WSL)"
+    Write-Host "  ctrltocaps        - remap CTRL key to Caps Lock"
     Write-Host "  wsl               - enables WSL2 and installs Ubuntu or Debian"
     Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
     Write-Host "  packages          - downloads and installs listed packages"
+    Write-Host "  dotfiles          - launches external dotfiles script"
     Write-Host
 }
 
@@ -206,17 +206,18 @@ function main {
     # return error if nothing is specified
     if (!$cmd) { usage; exit 1 }
 
-    if ($cmd -eq "dotfiles") { set_dotfiles }
-    elseif ($cmd -eq "uipreferences") { set_uipreferences }
+    if ($cmd -eq "uipreferences") { set_uipreferences }
     elseif ($cmd -eq "firewall") { set_firewall }
     elseif ($cmd -eq "ssh") { set_ssh }
     elseif ($cmd -eq "powersettings") { power_settings }
     elseif ($cmd -eq "envar") { install_envar }
     elseif ($cmd -eq "hostname") { change_hostname }
     elseif ($cmd -eq "features") { enable_wof }
+    elseif ($cmd -eq "ctrltocaps") {remap_ctrltocaps}
     elseif ($cmd -eq "wsl") { install_wsl }
     elseif ($cmd -eq "chocolatey") { install_chocolatey }
     elseif ($cmd -eq "packages") { install_packages }
+    elseif ($cmd -eq "dotfiles") { set_dotfiles }
     else { usage }
 }
 
