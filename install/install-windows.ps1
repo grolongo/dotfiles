@@ -1,4 +1,4 @@
-# Restriction: use "Set-ExecutionPolicy Unrestricted" as admin to allow this script to be run
+# Restriction: use "Set-ExecutionPolicy Bypass" as admin to allow this script to be run
 
 #Requires -RunAsAdministrator
 
