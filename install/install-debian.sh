@@ -243,6 +243,8 @@ set_gsettings() {
     gsettings set org.gnome.mutter dynamic-workspaces false
     gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
+    # blank screen delay
+    gsettings set org.gnome.desktop.session idle-delay 'uint32 0'
 
     # Tweaks
     gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
@@ -280,6 +282,8 @@ set_gsettings() {
     # Sound & Input Device Chooser
     # gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-profiles false
     # gsettings set org.gnome.shell.extensions.sound-output-device-chooser show-input-devices false
+
+    msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
 
 ### i3wm
