@@ -178,6 +178,7 @@ install_base() {
         ffmpeg
         gnupg
         jq
+        lulu
         lynis
         m-cli
         mpv
