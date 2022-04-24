@@ -11,12 +11,12 @@ if ((Get-Location).path -ne $PSScriptRoot) { Write-Output "Exiting. Please cd to
 New-Variable -Name "base" -Value "$(Split-Path (Get-Location))"
 
 # emacs
-$confirmation = Read-Host "Symlink emacs?"
-if ($confirmation -eq 'y') {
-    New-Item -Force -Path "$env:APPDATA\.emacs.d" -ItemType directory
-    New-Item -Force -Path "$env:APPDATA\.emacs.d\init.el" -ItemType SymbolicLink -Value "$base\.config\emacs\init.el"
-    New-Item -Force -Path "$env:APPDATA\.emacs.d\early-init.el" -ItemType SymbolicLink -Value "$base\.config\emacs\early-init.el"
-}
+# $confirmation = Read-Host "Symlink emacs?"
+# if ($confirmation -eq 'y') {
+#     New-Item -Force -Path "$env:APPDATA\.emacs.d" -ItemType directory
+#     New-Item -Force -Path "$env:APPDATA\.emacs.d\init.el" -ItemType SymbolicLink -Value "$base\.config\emacs\init.el"
+#     New-Item -Force -Path "$env:APPDATA\.emacs.d\early-init.el" -ItemType SymbolicLink -Value "$base\.config\emacs\early-init.el"
+# }
 
 # mpv
 $confirmation = Read-Host "Symlink mpv?"

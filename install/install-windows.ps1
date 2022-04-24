@@ -51,9 +51,11 @@ function set_uipreferences {
 function set_firewall {
     $confirmation = Read-Host "yellow" "Block incoming connections and allow outgoing?"
     if ($confirmation -eq 'y') {
-        Set-NetConnectionProfile -NetworkCategory Public
+        Set-NetConnectionProfile -NetworkCategory Private
         netsh advfirewall set allprofiles state on
         netsh advfirewall set domainprofile firewallpolicy blockinboundalways,allowoutbound
+        netsh advfirewall set publicprofile firewallpolicy blockinboundalways,allowoutbound
+        netsh advfirewall set privateprofile firewallpolicy blockinboundalways,allowoutbound
     }
 }
 
@@ -157,6 +159,7 @@ function install_packages {
     choco install obs-studio
     choco install shellcheck
     choco install signal --params "/NoShortcut"
+    choco install simplewall
     choco install steam-client
     choco install streamlink
     choco install synologydrive
