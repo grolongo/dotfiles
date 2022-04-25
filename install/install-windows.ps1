@@ -148,6 +148,7 @@ function install_packages {
     choco install electrum
     choco install emacs
     choco install everything --params "/client-service /efu-association /folder-context-menu /run-on-system-startup /start-menu-shortcuts"
+    choco install exiftool
     choco install ffmpeg
     choco install git --params "/GitAndUnixToolsOnPath /NoShellIntegration /NoOpenSSH /NoAutoCrlf /SChannel"
     choco install imagemagick
