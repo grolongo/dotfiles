@@ -172,7 +172,8 @@ function install_packages {
     choco pin add -n chatty
     choco pin add -n librewolf
     choco pin add -n signal
-    choco pin add -n steam
+    choco pin add -n simplewall
+    choco pin add -n steam-client
     choco pin add -n tor-browser
 }
 
