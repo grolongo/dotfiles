@@ -158,6 +158,7 @@ function install_packages {
     choco install mpv
     choco install nomacs
     choco install obs-studio
+    choco install qbittorrent
     choco install shellcheck
     choco install signal --params "/NoShortcut"
     choco install simplewall

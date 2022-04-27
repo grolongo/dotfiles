@@ -183,6 +183,7 @@ install_base() {
         m-cli
         mpv
         pandoc
+        qbittorrent
         shellcheck
         speedtest-cli
         streamlink
