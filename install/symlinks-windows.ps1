@@ -54,6 +54,12 @@ if ($confirmation -eq 'y') {
     New-Item -Force -Path "$HOME\.aria2\aria2.conf" -ItemType SymbolicLink -Value "$base\.config\aria2\aria2.conf"
 }
 
+# autohotkey
+$confirmation = Read-Host "Symlink autohotkey scripts?"
+if ($confirmation -eq 'y') {
+    New-Item -Force -Path "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\keybinds-shortcuts.ahk" -ItemType SymbolicLink -Value "$base\.local\bin\autohotkey\keybinds-shortcuts.ahk"
+}
+
 # powershell profile
 $confirmation = Read-Host "Symlink PowerShell profile?"
 if ($confirmation -eq 'y') {
