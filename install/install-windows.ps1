@@ -43,6 +43,10 @@ function set_uipreferences {
         Set-ItemProperty -Path $searchcortana -Name 'SearchboxTaskbarMode' -Value 0
     }
 
+    Write-Host -ForegroundColor "yellow" "Disabling sounds..."
+    New-ItemProperty -Path HKCU:\AppEvents\Schemes -Name "(Default)" -Value ".None" -Force | Out-Null
+    Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps\*\*\.current" | Set-ItemProperty -Name "(Default)" -Value ""
+
     Write-Host -ForegroundColor "yellow" "Relog for changes to take effect."
 }
 
