@@ -57,7 +57,7 @@ if ($confirmation -eq 'y') {
 # autohotkey
 $confirmation = Read-Host "Symlink autohotkey scripts?"
 if ($confirmation -eq 'y') {
-    New-Item -Force -Path "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\keybinds-shortcuts.ahk" -ItemType SymbolicLink -Value "$base\.local\bin\autohotkey\keybinds-shortcuts.ahk"
+    New-Item -Force -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\keybinds-shortcuts.ahk" -ItemType SymbolicLink -Value "$base\.local\bin\autohotkey\keybinds-shortcuts.ahk"
 }
 
 # powershell profile
