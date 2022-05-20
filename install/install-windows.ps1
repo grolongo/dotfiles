@@ -148,6 +148,7 @@ function install_packages {
     choco install 7zip
     choco install aria2
     choco install autohotkey
+    choco install brave
     choco install chatty
     choco install electrum
     choco install emacs
@@ -169,16 +170,20 @@ function install_packages {
     choco install steam-client
     choco install streamlink
     choco install synologydrive
+    choco install telegram
     choco install thunderbird
     choco install tor-browser
     choco install veracrypt
     choco install youtube-dl
 
+    choco pin add -n brave
     choco pin add -n chatty
     choco pin add -n librewolf
     choco pin add -n signal
     choco pin add -n simplewall
     choco pin add -n steam-client
+    choco pin add -n telegram
+    choco pin add -n thunderbird
     choco pin add -n tor-browser
 }
 
