@@ -4,9 +4,9 @@
 
 if [[ "$OSTYPE" = linux* ]]; then
     # GNU utils
-    alias cp="cp --interactive --verbose"
     alias ls="ls --almost-all --classify --color=auto --group-directories-first --literal --sort=extension"
     alias l="ls --almost-all --classify --color=auto --group-directories-first --human-readable -l --literal --sort=extension"
+    alias cp="cp --interactive --verbose"
     alias mv="mv --interactive --verbose"
     alias rm="rm --interactive=once --verbose"
     alias fstabshow="column -t /etc/fstab"
@@ -17,16 +17,12 @@ fi
 #############
 
 if [[ "$OSTYPE" = darwin* ]]; then
-    # hide/show dotfiles
-    alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
-    alias hidedotfiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
-
     # BSD utils
-    alias cp="cp -iv"
     alias ls="ls -AFG"
     alias l="ls -AFGlhS"
+    alias cp="cp -iv"
     alias mv="mv -iv"
-    alias rm="rm -Pv"
+    alias rm="rm -Rv"
 fi
 
 ###############
@@ -38,7 +34,6 @@ alias clear=" clear"
 alias claer=" clear"
 alias exit=" exit"
 alias fd="fd --hidden"
-alias tsmr="transmission-remote"
 alias em="emacs -nw"
 alias emq="emacs -Q -nw"
 alias logo="sudo pkill -u $USER"

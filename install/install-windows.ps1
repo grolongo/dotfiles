@@ -154,7 +154,6 @@ function install_packages {
     choco install emacs
     choco install everything --params "/client-service /efu-association /folder-context-menu /run-on-system-startup /start-menu-shortcuts"
     choco install exiftool
-    choco install fd
     choco install ffmpeg
     choco install git --params "/GitAndUnixToolsOnPath /NoShellIntegration /NoOpenSSH /NoAutoCrlf /SChannel"
     choco install imagemagick
@@ -175,11 +174,10 @@ function install_packages {
     choco install thunderbird
     choco install tor-browser
     choco install veracrypt
-    choco install youtube-dl
+    choco install yt-dlp
 
     choco pin add -n brave
     choco pin add -n chatty
-    choco pin add -n librewolf
     choco pin add -n signal
     choco pin add -n simplewall
     choco pin add -n steam-client

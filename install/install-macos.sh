@@ -189,7 +189,7 @@ install_base() {
         streamlink
         tmux
         tor
-        youtube-dl
+        ytb-dl
     )
 
     for p in "${packages[@]}"; do

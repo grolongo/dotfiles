@@ -9,7 +9,7 @@ player=mpv --cache=no
 # FFMPEG is used to mux separate video and audio streams in to a single
 # stream so that they can be played. The full or relative path to ffmpeg
 # or avconv should be specified here.
-ffmpeg-ffmpeg=ffmpeg
+ffmpeg-ffmpeg=C:\Program Files\Streamlink\ffmpeg\ffmpeg.exe
 
 hls-segment-threads=10
 

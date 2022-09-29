@@ -147,7 +147,7 @@ apt_common() {
         virt-manager
         wget
         xterm
-        youtube-dl
+        ytb-dl
     )
 
     for p in "${packages[@]}"; do
