@@ -63,6 +63,21 @@ function set_firewall {
     }
 }
 
+### DNS
+
+function set_dns {
+    $confirmation = Read-Host "yellow" "Set IPv4 & IPv6 DNS servers to Cloudflare?"
+    if ($confirmation -eq 'y') {
+        Set-DnsClientServerAddress -InterfaceAlias Ethernet -ServerAddresses 1.1.1.1,1.0.0.1
+        Set-DnsClientServerAddress -InterfaceAlias Ethernet -ServerAddresses 2606:4700:4700::1111,2606:4700:4700::1001
+        Set-DnsClientServerAddress -InterfaceAlias WiFi -ServerAddresses 1.1.1.1,1.0.0.1
+        Set-DnsClientServerAddress -InterfaceAlias WiFi -ServerAddresses 2606:4700:4700::1111,2606:4700:4700::1001
+
+        Write-Host -ForegroundColor "yellow" "Flushing DNS cache..."
+        Clear-DnsClientCache
+    }
+}
+
 ### SSH
 
 function set_ssh {
@@ -201,6 +216,7 @@ function usage {
     Write-Host "Usage:"
     Write-Host "  uipreferences     - windows explorer & taskbar preferences"
     Write-Host "  firewall          - firewall rules: block incoming, allow outgoing"
+    Write-Host "  dns               - IPv4 & IPv6 DNS to Cloudflare for Ethernet and WiFi"
     Write-Host "  ssh               - automatic startup of ssh agent"
     Write-Host "  powersettings     - disables power saving modes on AC power"
     Write-Host "  envar             - setups environment variables"
@@ -222,6 +238,7 @@ function main {
 
     if ($cmd -eq "uipreferences") { set_uipreferences }
     elseif ($cmd -eq "firewall") { set_firewall }
+    elseif ($cmd -eq "dns") { set_dns }
     elseif ($cmd -eq "ssh") { set_ssh }
     elseif ($cmd -eq "powersettings") { power_settings }
     elseif ($cmd -eq "envar") { install_envar }
