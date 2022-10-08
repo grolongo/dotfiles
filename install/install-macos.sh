@@ -133,6 +133,19 @@ setup_firewall() {
     /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 }
 
+### DNS
+
+setup_dns() {
+    check_is_not_sudo
+
+    msg_info "Setting DNS to Cloudflare..."
+    networksetup -setdnsservers Wi-Fi 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
+
+    msg_info "Flushing DNS cache..."
+    sudo dscacheutil -flushcache
+    sudo killall -HUP mDNSResponder
+}
+
 ### Hostname
 
 change_hostname() {
@@ -161,7 +174,7 @@ install_homebrew() {
     brew analytics off
 }
 
-### Brew packages
+### Brew formulaes
 
 install_base() {
     check_is_not_sudo
@@ -178,12 +191,7 @@ install_base() {
         ffmpeg
         gnupg
         jq
-        lulu
-        lynis
-        m-cli
-        mpv
         pandoc
-        qbittorrent
         shellcheck
         speedtest-cli
         streamlink
@@ -199,7 +207,7 @@ install_base() {
     brew_clean
 }
 
-### Casks
+### Brew casks
 
 install_casks() {
     check_is_not_sudo
@@ -208,15 +216,15 @@ install_casks() {
         adobe-creative-cloud
         chatty
         electrum
-        firefox
         keepassxc
-        nextcloud
-        onionshare
+        librewolf
+        lulu
+        mpv
+        qbittorrent
         rectangle
         signal
-        thunderbird
-        tor-browser
         spotify
+        tor-browser
         veracrypt
     )
 
@@ -256,6 +264,7 @@ usage() {
     echo "  dotfiles     - setting up dotfiles"
     echo "  prefsettings - setup finder, trackpad, keyboard and dock settings"
     echo "  firewall (s) - blocks incoming connection, stealth mode"
+    echo "  dns          - sets WiFi IPv4 & IPv6 DNS to Cloudflare"
     echo "  hostname (s) - changes computer hostname"
     echo "  homebrew     - setup homebrew if not installed"
     echo "  base         - installs base packages"
@@ -279,6 +288,8 @@ main() {
         setup_prefsettings
     elif [[ $cmd == "firewall" ]]; then
         setup_firewall
+    elif [[ $cmd == "dns" ]]; then
+        setup_dns
     elif [[ $cmd == "hostname" ]]; then
         change_hostname
     elif [[ $cmd == "homebrew" ]]; then
