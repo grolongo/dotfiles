@@ -361,6 +361,32 @@ install_steam() {
     apt_clean
 }
 
+### qBittorrent
+
+install_qbittorrent() {
+    check_is_sudo
+
+    apt install qbittorrent
+
+    local PLUGIN_FOLDER="$HOME/.local/share/data/qBittorrent/nova/engines"
+
+    msg_info "Downloading search plugins..."
+
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+    curl --create-dirs -L#o "$PLUGIN_FOLDER/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+}
+
 ### Signal
 
 install_signalapp() {
@@ -536,6 +562,7 @@ usage() {
     echo "  librewolf   (s) - installs librewolf repo and installs the browser"
     echo "  driveclient (s) - downloads and installs Synology Drive Client"
     echo "  steam       (s) - enables i386 and installs Steam"
+    echo "  qbittorrent (s) - installs qBittorrent and downloads plugins"
     echo "  signal      (s) - installs the Signal messenger app"
     echo "  veracrypt   (s) - downloads and installs Veracrypt"
     echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
@@ -575,6 +602,8 @@ main() {
         install_driveclient
     elif [[ $cmd == "steam" ]]; then
         install_steam
+    elif [[ $cmd == "qbittorrent" ]]; then
+        install_qbittorrent
     elif [[ $cmd == "signal" ]]; then
         install_signalapp
     elif [[ $cmd == "veracrypt" ]]; then
