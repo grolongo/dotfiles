@@ -178,7 +178,6 @@ function install_packages {
     choco install mpv
     choco install nomacs
     choco install obs-studio
-    choco install qbittorrent
     choco install shellcheck
     choco install signal --params "/NoShortcut"
     choco install simplewall
@@ -199,6 +198,30 @@ function install_packages {
     choco pin add -n telegram
     choco pin add -n thunderbird
     choco pin add -n tor-browser
+}
+
+### qBittorrent
+
+function install_qbittorrent {
+    # choco install qbittorrent
+
+    New-Variable -Name "PLUGIN_FOLDER" -Value "$HOME\AppData\Local\qBittorrent\nova3\engines"
+
+    ## RARBG and ThePirateBay should already be installed by default
+
+    Invoke-WebRequest -Uri "https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py" -OutFile "$PLUGIN_FOLDER\one337x.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py" -OutFile "$PLUGIN_FOLDER\ettv.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py" -OutFile "$PLUGIN_FOLDER\glotorrents.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py" -OutFile "$PLUGIN_FOLDER\kickasstorrents.py"
+    Invoke-WebRequest -Uri "https://scare.ca/dl/qBittorrent/magnetdl.py" -OutFile "$PLUGIN_FOLDER\magnetdl.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py" -OutFile "$PLUGIN_FOLDER\linuxtracker.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py" -OutFile "$PLUGIN_FOLDER\rutor.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py" -OutFile "$PLUGIN_FOLDER\tokyotoshokan.py"
+    Invoke-WebRequest -Uri "https://scare.ca/dl/qBittorrent/torrentdownload.py" -OutFile "$PLUGIN_FOLDER\torrentdownload.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py" -OutFile "$PLUGIN_FOLDER\torrentgalaxy.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py" -OutFile "$PLUGIN_FOLDER\yts_am.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py" -OutFile "$PLUGIN_FOLDER\rutracker.py"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py" -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
 }
 
 ### Dotfiles
@@ -226,6 +249,7 @@ function usage {
     Write-Host "  wsl               - enables WSL2 and installs Ubuntu or Debian"
     Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
     Write-Host "  packages          - downloads and installs listed packages"
+    Write-Host "  qbit              - installs qBittorrent with plugins"
     Write-Host "  dotfiles          - launches external dotfiles script"
     Write-Host
 }
@@ -248,6 +272,7 @@ function main {
     elseif ($cmd -eq "wsl") { install_wsl }
     elseif ($cmd -eq "chocolatey") { install_chocolatey }
     elseif ($cmd -eq "packages") { install_packages }
+    elseif ($cmd -eq "qbit") { install_qbittorrent }
     elseif ($cmd -eq "dotfiles") { set_dotfiles }
     else { usage }
 }

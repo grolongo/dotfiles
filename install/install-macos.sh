@@ -250,6 +250,8 @@ install_qbittorrent() {
 
     local PLUGIN_FOLDER="$HOME/Library/Application Support/qBittorrent/nova3/engines"
 
+    ## RARBG and ThePirateBay should already be installed by default
+
     msg_info "Downloading search plugins..."
     curl -L#o "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
     curl -L#o "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
