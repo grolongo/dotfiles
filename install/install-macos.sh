@@ -220,7 +220,6 @@ install_casks() {
         librewolf
         lulu
         mpv
-        qbittorrent
         rectangle
         signal
         spotify
@@ -240,6 +239,31 @@ install_casks() {
     echo
     msg_info "Cleaning up install files..."
     brew cleanup
+}
+
+### qbittorrent
+
+install_qbittorrent() {
+    check_is_not_sudo
+
+    brew install --cask qbittorrent
+
+    local PLUGIN_FOLDER="$HOME/Library/Application Support/qBittorrent/nova3/engines"
+
+    msg_info "Downloading search plugins..."
+    curl -L#o "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
+    curl -L#o "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+    curl -L#o "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+    curl -L#o "$PLUGIN_FOLDER/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+    curl -L#o "$PLUGIN_FOLDER/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
+    curl -L#o "$PLUGIN_FOLDER/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+    curl -L#o "$PLUGIN_FOLDER/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+    curl -L#o "$PLUGIN_FOLDER/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
+    curl -L#o "$PLUGIN_FOLDER/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
+    curl -L#o "$PLUGIN_FOLDER/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+    curl -L#o "$PLUGIN_FOLDER/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
+    curl -L#o "$PLUGIN_FOLDER/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+    curl -L#o "$PLUGIN_FOLDER/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
 }
 
 ### Emacs
@@ -269,6 +293,7 @@ usage() {
     echo "  homebrew     - setup homebrew if not installed"
     echo "  base         - installs base packages"
     echo "  casks        - setup caskroom & installs softwares"
+    echo "  qbit         - installs qBittorrent with plugins"
     echo "  emacs        - building our own Emacs"
     echo
 }
@@ -298,6 +323,8 @@ main() {
         install_base
     elif [[ $cmd == "casks" ]]; then
         install_casks
+    elif [[ $cmd == "qbit" ]]; then
+        install_qbittorrent
     elif [[ $cmd == "emacs" ]]; then
         install_emacs
     else
