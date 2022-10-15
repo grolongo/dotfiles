@@ -1,7 +1,8 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 set -e
+set -u
 set -o pipefail
+IFS=$'\n\t'
 
 ### Recurring functions
 
@@ -549,7 +550,6 @@ install_dotfiles() {
 
 usage() {
     echo
-    echo "This script installs my basic setup for a server."
     echo
     echo "Usage:"
     echo "  repo        (s) - disables translations, updates, upgrades and full-upgrades to unstable"
@@ -622,3 +622,4 @@ main() {
 }
 
 main "$@"
+
