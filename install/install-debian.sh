@@ -493,8 +493,8 @@ install_tor() {
 
     msg_info "Adding Tor Project repository to the apt sources"
     cat <<-EOF > /etc/apt/sources.list.d/tor.list
-    deb     [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
-    deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
+	deb     [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
+	deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
 	EOF
 
     msg_info "Add the gpg key used to sign the packages"

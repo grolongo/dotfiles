@@ -1,7 +1,8 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 set -e
+set -u
 set -o pipefail
+IFS=$'\n\t'
 
 ### Recurring functions
 
@@ -116,15 +117,15 @@ initial_setup() {
 
   confirm "Disable Bluetooth and WiFi?" && {
     cat <<-EOF > /etc/modprobe.d/raspi-blacklist.conf
-		# disable WLAN
-		blacklist brcmfmac
-		blacklist brcmutil
-		blacklist cfg80211
-		blacklist rfkill
-		# disable bluetooth
-		blacklist btbcm
-		blacklist hci_uart
-		EOF
+	# disable WLAN
+	blacklist brcmfmac
+	blacklist brcmutil
+	blacklist cfg80211
+	blacklist rfkill
+	# disable bluetooth
+	blacklist btbcm
+	blacklist hci_uart
+	EOF
 
     systemctl disable hciuart
   }
@@ -180,11 +181,11 @@ install_docker() {
 
     confirm "Enable IPv6?" && {
         sudo bash -c 'cat <<-EOF > /etc/docker/daemon.json
-        {
-        "ipv6": true,
-        "fixed-cidr-v6": "2001:db8:1::/64"
-        }
-        EOF'
+		{
+		"ipv6": true,
+		"fixed-cidr-v6": "2001:db8:1::/64"
+		}
+		EOF'
 
         msg_info "Restarting Docker..."
         sudo systemctl restart docker
