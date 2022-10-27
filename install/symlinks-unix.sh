@@ -4,11 +4,8 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-# check if running compatible OS
-[[ $OSTYPE = darwin* || $OSTYPE = linux* ]] || { echo >&2 "You are not running macOS or Linux. Exiting."; exit 1; }
-
 # check if we are in the correct folder
-[[ -e symlinks-unix.sh ]] || { echo >&2 "Please cd into the install dir before running this script."; exit 1; }
+[ -e symlinks-unix.sh ] || { printf >&2 "Please cd into the install dir before running this script.\n"; exit 1; }
 
 # base variable for where are our dotfiles
 base="${PWD%/*}"
@@ -25,7 +22,7 @@ confirm() {
                 return 1
                 ;;
             *)
-                echo "Please enter yes or no."
+                printf "Please enter yes or no.\n"
                 ;;
         esac
     done
@@ -36,8 +33,8 @@ symlink() {
     sourcefile="$base"/"$1"
     targetlink="$HOME"/"$1"
 
-    if [[ ! -e "$sourcefile" ]]; then
-        echo >&2 "$sourcefile doesn't exist"
+    if [ ! -e "$sourcefile" ]; then
+        printf >&2 "$sourcefile doesn't exist\n"
     else
         ln -sniv "$sourcefile" "$targetlink"
     fi
@@ -126,7 +123,7 @@ confirm "Install symlinks for $USER?" && {
 
     # streamlink
     confirm "link streamlink config file?" && {
-        if [[ $OSTYPE = darwin* ]]; then
+        if [ "$(uname)" = Darwin ]; then
             ln -sniv "$base/.config/streamlink/config" "$HOME/Library/Application Support/streamlink/config"
         else
             mkdir -vp "$HOME"/.config/streamlink

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 set -u
 set -o pipefail
@@ -10,27 +10,21 @@ msg_info() {
     yellow='\033[33m'
     nc='\033[0m'
     echo
-    echo -e "${yellow}$1${nc}"
+    printf "${yellow}$1${nc}"
 }
 
 msg_error() {
     red='\033[91m'
     nc='\033[0m'
-    echo -e "${red}$1${nc}" >&2
+    printf "${red}$1${nc}" >&2
 }
 
 check_is_sudo() {
-    if [ "$EUID" -ne 0 ]; then
-        msg_error "Requires root privileges. Use sudo."
-        exit 1
-    fi
+    [ "$(id -u)" -ne 0 ] && { msg_error "Requires root privileges. Use sudo."; exit 1; }
 }
 
 check_is_not_sudo() {
-    if [ ! "$EUID" -ne 0 ]; then
-        msg_error "Don't run this as sudo."
-        exit 1
-    fi
+    [ ! "$(id -u)" -ne 0 ] && { msg_error "Don't run this as sudo."; exit 1; }
 }
 
 confirm() {
@@ -61,14 +55,14 @@ brew_clean() {
 }
 
 # check if running macOS
-[[ ! $OSTYPE = darwin* ]] && { msg_error "You are not running macOS, exiting."; exit 1; }
+[ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
 
 ### Dotfiles
 
 install_dotfiles() {
     check_is_not_sudo
 
-    [[ -e symlinks-unix.sh ]] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
+    [ -e symlinks-unix.sh ] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
 
     msg_info "Launching external symlinks script..."
     ./symlinks-unix.sh
@@ -302,33 +296,33 @@ usage() {
 }
 
 main() {
-    local cmd=$1
+    local cmd="$1"
 
     # return error if nothing is specified
-    if [[ -z "$cmd" ]]; then
+    if [ -z "$cmd" ]; then
         usage
         exit 1
     fi
 
-    if [[ $cmd == "dotfiles" ]]; then
+    if [ "$cmd" = "dotfiles" ]; then
         install_dotfiles
-    elif [[ $cmd == "prefsettings" ]]; then
+    elif [ "$cmd" = "prefsettings" ]; then
         setup_prefsettings
-    elif [[ $cmd == "firewall" ]]; then
+    elif [ "$cmd" = "firewall" ]; then
         setup_firewall
-    elif [[ $cmd == "dns" ]]; then
+    elif [ "$cmd" = "dns" ]; then
         setup_dns
-    elif [[ $cmd == "hostname" ]]; then
+    elif [ "$cmd" = "hostname" ]; then
         change_hostname
-    elif [[ $cmd == "homebrew" ]]; then
+    elif [ "$cmd" = "homebrew" ]; then
         install_homebrew
-    elif [[ $cmd == "base" ]]; then
+    elif [ "$cmd" = "base" ]; then
         install_base
-    elif [[ $cmd == "casks" ]]; then
+    elif [ "$cmd" = "casks" ]; then
         install_casks
-    elif [[ $cmd == "qbit" ]]; then
+    elif [ "$cmd" = "qbit" ]; then
         install_qbittorrent
-    elif [[ $cmd == "emacs" ]]; then
+    elif [ "$cmd" = "emacs" ]; then
         install_emacs
     else
         usage
@@ -336,3 +330,4 @@ main() {
 }
 
 main "$@"
+

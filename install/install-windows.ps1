@@ -115,7 +115,7 @@ function install_envar {
 function change_hostname {
     $computername = Read-Host -Prompt "What name do you want? (e.g. 'windesk')"
     if ($env:computername -ne $computername) {
-	Rename-Computer -NewName $computername
+        Rename-Computer -NewName $computername
     }
 
     Write-Host -ForegroundColor "yellow" "Restart to take effect."
