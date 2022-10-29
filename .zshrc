@@ -1,4 +1,4 @@
-if [[ -r "$HOME/.aliases" ]] && [[ -f "$HOME/.aliases" ]]; then
+if [ -r "$HOME/.aliases" ] && [ -f "$HOME/.aliases" ]; then
     . "$HOME/.aliases"
 fi
 
@@ -67,11 +67,11 @@ zstyle ':completion:*:ssh:argument-1:*' tag-order hosts
 # only pick hostnames from our ssh config file
 
 h=()
-if [[ -r ~/.ssh/config ]]; then
+if [ -r ~/.ssh/config ]; then
     h=($h ${${${(@M)${(f)"$(< ~/.ssh/config)"}:#Host *}#Host }:#*[*?]*})
 fi
 
-if [[ $#h -gt 0 ]]; then
+if [ $#h -gt 0 ]; then
     zstyle ':completion:*:(ssh|scp|sftp|slogin):*' hosts $h
 fi
 
@@ -98,12 +98,10 @@ else
     hostStyle="%F{8}%m" # grey
 fi
 
-PROMPT='%B['
-PROMPT+='%(!.%F{red}.%F{green})%n%f'
+PROMPT='%B%(!.%F{red}.%F{green})%n%f'
 PROMPT+='@'
 PROMPT+='$hostStyle '
 PROMPT+='%F{blue}%~%f'
 PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
-PROMPT+=']'
 PROMPT+='%# '
 PROMPT+='%b%E'
