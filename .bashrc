@@ -85,7 +85,7 @@ PS1+="\[\e[1;37m\]@";                   # @
 PS1+="${hostStyle}\h ";                 # hostname
 PS1+="\[\e[1;34m\]\w";                  # working dir
 PS1+="\[\e[1;36m\]\$(git_branch_name)"; # git repository details
-PS1+="\[\e[1;37m\]\$";                  # $
+PS1+="\[\e[1;37m\] \$";                 # $
 PS1+="\[\e[0m\] ";                      # reset colors
 
 export PS1;
