@@ -413,165 +413,165 @@ install_veracrypt() {
         exit 1
         msg_info "Deleting temp folder...\n"
         rm -rf "$tmpdir"
-    }
+}
 
-    ### Chatty
+### Chatty
 
-    install_chatty() {
-        check_is_sudo
+install_chatty() {
+    check_is_sudo
 
-        command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path.\n"; exit 1; }
 
-        msg_info "Installing java runtime environment...\n"
-        apt install default-jre
+    msg_info "Installing java runtime environment...\n"
+    apt install default-jre
 
-        local chatty_latest
-        chatty_latest=$(curl -sSL "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
-        chatty_latest=${chatty_latest#v}
+    local chatty_latest
+    chatty_latest=$(curl -sSL "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
+    chatty_latest=${chatty_latest#v}
 
-        local repo="https://github.com/chatty/chatty/releases/download/"
-        local release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
+    local repo="https://github.com/chatty/chatty/releases/download/"
+    local release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
 
-        local tmpdir
-        tmpdir=$(mktemp -d)
+    local tmpdir
+    tmpdir=$(mktemp -d)
 
-        (
-            msg_info "Creating temporary folder...\n"
-            cd "$tmpdir" || exit 1
+    (
+        msg_info "Creating temporary folder...\n"
+        cd "$tmpdir" || exit 1
 
-            msg_info "Creating Chatty dir in home folder...\n"
-            mkdir -vp /opt/Chatty
+        msg_info "Creating Chatty dir in home folder...\n"
+        mkdir -vp /opt/Chatty
 
-            msg_info "Downloading and extracting Chatty...\n"
-            curl -#OL "${repo}${release}"
-            unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
-        )
+        msg_info "Downloading and extracting Chatty...\n"
+        curl -#OL "${repo}${release}"
+        unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
+    )
 
-        msg_info "Deleting temp folder...\n"
-        rm -rf "$tmpdir"
-    }
+    msg_info "Deleting temp folder...\n"
+    rm -rf "$tmpdir"
+}
 
-    ### Tor
+### Tor
 
-    install_tor() {
-        check_is_sudo
+install_tor() {
+    check_is_sudo
 
-        msg_info "Installing apt-transport-https...\n"
-        apt install apt-transport-https -y
+    msg_info "Installing apt-transport-https...\n"
+    apt install apt-transport-https -y
 
-        msg_info "Adding Tor Project repository to the apt sources\n"
-        cat <<-EOF > /etc/apt/sources.list.d/tor.list
+    msg_info "Adding Tor Project repository to the apt sources\n"
+    cat <<-EOF > /etc/apt/sources.list.d/tor.list
 	deb     [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
 	deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
 	EOF
 
-        msg_info "Add the gpg key used to sign the packages\n"
-        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/tor-archive-keyring.gpg >/dev/null
+    msg_info "Add the gpg key used to sign the packages\n"
+    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/tor-archive-keyring.gpg >/dev/null
 
-        apt update
-        apt install deb.torproject.org-keyring -y
-        apt install tor
-        apt install torbrowser-launcher
-    }
+    apt update
+    apt install deb.torproject.org-keyring -y
+    apt install tor
+    apt install torbrowser-launcher
+}
 
-    ### Remove Snaps
+### Remove Snaps
 
-    remove_snap() {
-        [ ! "$ID" = ubuntu ] && { msg_error "snap is for Ubuntu only, exiting.\n"; exit 1; }
+remove_snap() {
+    [ ! "$ID" = ubuntu ] && { msg_error "snap is for Ubuntu only, exiting.\n"; exit 1; }
 
-        sudo apt-get update && sudo apt-get upgrade
-        check_is_sudo
+    sudo apt-get update && sudo apt-get upgrade
+    check_is_sudo
 
-        msg_info "Stopping snapd service...\n"
-        systemctl stop snapd
-        sleep 5
+    msg_info "Stopping snapd service...\n"
+    systemctl stop snapd
+    sleep 5
 
-        msg_info "Disabling snapd service...\n"
-        systemctl disable snapd
-        sleep 5
+    msg_info "Disabling snapd service...\n"
+    systemctl disable snapd
+    sleep 5
 
-        msg_info "Uninstalling snapd and purging contents...\n"
-        apt autoremove --purge snapd gnome-software-plugin-snap
-        rm -rf ~/snap /snap /var/snap /var/cache/snapd /var/lib/snapd /usr/lib/snapd
+    msg_info "Uninstalling snapd and purging contents...\n"
+    apt autoremove --purge snapd gnome-software-plugin-snap
+    rm -rf ~/snap /snap /var/snap /var/cache/snapd /var/lib/snapd /usr/lib/snapd
 
-        msg_info "Preventing snapd to be automatically installed by APT...\n"
-        cat <<-EOF > /etc/apt/preferences.d/nosnap.pref
+    msg_info "Preventing snapd to be automatically installed by APT...\n"
+    cat <<-EOF > /etc/apt/preferences.d/nosnap.pref
 	Package: snapd
 	Pin: release a=*
 	Pin-Priority: -10
 	Package: snapd
 	EOF
 
-        msg_info "You can edit /etc/environment and remove snap from the PATH.\n"
-    }
+    msg_info "You can edit /etc/environment and remove snap from the PATH.\n"
+}
 
-    ### Menu
+### Menu
 
-    usage() {
-        echo
-        echo
-        echo "Usage:"
-        echo "  repo        (s) - no translations and full-upgrade to Debian Unstable (Sid)"
-        echo "  isetup      (s) - passwordless sudo and lock root"
-        echo "  aptcommon   (s) - installs few packages"
-        echo "  graphics    (s) - installs graphics drivers for X"
-        echo "  gsettings       - configures Gnome settings"
-        echo "  i3          (s) - installs and sets up i3wm related configs"
-        echo "  librewolf   (s) - installs librewolf repo and installs the browser"
-        echo "  driveclient (s) - downloads and installs Synology Drive Client"
-        echo "  steam       (s) - enables i386 and installs Steam"
-        echo "  qbittorrent (s) - installs qBittorrent and downloads plugins"
-        echo "  signal      (s) - installs the Signal messenger app"
-        echo "  veracrypt   (s) - downloads and installs Veracrypt"
-        echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
-        echo "  tor         (s) - setup Tor Project repository with signatures and installs tor"
-        echo "  snap        (s) - removes snapd and installed snap packaged on Ubuntu"
-        echo
-    }
+usage() {
+    echo
+    echo
+    echo "Usage:"
+    echo "  repo        (s) - no translations and full-upgrade to Debian Unstable (Sid)"
+    echo "  isetup      (s) - passwordless sudo and lock root"
+    echo "  aptcommon   (s) - installs few packages"
+    echo "  graphics    (s) - installs graphics drivers for X"
+    echo "  gsettings       - configures Gnome settings"
+    echo "  i3          (s) - installs and sets up i3wm related configs"
+    echo "  librewolf   (s) - installs librewolf repo and installs the browser"
+    echo "  driveclient (s) - downloads and installs Synology Drive Client"
+    echo "  steam       (s) - enables i386 and installs Steam"
+    echo "  qbittorrent (s) - installs qBittorrent and downloads plugins"
+    echo "  signal      (s) - installs the Signal messenger app"
+    echo "  veracrypt   (s) - downloads and installs Veracrypt"
+    echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
+    echo "  tor         (s) - setup Tor Project repository with signatures and installs tor"
+    echo "  snap        (s) - removes snapd and installed snap packaged on Ubuntu"
+    echo
+}
 
-    main() {
-        local cmd="$1"
+main() {
+    local cmd="$1"
 
-        # return error if nothing is specified
-        if [ -z "$cmd" ]; then
-            usage
-            exit 1
-        fi
+    # return error if nothing is specified
+    if [ -z "$cmd" ]; then
+        usage
+        exit 1
+    fi
 
-        if [ "$cmd" = "repo" ]; then
-            repo_sources
-        elif [ "$cmd" = "isetup" ]; then
-            initial_setup
-        elif [ "$cmd" = "aptcommon" ]; then
-            apt_common
-        elif [ "$cmd" = "graphics" ]; then
-            install_graphics
-        elif [ "$cmd" = "gsettings" ]; then
-            set_gsettings
-        elif [ "$cmd" = "i3" ]; then
-            set_i3wm
-        elif [ "$cmd" = "librewolf" ]; then
-            install_librewolf
-        elif [ "$cmd" = "driveclient" ]; then
-            install_driveclient
-        elif [ "$cmd" = "steam" ]; then
-            install_steam
-        elif [ "$cmd" = "qbittorrent" ]; then
-            install_qbittorrent
-        elif [ "$cmd" = "signal" ]; then
-            install_signalapp
-        elif [ "$cmd" = "veracrypt" ]; then
-            install_veracrypt
-        elif [ "$cmd" = "chatty" ]; then
-            install_chatty
-        elif [ "$cmd" = "tor" ]; then
-            install_tor
-        elif [ "$cmd" = "snap" ]; then
-            remove_snap
-        else
-            usage
-        fi
-    }
+    if [ "$cmd" = "repo" ]; then
+        repo_sources
+    elif [ "$cmd" = "isetup" ]; then
+        initial_setup
+    elif [ "$cmd" = "aptcommon" ]; then
+        apt_common
+    elif [ "$cmd" = "graphics" ]; then
+        install_graphics
+    elif [ "$cmd" = "gsettings" ]; then
+        set_gsettings
+    elif [ "$cmd" = "i3" ]; then
+        set_i3wm
+    elif [ "$cmd" = "librewolf" ]; then
+        install_librewolf
+    elif [ "$cmd" = "driveclient" ]; then
+        install_driveclient
+    elif [ "$cmd" = "steam" ]; then
+        install_steam
+    elif [ "$cmd" = "qbittorrent" ]; then
+        install_qbittorrent
+    elif [ "$cmd" = "signal" ]; then
+        install_signalapp
+    elif [ "$cmd" = "veracrypt" ]; then
+        install_veracrypt
+    elif [ "$cmd" = "chatty" ]; then
+        install_chatty
+    elif [ "$cmd" = "tor" ]; then
+        install_tor
+    elif [ "$cmd" = "snap" ]; then
+        remove_snap
+    else
+        usage
+    fi
+}
 
-    main "$@"
+main "$@"
 
