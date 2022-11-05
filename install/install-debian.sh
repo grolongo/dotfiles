@@ -280,9 +280,17 @@ install_librewolf() {
     check_is_sudo
 
     distro=$(if echo " bullseye focal impish jammy uma una " | grep -q " $(lsb_release -sc) "; then echo "$(lsb_release -sc)"; else echo focal; fi)
-    wget -O- https://deb.librewolf.net/keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
-    echo "deb [arch=amd64] http://deb.librewolf.net $distro main" | sudo tee /etc/apt/sources.list.d/librewolf.list
-    wget https://deb.librewolf.net/keyring.gpg -O /etc/apt/trusted.gpg.d/librewolf.gpg
+    wget -O- https://deb.librewolf.net/keyring.gpg | gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
+
+    tee /etc/apt/sources.list.d/librewolf.sources <<-EOF > /dev/null
+	Types: deb
+	URIs: https://deb.librewolf.net
+	Suites: $distro
+	Components: main
+	Architectures: amd64
+	Signed-By: /usr/share/keyrings/librewolf.gpg
+	EOF
+
     apt update
     apt install librewolf -y
 }
@@ -292,7 +300,7 @@ install_librewolf() {
 install_driveclient() {
     check_is_sudo
 
-    local source="https://global.download.synology.com/download/Utility/SynologyDriveClient/3.1.0-12920/Ubuntu/Installer/x86_64/synology-drive-client-12920.x86_64.deb"
+    local source="https://global.download.synology.com/download/Utility/SynologyDriveClient/3.2.0-13238/Ubuntu/Installer/x86_64/synology-drive-client-13238.x86_64.deb"
 
     local tmpdir
     tmpdir="$(mktemp -d)"
@@ -482,12 +490,18 @@ remove_snap() {
     sudo apt-get update && sudo apt-get upgrade
     check_is_sudo
 
-    msg_info "Stopping snapd service...\n"
-    systemctl stop snapd
-    sleep 5
+    msg_info "Removing Firefox as a snap\n"
+    snap remove firefox
 
     msg_info "Disabling snapd service...\n"
-    systemctl disable snapd
+    systemctl stop snapd.service
+    systemctl stop snapd.socket
+    systemctl stop snapd.seeded.service
+    sleep 5
+
+    systemctl disable snapd.service
+    systemctl disable snapd.socket
+    systemctl disable snapd.seeded.service
     sleep 5
 
     msg_info "Uninstalling snapd and purging contents...\n"
