@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -e
-set -u
 set -o pipefail
 IFS=$'\n\t'
 
@@ -147,7 +146,6 @@ apt_common() {
         mu4e
         netcat-openbsd
         pandoc
-        qbittorrent
         rtorrent
         shellcheck
         streamlink
@@ -156,7 +154,7 @@ apt_common() {
         virt-manager
         wget
         xterm
-        ytb-dl
+        yt-dlp
     )
 
     for p in "${packages[@]}"; do
@@ -345,10 +343,10 @@ install_qbittorrent() {
 
     apt install qbittorrent
 
-    local PLUGIN_FOLDER="$HOME/.local/share/data/qBittorrent/nova/engines"
-
     msg_info "Downloading search plugins...\n"
 
+    sudo -u "$SUDO_USER" bash -c '
+    PLUGIN_FOLDER="$HOME/.local/share/data/qBittorrent/nova/engines"
     curl --create-dirs -L#o "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
     curl --create-dirs -L#o "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
     curl --create-dirs -L#o "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
@@ -362,6 +360,7 @@ install_qbittorrent() {
     curl --create-dirs -L#o "$PLUGIN_FOLDER/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
     curl --create-dirs -L#o "$PLUGIN_FOLDER/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
     curl --create-dirs -L#o "$PLUGIN_FOLDER/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+    '
 }
 
 ### Signal
