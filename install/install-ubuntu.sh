@@ -60,51 +60,17 @@ apt_clean() {
     apt clean
 }
 
-### OS check if running Debian/Ubuntu
+### Ubuntu OS check
 
 # sourcing /etc/os-release file which contains $ID variable
 if [ -f /etc/os-release ]; then
     . /etc/os-release
 else
-    msg_error "You are not running either Debian or Ubuntu, exiting.\n"
+    msg_error "Not running Ubuntu, exiting.\n"
     exit 1
 fi
 
-if [ ! "$ID" = debian ] && [ ! "$ID" = ubuntu ]; then
-    msg_error "You are not running either Debian or Ubuntu, exiting.\n"
-    exit 1
-fi
-
-### Apt sources
-
-repo_sources() {
-    [ ! "$ID" = debian ] && { msg_error "Repositories for Debian only, exiting.\n"; exit 1; }
-
-    check_is_sudo
-
-    msg_info "Disabling translations to speed-up updates...\n"
-    mkdir -vp /etc/apt/apt.conf.d
-    echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/99disable-translations
-
-    msg_info "Adding sid repository to the apt sources...\n"
-    cat <<-EOF > /etc/apt/sources.list
-	deb http://deb.debian.org/debian unstable main contrib non-free
-	deb-src http://deb.debian.org/debian unstable main contrib non-free
-	EOF
-
-    msg_info "First update of the machine...\n"
-    apt update
-
-    msg_info "First upgrade of the machine...\n"
-    apt upgrade
-
-    msg_info "Doing a final full-upgrade...\n"
-    apt full-upgrade
-
-    apt_clean
-
-    msg_info "Please reboot the computer.\n"
-}
+[ ! "$ID" = ubuntu ] && { msg_error "Not running Ubuntu, exiting.\n"; exit 1; }
 
 ### Initial setup
 
@@ -134,7 +100,6 @@ apt_common() {
         exiftool
         ffmpeg
         ffmpegthumbnailer
-        fonts-dejavu
         git
         imagemagick
         jq
@@ -166,38 +131,13 @@ apt_common() {
     apt_clean
 }
 
-install_graphics() {
+### snaps
+
+snaps() {
     check_is_sudo
 
-    local system=$1
-
-    if [ -z "$system" ]; then
-        echo "You need to specify whether it's intel, nvidia or optimus"
-        exit 1
-    fi
-
-    local pkgs=( xorg xserver-xorg xserver-xorg-input-libinput xserver-xorg-input-synaptics )
-
-    case $system in
-        "intel")
-            pkgs+=( xserver-xorg-video-intel )
-            ;;
-        "nvidia")
-            pkgs+=( nvidia-driver )
-            ;;
-        "optimus")
-            pkgs+=( nvidia-kernel-dkms bumblebee-nvidia primus )
-            ;;
-        *)
-            echo "You need to specify whether it's intel, geforce or optimus"
-            exit 1
-            ;;
-    esac
-
-    msg_info "Installing graphics drivers...\n"
-    apt install -y "${pkgs[@]}" --no-install-recommends
-
-    apt_clean
+    snap install emacs --classic
+    snap install maildir-utils
 }
 
 ### Gnome
@@ -209,9 +149,7 @@ set_gsettings() {
 
     # Files (Nautilus)
     dconf write /org/gtk/settings/file-chooser/show-hidden true
-    dconf write /org/gtk/settings/file-chooser/sort-directories-first true
     gsettings set org.gnome.nautilus.preferences show-image-thumbnails always
-    gsettings set org.gnome.nautilus.icon-view default-zoom-level standard
 
     # Settings
     gsettings set org.gnome.desktop.notifications show-in-lock-screen false
@@ -223,20 +161,15 @@ set_gsettings() {
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
 
     # Tweaks
-    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
     gsettings set org.gnome.desktop.interface enable-animations false
     gsettings set org.gnome.desktop.interface gtk-key-theme Emacs
     gsettings set org.gnome.desktop.peripherals.mouse accel-profile flat
-    gsettings set org.gnome.desktop.interface enable-hot-corners false
     gsettings set org.gnome.desktop.interface clock-show-date false
-    gsettings set org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close
     gsettings set org.gnome.desktop.input-sources xkb-options [\'caps:ctrl_modifier\']
 
     # Desktop Icon NG
     gsettings set org.gnome.shell.extensions.ding icon-size 'small'
     gsettings set org.gnome.shell.extensions.ding show-home false
-    gsettings set org.gnome.shell.extensions.ding show-volumes true
-    gsettings set org.gnome.shell.extensions.ding show-network-volumes true
 
     # Ubuntu AppIndicator
     gsettings set org.gnome.shell.extensions.appindicator icon-opacity 255
@@ -270,7 +203,7 @@ set_i3wm() {
 install_librewolf() {
     check_is_sudo
 
-    distro=$(if echo " bullseye focal impish jammy uma una " | grep -q " $(lsb_release -sc) "; then echo "$(lsb_release -sc)"; else echo focal; fi)
+    distro=$(if echo " bullseye focal impish jammy uma una vanessa" | grep -q " $(lsb_release -sc) "; then echo $(lsb_release -sc); else echo focal; fi)
     wget -O- https://deb.librewolf.net/keyring.gpg | gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
 
     tee /etc/apt/sources.list.d/librewolf.sources <<-EOF > /dev/null
@@ -361,8 +294,6 @@ install_qbittorrent() {
 install_signalapp() {
     check_is_sudo
 
-    command -v wget >/dev/null 2>&1 || { msg_error "You need wget to continue. Make sure it is installed and in your path.\n"; exit 1; }
-
     msg_info  "Install official public software signing key\n"
     wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg
     cat signal-desktop-keyring.gpg | tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
@@ -380,39 +311,9 @@ install_signalapp() {
 install_veracrypt() {
     check_is_sudo
 
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path.\n"; exit 1; }
-
-    local vc_latest
-    vc_latest=$(curl -sSL "https://api.github.com/repos/veracrypt/VeraCrypt/releases/latest" | jq --raw-output .tag_name)
-    vc_latest=${vc_latest#VeraCrypt_}
-
-    local repo="https://github.com/veracrypt/VeraCrypt/releases/download/"
-    local release_debian="VeraCrypt_${vc_latest}/veracrypt-${vc_latest}-Debian-11-amd64.deb"
-    local release_ubuntu="VeraCrypt_${vc_latest}/veracrypt-${vc_latest}-Ubuntu-20.04-amd64.deb"
-
-    if [ "$ID" = ubuntu ]; then
-        local source="${repo}${release_ubuntu}"
-    else
-        local source="${repo}${release_debian}"
-    fi
-
-        local tmpdir
-        tmpdir=$(mktemp -d)
-
-        (
-            msg_info "Creating temporary folder...\n"
-            cd "$tmpdir" || exit 1
-            cd "/home/max/Downloads"
-
-            msg_info "Downloading and installing Veracrypt...\n"
-            #curl -#L "$source" --output veracrypt.deb
-            curl -#L -O "$source"
-            #apt install ./veracrypt.deb
-        )
-
-        exit 1
-        msg_info "Deleting temp folder...\n"
-        rm -rf "$tmpdir"
+    add-apt-repository ppa:unit193/encryption
+    apt update
+    apt install veracrypt
 }
 
 ### Chatty
@@ -456,13 +357,16 @@ install_chatty() {
 install_tor() {
     check_is_sudo
 
+    local distrib
+    distrib=$(lsb_release -sc)
+
     msg_info "Installing apt-transport-https...\n"
     apt install apt-transport-https -y
 
     msg_info "Adding Tor Project repository to the apt sources\n"
     cat <<-EOF > /etc/apt/sources.list.d/tor.list
-	deb     [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
-	deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
+	deb     [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org $distrib main
+	deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org $distrib main
 	EOF
 
     msg_info "Add the gpg key used to sign the packages\n"
@@ -474,16 +378,52 @@ install_tor() {
     apt install torbrowser-launcher
 }
 
+### Remove Snaps
+
+remove_snap() {
+    [ ! "$ID" = ubuntu ] && { msg_error "snap is for Ubuntu only, exiting.\n"; exit 1; }
+
+    sudo apt-get update && sudo apt-get upgrade
+    check_is_sudo
+
+    msg_info "Removing Firefox as a snap\n"
+    snap remove firefox
+
+    msg_info "Disabling snapd service...\n"
+    systemctl stop snapd.service
+    systemctl stop snapd.socket
+    systemctl stop snapd.seeded.service
+    sleep 5
+
+    systemctl disable snapd.service
+    systemctl disable snapd.socket
+    systemctl disable snapd.seeded.service
+    sleep 5
+
+    msg_info "Uninstalling snapd and purging contents...\n"
+    apt autoremove --purge snapd gnome-software-plugin-snap
+    rm -rf ~/snap /snap /var/snap /var/cache/snapd /var/lib/snapd /usr/lib/snapd
+
+    msg_info "Preventing snapd to be automatically installed by APT...\n"
+    cat <<-EOF > /etc/apt/preferences.d/nosnap.pref
+	Package: snapd
+	Pin: release a=*
+	Pin-Priority: -10
+	Package: snapd
+	EOF
+
+    msg_info "You can edit /etc/environment and remove snap from the PATH.\n"
+}
+
 ### Menu
 
 usage() {
     echo
     echo
     echo "Usage:"
-    echo "  repo        (s) - no translations and full-upgrade to Debian Unstable (Sid)"
     echo "  isetup      (s) - passwordless sudo and lock root"
     echo "  aptcommon   (s) - installs few packages"
-    echo "  graphics    (s) - installs graphics drivers for X"
+    echo "  snaps       (s) - installs few snaps"
     echo "  gsettings       - configures Gnome settings"
     echo "  i3          (s) - installs and sets up i3wm related configs"
     echo "  librewolf   (s) - installs librewolf repo and installs the browser"
@@ -491,9 +431,10 @@ usage() {
     echo "  steam       (s) - enables i386 and installs Steam"
     echo "  qbittorrent (s) - installs qBittorrent and downloads plugins"
     echo "  signal      (s) - installs the Signal messenger app"
-    echo "  veracrypt   (s) - downloads and installs Veracrypt"
+    echo "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA"
     echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
     echo "  tor         (s) - setup Tor Project repository with signatures and installs tor"
+    echo "  snap        (s) - removes snapd and installed snap packaged on Ubuntu"
     echo
 }
 
@@ -506,14 +447,12 @@ main() {
         exit 1
     fi
 
-    if [ "$cmd" = "repo" ]; then
-        repo_sources
-    elif [ "$cmd" = "isetup" ]; then
+    if [ "$cmd" = "isetup" ]; then
         initial_setup
     elif [ "$cmd" = "aptcommon" ]; then
         apt_common
-    elif [ "$cmd" = "graphics" ]; then
-        install_graphics
+    elif [ "$cmd" = "snaps" ]; then
+        snaps
     elif [ "$cmd" = "gsettings" ]; then
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
