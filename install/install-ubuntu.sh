@@ -96,7 +96,6 @@ apt_common() {
         aria2
         bash-completion
         curl
-        emacs
         exiftool
         ffmpeg
         ffmpegthumbnailer
@@ -105,7 +104,6 @@ apt_common() {
         jq
         keepassxc
         mpv
-        mu4e
         pandoc
         shellcheck
         streamlink
@@ -240,26 +238,6 @@ install_driveclient() {
 
     msg_info "Deleting temp folder...\n"
     rm -rf "$tmpdir"
-}
-
-### Steam
-
-install_steam() {
-    check_is_sudo
-
-    msg_info "Enable i386 architecture for Steam UI\n"
-    dpkg --add-architecture i386
-
-    msg_info "Updating new packages...\n"
-    apt update
-
-    msg_info "Installing additional Nvidia drivers...\n"
-    apt install nvidia-driver-libs:i386 --no-install-recommends
-
-    msg_info "Installing Steam...\n"
-    apt install steam --no-install-recommends
-
-    apt_clean
 }
 
 ### qBittorrent
@@ -428,13 +406,12 @@ usage() {
     echo "  i3          (s) - installs and sets up i3wm related configs"
     echo "  librewolf   (s) - installs librewolf repo and installs the browser"
     echo "  driveclient (s) - downloads and installs Synology Drive Client"
-    echo "  steam       (s) - enables i386 and installs Steam"
     echo "  qbittorrent (s) - installs qBittorrent and downloads plugins"
     echo "  signal      (s) - installs the Signal messenger app"
     echo "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA"
     echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
     echo "  tor         (s) - setup Tor Project repository with signatures and installs tor"
-    echo "  snap        (s) - removes snapd and installed snap packaged on Ubuntu"
+    echo "  rmsnaps     (s) - removes snapd and installed snap packaged on Ubuntu"
     echo
 }
 
@@ -461,8 +438,6 @@ main() {
         install_librewolf
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
-    elif [ "$cmd" = "steam" ]; then
-        install_steam
     elif [ "$cmd" = "qbittorrent" ]; then
         install_qbittorrent
     elif [ "$cmd" = "signal" ]; then
@@ -473,7 +448,7 @@ main() {
         install_chatty
     elif [ "$cmd" = "tor" ]; then
         install_tor
-    elif [ "$cmd" = "snap" ]; then
+    elif [ "$cmd" = "rmsnaps" ]; then
         remove_snap
     else
         usage
