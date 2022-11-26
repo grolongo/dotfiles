@@ -175,6 +175,7 @@ function install_packages {
     choco install librewolf
     choco install keepass
     choco install microsoft-windows-terminal
+    choco install mkvtoolnix
     choco install mpv
     choco install nomacs
     choco install obs-studio

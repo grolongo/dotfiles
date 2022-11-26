@@ -103,6 +103,7 @@ apt_common() {
         imagemagick
         jq
         keepassxc
+        mkvtoolnix
         mpv
         pandoc
         shellcheck

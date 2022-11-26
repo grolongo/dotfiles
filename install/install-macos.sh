@@ -186,6 +186,7 @@ install_base() {
         ffmpeg
         gnupg
         jq
+        mkvtoolnix
         pandoc
         shellcheck
         speedtest-cli
