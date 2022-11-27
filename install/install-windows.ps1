@@ -148,7 +148,7 @@ function remap_ctrltocaps {
 
 function install_wsl {
     # to change default Ubuntu: "wsl.exe --install -d Debian"
-    wsl.exe --install --distribution Ubuntu
+    wsl.exe --install
 }
 
 ### Chocolatey
