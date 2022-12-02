@@ -218,6 +218,7 @@ install_casks() {
         mpv
         rectangle
         signal
+        silentknight
         spotify
         tor-browser
         veracrypt
