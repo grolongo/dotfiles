@@ -273,7 +273,7 @@ install_emacs() {
     brew tap railwaycat/emacsmacport
 
     msg_info "Building our Emacs with custom flags..."
-    brew install emacs-mac --with-emacs-big-sur-icon --with-imagemagick --with-mac-metal
+    brew install emacs-mac --with-emacs-big-sur-icon --with-starter --with-native-compilation --with-imagemagick --with-mac-metal --with-librsvg --with-xwidgets
 }
 
 ### Menu
