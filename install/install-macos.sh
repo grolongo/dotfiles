@@ -210,6 +210,7 @@ install_casks() {
 
     local packages=(
         adobe-creative-cloud
+        caffeine
         chatty
         electrum
         keepassxc
