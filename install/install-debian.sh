@@ -7,24 +7,20 @@ IFS=$'\n\t'
 ### Recurring functions
 
 msg_info() {
-    yellow='\033[33m'
-    nc='\033[0m'
     echo
-    printf "${yellow}$1${nc}"
+    printf '\033[33m%s\033[0m\n' "$1"
 }
 
 msg_error() {
-    red='\033[91m'
-    nc='\033[0m'
-    printf "${red}$1${nc}" >&2
+    printf '\033[91m%s\033[0m\n' "$1" >&2
 }
 
 check_is_sudo() {
-    [ "$(id -u)" -ne 0 ] && { msg_error "Requires root privileges. Use sudo.\n"; exit 1; }
+    [ "$(id -u)" -ne 0 ] && { msg_error "Requires root privileges. Use sudo."; exit 1; }
 }
 
 check_is_not_sudo() {
-    [ ! "$(id -u)" -ne 0 ] && { msg_error "Don't run this as sudo.\n"; exit 1; }
+    [ ! "$(id -u)" -ne 0 ] && { msg_error "Don't run this as sudo."; exit 1; }
 }
 
 confirm() {
@@ -38,25 +34,25 @@ confirm() {
                 return 1
                 ;;
             *)
-                msg_error "Please enter yes or no.\n"
+                msg_error "Please enter yes or no."
                 ;;
         esac
     done
 }
 
 apt_install() {
-    msg_info "Installing packages...\n"
+    msg_info "Installing packages..."
     apt install -y "${packages[@]}"
 }
 
 apt_clean() {
-    msg_info "Autoremoving...\n"
+    msg_info "Autoremoving..."
     apt autoremove
 
-    msg_info "Autocleaning...\n"
+    msg_info "Autocleaning..."
     apt autoclean
 
-    msg_info "Cleaning...\n"
+    msg_info "Cleaning..."
     apt clean
 }
 
@@ -66,44 +62,44 @@ apt_clean() {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
 else
-    msg_error "You are not running either Debian or Ubuntu, exiting.\n"
+    msg_error "You are not running either Debian or Ubuntu, exiting."
     exit 1
 fi
 
 if [ ! "$ID" = debian ] && [ ! "$ID" = ubuntu ]; then
-    msg_error "You are not running either Debian or Ubuntu, exiting.\n"
+    msg_error "You are not running either Debian or Ubuntu, exiting."
     exit 1
 fi
 
 ### Apt sources
 
 repo_sources() {
-    [ ! "$ID" = debian ] && { msg_error "Repositories for Debian only, exiting.\n"; exit 1; }
+    [ ! "$ID" = debian ] && { msg_error "Repositories for Debian only, exiting."; exit 1; }
 
     check_is_sudo
 
-    msg_info "Disabling translations to speed-up updates...\n"
+    msg_info "Disabling translations to speed-up updates..."
     mkdir -vp /etc/apt/apt.conf.d
     echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/99disable-translations
 
-    msg_info "Adding sid repository to the apt sources...\n"
+    msg_info "Adding sid repository to the apt sources..."
     cat <<-EOF > /etc/apt/sources.list
 	deb http://deb.debian.org/debian unstable main contrib non-free
 	deb-src http://deb.debian.org/debian unstable main contrib non-free
 	EOF
 
-    msg_info "First update of the machine...\n"
+    msg_info "First update of the machine..."
     apt update
 
-    msg_info "First upgrade of the machine...\n"
+    msg_info "First upgrade of the machine..."
     apt upgrade
 
-    msg_info "Doing a final full-upgrade...\n"
+    msg_info "Doing a final full-upgrade..."
     apt full-upgrade
 
     apt_clean
 
-    msg_info "Please reboot the computer.\n"
+    msg_info "Please reboot the computer."
 }
 
 ### Initial setup
@@ -111,7 +107,7 @@ repo_sources() {
 initial_setup() {
     check_is_sudo
 
-    msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers\n"
+    msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers"
     echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
     echo
 
@@ -158,7 +154,7 @@ apt_common() {
         obs-studio
     )
 
-    msg_info "Installing packages with no recommends...\n"
+    msg_info "Installing packages with no recommends..."
     for p in "${packagesnore[@]}"; do
         confirm "Install $p?" && apt install -y "$p" --no-install-recommends
     done
@@ -194,7 +190,7 @@ install_graphics() {
             ;;
     esac
 
-    msg_info "Installing graphics drivers...\n"
+    msg_info "Installing graphics drivers..."
     apt install -y "${pkgs[@]}" --no-install-recommends
 
     apt_clean
@@ -205,7 +201,7 @@ install_graphics() {
 set_gsettings() {
     check_is_not_sudo
 
-    msg_info "Applying custom settings...\n"
+    msg_info "Applying custom settings..."
 
     # Files (Nautilus)
     dconf write /org/gtk/settings/file-chooser/show-hidden true
@@ -241,7 +237,7 @@ set_gsettings() {
     # Ubuntu AppIndicator
     gsettings set org.gnome.shell.extensions.appindicator icon-opacity 255
 
-    msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!\n"
+    msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
 
 ### i3wm
@@ -297,15 +293,15 @@ install_driveclient() {
     tmpdir="$(mktemp -d)"
 
     (
-        msg_info "Creating temporary folder...\n"
+        msg_info "Creating temporary folder..."
         cd "$tmpdir" || exit 1
 
-        msg_info "Downloading and installing Synology Drive Client\n"
+        msg_info "Downloading and installing Synology Drive Client"
         curl -#L "$source" --output sdc.deb
         apt install ./sdc.deb
     )
 
-    msg_info "Deleting temp folder...\n"
+    msg_info "Deleting temp folder..."
     rm -rf "$tmpdir"
 }
 
@@ -314,16 +310,16 @@ install_driveclient() {
 install_steam() {
     check_is_sudo
 
-    msg_info "Enable i386 architecture for Steam UI\n"
+    msg_info "Enable i386 architecture for Steam UI"
     dpkg --add-architecture i386
 
-    msg_info "Updating new packages...\n"
+    msg_info "Updating new packages..."
     apt update
 
-    msg_info "Installing additional Nvidia drivers...\n"
+    msg_info "Installing additional Nvidia drivers..."
     apt install nvidia-driver-libs:i386 --no-install-recommends
 
-    msg_info "Installing Steam...\n"
+    msg_info "Installing Steam..."
     apt install steam --no-install-recommends
 
     apt_clean
@@ -336,7 +332,7 @@ install_qbittorrent() {
 
     apt install qbittorrent
 
-    msg_info "Downloading search plugins...\n"
+    msg_info "Downloading search plugins..."
 
     sudo -u "$SUDO_USER" bash -c '
     PLUGIN_FOLDER="$HOME/.local/share/qBittorrent/nova3/engines"
@@ -361,17 +357,17 @@ install_qbittorrent() {
 install_signalapp() {
     check_is_sudo
 
-    command -v wget >/dev/null 2>&1 || { msg_error "You need wget to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v wget >/dev/null 2>&1 || { msg_error "You need wget to continue. Make sure it is installed and in your path."; exit 1; }
 
-    msg_info  "Install official public software signing key\n"
+    msg_info  "Install official public software signing key"
     wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg
     cat signal-desktop-keyring.gpg | tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
 
-    msg_info "Add our repository to your list of repositories\n"
+    msg_info "Add our repository to your list of repositories"
     echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' |\
         tee -a /etc/apt/sources.list.d/signal-xenial.list
 
-    msg_info "Update package database and install signal\n"
+    msg_info "Update package database and install signal"
     apt update && apt install signal-desktop
 }
 
@@ -380,7 +376,7 @@ install_signalapp() {
 install_veracrypt() {
     check_is_sudo
 
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
     local vc_latest
     vc_latest=$(curl -sSL "https://api.github.com/repos/veracrypt/VeraCrypt/releases/latest" | jq --raw-output .tag_name)
@@ -400,18 +396,18 @@ install_veracrypt() {
         tmpdir=$(mktemp -d)
 
         (
-            msg_info "Creating temporary folder...\n"
+            msg_info "Creating temporary folder..."
             cd "$tmpdir" || exit 1
             cd "/home/max/Downloads"
 
-            msg_info "Downloading and installing Veracrypt...\n"
+            msg_info "Downloading and installing Veracrypt..."
             #curl -#L "$source" --output veracrypt.deb
             curl -#L -O "$source"
             #apt install ./veracrypt.deb
         )
 
         exit 1
-        msg_info "Deleting temp folder...\n"
+        msg_info "Deleting temp folder..."
         rm -rf "$tmpdir"
 }
 
@@ -420,9 +416,9 @@ install_veracrypt() {
 install_chatty() {
     check_is_sudo
 
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
-    msg_info "Installing java runtime environment...\n"
+    msg_info "Installing java runtime environment..."
     apt install default-jre
 
     local chatty_latest
@@ -436,18 +432,18 @@ install_chatty() {
     tmpdir=$(mktemp -d)
 
     (
-        msg_info "Creating temporary folder...\n"
+        msg_info "Creating temporary folder..."
         cd "$tmpdir" || exit 1
 
-        msg_info "Creating Chatty dir in home folder...\n"
+        msg_info "Creating Chatty dir in home folder..."
         mkdir -vp /opt/Chatty
 
-        msg_info "Downloading and extracting Chatty...\n"
+        msg_info "Downloading and extracting Chatty..."
         curl -#OL "${repo}${release}"
         unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
     )
 
-    msg_info "Deleting temp folder...\n"
+    msg_info "Deleting temp folder..."
     rm -rf "$tmpdir"
 }
 
@@ -456,16 +452,16 @@ install_chatty() {
 install_tor() {
     check_is_sudo
 
-    msg_info "Installing apt-transport-https...\n"
+    msg_info "Installing apt-transport-https..."
     apt install apt-transport-https -y
 
-    msg_info "Adding Tor Project repository to the apt sources\n"
+    msg_info "Adding Tor Project repository to the apt sources"
     cat <<-EOF > /etc/apt/sources.list.d/tor.list
 	deb     [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
 	deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org unstable main
 	EOF
 
-    msg_info "Add the gpg key used to sign the packages\n"
+    msg_info "Add the gpg key used to sign the packages"
     wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/tor-archive-keyring.gpg >/dev/null
 
     apt update

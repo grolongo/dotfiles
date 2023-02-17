@@ -7,16 +7,12 @@ IFS=$'\n\t'
 ### Recurring functions
 
 msg_info() {
-    yellow='\033[33m'
-    nc='\033[0m'
     echo
-    printf "${yellow}$1${nc}"
+    printf '\033[33m%s\033[0m\n' "$1"
 }
 
 msg_error() {
-    red='\033[91m'
-    nc='\033[0m'
-    printf "${red}$1${nc}" >&2
+    printf '\033[91m%s\033[0m\n' "$1" >&2
 }
 
 check_is_sudo() {

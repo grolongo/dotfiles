@@ -7,24 +7,20 @@ IFS=$'\n\t'
 ### Recurring functions
 
 msg_info() {
-    yellow='\033[33m'
-    nc='\033[0m'
     echo
-    printf "${yellow}$1${nc}"
+    printf '\033[33m%s\033[0m\n' "$1"
 }
 
 msg_error() {
-    red='\033[91m'
-    nc='\033[0m'
-    printf "${red}$1${nc}" >&2
+    printf '\033[91m%s\033[0m\n' "$1" >&2
 }
 
 check_is_sudo() {
-    [ "$(id -u)" -ne 0 ] && { msg_error "Requires root privileges. Use sudo.\n"; exit 1; }
+    [ "$(id -u)" -ne 0 ] && { msg_error "Requires root privileges. Use sudo."; exit 1; }
 }
 
 check_is_not_sudo() {
-    [ ! "$(id -u)" -ne 0 ] && { msg_error "Don't run this as sudo.\n"; exit 1; }
+    [ ! "$(id -u)" -ne 0 ] && { msg_error "Don't run this as sudo."; exit 1; }
 }
 
 confirm() {
@@ -38,25 +34,25 @@ confirm() {
                 return 1
                 ;;
             *)
-                msg_error "Please enter yes or no.\n"
+                msg_error "Please enter yes or no."
                 ;;
         esac
     done
 }
 
 apt_install() {
-    msg_info "Installing packages...\n"
+    msg_info "Installing packages..."
     apt install -y "${packages[@]}"
 }
 
 apt_clean() {
-    msg_info "Autoremoving...\n"
+    msg_info "Autoremoving..."
     apt autoremove
 
-    msg_info "Autocleaning...\n"
+    msg_info "Autocleaning..."
     apt autoclean
 
-    msg_info "Cleaning...\n"
+    msg_info "Cleaning..."
     apt clean
 }
 
@@ -64,12 +60,12 @@ apt_clean() {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
 else
-    msg_error "You are not running Raspberry Pi OS, exiting.\n"
+    msg_error "You are not running Raspberry Pi OS, exiting."
     exit 1
 fi
 
 # check if running on raspberrypi
-[ ! "$ID" = raspbian ] && { msg_error "You're not running Raspberry Pi OS, exiting.\n"; exit 1; }
+[ ! "$ID" = raspbian ] && { msg_error "You're not running Raspberry Pi OS, exiting."; exit 1; }
 
 ### Initial setup
 
@@ -85,25 +81,25 @@ initial_setup() {
             deluser --remove-home pi
             groupdel pi
         }
-        msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers\n"
+        msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers"
         echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
         echo
     fi
 
-    msg_info "Disabling root account for security...\n"
+    msg_info "Disabling root account for security..."
     passwd --delete root
     passwd --lock root
 
-    msg_info "Setting up timezone...\n"
+    msg_info "Setting up timezone..."
     dpkg-reconfigure tzdata
 
-    msg_info "Setting up locales...\n"
+    msg_info "Setting up locales..."
     dpkg-reconfigure locales
 
-    msg_info "Changing memory split to 16 for GPU...\n"
+    msg_info "Changing memory split to 16 for GPU..."
     echo 'gpu_mem=16' >> /boot/config.txt
 
-    msg_info "Expanding filesystem\n"
+    msg_info "Expanding filesystem"
     raspi-config --expand-rootfs
 
     confirm "Disable Bluetooth and WiFi?" && {
@@ -121,7 +117,7 @@ initial_setup() {
         systemctl disable hciuart
     }
 
-    msg_info "Reboot now.\n"
+    msg_info "Reboot now."
 }
 
 ### Apt base
@@ -129,14 +125,14 @@ initial_setup() {
 apt_base() {
     check_is_sudo
 
-    msg_info "Disabling translations to speed-up updates...\n"
+    msg_info "Disabling translations to speed-up updates..."
     mkdir -vp /etc/apt/apt.conf.d
     echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/99disable-translations
 
-    msg_info "First update of the machine...\n"
+    msg_info "First update of the machine..."
     apt update
 
-    msg_info "First upgrade of the machine...\n"
+    msg_info "First upgrade of the machine..."
     apt upgrade
 
     local packages=(
@@ -167,7 +163,7 @@ install_docker() {
 
     curl -sSL https://get.docker.com | sh
 
-    msg_info "Adding $USER to docker group...\n"
+    msg_info "Adding $USER to docker group..."
     sudo usermod -aG docker "$USER"
 
     confirm "Enable IPv6?" && {
@@ -178,7 +174,7 @@ install_docker() {
 		}
 		EOF'
 
-        msg_info "Restarting Docker...\n"
+        msg_info "Restarting Docker..."
         sudo systemctl restart docker
     }
 
@@ -191,7 +187,7 @@ install_docker() {
 
 install_nextcloud_local() {
     check_is_not_sudo
-    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
     local IP
     IP="$(hostname -I | cut -f1 -d ' ')"
@@ -212,10 +208,10 @@ install_nextcloud_local() {
            --name ncvanilla \
            nextcloud
 
-    msg_info "Waiting for initial install to finish...\n"
+    msg_info "Waiting for initial install to finish..."
     sleep 180
 
-    msg_info "Disabling unecessary apps...\n"
+    msg_info "Disabling unecessary apps..."
     docker exec --user www-data ncvanilla php occ app:disable accessibility
     docker exec --user www-data ncvanilla php occ app:disable systemtags
     docker exec --user www-data ncvanilla php occ app:disable comments
@@ -226,18 +222,18 @@ install_nextcloud_local() {
     docker exec --user www-data ncvanilla php occ app:disable support
     docker exec --user www-data ncvanilla php occ app:disable theming
 
-    msg_info "Enabling and installing some apps...\n"
+    msg_info "Enabling and installing some apps..."
     docker exec --user www-data ncvanilla php occ app:enable admin_audit
     docker exec --user www-data ncvanilla php occ app:install limit_login_to_ip
     docker exec --user www-data ncvanilla php occ app:install bruteforcesettings
     docker exec --user www-data ncvanilla php occ app:install notes
 
-    msg_info "Enabling encryption...\n"
+    msg_info "Enabling encryption..."
     docker exec --user www-data ncvanilla php occ app:enable encryption
     docker exec --user www-data ncvanilla php occ encryption:enable
     docker exec --user www-data ncvanilla php occ encryption:enable-master-key
 
-    msg_info "Encrypting files...\n"
+    msg_info "Encrypting files..."
     docker exec -it --user www-data ncvanilla php occ encryption:encrypt-all
 }
 
@@ -245,7 +241,7 @@ install_nextcloud_local() {
 
 install_nextcloudpi_internet() {
     check_is_not_sudo
-    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
     local IP
     IP="$(hostname -I | cut -f1 -d ' ')"
@@ -269,7 +265,7 @@ install_nextcloudpi_internet() {
 install_seafile() {
     check_is_not_sudo
 
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
     sf_latest=$(curl -sSL "https://api.github.com/repos/haiwen/seafile-rpi/releases/latest" | jq --raw-output .tag_name)
     sf_latest=${sf_latest#v}
@@ -278,18 +274,18 @@ install_seafile() {
 
     tmpdir=$(mktemp -d)
 
-    msg_info "Creating Seafile dir in home...\n"
+    msg_info "Creating Seafile dir in home..."
     mkdir -vp "$HOME"/Seafile
 
     (
-        msg_info "Creating temporary folder...\n"
+        msg_info "Creating temporary folder..."
         cd "$tmpdir" || exit 1
 
-        msg_info "Downloading and extracting Seafile ${sf_latest}\n"
+        msg_info "Downloading and extracting Seafile ${sf_latest}"
         curl -#L "${repo}${release}" | tar -C "$HOME"/Seafile -xzf -
     )
 
-    msg_info "Deleting temp folder...\n"
+    msg_info "Deleting temp folder..."
     rm -rf "$tmpdir"
 
     local packages=(
@@ -303,32 +299,32 @@ install_seafile() {
         python-requests
     )
 
-    msg_info "Installing packages...\n"
+    msg_info "Installing packages..."
     sudo apt install -y "${packages[@]}"
 
     (
         cd "$HOME"/Seafile/seafile-server-"$sf_latest" || exit 1
-        msg_info "Launching setup script...\n"
+        msg_info "Launching setup script..."
         ./setup-seafile.sh && \
             ./seafile.sh start && \
             ./seahub.sh start
     )
 
-    msg_info "Setting Paris timezone in the config file...\n"
+    msg_info "Setting Paris timezone in the config file..."
     echo "TIME_ZONE = 'Europe/Paris'" >> "$HOME"/Seafile/conf/seahub_settings.py
 
-    msg_info "Adding to crontab for autostart on boot...\n"
+    msg_info "Adding to crontab for autostart on boot..."
     (crontab -l ; echo "@reboot sleep 30 && $HOME/Seafile/seafile-server-latest/seafile.sh start") | crontab -
     (crontab -l ; echo "@reboot sleep 60 && $HOME/Seafile/seafile-server-latest/seahub.sh start") | crontab -
-    msg_info "Confirm with 'crontab -l'\n"
+    msg_info "Confirm with 'crontab -l'"
 
-    msg_info "Autoremoving...\n"
+    msg_info "Autoremoving..."
     sudo apt autoremove
 
-    msg_info "Autocleaning...\n"
+    msg_info "Autocleaning..."
     sudo apt autoclean
 
-    msg_info "Cleaning...\n"
+    msg_info "Cleaning..."
     sudo apt clean
 }
 
@@ -337,10 +333,10 @@ install_seafile() {
 install_pihole() {
     check_is_sudo
 
-    msg_info "Installing Pihole...\n"
+    msg_info "Installing Pihole..."
     curl -sSL https://install.pi-hole.net | bash
 
-    msg_info "Adding additional blocking lists to /etc/pihole/adlists.list\n"
+    msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
     {
         curl -sSL https://v.firebog.net/hosts/lists.php?type=all
         echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt
@@ -348,12 +344,12 @@ install_pihole() {
         echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt
     } >> /etc/pihole/adlists.list
 
-    msg_info "Adding some urls to whitelist...\n"
+    msg_info "Adding some urls to whitelist..."
 
     # android app store
     pihole -w android.clients.google.com
 
-    msg_info "Updating gravity...\n"
+    msg_info "Updating gravity..."
     pihole -g
 
     echo
@@ -367,7 +363,7 @@ install_pihole() {
 
 install_pihole_docker() {
     check_is_not_sudo
-    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
     local IP
     IP="$(ip route get 8.8.8.8 | awk '{ print $NF; exit }')"
@@ -427,10 +423,10 @@ install_pihole_docker() {
 
     echo
     until [ "$(docker inspect -f '{{json .State.Health.Status}}' pihole)" = '"healthy"' ]; do
-        msg_info "First init not finished yet, waiting 10 seconds more...\n" && sleep 10;
+        msg_info "First init not finished yet, waiting 10 seconds more..." && sleep 10;
     done;
 
-    msg_info "Adding additional blocking lists to /etc/pihole/adlists.list\n"
+    msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
     docker exec pihole bash -c "{
     curl -sSL https://v.firebog.net/hosts/lists.php?type=all
     echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt
@@ -438,11 +434,11 @@ install_pihole_docker() {
     echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt
     } >> /etc/pihole/adlists.list"
 
-    msg_info "Adding some urls to whitelist...\n"
+    msg_info "Adding some urls to whitelist..."
     # android app store
     docker exec pihole pihole -w android.clients.google.com
 
-    msg_info "Updating gravity...\n"
+    msg_info "Updating gravity..."
     docker exec pihole pihole -g
 
     echo
@@ -459,7 +455,7 @@ install_pihole_docker() {
 install_fail2ban() {
     check_is_sudo
 
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path.\n"; exit 1; }
+    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
     f2b_latest=$(curl -sSL "https://api.github.com/repos/fail2ban/fail2ban/releases/latest" | jq --raw-output .tag_name)
     repo="https://github.com/fail2ban/fail2ban/archive/"
@@ -468,28 +464,28 @@ install_fail2ban() {
     tmpdir=$(mktemp -d)
 
     (
-        msg_info "Creating temporary folder...\n"
+        msg_info "Creating temporary folder..."
         cd "$tmpdir" || exit 1
 
-        msg_info "Downloading and extracting ${f2b_latest}\n"
+        msg_info "Downloading and extracting ${f2b_latest}"
         curl -#L "${repo}${release}" | tar -xzf -
 
         cd fail2ban-"${f2b_latest}" || exit 1
 
-        msg_info "Installing...\n"
+        msg_info "Installing..."
         python setup.py install
 
-        msg_info "Moving init file to location...\n"
+        msg_info "Moving init file to location..."
         cp files/debian-initd /etc/init.d/fail2ban
     )
 
-    msg_info "Updating the init script...\n"
+    msg_info "Updating the init script..."
     update-rc.d fail2ban defaults
 
-    msg_info "Starting the service...\n"
+    msg_info "Starting the service..."
     service fail2ban start
 
-    msg_info "Deleting temp folder...\n"
+    msg_info "Deleting temp folder..."
     rm -rf "$tmpdir"
 
     echo
@@ -510,8 +506,8 @@ install_msmtp() {
     apt_install
     apt_clean
 
-    msg_info "Now add custom /etc/msmtprc\n"
-    msg_info "Then try with: 'echo test | msmtp <email recipient>'\n"
+    msg_info "Now add custom /etc/msmtprc"
+    msg_info "Then try with: 'echo test | msmtp <email recipient>'"
 }
 
 ### Menu
