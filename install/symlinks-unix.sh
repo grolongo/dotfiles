@@ -5,7 +5,7 @@ set -o pipefail
 IFS=$'\n\t'
 
 # check if we are in the correct folder
-[ -e symlinks-unix.sh ] || { printf >&2 "Please cd into the install dir before running this script.\n"; exit 1; }
+[ -e symlinks-unix.sh ] || { printf "Please cd into the install dir before running this script.\n" >&2; exit 1; }
 
 # base variable for where are our dotfiles
 base="${PWD%/*}"
