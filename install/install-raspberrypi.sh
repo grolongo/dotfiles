@@ -374,8 +374,8 @@ install_pihole_docker() {
     echo
     printf "Make sure your IPs are correct, hard code ServerIP ENV VARs if necessary.\n"
     echo
-    printf "IPv4: ${IP}\n"
-    printf "IPv6: ${IPv6}\n"
+    printf 'IPv4: %s\n' "${IP}"
+    printf 'IPv6: %s\n' "${IPv6}"
     echo
 
     echo
@@ -441,13 +441,13 @@ install_pihole_docker() {
     msg_info "Updating gravity..."
     docker exec pihole pihole -g
 
-    echo
-    printf "Change DNS addresses on all devices:\n"
-    printf "IPv4: ${IP}\n"
-    printf "IPv6: ${IPv6}\n"
-    echo
-    printf "Your password for https://${IP}/admin/ is \n"
-    docker logs pihole 2> /dev/null | grep 'password:'
+     echo
+     printf "Change DNS addresses on all devices:\n"
+     printf 'IPv4: %s\n' "${IP}"
+     printf 'IPv6: %s\n' "${IPv6}"
+     echo
+     printf 'Your password for https://%s/admin/ is \n' "${IP}"
+     docker logs pihole 2> /dev/null | grep 'password:'
 }
 
 ### Fail2ban

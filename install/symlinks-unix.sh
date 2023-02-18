@@ -34,7 +34,7 @@ symlink() {
     targetlink="$HOME"/"$1"
 
     if [ ! -e "$sourcefile" ]; then
-        printf >&2 "$sourcefile doesn't exist\n"
+        printf '%s does not exist.\n' "$sourcefile" >&2
     else
         ln -sniv "$sourcefile" "$targetlink"
     fi
