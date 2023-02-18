@@ -130,6 +130,7 @@ apt_common() {
         exiftool
         ffmpeg
         ffmpegthumbnailer
+        firefox # unstable only
         fonts-dejavu
         git
         imagemagick
@@ -261,27 +262,6 @@ set_i3wm() {
     apt_clean
 }
 
-### LibreWolf
-
-install_librewolf() {
-    check_is_sudo
-
-    distro=$(if echo " bullseye focal impish jammy uma una " | grep -q " $(lsb_release -sc) "; then echo "$(lsb_release -sc)"; else echo focal; fi)
-    wget -O- https://deb.librewolf.net/keyring.gpg | gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
-
-    tee /etc/apt/sources.list.d/librewolf.sources <<-EOF > /dev/null
-	Types: deb
-	URIs: https://deb.librewolf.net
-	Suites: $distro
-	Components: main
-	Architectures: amd64
-	Signed-By: /usr/share/keyrings/librewolf.gpg
-	EOF
-
-    apt update
-    apt install librewolf -y
-}
-
 ### Synology Drive Client
 
 install_driveclient() {
@@ -392,23 +372,23 @@ install_veracrypt() {
         local source="${repo}${release_debian}"
     fi
 
-        local tmpdir
-        tmpdir=$(mktemp -d)
+    local tmpdir
+    tmpdir=$(mktemp -d)
 
-        (
-            msg_info "Creating temporary folder..."
-            cd "$tmpdir" || exit 1
-            cd "/home/max/Downloads"
+    (
+        msg_info "Creating temporary folder..."
+        cd "$tmpdir" || exit 1
+        cd "/home/max/Downloads"
 
-            msg_info "Downloading and installing Veracrypt..."
-            #curl -#L "$source" --output veracrypt.deb
-            curl -#L -O "$source"
-            #apt install ./veracrypt.deb
-        )
+        msg_info "Downloading and installing Veracrypt..."
+        #curl -#L "$source" --output veracrypt.deb
+        curl -#L -O "$source"
+        #apt install ./veracrypt.deb
+    )
 
-        exit 1
-        msg_info "Deleting temp folder..."
-        rm -rf "$tmpdir"
+    exit 1
+    msg_info "Deleting temp folder..."
+    rm -rf "$tmpdir"
 }
 
 ### Chatty
@@ -474,27 +454,25 @@ install_tor() {
 
 usage() {
     echo
-    echo
-    echo "Usage:"
-    echo "  repo        (s) - no translations and full-upgrade to Debian Unstable (Sid)"
-    echo "  isetup      (s) - passwordless sudo and lock root"
-    echo "  aptcommon   (s) - installs few packages"
-    echo "  graphics    (s) - installs graphics drivers for X"
-    echo "  gsettings       - configures Gnome settings"
-    echo "  i3          (s) - installs and sets up i3wm related configs"
-    echo "  librewolf   (s) - installs librewolf repo and installs the browser"
-    echo "  driveclient (s) - downloads and installs Synology Drive Client"
-    echo "  steam       (s) - enables i386 and installs Steam"
-    echo "  qbittorrent (s) - installs qBittorrent and downloads plugins"
-    echo "  signal      (s) - installs the Signal messenger app"
-    echo "  veracrypt   (s) - downloads and installs Veracrypt"
-    echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
-    echo "  tor         (s) - setup Tor Project repository with signatures and installs tor"
+    printf "Usage:\n"
+    printf "  repo        (s) - no translations and full-upgrade to Debian Unstable (Sid)\n"
+    printf "  isetup      (s) - passwordless sudo and lock root\n"
+    printf "  aptcommon   (s) - installs few packages\n"
+    printf "  graphics    (s) - installs graphics drivers for X\n"
+    printf "  gsettings       - configures Gnome settings\n"
+    printf "  i3          (s) - installs and sets up i3wm related configs\n"
+    printf "  driveclient (s) - downloads and installs Synology Drive Client\n"
+    printf "  steam       (s) - enables i386 and installs Steam\n"
+    printf "  qbittorrent (s) - installs qBittorrent and downloads plugins\n"
+    printf "  signal      (s) - installs the Signal messenger app\n"
+    printf "  veracrypt   (s) - downloads and installs Veracrypt\n"
+    printf "  chatty      (s) - downloads and installs Chatty with Java runtime environment\n"
+    printf "  tor         (s) - setup Tor Project repository with signatures and installs tor\n"
     echo
 }
 
 main() {
-    local cmd="$1"
+    local cmd="${1-}"
 
     # return error if nothing is specified
     if [ -z "$cmd" ]; then
@@ -514,8 +492,6 @@ main() {
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
         set_i3wm
-    elif [ "$cmd" = "librewolf" ]; then
-        install_librewolf
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
     elif [ "$cmd" = "steam" ]; then

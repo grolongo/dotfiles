@@ -514,24 +514,22 @@ install_msmtp() {
 
 usage() {
     echo
-    echo "This script installs my basic setup for a server."
-    echo
-    echo "Usage:"
-    echo "  isetup                        (s) - delete pi user, passwordless sudo, lock root and run raspi-config"
-    echo "  aptbase                       (s) - disable translations, update, upgrade and installs few packages"
-    echo "  docker                            - installs docker"
-    echo "  nextcloud_docker_local            - downloads and deploys nextcloudpi with Docker"
-    echo "  nextcloudpi_docker_internet       - downloads and deploys nextcloudpi with Docker"
-    echo "  seafile                           - downloads and deploys Seafile server"
-    echo "  pihole                        (s) - runs Pihole bash script installer"
-    echo "  pihole_docker                     - downloads and deploys Pihole with Docker"
-    echo "  fail2ban                      (s) - downloads and installs Fail2ban"
-    echo "  msmtp                         (s) - installs msmtp and msmtp-mta"
+    printf "Usage:\n"
+    printf "  isetup                        (s) - delete pi user, passwordless sudo, lock root and run raspi-config\n"
+    printf "  aptbase                       (s) - disable translations, update, upgrade and installs few packages\n"
+    printf "  docker                            - installs docker\n"
+    printf "  nextcloud_docker_local            - downloads and deploys nextcloudpi with Docker\n"
+    printf "  nextcloudpi_docker_internet       - downloads and deploys nextcloudpi with Docker\n"
+    printf "  seafile                           - downloads and deploys Seafile server\n"
+    printf "  pihole                        (s) - runs Pihole bash script installer\n"
+    printf "  pihole_docker                     - downloads and deploys Pihole with Docker\n"
+    printf "  fail2ban                      (s) - downloads and installs Fail2ban\n"
+    printf "  msmtp                         (s) - installs msmtp and msmtp-mta\n"
     echo
 }
 
 main() {
-    local cmd="$1"
+    local cmd="${1-}"
 
     # return error if nothing is specified
 	if [ -z "$cmd" ]; then

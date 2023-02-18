@@ -193,27 +193,6 @@ set_i3wm() {
     apt_clean
 }
 
-### LibreWolf
-
-install_librewolf() {
-    check_is_sudo
-
-    distro=$(if echo " bullseye focal impish jammy uma una vanessa" | grep -q " $(lsb_release -sc) "; then echo $(lsb_release -sc); else echo focal; fi)
-    wget -O- https://deb.librewolf.net/keyring.gpg | gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
-
-    tee /etc/apt/sources.list.d/librewolf.sources <<-EOF > /dev/null
-	Types: deb
-	URIs: https://deb.librewolf.net
-	Suites: $distro
-	Components: main
-	Architectures: amd64
-	Signed-By: /usr/share/keyrings/librewolf.gpg
-	EOF
-
-    apt update
-    apt install librewolf -y
-}
-
 ### Synology Drive Client
 
 install_driveclient() {
@@ -394,26 +373,24 @@ remove_snap() {
 
 usage() {
     echo
-    echo
-    echo "Usage:"
-    echo "  isetup      (s) - passwordless sudo and lock root"
-    echo "  aptcommon   (s) - installs few packages"
-    echo "  snaps       (s) - installs few snaps"
-    echo "  gsettings       - configures Gnome settings"
-    echo "  i3          (s) - installs and sets up i3wm related configs"
-    echo "  librewolf   (s) - installs librewolf repo and installs the browser"
-    echo "  driveclient (s) - downloads and installs Synology Drive Client"
-    echo "  qbittorrent (s) - installs qBittorrent and downloads plugins"
-    echo "  signal      (s) - installs the Signal messenger app"
-    echo "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA"
-    echo "  chatty      (s) - downloads and installs Chatty with Java runtime environment"
-    echo "  tor         (s) - setup Tor Project repository with signatures and installs tor"
-    echo "  rmsnaps     (s) - removes snapd and installed snap packaged on Ubuntu"
+    printf "Usage:\n"
+    printf "  isetup      (s) - passwordless sudo and lock root\n"
+    printf "  aptcommon   (s) - installs few packages\n"
+    printf "  snaps       (s) - installs few snaps\n"
+    printf "  gsettings       - configures Gnome settings\n"
+    printf "  i3          (s) - installs and sets up i3wm related configs\n"
+    printf "  driveclient (s) - downloads and installs Synology Drive Client\n"
+    printf "  qbittorrent (s) - installs qBittorrent and downloads plugins\n"
+    printf "  signal      (s) - installs the Signal messenger app\n"
+    printf "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA\n"
+    printf "  chatty      (s) - downloads and installs Chatty with Java runtime environment\n"
+    printf "  tor         (s) - setup Tor Project repository with signatures and installs tor\n"
+    printf "  rmsnaps     (s) - removes snapd and installed snap packaged on Ubuntu\n"
     echo
 }
 
 main() {
-    local cmd="$1"
+    local cmd="${1-}"
 
     # return error if nothing is specified
     if [ -z "$cmd" ]; then
@@ -431,8 +408,6 @@ main() {
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
         set_i3wm
-    elif [ "$cmd" = "librewolf" ]; then
-        install_librewolf
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
     elif [ "$cmd" = "qbittorrent" ]; then

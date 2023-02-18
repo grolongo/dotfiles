@@ -209,8 +209,8 @@ install_casks() {
         caffeine
         chatty
         electrum
+        firefox
         keepassxc
-        librewolf
         lulu
         mpv
         rectangle
@@ -278,24 +278,22 @@ install_emacs() {
 
 usage() {
     echo
-    echo "This script installs my basic setup for a macOS laptop."
-    echo
-    echo "Usage:"
-    echo "  dotfiles     - setting up dotfiles"
-    echo "  prefsettings - setup finder, trackpad, keyboard and dock settings"
-    echo "  firewall (s) - blocks incoming connection, stealth mode"
-    echo "  dns          - sets WiFi IPv4 & IPv6 DNS to Cloudflare"
-    echo "  hostname (s) - changes computer hostname"
-    echo "  homebrew     - setup homebrew if not installed"
-    echo "  base         - installs base packages"
-    echo "  casks        - setup caskroom & installs softwares"
-    echo "  qbit         - installs qBittorrent with plugins"
-    echo "  emacs        - building our own Emacs"
+    printf "Usage:\n"
+    printf "  dotfiles     - setting up dotfiles\n"
+    printf "  prefsettings - setup finder, trackpad, keyboard and dock settings\n"
+    printf "  firewall (s) - blocks incoming connection, stealth mode\n"
+    printf "  dns          - sets WiFi IPv4 & IPv6 DNS to Cloudflare\n"
+    printf "  hostname (s) - changes computer hostname\n"
+    printf "  homebrew     - setup homebrew if not installed\n"
+    printf "  base         - installs base packages\n"
+    printf "  casks        - setup caskroom & installs softwares\n"
+    printf "  qbit         - installs qBittorrent with plugins\n"
+    printf "  emacs        - building our own Emacs\n"
     echo
 }
 
 main() {
-    local cmd="$1"
+    local cmd="${1-}"
 
     # return error if nothing is specified
     if [ -z "$cmd" ]; then
