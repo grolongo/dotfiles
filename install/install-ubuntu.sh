@@ -332,43 +332,6 @@ install_tor() {
     apt install torbrowser-launcher
 }
 
-### Remove Snaps
-
-remove_snap() {
-    [ ! "$ID" = ubuntu ] && { msg_error "snap is for Ubuntu only, exiting."; exit 1; }
-
-    sudo apt-get update && sudo apt-get upgrade
-    check_is_sudo
-
-    msg_info "Removing Firefox as a snap"
-    snap remove firefox
-
-    msg_info "Disabling snapd service..."
-    systemctl stop snapd.service
-    systemctl stop snapd.socket
-    systemctl stop snapd.seeded.service
-    sleep 5
-
-    systemctl disable snapd.service
-    systemctl disable snapd.socket
-    systemctl disable snapd.seeded.service
-    sleep 5
-
-    msg_info "Uninstalling snapd and purging contents..."
-    apt autoremove --purge snapd gnome-software-plugin-snap
-    rm -rf ~/snap /snap /var/snap /var/cache/snapd /var/lib/snapd /usr/lib/snapd
-
-    msg_info "Preventing snapd to be automatically installed by APT..."
-    cat <<-EOF > /etc/apt/preferences.d/nosnap.pref
-	Package: snapd
-	Pin: release a=*
-	Pin-Priority: -10
-	Package: snapd
-	EOF
-
-    msg_info "You can edit /etc/environment and remove snap from the PATH."
-}
-
 ### Menu
 
 usage() {
@@ -385,7 +348,6 @@ usage() {
     printf "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA\n"
     printf "  chatty      (s) - downloads and installs Chatty with Java runtime environment\n"
     printf "  tor         (s) - setup Tor Project repository with signatures and installs tor\n"
-    printf "  rmsnaps     (s) - removes snapd and installed snap packaged on Ubuntu\n"
     echo
 }
 
@@ -420,8 +382,6 @@ main() {
         install_chatty
     elif [ "$cmd" = "tor" ]; then
         install_tor
-    elif [ "$cmd" = "rmsnaps" ]; then
-        remove_snap
     else
         usage
     fi
