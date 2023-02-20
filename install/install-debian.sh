@@ -62,7 +62,7 @@ apt_clean() {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
 else
-    msg_error "You are not running either Debian, exiting."
+    msg_error "Not running Debian, exiting."
     exit 1
 fi
 
