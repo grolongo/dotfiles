@@ -16,11 +16,11 @@ msg_error() {
 }
 
 check_is_sudo() {
-    [ "$(id -u)" -ne 0 ] && { msg_error "Requires root privileges. Use sudo."; exit 1; }
+    [ "$(id -u)" -eq 0 ] || { msg_error "Requires root privileges. Use sudo."; exit 1; }
 }
 
 check_is_not_sudo() {
-    [ ! "$(id -u)" -ne 0 ] && { msg_error "Don't run this as sudo."; exit 1; }
+    [ "$(id -u)" -ne 0 ] || { msg_error "Don't run this as sudo."; exit 1; }
 }
 
 confirm() {
@@ -62,14 +62,11 @@ apt_clean() {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
 else
-    msg_error "You are not running either Debian or Ubuntu, exiting."
+    msg_error "You are not running either Debian, exiting."
     exit 1
 fi
 
-if [ ! "$ID" = debian ] && [ ! "$ID" = ubuntu ]; then
-    msg_error "You are not running either Debian or Ubuntu, exiting."
-    exit 1
-fi
+[ "$ID" = debian ] || { msg_error "Not running Debian, exiting."; exit 1; }
 
 ### Apt sources
 
