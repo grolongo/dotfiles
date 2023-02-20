@@ -16,11 +16,11 @@ msg_error() {
 }
 
 check_is_sudo() {
-    [ "$(id -u)" -ne 0 ] && { msg_error "Requires root privileges. Use sudo."; exit 1; }
+    [ "$(id -u)" -eq 0 ] || { msg_error "Requires root privileges. Use sudo."; exit 1; }
 }
 
 check_is_not_sudo() {
-    [ ! "$(id -u)" -ne 0 ] && { msg_error "Don't run this as sudo."; exit 1; }
+    [ "$(id -u)" -ne 0 ] || { msg_error "Don't run this as sudo."; exit 1; }
 }
 
 confirm() {
@@ -66,7 +66,7 @@ else
     exit 1
 fi
 
-[ ! "$ID" = ubuntu ] && { msg_error "Not running Ubuntu, exiting."; exit 1; }
+[ "$ID" = ubuntu ] || { msg_error "Not running Ubuntu, exiting."; exit 1; }
 
 ### Initial setup
 
