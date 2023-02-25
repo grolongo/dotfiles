@@ -98,4 +98,3 @@ for file in ~/.{aliases,exports}; do
     fi
 done
 unset file
-

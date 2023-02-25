@@ -65,4 +65,3 @@ $confirmation = Read-Host "Symlink PowerShell profile?"
 if ($confirmation -eq 'y') {
     New-Item -Force -Path "$PROFILE" -ItemType SymbolicLink -Value "$base\Microsoft.PowerShell_profile.ps1"
 }
-

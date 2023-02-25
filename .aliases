@@ -75,4 +75,3 @@ rgrep2 () { grep --binary-file=without-match --color=auto --ignore-case --line-n
 # ripgrep
 lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
 rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
-

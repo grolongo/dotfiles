@@ -158,4 +158,3 @@ confirm "Install symlinks for $USER?" && {
     }
 
 }
-
