@@ -106,10 +106,9 @@ setup_prefsettings() {
     defaults write com.apple.universalaccess reduceTransparency 1
 
     msg_info "Setting Terminal prefs..."
-    defaults write com.apple.Terminal ShowLineMarks -int 0
     defaults write com.apple.Terminal SecureKeyboardEntry -bool true
 
-    confirm "Some options require reboot to take effect. Reboot now?" && shutdown -r now
+    confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
 }
 
 ### Firewall
@@ -156,7 +155,7 @@ install_homebrew() {
     if test ! "$(command -v brew >/dev/null 2>&1)"
     then
         msg_info "Downloading and installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     else
         msg_error "Homebrew is already installed, exiting."
     fi
