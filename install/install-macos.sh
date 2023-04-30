@@ -300,7 +300,7 @@ install_ports() {
     local packages=(
         aria2
         exiftool
-        ffmpeg # outdated
+        ffmpeg
         gnupg
         imagemagick
         jq
@@ -308,7 +308,7 @@ install_ports() {
         pandoc
         shellcheck
         speedtest-cli
-        streamlink # outdated
+        streamlink
         tmux
         tor
         yt-dlp
@@ -317,7 +317,6 @@ install_ports() {
     for p in "${packages[@]}"; do
         confirm "Install $p?" && sudo port install "$p"
     done
-
 }
 
 ### Menu
