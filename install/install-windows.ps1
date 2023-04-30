@@ -159,11 +159,10 @@ function install_chocolatey {
 
 ### Packages
 
-function install_packages {
+function install_choco {
     choco install 7zip
     choco install aria2
     choco install autohotkey
-    choco install brave
     choco install chatty
     choco install electrum
     choco install emacs
@@ -199,6 +198,57 @@ function install_packages {
     choco pin add -n telegram
     choco pin add -n thunderbird
     choco pin add -n tor-browser
+}
+
+### Packages
+
+function install_winget {
+
+    $packages = @(
+        "7zip.7zip",
+        "aria2.aria2",
+        "AutoHotkey.AutoHotkey",
+        "Chatty.Chatty",
+        "Electrum.Electrum",
+        "GNU.Emacs",
+        "voidtools.Everything",
+        "OliverBetz.ExifTool",
+        "Gyan.FFmpeg",
+        "Mozilla.Firefox",
+        "Git.Git",
+        "ImageMagick.ImageMagick",
+        "DominikReichl.KeePass",
+        "Microsoft.VisualStudioCode",
+        "Microsoft.WindowsTerminal",
+        "MoritzBunkus.MKVToolNix",
+        "nomacs.nomacs",
+        "OBSProject.OBSStudio",
+        "koalaman.shellcheck",
+        "OpenWhisperSystems.Signal",
+        "Henry++.simplewall",
+        "Valve.Steam",
+        "Streamlink.Streamlink",
+        "Spotify.Spotify",
+        "Synology.DriveClient",
+        "Telegram.TelegramDesktop",
+        "TorProject.TorBrowser",
+        "IDRIX.VeraCrypt",
+        "yt-dlp.yt-dlp"
+    )
+
+    foreach ($p in $packages) {
+        do {
+            $response = Read-Host "Install '$p'? [y/n]"
+            $response = $response.ToLower()
+            if ($response -ne "y" -and $response -ne "n") {
+                Write-Host -ForegroundColor "yellow" "Please enter 'y' or 'n'"
+            }
+        } while ($response -ne "y" -and $response -ne "n")
+
+        if ($response -eq "y") {
+            winget install "$p"
+        }
+    }
 }
 
 ### qBittorrent
@@ -249,10 +299,11 @@ function usage {
     Write-Host "  ctrltocaps        - remap CTRL key to Caps Lock"
     Write-Host "  wsl               - enables WSL2 and installs Ubuntu or Debian"
     Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
-    Write-Host "  packages          - downloads and installs listed packages"
+    Write-Host "  choco_packages    - downloads and installs listed packages with chocolatey"
+    Write-Host "  winget_packages   - downloads and installs listed packages with winget"
     Write-Host "  qbit              - installs qBittorrent with plugins"
     Write-Host "  dotfiles          - launches external dotfiles script"
-    Write-Host
+Write-Host
 }
 
 function main {
@@ -272,7 +323,8 @@ function main {
     elseif ($cmd -eq "ctrltocaps") {remap_ctrltocaps}
     elseif ($cmd -eq "wsl") { install_wsl }
     elseif ($cmd -eq "chocolatey") { install_chocolatey }
-    elseif ($cmd -eq "packages") { install_packages }
+    elseif ($cmd -eq "choco_packages") { install_choco }
+    elseif ($cmd -eq "winget_packages") { install_winget }
     elseif ($cmd -eq "qbit") { install_qbittorrent }
     elseif ($cmd -eq "dotfiles") { set_dotfiles }
     else { usage }
