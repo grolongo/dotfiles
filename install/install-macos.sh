@@ -151,7 +151,7 @@ install_homebrew() {
     if test ! "$(command -v brew >/dev/null 2>&1)"
     then
         msg_info "Downloading and installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     else
         msg_error "Homebrew is already installed, exiting."
     fi
@@ -176,6 +176,7 @@ install_base() {
         exiftool
         ffmpeg
         gnupg
+        imagemagick
         jq
         mkvtoolnix
         pandoc
@@ -269,6 +270,52 @@ install_emacs() {
     brew install emacs-mac --with-emacs-big-sur-icon --with-starter --with-native-compilation --with-imagemagick --with-mac-metal --with-librsvg --with-xwidgets
 }
 
+### MacPorts
+
+install_macports() {
+    check_is_not_sudo
+
+    local tmpdir
+    tmpdir=$(mktemp -d)
+
+    (
+        msg_info "Creating temporary folder..."
+        cd "$tmpdir" || exit 1
+
+        msg_info "Downloading MacPorts for Catalina..."
+        curl -#OL "https://github.com/macports/macports-base/releases/download/v2.8.1/MacPorts-2.8.1-10.15-Catalina.pkg"
+        open ./MacPorts-2.8.1-10.15-Catalina.pkg
+    )
+
+    confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "$tmpdir"
+}
+
+install_ports() {
+    check_is_sudo
+
+    local packages=(
+        aria2
+        exiftool
+        ffmpeg # outdated
+        gnupg
+        imagemagick
+        jq
+        mkvtoolnix
+        pandoc
+        shellcheck
+        speedtest-cli
+        streamlink # outdated
+        tmux
+        tor
+        yt-dlp
+    )
+
+    for p in "${packages[@]}"; do
+        confirm "Install $p?" && sudo port install "$p"
+    done
+
+}
+
 ### Menu
 
 usage() {
@@ -284,6 +331,8 @@ usage() {
     printf "  casks        - setup caskroom & installs softwares\n"
     printf "  qbit         - installs qBittorrent with plugins\n"
     printf "  emacs        - building our own Emacs\n"
+    printf "  macports     - setup MacPorts\n"
+    printf "  ports        - installs ports\n"
     echo
 }
 
@@ -316,6 +365,10 @@ main() {
         install_qbittorrent
     elif [ "$cmd" = "emacs" ]; then
         install_emacs
+    elif [ "$cmd" = "macports" ]; then
+        install_macports
+    elif [ "$cmd" = "ports" ]; then
+        install_ports
     else
         usage
     fi

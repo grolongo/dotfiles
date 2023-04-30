@@ -133,6 +133,7 @@ snaps() {
 
     snap install emacs --classic
     snap install maildir-utils
+    snap install steam --beta
 }
 
 ### Gnome
