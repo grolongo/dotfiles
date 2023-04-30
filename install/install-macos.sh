@@ -331,7 +331,7 @@ usage() {
     printf "  qbit         - installs qBittorrent with plugins\n"
     printf "  emacs        - building our own Emacs\n"
     printf "  macports     - setup MacPorts\n"
-    printf "  ports        - installs ports\n"
+    printf "  ports (s)    - installs ports\n"
     echo
 }
 
