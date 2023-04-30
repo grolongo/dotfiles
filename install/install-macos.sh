@@ -101,10 +101,6 @@ setup_prefsettings() {
     msg_info "Restarting the Dock."
     killall -KILL Dock
 
-    msg_info "Setting Accessibility performance..."
-    defaults write com.apple.universalaccess reduceMotion 1
-    defaults write com.apple.universalaccess reduceTransparency 1
-
     msg_info "Setting Terminal prefs..."
     defaults write com.apple.Terminal SecureKeyboardEntry -bool true
 
