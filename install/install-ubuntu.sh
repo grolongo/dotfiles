@@ -199,7 +199,7 @@ set_i3wm() {
 install_driveclient() {
     check_is_sudo
 
-    local source="https://global.download.synology.com/download/Utility/SynologyDriveClient/3.2.0-13238/Ubuntu/Installer/x86_64/synology-drive-client-13238.x86_64.deb"
+    local source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.3.0-15082/Ubuntu/Installer/x86_64/synology-drive-client-15082.x86_64.deb"
 
     local tmpdir
     tmpdir="$(mktemp -d)"
