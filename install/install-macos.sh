@@ -180,6 +180,7 @@ install_base() {
         jq
         mkvtoolnix
         pandoc
+        pinentry-mac
         shellcheck
         speedtest-cli
         streamlink
@@ -302,6 +303,7 @@ install_ports() {
         jq
         mkvtoolnix
         pandoc
+        pinentry-mac
         shellcheck
         speedtest-cli
         streamlink
