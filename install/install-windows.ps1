@@ -232,6 +232,7 @@ function install_winget {
         "Telegram.TelegramDesktop",
         "TorProject.TorBrowser",
         "IDRIX.VeraCrypt",
+        "Microsoft.PowerToys",
         "Microsoft.VisualStudioCode",
         "Microsoft.WindowsTerminal",
         "yt-dlp.yt-dlp"
