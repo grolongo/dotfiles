@@ -223,6 +223,8 @@ function install_winget {
         "MoritzBunkus.MKVToolNix",
         "nomacs.nomacs",
         "OBSProject.OBSStudio",
+        "Microsoft.PowerToys",
+        "BurntSushi.ripgrep.MSVC",
         "koalaman.shellcheck",
         "OpenWhisperSystems.Signal",
         "Henry++.simplewall",
@@ -232,7 +234,6 @@ function install_winget {
         "Telegram.TelegramDesktop",
         "TorProject.TorBrowser",
         "IDRIX.VeraCrypt",
-        "Microsoft.PowerToys",
         "Microsoft.VisualStudioCode",
         "Microsoft.WindowsTerminal",
         "yt-dlp.yt-dlp"
