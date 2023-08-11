@@ -296,15 +296,19 @@ install_ports() {
 
     local packages=(
         aria2
+        emacs-mac-app +imagemagick +metal +rsvg
         exiftool
         ffmpeg
         gnupg
         imagemagick
         jq
+        keepassxc
         mkvtoolnix
+        mpv
         pandoc
         pinentry-mac
         shellcheck
+        silentknight
         speedtest-cli
         streamlink
         tmux
