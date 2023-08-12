@@ -296,7 +296,7 @@ install_ports() {
 
     local packages=(
         aria2
-        emacs-mac-app +imagemagick +metal +rsvg
+        emacs-mac-app +imagemagick +metal +rsvg +xwidgets
         exiftool
         ffmpeg
         gnupg
