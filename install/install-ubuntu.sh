@@ -131,16 +131,10 @@ apt_common() {
 snaps() {
     check_is_sudo
 
-    local packages=(
-        emacs --classic
-        maildir-utils
-        steam --beta
-        chromium
-    )
-
-    for p in "${packages[@]}"; do
-        confirm "Install $p?" && snap install "$p"
-    done
+    confirm "Install Emacs snap?" && { snap install emacs --classic; }
+    confirm "Install mu4e snap?" && { snap install maildir-utils; }
+    confirm "Install steam snap?" && { snap install steam --beta; }
+    confirm "Install chromium snap?" && { snap install chromium; }
 
     snap refresh
 }
