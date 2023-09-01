@@ -93,6 +93,7 @@ apt_common() {
         bash-completion
         curl
         exiftool
+        fd-find
         ffmpeg
         ffmpegthumbnailer
         git

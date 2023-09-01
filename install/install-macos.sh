@@ -174,6 +174,7 @@ install_base() {
     local packages=(
         aria2
         exiftool
+        fd
         ffmpeg
         gnupg
         imagemagick
@@ -298,6 +299,7 @@ install_ports() {
         aria2
         emacs-mac-app +imagemagick +metal +rsvg +xwidgets
         exiftool
+        fd
         ffmpeg
         gnupg
         imagemagick
