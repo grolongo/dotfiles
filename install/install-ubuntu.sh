@@ -159,6 +159,12 @@ set_gsettings() {
     gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
 
+    # Night shift mode
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3500
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-from 0
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-to 0
+
     # Tweaks
     gsettings set org.gnome.desktop.interface enable-animations false
     gsettings set org.gnome.desktop.interface gtk-key-theme Emacs
