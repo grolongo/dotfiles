@@ -168,6 +168,7 @@ function install_choco {
     choco install emacs
     choco install everything --params "/client-service /efu-association /folder-context-menu /run-on-system-startup /start-menu-shortcuts"
     choco install exiftool
+    choco install fd
     choco install ffmpeg
     choco install firefox
     choco install git --params "/GitAndUnixToolsOnPath /NoShellIntegration /NoOpenSSH /NoAutoCrlf /SChannel"
@@ -214,6 +215,7 @@ function install_winget {
         "GNU.Emacs",
         "voidtools.Everything",
         "OliverBetz.ExifTool",
+        "sharkdp.fd",
         "Gyan.FFmpeg",
         "Mozilla.Firefox",
         "Git.Git",
