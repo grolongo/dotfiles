@@ -160,6 +160,7 @@ set_gsettings() {
     gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
     gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
+    gsettings set org.freedesktop.ibus.panel.emoji hotkey  "@as []" # make C-; available in Emacs
 
     # Night shift mode
     gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
