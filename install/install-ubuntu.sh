@@ -103,6 +103,7 @@ apt_common() {
         mkvtoolnix
         mpv
         pandoc
+        ripgrep
         shellcheck
         streamlink
         tmux
