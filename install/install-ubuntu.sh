@@ -97,6 +97,7 @@ apt_common() {
         ffmpeg
         ffmpegthumbnailer
         git
+        gnome-shell-extension-manager
         imagemagick
         jq
         keepassxc
