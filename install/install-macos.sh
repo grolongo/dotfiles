@@ -211,6 +211,7 @@ install_casks() {
         keepassxc
         lulu
         mpv
+        mullvadvpn
         rectangle
         signal
         silentknight

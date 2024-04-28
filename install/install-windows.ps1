@@ -223,6 +223,7 @@ function install_winget {
         "DominikReichl.KeePass",
         "GnuWin32.Make",
         "MoritzBunkus.MKVToolNix",
+        "MullvadVPN.MullvadVPN",
         "nomacs.nomacs",
         "OBSProject.OBSStudio",
         "Microsoft.PowerToys",
