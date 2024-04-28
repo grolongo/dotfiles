@@ -214,7 +214,7 @@ set_i3wm() {
 install_driveclient() {
     check_is_sudo
 
-    local source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.3.0-15082/Ubuntu/Installer/x86_64/synology-drive-client-15082.x86_64.deb"
+    local source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.5.0-16084/Ubuntu/Installer/synology-drive-client-16084.x86_64.deb"
 
     local tmpdir
     tmpdir="$(mktemp -d)"
@@ -230,6 +230,20 @@ install_driveclient() {
 
     msg_info "Deleting temp folder..."
     rm -rf "$tmpdir"
+}
+
+install_mullvad() {
+    check_is_sudo
+
+    msg_info "Downloading the Mullvad signing key..."
+    curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc https://repository.mullvad.net/deb/mullvad-keyring.asc
+
+    msg_info "Adding Mullvad repository server to apt..."
+    echo "deb [signed-by=/usr/share/keyrings/mullvad-keyring.asc arch=$( dpkg --print-architecture )] https://repository.mullvad.net/deb/stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/mullvad.list
+
+    msg_info "Update package database and installing Mullvad..."
+    apt update
+    apt install mullvad-vpn
 }
 
 ### qBittorrent
@@ -264,15 +278,15 @@ install_qbittorrent() {
 install_signalapp() {
     check_is_sudo
 
-    msg_info  "Install official public software signing key"
+    msg_info  "Downloading the Signal signing key..."
     wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg
     cat signal-desktop-keyring.gpg | tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
 
-    msg_info "Add our repository to your list of repositories"
+    msg_info "Adding Signal repository server to apt..."
     echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' |\
         tee -a /etc/apt/sources.list.d/signal-xenial.list
 
-    msg_info "Update package database and install signal"
+    msg_info "Update package database and installing Signal..."
     apt update && apt install signal-desktop
 }
 
@@ -354,16 +368,17 @@ usage() {
     echo
     printf "Usage:\n"
     printf "  isetup      (s) - passwordless sudo and lock root\n"
-    printf "  aptcommon   (s) - installs few packages\n"
-    printf "  snaps       (s) - installs few snaps\n"
+    printf "  aptcommon   (s) - installs a few packages\n"
+    printf "  snaps       (s) - installs a few snaps\n"
     printf "  gsettings       - configures Gnome settings\n"
     printf "  i3          (s) - installs and sets up i3wm related configs\n"
-    printf "  driveclient (s) - downloads and installs Synology Drive Client\n"
-    printf "  qbittorrent (s) - installs qBittorrent and downloads plugins\n"
-    printf "  signal      (s) - installs the Signal messenger app\n"
+    printf "  driveclient (s) - installs Synology Drive Client\n"
+    printf "  mullvad     (s) - installs Mullvad VPN from official repository\n"
+    printf "  qbittorrent (s) - installs qBittorrent with plugins\n"
+    printf "  signal      (s) - installs Signal messenger from official repository\n"
     printf "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA\n"
-    printf "  chatty      (s) - downloads and installs Chatty with Java runtime environment\n"
-    printf "  tor         (s) - setup Tor Project repository with signatures and installs tor\n"
+    printf "  chatty      (s) - installs Chatty with JRE\n"
+    printf "  tor         (s) - install Tor from official repository\n"
     echo
 }
 
@@ -388,6 +403,8 @@ main() {
         set_i3wm
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
+    elif [ "$cmd" = "mullvad" ]; then
+        install_mullvad
     elif [ "$cmd" = "qbittorrent" ]; then
         install_qbittorrent
     elif [ "$cmd" = "signal" ]; then
