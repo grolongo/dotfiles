@@ -138,6 +138,7 @@ snaps() {
     confirm "Install mu4e snap?" && { snap install maildir-utils; }
     confirm "Install steam snap?" && { snap install steam --beta; }
     confirm "Install chromium snap?" && { snap install chromium; }
+    confirm "Install spotify snap?" && { snap install spotify; }
 
     snap refresh
 }
