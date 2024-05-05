@@ -208,6 +208,7 @@ install_casks() {
         electrum
         firefox
         keepassxc
+        knockknock
         lulu
         mpv
         rectangle
