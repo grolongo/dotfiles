@@ -174,6 +174,7 @@ install_base() {
     local packages=(
         aria2
         exiftool
+        fd
         ffmpeg
         gnupg
         imagemagick
@@ -211,6 +212,7 @@ install_casks() {
         knockknock
         lulu
         mpv
+        mullvadvpn
         rectangle
         signal
         silentknight
@@ -297,8 +299,9 @@ install_ports() {
 
     local packages=(
         aria2
-        emacs-mac-app +imagemagick +metal +rsvg
+        emacs-mac-app +imagemagick +metal +rsvg +xwidgets
         exiftool
+        fd
         ffmpeg
         gnupg
         imagemagick

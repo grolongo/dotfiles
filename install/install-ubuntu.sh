@@ -93,15 +93,18 @@ apt_common() {
         bash-completion
         curl
         exiftool
+        fd-find
         ffmpeg
         ffmpegthumbnailer
         git
+        gnome-shell-extension-manager
         imagemagick
         jq
         keepassxc
         mkvtoolnix
         mpv
         pandoc
+        ripgrep
         shellcheck
         streamlink
         tmux
@@ -131,10 +134,13 @@ apt_common() {
 snaps() {
     check_is_sudo
 
-    snap install emacs --classic
-    snap install maildir-utils
-    snap install steam --beta
-    snap install chromium
+    confirm "Install Emacs snap?" && { snap install emacs --classic; }
+    confirm "Install mu4e snap?" && { snap install maildir-utils; }
+    confirm "Install steam snap?" && { snap install steam --beta; }
+    confirm "Install chromium snap?" && { snap install chromium; }
+    confirm "Install spotify snap?" && { snap install spotify; }
+
+    snap refresh
 }
 
 ### Gnome
@@ -152,17 +158,23 @@ set_gsettings() {
     gsettings set org.gnome.desktop.notifications show-in-lock-screen false
     gsettings set org.gnome.desktop.session idle-delay 0
     gsettings set org.gnome.desktop.screensaver lock-enabled false
+    gsettings set org.gnome.desktop.interface enable-animations false
+    gsettings set org.gnome.desktop.interface gtk-key-theme Emacs
+    gsettings set org.gnome.desktop.interface show-battery-percentage true
+    gsettings set org.gnome.desktop.interface clock-show-date false
+    gsettings set org.gnome.desktop.peripherals.mouse accel-profile flat
+    gsettings set org.gnome.desktop.input-sources xkb-options [\'caps:ctrl_modifier\']
     gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type nothing
     gsettings set org.gnome.mutter dynamic-workspaces false
     gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
+    gsettings set org.freedesktop.ibus.panel.emoji hotkey  "@as []" # make C-; available in Emacs
 
-    # Tweaks
-    gsettings set org.gnome.desktop.interface enable-animations false
-    gsettings set org.gnome.desktop.interface gtk-key-theme Emacs
-    gsettings set org.gnome.desktop.peripherals.mouse accel-profile flat
-    gsettings set org.gnome.desktop.interface clock-show-date false
-    gsettings set org.gnome.desktop.input-sources xkb-options [\'caps:ctrl_modifier\']
+    # Night shift mode
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3500
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-from 0
+    gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-to 0
 
     # Desktop Icon NG
     gsettings set org.gnome.shell.extensions.ding icon-size 'small'
@@ -170,6 +182,9 @@ set_gsettings() {
 
     # Ubuntu AppIndicator
     gsettings set org.gnome.shell.extensions.appindicator icon-opacity 255
+
+    # Dock
+    gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
 
     msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
@@ -200,7 +215,7 @@ set_i3wm() {
 install_driveclient() {
     check_is_sudo
 
-    local source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.3.0-15082/Ubuntu/Installer/x86_64/synology-drive-client-15082.x86_64.deb"
+    local source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.5.0-16084/Ubuntu/Installer/synology-drive-client-16084.x86_64.deb"
 
     local tmpdir
     tmpdir="$(mktemp -d)"
@@ -216,6 +231,20 @@ install_driveclient() {
 
     msg_info "Deleting temp folder..."
     rm -rf "$tmpdir"
+}
+
+install_mullvad() {
+    check_is_sudo
+
+    msg_info "Downloading the Mullvad signing key..."
+    curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc https://repository.mullvad.net/deb/mullvad-keyring.asc
+
+    msg_info "Adding Mullvad repository server to apt..."
+    echo "deb [signed-by=/usr/share/keyrings/mullvad-keyring.asc arch=$( dpkg --print-architecture )] https://repository.mullvad.net/deb/stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/mullvad.list
+
+    msg_info "Update package database and installing Mullvad..."
+    apt update
+    apt install mullvad-vpn
 }
 
 ### qBittorrent
@@ -250,15 +279,15 @@ install_qbittorrent() {
 install_signalapp() {
     check_is_sudo
 
-    msg_info  "Install official public software signing key"
+    msg_info  "Downloading the Signal signing key..."
     wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg
     cat signal-desktop-keyring.gpg | tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
 
-    msg_info "Add our repository to your list of repositories"
+    msg_info "Adding Signal repository server to apt..."
     echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' |\
         tee -a /etc/apt/sources.list.d/signal-xenial.list
 
-    msg_info "Update package database and install signal"
+    msg_info "Update package database and installing Signal..."
     apt update && apt install signal-desktop
 }
 
@@ -340,16 +369,17 @@ usage() {
     echo
     printf "Usage:\n"
     printf "  isetup      (s) - passwordless sudo and lock root\n"
-    printf "  aptcommon   (s) - installs few packages\n"
-    printf "  snaps       (s) - installs few snaps\n"
+    printf "  aptcommon   (s) - installs a few packages\n"
+    printf "  snaps       (s) - installs a few snaps\n"
     printf "  gsettings       - configures Gnome settings\n"
     printf "  i3          (s) - installs and sets up i3wm related configs\n"
-    printf "  driveclient (s) - downloads and installs Synology Drive Client\n"
-    printf "  qbittorrent (s) - installs qBittorrent and downloads plugins\n"
-    printf "  signal      (s) - installs the Signal messenger app\n"
+    printf "  driveclient (s) - installs Synology Drive Client\n"
+    printf "  mullvad     (s) - installs Mullvad VPN from official repository\n"
+    printf "  qbittorrent (s) - installs qBittorrent with plugins\n"
+    printf "  signal      (s) - installs Signal messenger from official repository\n"
     printf "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA\n"
-    printf "  chatty      (s) - downloads and installs Chatty with Java runtime environment\n"
-    printf "  tor         (s) - setup Tor Project repository with signatures and installs tor\n"
+    printf "  chatty      (s) - installs Chatty with JRE\n"
+    printf "  tor         (s) - install Tor from official repository\n"
     echo
 }
 
@@ -374,6 +404,8 @@ main() {
         set_i3wm
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
+    elif [ "$cmd" = "mullvad" ]; then
+        install_mullvad
     elif [ "$cmd" = "qbittorrent" ]; then
         install_qbittorrent
     elif [ "$cmd" = "signal" ]; then
