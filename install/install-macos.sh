@@ -297,7 +297,7 @@ install_ports() {
         exiftool
         fd
         ffmpeg
-        gnupg
+        gnupg2
         imagemagick
         jq
         keepassxc
