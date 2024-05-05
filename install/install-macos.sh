@@ -53,17 +53,6 @@ brew_clean() {
 # check if running macOS
 [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
 
-### Dotfiles
-
-install_dotfiles() {
-    check_is_not_sudo
-
-    [ -e symlinks-unix.sh ] || { msg_error "Please cd into the install directory or make sure symlink-unix.sh is here."; exit 1; }
-
-    msg_info "Launching external symlinks script..."
-    ./symlinks-unix.sh
-}
-
 ### macOS preferences settings
 
 setup_prefsettings() {
@@ -91,7 +80,12 @@ setup_prefsettings() {
     defaults write NSGlobalDomain KeyRepeat -int 2
     defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+    # CTRL to CAPSLOCK remap
+    hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000e0}]}'
+
     msg_info "Setting Dock prefs..."
+    defaults write com.apple.dock orientation left
+    defaults write com.apple.dock tilesize -integer 40
     defaults write com.apple.dock mineffect -string "scale"
     defaults write com.apple.dock persistent-apps -array
     defaults write com.apple.dock show-recents -bool false
@@ -330,7 +324,6 @@ install_ports() {
 usage() {
     echo
     printf "Usage:\n"
-    printf "  dotfiles     - setting up dotfiles\n"
     printf "  prefsettings - setup finder, trackpad, keyboard and dock settings\n"
     printf "  firewall (s) - blocks incoming connection, stealth mode\n"
     printf "  dns          - sets WiFi IPv4 & IPv6 DNS to Cloudflare\n"
@@ -354,9 +347,7 @@ main() {
         exit 1
     fi
 
-    if [ "$cmd" = "dotfiles" ]; then
-        install_dotfiles
-    elif [ "$cmd" = "prefsettings" ]; then
+    if [ "$cmd" = "prefsettings" ]; then
         setup_prefsettings
     elif [ "$cmd" = "firewall" ]; then
         setup_firewall
