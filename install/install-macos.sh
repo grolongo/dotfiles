@@ -266,6 +266,9 @@ install_emacs() {
 
     msg_info "Building our Emacs with custom flags..."
     brew install emacs-mac --with-emacs-big-sur-icon --with-starter --with-native-compilation --with-imagemagick --with-mac-metal --with-librsvg --with-xwidgets
+
+    msg_info "Making GUI helper to Applications..."
+    cp -a "$(brew --prefix)"/opt/emacs-mac/Emacs.app /Applications
 }
 
 ### MacPorts
@@ -326,7 +329,7 @@ install_ports() {
         confirm "Install $p?" && sudo port install "$p"
     done
 
-    confirm "Install emacs?" && sudo port install emacs +imagemagick +nativecomp +treesitter
+    confirm "Install emacs?" && sudo port install emacs +imagemagick +nativecomp +treesitter +xwidgets
 
 }
 
