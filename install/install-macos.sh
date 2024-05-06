@@ -273,6 +273,15 @@ install_emacs() {
 install_macports() {
     check_is_not_sudo
 
+    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+
+    local macports_latest
+    macports_latest=$(curl -sSL "https://api.github.com/repos/macports/macports-base/releases/latest" | jq --raw-output .tag_name)
+    macports_latest=${macports_latest#v}
+
+    local repo="https://github.com/macports/macports-base/releases/download/"
+    local release="v${macports_latest}/MacPorts-${macports_latest}-10.15-Catalina.pkg"
+
     local tmpdir
     tmpdir=$(mktemp -d)
 
@@ -281,8 +290,8 @@ install_macports() {
         cd "$tmpdir" || exit 1
 
         msg_info "Downloading MacPorts for Catalina..."
-        curl -#OL "https://github.com/macports/macports-base/releases/download/v2.8.1/MacPorts-2.8.1-10.15-Catalina.pkg"
-        open ./MacPorts-2.8.1-10.15-Catalina.pkg
+        curl -#OL "${repo}${release}"
+        open ./MacPorts-"${macports_latest}"-10.15-Catalina.pkg
     )
 
     confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "$tmpdir"
@@ -336,7 +345,7 @@ usage() {
     printf "  qbit         - installs qBittorrent with plugins\n"
     printf "  emacs        - building our own Emacs\n"
     printf "  macports     - setup MacPorts\n"
-    printf "  ports (s)    - installs ports\n"
+    printf "  ports    (s) - installs ports\n"
     echo
 }
 
