@@ -80,9 +80,6 @@ setup_prefsettings() {
     defaults write NSGlobalDomain KeyRepeat -int 2
     defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
-    # CTRL to CAPSLOCK remap
-    hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000e0}]}'
-
     msg_info "Setting Dock prefs..."
     defaults write com.apple.dock orientation left
     defaults write com.apple.dock tilesize -integer 40
@@ -211,6 +208,7 @@ install_casks() {
         signal
         silentknight
         spotify
+        synology-drive
         tor-browser
         veracrypt
     )
@@ -219,10 +217,6 @@ install_casks() {
     for p in "${packages[@]}"; do
         confirm "Install $p?" && brew install --cask "$p"
     done
-
-    confirm "Install synology-drive?" &&
-        brew tap homebrew/cask-drivers &&
-        brew install --cask synology-drive
 
     echo
     msg_info "Cleaning up install files..."
