@@ -293,7 +293,6 @@ install_ports() {
 
     local packages=(
         aria2
-        emacs-mac-app +imagemagick +metal +rsvg +xwidgets
         exiftool
         fd
         ffmpeg
@@ -317,6 +316,9 @@ install_ports() {
     for p in "${packages[@]}"; do
         confirm "Install $p?" && sudo port install "$p"
     done
+
+    confirm "Install emacs?" && sudo port install emacs +imagemagick +nativecomp +treesitter
+
 }
 
 ### Menu
