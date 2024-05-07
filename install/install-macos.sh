@@ -230,6 +230,9 @@ install_qbittorrent() {
 
     brew install --cask qbittorrent
 
+    msg_info "Waiting 10 secs for folders to be made..."
+    sleep 10
+
     local PLUGIN_FOLDER="$HOME/Library/Application Support/qBittorrent/nova3/engines"
 
     ## RARBG and ThePirateBay should already be installed by default
