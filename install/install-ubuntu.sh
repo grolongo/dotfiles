@@ -245,11 +245,24 @@ install_driveclient() {
 install_mullvad() {
     check_is_sudo
 
-    msg_info "Downloading the Mullvad signing key..."
+    local distrib
+    distrib=$(lsb_release -sc)
+
+    local arch
+    arch=$(dpkg --print-architecture)
+
+    msg_info "Downloading Mullvad signing key..."
     curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc https://repository.mullvad.net/deb/mullvad-keyring.asc
 
-    msg_info "Adding Mullvad repository server to apt..."
-    echo "deb [signed-by=/usr/share/keyrings/mullvad-keyring.asc arch=$( dpkg --print-architecture )] https://repository.mullvad.net/deb/stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/mullvad.list
+    msg_info "Adding Mullvad repository..."
+    cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
+	Types: deb
+	URIs: https://repository.mullvad.net/deb/stable
+	Suites: noble
+	Components: main
+	Architectures: $arch
+	Signed-By: /usr/share/keyrings/mullvad-keyring.asc
+	EOF
 
     msg_info "Update package database and installing Mullvad..."
     apt update
@@ -288,13 +301,19 @@ install_qbittorrent() {
 install_signalapp() {
     check_is_sudo
 
-    msg_info  "Downloading the Signal signing key..."
+    msg_info  "Downloading Signal signing key..."
     wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg
     cat signal-desktop-keyring.gpg | tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
 
-    msg_info "Adding Signal repository server to apt..."
-    echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' |\
-        tee -a /etc/apt/sources.list.d/signal-xenial.list
+    msg_info "Adding Signal repository..."
+    cat <<-EOF > /etc/apt/sources.list.d/signal-xenial.sources
+	Types: deb
+	URIs: https://updates.signal.org/desktop/apt
+	Suites: xenial
+	Components: main
+	Architectures: amd64
+	Signed-By: /usr/share/keyrings/signal-desktop-keyring.gpg
+	EOF
 
     msg_info "Update package database and installing Signal..."
     apt update && apt install signal-desktop
@@ -357,14 +376,23 @@ install_tor() {
     msg_info "Installing apt-transport-https..."
     apt install apt-transport-https -y
 
-    msg_info "Adding Tor Project repository to the apt sources"
-    cat <<-EOF > /etc/apt/sources.list.d/tor.list
-	deb     [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org $distrib main
-	deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org $distrib main
-	EOF
-
     msg_info "Add the gpg key used to sign the packages"
     wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/tor-archive-keyring.gpg >/dev/null
+
+    msg_info "Adding Tor Project repository..."
+    cat <<-EOF > /etc/apt/sources.list.d/tor.sources
+	Types: deb
+	URIs: https://deb.torproject.org/torproject.org
+	Suites: stable
+	Components: main
+	Signed-By: /usr/share/keyrings/tor-archive-keyring.gpg
+
+	Types: deb-src
+	URIs: https://deb.torproject.org/torproject.org
+	Suites: stable
+	Components: main
+	Signed-By: /usr/share/keyrings/tor-archive-keyring.gpg
+	EOF
 
     apt update
     apt install deb.torproject.org-keyring -y
