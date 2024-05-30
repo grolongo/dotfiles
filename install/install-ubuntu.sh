@@ -186,6 +186,15 @@ set_gsettings() {
     # Dock
     gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
 
+    msg_info "Installing extra extensions..."
+    # find the uuid by visiting the gnome extension page and lookup uuid in the source
+    array=( system-monitor@gnome-shell-extensions.gcampax.github.com caffeine@patapon.info )
+
+    for i in "${array[@]}"
+    do
+        busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
+    done
+
     msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
 
