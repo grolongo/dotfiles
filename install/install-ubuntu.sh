@@ -381,13 +381,7 @@ install_tor() {
 
     msg_info "Adding Tor Project repository..."
     cat <<-EOF > /etc/apt/sources.list.d/tor.sources
-	Types: deb
-	URIs: https://deb.torproject.org/torproject.org
-	Suites: stable
-	Components: main
-	Signed-By: /usr/share/keyrings/tor-archive-keyring.gpg
-
-	Types: deb-src
+	Types: deb deb-src
 	URIs: https://deb.torproject.org/torproject.org
 	Suites: stable
 	Components: main
