@@ -261,7 +261,7 @@ install_mullvad() {
     check_is_sudo
 
     local distrib
-    distrib=$(lsb_release -sc)
+    distrib=$(lsb_release -sc 2> /dev/null)
 
     local arch
     arch=$(dpkg --print-architecture)
@@ -273,7 +273,7 @@ install_mullvad() {
     cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
 	Types: deb
 	URIs: https://repository.mullvad.net/deb/stable
-	Suites: noble
+	Suites: $distrib
 	Components: main
 	Architectures: $arch
 	Signed-By: /usr/share/keyrings/mullvad-keyring.asc
@@ -386,7 +386,7 @@ install_tor() {
     check_is_sudo
 
     local distrib
-    distrib=$(lsb_release -sc)
+    distrib=$(lsb_release -sc 2> /dev/null)
 
     msg_info "Installing apt-transport-https..."
     apt install apt-transport-https -y
