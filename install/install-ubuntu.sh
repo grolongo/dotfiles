@@ -101,6 +101,7 @@ apt_common() {
         imagemagick
         jq
         keepassxc
+        mg
         mkvtoolnix
         mpv
         pandoc
