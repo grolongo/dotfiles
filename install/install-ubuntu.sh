@@ -219,6 +219,61 @@ set_i3wm() {
     apt_clean
 }
 
+### Emacs
+
+install_emacs() {
+    check_is_sudo
+
+    read -r -p "Do you need PureGTK (Wayland only)? [y/n] " choice
+    case "$choice" in
+        [yY]es|[yY])
+            local pgtk="--with-pgtk"
+            ;;
+        [nN]o|[nN])
+            local pgtk="--without-pgtk"
+            ;;
+        *)
+            msg_error "Please enter yes or no."
+            ;;
+    esac
+
+    msg_info "Checking for source packages repository..."
+    if ! grep -q deb-src /etc/apt/sources.list.d/ubuntu.sources; then
+        sed -i 's/Types: deb/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+        apt update
+    fi
+
+    msg_info "Installing all dependencies..."
+    apt build-dep emacs
+
+    msg_info "Installing extra dependencies for additional support..."
+    apt install libmagickcore-dev libmagick++-dev # imagemagick support
+    apt install libwebkit2gtk-4.1-dev # xwidgets support
+
+    (
+        msg_info "Downloading Emacs from official website..."
+        mkdir ~/git && cd ~/git
+        wget -O - https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz
+        tar -xzv emacs-29.3.tar.gz
+        cd ~/git/emacs-29.3
+        export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
+        ./autogen.sh
+        # you can check the available flags with: ./configure --help
+        ./configure \
+            --prefix=/opt/emacs-29 \
+            --without-compress-install \
+            --with-native-compilation=aot \
+            --with-json \
+            --with-tree-sitter \
+            --with-imagemagick \
+            --with-mailutils \
+            --with-xwidgets \
+            "$pgtk"
+        make -j"$(nproc)"
+        make install
+    )
+}
+
 ### Synology Drive Client
 
 install_driveclient() {
@@ -404,6 +459,7 @@ usage() {
     printf "  snaps       (s) - installs a few snaps\n"
     printf "  gsettings       - configures Gnome settings\n"
     printf "  i3          (s) - installs and sets up i3wm related configs\n"
+    printf "  emacs       (s) - compile Emacs from tarball\n"
     printf "  driveclient (s) - installs Synology Drive Client\n"
     printf "  mullvad     (s) - installs Mullvad VPN from official repository\n"
     printf "  qbittorrent (s) - installs qBittorrent with plugins\n"
@@ -433,6 +489,8 @@ main() {
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
         set_i3wm
+    elif [ "$cmd" = "emacs" ]; then
+        install_emacs
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
     elif [ "$cmd" = "mullvad" ]; then
