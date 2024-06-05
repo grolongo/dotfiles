@@ -182,7 +182,6 @@ set_gsettings() {
 
     # Ubuntu AppIndicator
     gsettings set org.gnome.shell.extensions.appindicator icon-opacity 255
-
     # Dock
     gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
 
@@ -194,6 +193,22 @@ set_gsettings() {
     do
         busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
     done
+
+    msg_info "Applying settings..."
+
+    sleep 5
+
+    # caffeine settings
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-indicator always
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-notifications false
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-timer true
+
+    # system monitor settings
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-cpu true
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-memory true
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-swap false
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-download false
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-upload false
 
     msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
@@ -301,7 +316,7 @@ install_mullvad() {
     check_is_sudo
 
     local distrib
-    distrib=$(lsb_release -sc)
+    distrib=$(lsb_release -sc 2> /dev/null)
 
     local arch
     arch=$(dpkg --print-architecture)
@@ -313,7 +328,7 @@ install_mullvad() {
     cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
 	Types: deb
 	URIs: https://repository.mullvad.net/deb/stable
-	Suites: noble
+	Suites: $distrib
 	Components: main
 	Architectures: $arch
 	Signed-By: /usr/share/keyrings/mullvad-keyring.asc
@@ -426,7 +441,7 @@ install_tor() {
     check_is_sudo
 
     local distrib
-    distrib=$(lsb_release -sc)
+    distrib=$(lsb_release -sc 2> /dev/null)
 
     msg_info "Installing apt-transport-https..."
     apt install apt-transport-https -y
