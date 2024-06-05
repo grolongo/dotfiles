@@ -268,8 +268,7 @@ install_emacs() {
     (
         msg_info "Downloading Emacs from official website..."
         mkdir ~/git && cd ~/git
-        wget -O - https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz
-        tar -xzv emacs-29.3.tar.gz
+        wget -O - https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz | tar -xzv
         cd ~/git/emacs-29.3
         export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
         ./autogen.sh
