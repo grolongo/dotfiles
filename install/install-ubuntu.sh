@@ -264,12 +264,13 @@ install_emacs() {
     fi
 
     msg_info "Installing all dependencies..."
-    apt build-dep emacs
+    apt build-dep -y emacs
 
-    msg_info "Installing extra dependencies for additional support..."
-    apt install libmagickcore-dev libmagick++-dev # imagemagick support
-    apt install libwebkit2gtk-4.1-dev # xwidgets support
+    msg_info "Installing extra dependencies for imagemagick support..."
+    apt install -y libmagickcore-dev libmagick++-dev
 
+    msg_info "Installing extra dependencies for xwidgets support..."
+    apt install -y libwebkit2gtk-4.1-dev
 
     (
         msg_info "Creating temporary folder..."
