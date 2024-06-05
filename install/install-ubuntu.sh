@@ -267,9 +267,9 @@ install_emacs() {
 
     (
         msg_info "Downloading Emacs from official website..."
-        mkdir ~/git && cd ~/git
+        mkdir /home/"$SUDO_USER"/git && cd /home/"$SUDO_USER"/git
         wget -O - https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz | tar -xzv
-        cd ~/git/emacs-29.3
+        cd /home/"$SUDO_USER"/git/emacs-29.3
         export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
         ./autogen.sh
         # you can check the available flags with: ./configure --help
