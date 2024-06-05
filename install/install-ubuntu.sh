@@ -239,6 +239,11 @@ set_i3wm() {
 install_emacs() {
     check_is_sudo
 
+    local source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz"
+
+    local tmpdir
+    tmpdir="$(mktemp -d)"
+
     read -r -p "Do you need PureGTK (Wayland only)? [y/n] " choice
     case "$choice" in
         [yY]es|[yY])
@@ -265,12 +270,19 @@ install_emacs() {
     apt install libmagickcore-dev libmagick++-dev # imagemagick support
     apt install libwebkit2gtk-4.1-dev # xwidgets support
 
+
     (
+        msg_info "Creating temporary folder..."
+        cd "$tmpdir" || exit 1
+
         msg_info "Downloading Emacs from official website..."
-        mkdir /home/"$SUDO_USER"/git && cd /home/"$SUDO_USER"/git
-        wget -O - https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz | tar -xzv
+        mkdir /home/"$SUDO_USER"/git
+        curl -#L "$source" --output emacs-29.3.tar.gz
+        tar -xzvf emacs-29.3.tar.gz --directory /home/"$SUDO_USER"/git
+
         cd /home/"$SUDO_USER"/git/emacs-29.3
         export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
+
         ./autogen.sh
         # you can check the available flags with: ./configure --help
         ./configure \
@@ -284,8 +296,14 @@ install_emacs() {
             --with-xwidgets \
             "$pgtk"
         make -j"$(nproc)"
+
+        msg_info "Changing ownership..."
+        chown -R "$SUDO_USER":"$SUDO_USER" /home/"$SUDO_USER"/git
         make install
     )
+
+    msg_info "Deleting temp folder..."
+    rm -rf "$tmpdir"
 }
 
 ### Synology Drive Client
