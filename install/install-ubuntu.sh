@@ -253,7 +253,7 @@ install_emacs() {
     esac
 
     msg_info "Checking for source packages repository..."
-    if ! grep -q deb-src /etc/apt/sources.list.d/ubuntu.sources; then
+    if ! grep -q "Types: deb deb-src" /etc/apt/sources.list.d/ubuntu.sources; then
         sed -i 's/Types: deb/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
         apt update
     fi
