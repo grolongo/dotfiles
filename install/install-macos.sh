@@ -168,6 +168,7 @@ install_base() {
         fd
         ffmpeg
         gnupg
+        httrack
         imagemagick
         jq
         mkvtoolnix
@@ -306,6 +307,7 @@ install_ports() {
         fd
         ffmpeg
         gnupg2
+        httrack
         imagemagick
         jq
         keepassxc
