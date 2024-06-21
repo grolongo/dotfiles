@@ -343,16 +343,18 @@ install_mullvad() {
     arch=$(dpkg --print-architecture)
 
     msg_info "Downloading Mullvad signing key..."
-    curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc https://repository.mullvad.net/deb/mullvad-keyring.asc
+    install -m 0755 -d /etc/apt/keyrings
+    wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc | tee /etc/apt/keyrings/mullvad-keyring.asc >/dev/null
+    chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
     msg_info "Adding Mullvad repository..."
     cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
 	Types: deb
 	URIs: https://repository.mullvad.net/deb/stable
+	Architectures: $arch
 	Suites: $distrib
 	Components: main
-	Architectures: $arch
-	Signed-By: /usr/share/keyrings/mullvad-keyring.asc
+	Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
 	EOF
 
     msg_info "Update package database and installing Mullvad..."
@@ -393,21 +395,23 @@ install_signalapp() {
     check_is_sudo
 
     msg_info  "Downloading Signal signing key..."
-    wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg
-    cat signal-desktop-keyring.gpg | tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
+    install -m 0755 -d /etc/apt/keyrings
+    wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg > /dev/null
+    chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
     msg_info "Adding Signal repository..."
     cat <<-EOF > /etc/apt/sources.list.d/signal-xenial.sources
 	Types: deb
 	URIs: https://updates.signal.org/desktop/apt
+	Architectures: amd64
 	Suites: xenial
 	Components: main
-	Architectures: amd64
-	Signed-By: /usr/share/keyrings/signal-desktop-keyring.gpg
+	Signed-By: /etc/apt/keyrings/signal-desktop-keyring.gpg
 	EOF
 
     msg_info "Update package database and installing Signal..."
-    apt update && apt install signal-desktop
+    apt update
+    apt install signal-desktop
 }
 
 ### Veracrypt
@@ -464,25 +468,63 @@ install_tor() {
     local distrib
     distrib=$(lsb_release -sc 2> /dev/null)
 
+    local arch
+    arch=$(dpkg --print-architecture)
+
     msg_info "Installing apt-transport-https..."
+    apt update
     apt install apt-transport-https -y
 
     msg_info "Add the gpg key used to sign the packages"
-    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/tor-archive-keyring.gpg >/dev/null
+    install -m 0755 -d /etc/apt/keyrings
+    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /etc/apt/keyrings/tor-archive-keyring.gpg > /dev/null
+    chmod a+r /etc/apt/keyrings/tor-archive-keyring.gpg
 
     msg_info "Adding Tor Project repository..."
     cat <<-EOF > /etc/apt/sources.list.d/tor.sources
 	Types: deb deb-src
 	URIs: https://deb.torproject.org/torproject.org
+	Architectures: $arch
 	Suites: stable
 	Components: main
-	Signed-By: /usr/share/keyrings/tor-archive-keyring.gpg
+	Signed-By: /etc/apt/keyrings/tor-archive-keyring.gpg
 	EOF
 
     apt update
     apt install deb.torproject.org-keyring -y
-    apt install tor
-    apt install torbrowser-launcher
+    apt install tor torbrowser-launcher
+}
+
+### Docker
+
+install_docker() {
+    check_is_sudo
+
+    local distrib
+    distrib=$(lsb_release -sc 2> /dev/null)
+
+    local arch
+    arch=$(dpkg --print-architecture)
+
+    apt update
+    apt install ca-certificates
+
+    install -m 0755 -d /etc/apt/keyrings
+    wget -qO- https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null
+    chmod a+r /etc/apt/keyrings/docker.asc
+
+    msg_info "Adding Docker repository..."
+    cat <<-EOF > /etc/apt/sources.list.d/docker.sources
+	Types: deb
+	URIs: https://download.docker.com/linux/ubuntu
+	Architectures: $arch
+	Suites: $distrib stable
+	Components: main
+	Signed-By: /etc/apt/keyrings/docker.asc
+	EOF
+
+    apt update
+    apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 }
 
 ### Menu
@@ -503,6 +545,7 @@ usage() {
     printf "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA\n"
     printf "  chatty      (s) - installs Chatty with JRE\n"
     printf "  tor         (s) - install Tor from official repository\n"
+    printf "  docker      (s) - install Docker from official repository\n"
     echo
 }
 
@@ -541,6 +584,8 @@ main() {
         install_chatty
     elif [ "$cmd" = "tor" ]; then
         install_tor
+    elif [ "$cmd" = "docker" ]; then
+        install_docker
     else
         usage
     fi
