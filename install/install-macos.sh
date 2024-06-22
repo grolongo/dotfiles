@@ -179,6 +179,7 @@ install_base() {
         streamlink
         tmux
         tor
+        wget
         yt-dlp
     )
 
@@ -321,6 +322,7 @@ install_ports() {
         streamlink
         tmux
         tor
+        wget
         yt-dlp
     )
 
