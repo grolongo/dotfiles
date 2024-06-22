@@ -346,14 +346,14 @@ install_mullvad() {
     msg_info "Downloading Mullvad signing key..."
     install -m 0755 -d /etc/apt/keyrings
     wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc | tee /etc/apt/keyrings/mullvad-keyring.asc >/dev/null
-    chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
+    chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
 
     msg_info "Adding Mullvad repository..."
     cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
 	Types: deb
 	URIs: https://repository.mullvad.net/deb/stable
-	Architectures: "$arch"
-	Suites: "$distrib"
+	Architectures: $arch
+	Suites: $distrib
 	Components: main
 	Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
 	EOF
@@ -485,7 +485,7 @@ install_tor() {
     cat <<-EOF > /etc/apt/sources.list.d/tor.sources
 	Types: deb deb-src
 	URIs: https://deb.torproject.org/torproject.org
-	Architectures: "$arch"
+	Architectures: $arch
 	Suites: stable
 	Components: main
 	Signed-By: /etc/apt/keyrings/tor-archive-keyring.gpg
@@ -525,8 +525,8 @@ install_docker() {
     cat <<-EOF > /etc/apt/sources.list.d/docker.sources
 	Types: deb
 	URIs: https://download.docker.com/linux/ubuntu
-	Architectures: "$arch"
-	Suites: "$distrib" stable
+	Architectures: $arch
+	Suites: $distrib stable
 	Components: main
 	Signed-By: /etc/apt/keyrings/docker.asc
 	EOF
