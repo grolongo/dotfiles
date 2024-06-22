@@ -374,6 +374,7 @@ install_qbittorrent() {
 
     sudo -u "$SUDO_USER" bash -c '
     PLUGIN_FOLDER="$HOME/.local/share/qBittorrent/nova3/engines"
+    mkdir -p "$PLUGIN_FOLDER"
     wget -O "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
     wget -O "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
     wget -O "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
