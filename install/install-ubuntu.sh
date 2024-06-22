@@ -578,8 +578,8 @@ usage() {
     printf "  signal      (s) - installs Signal messenger from official repository\n"
     printf "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA\n"
     printf "  chatty      (s) - installs Chatty with JRE\n"
-    printf "  tor         (s) - install Tor from official repository\n"
-    printf "  docker      (s) - install Docker from official repository\n"
+    printf "  tor         (s) - installs Tor from official repository\n"
+    printf "  docker      (s) - installs Docker from official repository\n"
     echo
 }
 
