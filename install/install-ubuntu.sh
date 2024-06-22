@@ -527,8 +527,8 @@ install_docker() {
 	Types: deb
 	URIs: https://download.docker.com/linux/ubuntu
 	Architectures: $arch
-	Suites: $distrib stable
-	Components: main
+	Suites: $distrib
+	Components: stable
 	Signed-By: /etc/apt/keyrings/docker.asc
 	EOF
 
