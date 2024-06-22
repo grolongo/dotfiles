@@ -281,16 +281,17 @@ install_emacs() {
 
         msg_info "Downloading Emacs from official website..."
         mkdir /home/"$SUDO_USER"/git
-        curl -#L "$source" --output emacs-29.3.tar.gz
-        tar -xzvf emacs-29.3.tar.gz --directory /home/"$SUDO_USER"/git
+        wget -O emacs.tar.gz "$source"
+        tar -xzvf emacs.tar.gz --directory /home/"$SUDO_USER"/git
+        mv /home/"$SUDO_USER"/git/emacs* /home/"$SUDO_USER"/git/emacs
 
-        cd /home/"$SUDO_USER"/git/emacs-29.3
+        cd /home/"$SUDO_USER"/git/emacs
         export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
 
         ./autogen.sh
         # you can check the available flags with: ./configure --help
         ./configure \
-            --prefix=/opt/emacs-29 \
+            --prefix=/opt/emacs \
             --without-compress-install \
             --with-native-compilation=aot \
             --with-json \
@@ -325,7 +326,7 @@ install_driveclient() {
         cd "$tmpdir" || exit 1
 
         msg_info "Downloading and installing Synology Drive Client"
-        curl -#L "$source" --output sdc.deb
+        wget -O sdc.deb "$source"
         apt install ./sdc.deb
     )
 
@@ -351,8 +352,8 @@ install_mullvad() {
     cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
 	Types: deb
 	URIs: https://repository.mullvad.net/deb/stable
-	Architectures: $arch
-	Suites: $distrib
+	Architectures: "$arch"
+	Suites: "$distrib"
 	Components: main
 	Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
 	EOF
@@ -373,19 +374,19 @@ install_qbittorrent() {
 
     sudo -u "$SUDO_USER" bash -c '
     PLUGIN_FOLDER="$HOME/.local/share/qBittorrent/nova3/engines"
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+    wget -O "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
+    wget -O "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+    wget -O "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+    wget -O "$PLUGIN_FOLDER/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+    wget -O "$PLUGIN_FOLDER/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
+    wget -O "$PLUGIN_FOLDER/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+    wget -O "$PLUGIN_FOLDER/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+    wget -O "$PLUGIN_FOLDER/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
+    wget -O "$PLUGIN_FOLDER/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
+    wget -O "$PLUGIN_FOLDER/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+    wget -O "$PLUGIN_FOLDER/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
+    wget -O "$PLUGIN_FOLDER/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+    wget -O "$PLUGIN_FOLDER/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
     '
 }
 
@@ -435,7 +436,7 @@ install_chatty() {
     apt install default-jre
 
     local chatty_latest
-    chatty_latest=$(curl -sSL "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
+    chatty_latest=$(wget -qO- "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
     chatty_latest=${chatty_latest#v}
 
     local repo="https://github.com/chatty/chatty/releases/download/"
@@ -452,7 +453,7 @@ install_chatty() {
         mkdir -vp /opt/Chatty
 
         msg_info "Downloading and extracting Chatty..."
-        curl -#OL "${repo}${release}"
+        wget "${repo}${release}"
         unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
     )
 
@@ -484,7 +485,7 @@ install_tor() {
     cat <<-EOF > /etc/apt/sources.list.d/tor.sources
 	Types: deb deb-src
 	URIs: https://deb.torproject.org/torproject.org
-	Architectures: $arch
+	Architectures: "$arch"
 	Suites: stable
 	Components: main
 	Signed-By: /etc/apt/keyrings/tor-archive-keyring.gpg
@@ -500,6 +501,12 @@ install_tor() {
 install_docker() {
     check_is_sudo
 
+    local version
+    version="4.30.0"
+
+    local tmpdir
+    tmpdir="$(mktemp -d)"
+
     local distrib
     distrib=$(lsb_release -sc 2> /dev/null)
 
@@ -509,6 +516,7 @@ install_docker() {
     apt update
     apt install ca-certificates
 
+    msg_info "Add the gpg key used to sign the packages"
     install -m 0755 -d /etc/apt/keyrings
     wget -qO- https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null
     chmod a+r /etc/apt/keyrings/docker.asc
@@ -517,14 +525,40 @@ install_docker() {
     cat <<-EOF > /etc/apt/sources.list.d/docker.sources
 	Types: deb
 	URIs: https://download.docker.com/linux/ubuntu
-	Architectures: $arch
-	Suites: $distrib stable
+	Architectures: "$arch"
+	Suites: "$distrib" stable
 	Components: main
 	Signed-By: /etc/apt/keyrings/docker.asc
 	EOF
 
     apt update
-    apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    msg_info "Choose if you want to install Docker for your server or desktop"
+
+    PS3="Select: "
+
+    select lng in Server Desktop
+    do
+        case "$lng" in
+            "Server")
+                apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+                break;;
+            "Desktop")
+                (
+                    msg_info "Creating temporary folder..."
+                    cd "$tmpdir" || exit 1
+                    wget https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-"${version}"-amd64.deb
+                    apt install ./docker-desktop-"${version}"-amd64.deb
+                )
+
+                msg_info "Deleting temp folder..."
+                rm -rf "$tmpdir"
+                break;;
+            *)
+                msg_error "Wrong input";;
+        esac
+    done
+
 }
 
 ### Menu
