@@ -154,6 +154,7 @@ set_gsettings() {
 
     # Files (Nautilus)
     dconf write /org/gtk/settings/file-chooser/show-hidden true
+    dconf write /org/gtk/settings/file-chooser/sort-directories-first true
     gsettings set org.gnome.nautilus.preferences show-image-thumbnails always
 
     # Settings
@@ -233,6 +234,34 @@ set_i3wm() {
     for p in "${packages[@]}"; do
         confirm "Install ${p}?" && apt install -y "${p}"
     done
+
+    # local system=$1
+
+    # if [ -z "$system" ]; then
+    #     echo "You need to specify whether it's intel, nvidia or optimus"
+    #     exit 1
+    # fi
+
+    # local pkgs=( xorg xserver-xorg xserver-xorg-input-libinput xserver-xorg-input-synaptics )
+
+    # case $system in
+    #     "intel")
+    #         pkgs+=( xserver-xorg-video-intel )
+    #         ;;
+    #     "nvidia")
+    #         pkgs+=( nvidia-driver )
+    #         ;;
+    #     "optimus")
+    #         pkgs+=( nvidia-kernel-dkms bumblebee-nvidia primus )
+    #         ;;
+    #     *)
+    #         echo "You need to specify whether it's intel, geforce or optimus"
+    #         exit 1
+    #         ;;
+    # esac
+
+    # msg_info "Installing graphics drivers..."
+    # apt install -y "${pkgs[@]}" --no-install-recommends
 
     apt_clean
 }
