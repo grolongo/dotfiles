@@ -145,7 +145,7 @@ apt_common() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install $p?" && apt install -y "$p"
+        confirm "Install ${p}?" && apt install -y "${p}"
     done
 
     local packagesnore=(
@@ -154,7 +154,7 @@ apt_common() {
 
     msg_info "Installing packages with no recommends..."
     for p in "${packagesnore[@]}"; do
-        confirm "Install $p?" && apt install -y "$p" --no-install-recommends
+        confirm "Install ${p}?" && apt install -y "${p}" --no-install-recommends
     done
 
     apt_clean
@@ -253,7 +253,7 @@ set_i3wm() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install $p?" && apt install -y "$p"
+        confirm "Install ${p}?" && apt install -y "${p}"
     done
 
     apt_clean
@@ -312,20 +312,20 @@ install_qbittorrent() {
     msg_info "Downloading search plugins..."
 
     sudo -u "$SUDO_USER" bash -c '
-    PLUGIN_FOLDER="$HOME/.local/share/qBittorrent/nova3/engines"
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+    PLUGIN_FOLDER="${HOME}/.local/share/qBittorrent/nova3/engines"
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+    curl --create-dirs -L#o "${PLUGIN_FOLDER}/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
     '
 }
 

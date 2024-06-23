@@ -231,7 +231,7 @@ set_i3wm() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install $p?" && apt install -y "$p"
+        confirm "Install ${p}?" && apt install -y "${p}"
     done
 
     apt_clean
@@ -280,12 +280,12 @@ install_emacs() {
         cd "$tmpdir" || exit 1
 
         msg_info "Downloading Emacs from official website..."
-        mkdir /home/"$SUDO_USER"/git
+        mkdir /home/"${SUDO_USER}"/git
         wget -O emacs.tar.gz "$source"
-        tar -xzvf emacs.tar.gz --directory /home/"$SUDO_USER"/git
-        mv /home/"$SUDO_USER"/git/emacs* /home/"$SUDO_USER"/git/emacs
+        tar -xzvf emacs.tar.gz --directory /home/"${SUDO_USER}"/git
+        mv /home/"${SUDO_USER}"/git/emacs* /home/"${SUDO_USER}"/git/emacs
 
-        cd /home/"$SUDO_USER"/git/emacs
+        cd /home/"${SUDO_USER}"/git/emacs
         export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
 
         ./autogen.sh
@@ -303,7 +303,7 @@ install_emacs() {
         make -j"$(nproc)"
 
         msg_info "Changing ownership..."
-        chown -R "$SUDO_USER":"$SUDO_USER" /home/"$SUDO_USER"/git
+        chown -R "${SUDO_USER}":"${SUDO_USER}" /home/"${SUDO_USER}"/git
         make install
     )
 
@@ -373,21 +373,21 @@ install_qbittorrent() {
     msg_info "Downloading search plugins..."
 
     sudo -u "$SUDO_USER" bash -c '
-    PLUGIN_FOLDER="$HOME/.local/share/qBittorrent/nova3/engines"
+    PLUGIN_FOLDER="${HOME}/.local/share/qBittorrent/nova3/engines"
     mkdir -p "$PLUGIN_FOLDER"
-    wget -O "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
-    wget -O "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
-    wget -O "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
-    wget -O "$PLUGIN_FOLDER/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
-    wget -O "$PLUGIN_FOLDER/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
-    wget -O "$PLUGIN_FOLDER/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
-    wget -O "$PLUGIN_FOLDER/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-    wget -O "$PLUGIN_FOLDER/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
-    wget -O "$PLUGIN_FOLDER/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
-    wget -O "$PLUGIN_FOLDER/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
-    wget -O "$PLUGIN_FOLDER/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
-    wget -O "$PLUGIN_FOLDER/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
-    wget -O "$PLUGIN_FOLDER/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+    wget -O "${PLUGIN_FOLDER}/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
+    wget -O "${PLUGIN_FOLDER}/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+    wget -O "${PLUGIN_FOLDER}/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+    wget -O "${PLUGIN_FOLDER}/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+    wget -O "${PLUGIN_FOLDER}/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
+    wget -O "${PLUGIN_FOLDER}/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+    wget -O "${PLUGIN_FOLDER}/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+    wget -O "${PLUGIN_FOLDER}/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
+    wget -O "${PLUGIN_FOLDER}/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
+    wget -O "${PLUGIN_FOLDER}/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+    wget -O "${PLUGIN_FOLDER}/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
+    wget -O "${PLUGIN_FOLDER}/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+    wget -O "${PLUGIN_FOLDER}/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
     '
 }
 
