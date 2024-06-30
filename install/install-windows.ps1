@@ -225,6 +225,7 @@ function install_winget {
         "GnuWin32.Make",
         "MoritzBunkus.MKVToolNix",
         "MullvadVPN.MullvadVPN",
+        "Insecure.Nmap",
         "nomacs.nomacs",
         "OBSProject.OBSStudio",
         "Microsoft.PowerToys",
