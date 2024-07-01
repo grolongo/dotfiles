@@ -98,11 +98,15 @@ apt_common() {
         ffmpegthumbnailer
         git
         gnome-shell-extension-manager
+        httrack
         imagemagick
         jq
         keepassxc
+        mg
         mkvtoolnix
         mpv
+        ncat
+        nmap
         pandoc
         ripgrep
         shellcheck
@@ -152,6 +156,7 @@ set_gsettings() {
 
     # Files (Nautilus)
     dconf write /org/gtk/settings/file-chooser/show-hidden true
+    dconf write /org/gtk/settings/file-chooser/sort-directories-first true
     gsettings set org.gnome.nautilus.preferences show-image-thumbnails always
 
     # Settings
@@ -169,6 +174,7 @@ set_gsettings() {
     gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
     gsettings set org.freedesktop.ibus.panel.emoji hotkey  "@as []" # make C-; available in Emacs
+    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ bold-is-bright true
 
     # Night shift mode
     gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
@@ -182,9 +188,33 @@ set_gsettings() {
 
     # Ubuntu AppIndicator
     gsettings set org.gnome.shell.extensions.appindicator icon-opacity 255
-
     # Dock
     gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
+
+    msg_info "Installing extra extensions..."
+    # find the uuid by visiting the gnome extension page and lookup uuid in the source
+    array=( system-monitor@gnome-shell-extensions.gcampax.github.com caffeine@patapon.info )
+
+    for i in "${array[@]}"
+    do
+        busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
+    done
+
+    msg_info "Applying settings..."
+
+    sleep 5
+
+    # caffeine settings
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-indicator always
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-notifications false
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-timer true
+
+    # system monitor settings
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-cpu true
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-memory true
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-swap false
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-download false
+    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-upload false
 
     msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
@@ -204,10 +234,112 @@ set_i3wm() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install $p?" && apt install -y "$p"
+        confirm "Install ${p}?" && apt install -y "${p}"
     done
 
+    # local system=$1
+
+    # if [ -z "$system" ]; then
+    #     echo "You need to specify whether it's intel, nvidia or optimus"
+    #     exit 1
+    # fi
+
+    # local pkgs=( xorg xserver-xorg xserver-xorg-input-libinput xserver-xorg-input-synaptics )
+
+    # case $system in
+    #     "intel")
+    #         pkgs+=( xserver-xorg-video-intel )
+    #         ;;
+    #     "nvidia")
+    #         pkgs+=( nvidia-driver )
+    #         ;;
+    #     "optimus")
+    #         pkgs+=( nvidia-kernel-dkms bumblebee-nvidia primus )
+    #         ;;
+    #     *)
+    #         echo "You need to specify whether it's intel, geforce or optimus"
+    #         exit 1
+    #         ;;
+    # esac
+
+    # msg_info "Installing graphics drivers..."
+    # apt install -y "${pkgs[@]}" --no-install-recommends
+
     apt_clean
+}
+
+### Emacs
+
+install_emacs() {
+    check_is_sudo
+
+    local source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz"
+
+    local tmpdir
+    tmpdir="$(mktemp -d)"
+
+    read -r -p "Do you need PureGTK (Wayland only)? [y/n] " choice
+    case "$choice" in
+        [yY]es|[yY])
+            local pgtk="--with-pgtk"
+            ;;
+        [nN]o|[nN])
+            local pgtk="--without-pgtk"
+            ;;
+        *)
+            msg_error "Please enter yes or no."
+            ;;
+    esac
+
+    msg_info "Checking for source packages repository..."
+    if ! grep -q "Types: deb deb-src" /etc/apt/sources.list.d/ubuntu.sources; then
+        sed -i 's/Types: deb/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+        apt update
+    fi
+
+    msg_info "Installing all dependencies..."
+    apt build-dep -y emacs
+
+    msg_info "Installing extra dependencies for imagemagick support..."
+    apt install -y libmagickcore-dev libmagick++-dev
+
+    msg_info "Installing extra dependencies for xwidgets support..."
+    apt install -y libwebkit2gtk-4.1-dev
+
+    (
+        msg_info "Creating temporary folder..."
+        cd "$tmpdir" || exit 1
+
+        msg_info "Downloading Emacs from official website..."
+        mkdir /home/"${SUDO_USER}"/git
+        wget -O emacs.tar.gz "$source"
+        tar -xzvf emacs.tar.gz --directory /home/"${SUDO_USER}"/git
+        mv /home/"${SUDO_USER}"/git/emacs* /home/"${SUDO_USER}"/git/emacs
+
+        cd /home/"${SUDO_USER}"/git/emacs
+        export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
+
+        ./autogen.sh
+        # you can check the available flags with: ./configure --help
+        ./configure \
+            --prefix=/opt/emacs \
+            --without-compress-install \
+            --with-native-compilation=aot \
+            --with-json \
+            --with-tree-sitter \
+            --with-imagemagick \
+            --with-mailutils \
+            --with-xwidgets \
+            "$pgtk"
+        make -j"$(nproc)"
+
+        msg_info "Changing ownership..."
+        chown -R "${SUDO_USER}":"${SUDO_USER}" /home/"${SUDO_USER}"/git
+        make install
+    )
+
+    msg_info "Deleting temp folder..."
+    rm -rf "$tmpdir"
 }
 
 ### Synology Drive Client
@@ -225,7 +357,7 @@ install_driveclient() {
         cd "$tmpdir" || exit 1
 
         msg_info "Downloading and installing Synology Drive Client"
-        curl -#L "$source" --output sdc.deb
+        wget -O sdc.deb "$source"
         apt install ./sdc.deb
     )
 
@@ -236,11 +368,26 @@ install_driveclient() {
 install_mullvad() {
     check_is_sudo
 
-    msg_info "Downloading the Mullvad signing key..."
-    curl -fsSLo /usr/share/keyrings/mullvad-keyring.asc https://repository.mullvad.net/deb/mullvad-keyring.asc
+    local distrib
+    distrib=$(lsb_release -sc 2> /dev/null)
 
-    msg_info "Adding Mullvad repository server to apt..."
-    echo "deb [signed-by=/usr/share/keyrings/mullvad-keyring.asc arch=$( dpkg --print-architecture )] https://repository.mullvad.net/deb/stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/mullvad.list
+    local arch
+    arch=$(dpkg --print-architecture)
+
+    msg_info "Downloading Mullvad signing key..."
+    install -m 0755 -d /etc/apt/keyrings
+    wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc | tee /etc/apt/keyrings/mullvad-keyring.asc >/dev/null
+    chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
+
+    msg_info "Adding Mullvad repository..."
+    cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
+	Types: deb
+	URIs: https://repository.mullvad.net/deb/stable
+	Architectures: $arch
+	Suites: $distrib
+	Components: main
+	Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
+	EOF
 
     msg_info "Update package database and installing Mullvad..."
     apt update
@@ -257,20 +404,21 @@ install_qbittorrent() {
     msg_info "Downloading search plugins..."
 
     sudo -u "$SUDO_USER" bash -c '
-    PLUGIN_FOLDER="$HOME/.local/share/qBittorrent/nova3/engines"
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
-    curl --create-dirs -L#o "$PLUGIN_FOLDER/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+    PLUGIN_FOLDER="${HOME}/.local/share/qBittorrent/nova3/engines"
+    mkdir -p "$PLUGIN_FOLDER"
+    wget -O "${PLUGIN_FOLDER}/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
+    wget -O "${PLUGIN_FOLDER}/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+    wget -O "${PLUGIN_FOLDER}/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+    wget -O "${PLUGIN_FOLDER}/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+    wget -O "${PLUGIN_FOLDER}/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
+    wget -O "${PLUGIN_FOLDER}/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+    wget -O "${PLUGIN_FOLDER}/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+    wget -O "${PLUGIN_FOLDER}/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
+    wget -O "${PLUGIN_FOLDER}/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
+    wget -O "${PLUGIN_FOLDER}/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+    wget -O "${PLUGIN_FOLDER}/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
+    wget -O "${PLUGIN_FOLDER}/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+    wget -O "${PLUGIN_FOLDER}/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
     '
 }
 
@@ -279,16 +427,24 @@ install_qbittorrent() {
 install_signalapp() {
     check_is_sudo
 
-    msg_info  "Downloading the Signal signing key..."
-    wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg
-    cat signal-desktop-keyring.gpg | tee -a /usr/share/keyrings/signal-desktop-keyring.gpg > /dev/null
+    msg_info  "Downloading Signal signing key..."
+    install -m 0755 -d /etc/apt/keyrings
+    wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg > /dev/null
+    chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
-    msg_info "Adding Signal repository server to apt..."
-    echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main' |\
-        tee -a /etc/apt/sources.list.d/signal-xenial.list
+    msg_info "Adding Signal repository..."
+    cat <<-EOF > /etc/apt/sources.list.d/signal-xenial.sources
+	Types: deb
+	URIs: https://updates.signal.org/desktop/apt
+	Architectures: amd64
+	Suites: xenial
+	Components: main
+	Signed-By: /etc/apt/keyrings/signal-desktop-keyring.gpg
+	EOF
 
     msg_info "Update package database and installing Signal..."
-    apt update && apt install signal-desktop
+    apt update
+    apt install signal-desktop
 }
 
 ### Veracrypt
@@ -312,7 +468,7 @@ install_chatty() {
     apt install default-jre
 
     local chatty_latest
-    chatty_latest=$(curl -sSL "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
+    chatty_latest=$(wget -qO- "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
     chatty_latest=${chatty_latest#v}
 
     local repo="https://github.com/chatty/chatty/releases/download/"
@@ -329,7 +485,7 @@ install_chatty() {
         mkdir -vp /opt/Chatty
 
         msg_info "Downloading and extracting Chatty..."
-        curl -#OL "${repo}${release}"
+        wget "${repo}${release}"
         unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
     )
 
@@ -343,24 +499,106 @@ install_tor() {
     check_is_sudo
 
     local distrib
-    distrib=$(lsb_release -sc)
+    distrib=$(lsb_release -sc 2> /dev/null)
+
+    local arch
+    arch=$(dpkg --print-architecture)
 
     msg_info "Installing apt-transport-https..."
+    apt update
     apt install apt-transport-https -y
 
-    msg_info "Adding Tor Project repository to the apt sources"
-    cat <<-EOF > /etc/apt/sources.list.d/tor.list
-	deb     [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org $distrib main
-	deb-src [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org $distrib main
-	EOF
-
     msg_info "Add the gpg key used to sign the packages"
-    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/tor-archive-keyring.gpg >/dev/null
+    install -m 0755 -d /etc/apt/keyrings
+    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /etc/apt/keyrings/tor-archive-keyring.gpg > /dev/null
+    chmod a+r /etc/apt/keyrings/tor-archive-keyring.gpg
+
+    msg_info "Adding Tor Project repository..."
+    cat <<-EOF > /etc/apt/sources.list.d/tor.sources
+	Types: deb deb-src
+	URIs: https://deb.torproject.org/torproject.org
+	Architectures: $arch
+	Suites: stable
+	Components: main
+	Signed-By: /etc/apt/keyrings/tor-archive-keyring.gpg
+	EOF
 
     apt update
     apt install deb.torproject.org-keyring -y
-    apt install tor
-    apt install torbrowser-launcher
+
+    local packages=(
+        tor
+        torbrowser-launcher
+    )
+
+    for p in "${packages[@]}"; do
+        confirm "Install ${p}?" && apt install -y "${p}"
+    done
+}
+
+### Docker
+
+install_docker() {
+    check_is_sudo
+
+    local version
+    version="4.30.0"
+
+    local tmpdir
+    tmpdir="$(mktemp -d)"
+
+    local distrib
+    distrib=$(lsb_release -sc 2> /dev/null)
+
+    local arch
+    arch=$(dpkg --print-architecture)
+
+    apt update
+    apt install ca-certificates
+
+    msg_info "Add the gpg key used to sign the packages"
+    install -m 0755 -d /etc/apt/keyrings
+    wget -qO- https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null
+    chmod a+r /etc/apt/keyrings/docker.asc
+
+    msg_info "Adding Docker repository..."
+    cat <<-EOF > /etc/apt/sources.list.d/docker.sources
+	Types: deb
+	URIs: https://download.docker.com/linux/ubuntu
+	Architectures: $arch
+	Suites: $distrib
+	Components: stable
+	Signed-By: /etc/apt/keyrings/docker.asc
+	EOF
+
+    apt update
+
+    msg_info "Choose if you want to install Docker for your server or desktop"
+
+    PS3="Select: "
+
+    select lng in Server Desktop
+    do
+        case "$lng" in
+            "Server")
+                apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+                break;;
+            "Desktop")
+                (
+                    msg_info "Creating temporary folder..."
+                    cd "$tmpdir" || exit 1
+                    wget https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-"${version}"-amd64.deb
+                    apt install ./docker-desktop-"${version}"-amd64.deb
+                )
+
+                msg_info "Deleting temp folder..."
+                rm -rf "$tmpdir"
+                break;;
+            *)
+                msg_error "Wrong input";;
+        esac
+    done
+
 }
 
 ### Menu
@@ -373,13 +611,15 @@ usage() {
     printf "  snaps       (s) - installs a few snaps\n"
     printf "  gsettings       - configures Gnome settings\n"
     printf "  i3          (s) - installs and sets up i3wm related configs\n"
+    printf "  emacs       (s) - compile Emacs from tarball\n"
     printf "  driveclient (s) - installs Synology Drive Client\n"
     printf "  mullvad     (s) - installs Mullvad VPN from official repository\n"
     printf "  qbittorrent (s) - installs qBittorrent with plugins\n"
     printf "  signal      (s) - installs Signal messenger from official repository\n"
     printf "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA\n"
     printf "  chatty      (s) - installs Chatty with JRE\n"
-    printf "  tor         (s) - install Tor from official repository\n"
+    printf "  tor         (s) - installs Tor from official repository\n"
+    printf "  docker      (s) - installs Docker from official repository\n"
     echo
 }
 
@@ -402,6 +642,8 @@ main() {
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
         set_i3wm
+    elif [ "$cmd" = "emacs" ]; then
+        install_emacs
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
     elif [ "$cmd" = "mullvad" ]; then
@@ -416,6 +658,8 @@ main() {
         install_chatty
     elif [ "$cmd" = "tor" ]; then
         install_tor
+    elif [ "$cmd" = "docker" ]; then
+        install_docker
     else
         usage
     fi

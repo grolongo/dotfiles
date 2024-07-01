@@ -74,7 +74,7 @@ initial_setup() {
 
     read -r -p "What hostname for the machine?: " hostname
     echo "$hostname" > /etc/hostname
-    sed -i "s/raspberrypi/$hostname/g" /etc/hosts
+    sed -i "s/raspberrypi/${hostname}/g" /etc/hosts
 
     if [ "$SUDO_USER" != "pi" ]; then
         confirm "You're under user '$SUDO_USER'. Do you wish to delete pi?" && {
@@ -150,7 +150,7 @@ apt_base() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install $p?" && apt install -y "$p"
+        confirm "Install ${p}?" && apt install -y "${p}"
     done
 
     apt_clean
@@ -275,14 +275,14 @@ install_seafile() {
     tmpdir=$(mktemp -d)
 
     msg_info "Creating Seafile dir in home..."
-    mkdir -vp "$HOME"/Seafile
+    mkdir -vp "${HOME}"/Seafile
 
     (
         msg_info "Creating temporary folder..."
         cd "$tmpdir" || exit 1
 
         msg_info "Downloading and extracting Seafile ${sf_latest}"
-        curl -#L "${repo}${release}" | tar -C "$HOME"/Seafile -xzf -
+        curl -#L "${repo}${release}" | tar -C "${HOME}"/Seafile -xzf -
     )
 
     msg_info "Deleting temp folder..."
@@ -303,7 +303,7 @@ install_seafile() {
     sudo apt install -y "${packages[@]}"
 
     (
-        cd "$HOME"/Seafile/seafile-server-"$sf_latest" || exit 1
+        cd "${HOME}"/Seafile/seafile-server-"${sf_latest}" || exit 1
         msg_info "Launching setup script..."
         ./setup-seafile.sh && \
             ./seafile.sh start && \
@@ -311,11 +311,11 @@ install_seafile() {
     )
 
     msg_info "Setting Paris timezone in the config file..."
-    echo "TIME_ZONE = 'Europe/Paris'" >> "$HOME"/Seafile/conf/seahub_settings.py
+    echo "TIME_ZONE = 'Europe/Paris'" >> "${HOME}"/Seafile/conf/seahub_settings.py
 
     msg_info "Adding to crontab for autostart on boot..."
-    (crontab -l ; echo "@reboot sleep 30 && $HOME/Seafile/seafile-server-latest/seafile.sh start") | crontab -
-    (crontab -l ; echo "@reboot sleep 60 && $HOME/Seafile/seafile-server-latest/seahub.sh start") | crontab -
+    (crontab -l ; echo "@reboot sleep 30 && ${HOME}/Seafile/seafile-server-latest/seafile.sh start") | crontab -
+    (crontab -l ; echo "@reboot sleep 60 && ${HOME}/Seafile/seafile-server-latest/seahub.sh start") | crontab -
     msg_info "Confirm with 'crontab -l'"
 
     msg_info "Autoremoving..."

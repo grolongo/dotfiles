@@ -30,8 +30,8 @@ confirm() {
 
 # ln
 symlink() {
-    sourcefile="$base"/"$1"
-    targetlink="$HOME"/"$1"
+    sourcefile="${base}"/"$1"
+    targetlink="${HOME}"/"$1"
 
     if [ -e "$sourcefile" ]; then
         ln -sniv "$sourcefile" "$targetlink"
@@ -42,11 +42,11 @@ symlink() {
 
 # user symlinks
 echo
-confirm "Install symlinks for $USER?" && {
+confirm "Install symlinks for ${USER}?" && {
 
     # zsh
     confirm "link zsh files?" && {
-        mkdir -vp "$HOME"/.cache/zsh
+        mkdir -vp "${HOME}/.cache/zsh"
         symlink ".zshrc"
         symlink ".zshenv"
         symlink ".aliases"
@@ -56,7 +56,7 @@ confirm "Install symlinks for $USER?" && {
 
     # bash
     confirm "link bash files?" && {
-        mkdir -vp "$HOME"/.cache/bash
+        mkdir -vp "${HOME}/.cache/bash"
         symlink ".bashrc"
         symlink ".inputrc"
         symlink ".aliases"
@@ -65,22 +65,22 @@ confirm "Install symlinks for $USER?" && {
 
     # emacs
     # confirm "link emacs config?" && {
-    #     mkdir -vp "$HOME"/.config/emacs
+    #     mkdir -vp "${HOME}"/.config/emacs
     #     symlink ".config/emacs/init.el"
     #     symlink ".config/emacs/early-init.el"
     # }
 
     # chatty
     confirm "link chatty files?" && {
-        mkdir -vp "$HOME"/.chatty
+        mkdir -vp "${HOME}/.chatty"
         symlink ".chatty/settings"
     }
 
     # mpv
     confirm "link mpv files?" && {
-        mkdir -vp "$HOME"/.config/mpv
-        mkdir -vp "$HOME"/.config/mpv/scripts
-        mkdir -vp "$HOME"/.config/mpv/script-opts
+        mkdir -vp "${HOME}/.config/mpv"
+        mkdir -vp "${HOME}/.config/mpv/scripts"
+        mkdir -vp "${HOME}/.config/mpv/script-opts"
         symlink ".config/mpv/input.conf"
         symlink ".config/mpv/mpv.conf"
         symlink ".config/mpv/scripts/crop.lua"
@@ -92,55 +92,55 @@ confirm "Install symlinks for $USER?" && {
 
     # tmux
     confirm "link tmux config file?" && {
-        mkdir -vp "$HOME"/.config/tmux
+        mkdir -vp "${HOME}/.config/tmux"
         symlink ".config/tmux/tmux.conf"
     }
 
     # rtorrent
     confirm "link rtorrent config file?" && {
-        mkdir -vp "$HOME"/Downloads
-        mkdir -vp "$HOME"/.cache/rtorrent
+        mkdir -vp "${HOME}/Downloads"
+        mkdir -vp "${HOME}/.cache/rtorrent"
         symlink ".config/rtorrent/rtorrent.rc"
     }
 
     # aria2
     confirm "link aria2 config file?" && {
-        mkdir -vp "$HOME"/.config/aria2
+        mkdir -vp "${HOME}/.config/aria2"
         symlink ".config/aria2/aria2.conf"
     }
 
     # vim
     confirm "link vim files?" && {
-        mkdir -vp "$HOME"/.vim
+        mkdir -vp "${HOME}/.vim"
         symlink ".vimrc"
     }
 
     # git
     confirm "link gitconfig file?" && {
-        mkdir -vp "$HOME"/.config/git
+        mkdir -vp "${HOME}/.config/git"
         symlink ".config/git/config"
     }
 
     # streamlink
     confirm "link streamlink config file?" && {
         if [ "$(uname)" = Darwin ]; then
-            ln -sniv "$base/.config/streamlink/config" "$HOME/Library/Application Support/streamlink/config"
+            ln -sniv "${base}/.config/streamlink/config" "${HOME}/Library/Application Support/streamlink/config"
         else
-            mkdir -vp "$HOME"/.config/streamlink
+            mkdir -vp "${HOME}/.config/streamlink"
             symlink ".config/streamlink/config"
         fi
     }
 
     # dunst
     confirm "link dunst config file?" && {
-        mkdir -vp "$HOME"/.config/dunst
+        mkdir -vp "${HOME}/.config/dunst"
         symlink ".config/dunst/dunstrc"
     }
 
     # i3
     confirm "link i3 files?" && {
-        mkdir -vp "$HOME"/.config/i3
-        mkdir -vp "$HOME"/.config/i3status
+        mkdir -vp "${HOME}/.config/i3"
+        mkdir -vp "${HOME}/.config/i3status"
         symlink ".config/i3/config"
         symlink ".config/i3status/config"
     }
@@ -152,9 +152,9 @@ confirm "Install symlinks for $USER?" && {
 
     # bin
     confirm "link binary files?" && {
-        mkdir -vp "$HOME"/.local/bin
+        mkdir -vp "${HOME}/.local/bin"
         symlink ".local/bin/extract"
-        chmod +x "$HOME"/.local/bin/*
+        chmod +x "${HOME}"/.local/bin/*
     }
 
 }

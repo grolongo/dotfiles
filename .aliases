@@ -36,12 +36,12 @@ alias exit=" exit"
 alias fd="fd --hidden"
 alias em="emacs -nw"
 alias emq="emacs -Q -nw"
-alias mg="emacs -Q -nw"
 alias logo="sudo pkill -u $USER"
 alias curldl="curl --location --progress-bar --remote-name"
 alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
 alias chatty="nohup java -jar /opt/Chatty/Chatty.jar </dev/null &>/dev/null & disown;"
 alias cdtbb="cd ~/.local/share/torbrowser/tbb/x86_64/tor-browser_en-US/Browser/Downloads/"
+alias wgetws="wget -mpEk" # add "--wait=seconds" if ban occurs
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
