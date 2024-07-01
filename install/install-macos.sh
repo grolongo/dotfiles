@@ -171,6 +171,7 @@ install_base() {
         imagemagick
         jq
         mkvtoolnix
+        nmap
         pandoc
         pinentry-mac
         shellcheck
@@ -311,6 +312,7 @@ install_ports() {
         keepassxc
         mkvtoolnix
         mpv
+        nmap
         pandoc
         pinentry-mac
         shellcheck
