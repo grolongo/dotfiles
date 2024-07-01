@@ -523,7 +523,15 @@ install_tor() {
 
     apt update
     apt install deb.torproject.org-keyring -y
-    apt install tor torbrowser-launcher
+
+    local packages=(
+        tor
+        torbrowser-launcher
+    )
+
+    for p in "${packages[@]}"; do
+        confirm "Install ${p}?" && apt install -y "${p}"
+    done
 }
 
 ### Docker
