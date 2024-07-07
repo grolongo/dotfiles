@@ -172,6 +172,7 @@ install_base() {
         imagemagick
         jq
         mkvtoolnix
+        nmap
         pandoc
         pinentry-mac
         shellcheck
@@ -282,7 +283,7 @@ install_macports() {
     macports_latest=${macports_latest#v}
 
     local repo="https://github.com/macports/macports-base/releases/download/"
-    local release="v${macports_latest}/MacPorts-${macports_latest}-10.15-Catalina.pkg"
+    local release="v${macports_latest}/MacPorts-${macports_latest}-12-Monterey.pkg"
 
     local tmpdir
     tmpdir=$(mktemp -d)
@@ -293,7 +294,7 @@ install_macports() {
 
         msg_info "Downloading MacPorts for Catalina..."
         curl -#OL "${repo}${release}"
-        open ./MacPorts-"${macports_latest}"-10.15-Catalina.pkg
+        open ./MacPorts-"${macports_latest}"-12-Monterey.pkg
     )
 
     confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "$tmpdir"
@@ -314,6 +315,7 @@ install_ports() {
         keepassxc
         mkvtoolnix
         mpv
+        nmap
         pandoc
         pinentry-mac
         shellcheck

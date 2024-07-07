@@ -105,6 +105,8 @@ apt_common() {
         mg
         mkvtoolnix
         mpv
+        ncat
+        nmap
         pandoc
         ripgrep
         shellcheck
