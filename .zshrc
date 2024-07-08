@@ -1,6 +1,5 @@
 ### Emacs Tramp
-if [[ "$TERM" == "tramp" ]]
-then
+if [ "$TERM" == "tramp" ]; then
     unsetopt zle
     unsetopt rcs
     unsetopt prompt_cr
@@ -13,7 +12,7 @@ then
     if whence -w preexec >/dev/null; then
         unfunction preexec
     fi
-    PS1='$ '
+    PS1='$ ' && return
 fi
 
 if [ -r "$HOME/.aliases" ] && [ -f "$HOME/.aliases" ]; then

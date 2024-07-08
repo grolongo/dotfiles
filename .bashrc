@@ -1,3 +1,6 @@
+### Emacs Tramp
+[[ "$TERM" == "tramp" ]] && PS1='$ ' && return
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
