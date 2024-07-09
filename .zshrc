@@ -111,7 +111,7 @@ if [ "$TERM" == "tramp" ]; then
     if whence -w preexec >/dev/null; then
         unfunction preexec
     fi
-    PS1='$ ' && return
+    PS1='$ ' && return;
 else
     PROMPT='%B%(!.%F{red}.%F{green})%n%f'
     PROMPT+='@'

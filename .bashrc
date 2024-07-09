@@ -81,8 +81,8 @@ else
 fi;
 
 ### Emacs Tramp
-if [[ "${TERM}" == "tramp" ]]; then
-    PS1='$ ';
+if [[ "${TERM}" == "dumb" ]]; then
+    PS1='$ ' && return;
 else
     PS1="${userStyle}\u";                   # username
     PS1+="\[\e[1;37m\]@";                   # @
