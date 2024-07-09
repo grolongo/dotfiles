@@ -1,20 +1,3 @@
-### Emacs Tramp
-if [ "$TERM" == "tramp" ]; then
-    unsetopt zle
-    unsetopt rcs
-    unsetopt prompt_cr
-    unsetopt prompt_subst
-    unset RPROMPT
-    unset RPS1
-    if whence -w precmd >/dev/null; then
-        unfunction precmd
-    fi
-    if whence -w preexec >/dev/null; then
-        unfunction preexec
-    fi
-    PS1='$ ' && return
-fi
-
 if [ -r "$HOME/.aliases" ] && [ -f "$HOME/.aliases" ]; then
     . "$HOME/.aliases"
 fi
@@ -115,10 +98,26 @@ else
     hostStyle="%F{8}%m" # grey
 fi
 
-PROMPT='%B%(!.%F{red}.%F{green})%n%f'
-PROMPT+='@'
-PROMPT+='$hostStyle '
-PROMPT+='%F{blue}%~%f'
-PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
-PROMPT+=' %# '
-PROMPT+='%b%E'
+if [ "$TERM" == "tramp" ]; then
+    unsetopt zle
+    unsetopt rcs
+    unsetopt prompt_cr
+    unsetopt prompt_subst
+    unset RPROMPT
+    unset RPS1
+    if whence -w precmd >/dev/null; then
+        unfunction precmd
+    fi
+    if whence -w preexec >/dev/null; then
+        unfunction preexec
+    fi
+    PS1='$ ' && return
+else
+    PROMPT='%B%(!.%F{red}.%F{green})%n%f'
+    PROMPT+='@'
+    PROMPT+='$hostStyle '
+    PROMPT+='%F{blue}%~%f'
+    PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
+    PROMPT+=' %# '
+    PROMPT+='%b%E'
+fi

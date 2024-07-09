@@ -1,6 +1,3 @@
-### Emacs Tramp
-[[ "$TERM" == "tramp" ]] && PS1='$ ' && return
-
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -83,13 +80,18 @@ else
     hostStyle="\[\e[1;30m\]";       # grey
 fi;
 
-PS1="${userStyle}\u";                   # username
-PS1+="\[\e[1;37m\]@";                   # @
-PS1+="${hostStyle}\h ";                 # hostname
-PS1+="\[\e[1;34m\]\w";                  # working dir
-PS1+="\[\e[1;36m\]\$(git_branch_name)"; # git repository details
-PS1+="\[\e[1;37m\] \$";                 # $
-PS1+="\[\e[0m\] ";                      # reset colors
+### Emacs Tramp
+if [[ "${TERM}" == "tramp" ]]; then
+    PS1='$ ';
+else
+    PS1="${userStyle}\u";                   # username
+    PS1+="\[\e[1;37m\]@";                   # @
+    PS1+="${hostStyle}\h ";                 # hostname
+    PS1+="\[\e[1;34m\]\w";                  # working dir
+    PS1+="\[\e[1;36m\]\$(git_branch_name)"; # git repository details
+    PS1+="\[\e[1;37m\] \$";                 # $
+    PS1+="\[\e[0m\] ";                      # reset colors
+fi
 
 export PS1;
 
