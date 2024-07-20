@@ -278,12 +278,29 @@ install_macports() {
 
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
+    get_macos_version() {
+        sw_vers | awk '/ProductVersion/ {
+        split($2, a, ".");
+        if (a[1] == 10) {
+           print a[1] "." a[2];
+        } else {
+          print a[1];
+        }
+        }'
+    }
+
+    local os_version
+    os_version=$(get_macos_version)
+
+    local os_marketing
+    os_marketing=$(awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}')
+
     local macports_latest
     macports_latest=$(curl -sSL "https://api.github.com/repos/macports/macports-base/releases/latest" | jq --raw-output .tag_name)
     macports_latest=${macports_latest#v}
 
     local repo="https://github.com/macports/macports-base/releases/download/"
-    local release="v${macports_latest}/MacPorts-${macports_latest}-12-Monterey.pkg"
+    local release="v${macports_latest}/MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
 
     local tmpdir
     tmpdir=$(mktemp -d)
@@ -292,9 +309,9 @@ install_macports() {
         msg_info "Creating temporary folder..."
         cd "$tmpdir" || exit 1
 
-        msg_info "Downloading MacPorts for Catalina..."
+        msg_info "Downloading MacPorts..."
         curl -#OL "${repo}${release}"
-        open ./MacPorts-"${macports_latest}"-12-Monterey.pkg
+        open ./"MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
     )
 
     confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "$tmpdir"
