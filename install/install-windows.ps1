@@ -244,6 +244,9 @@ function install_winget {
         "yt-dlp.yt-dlp"
     )
 
+    Write-Host -ForegroundColor "yellow" "Updating sources list..."
+    winget source update
+
     foreach ($p in $packages) {
         do {
             $response = Read-Host "Install '$p'? [y/n]"
