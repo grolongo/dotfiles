@@ -53,7 +53,7 @@ function set_uipreferences {
 ### Firewall
 
 function set_firewall {
-    $confirmation = Read-Host "yellow" "Block incoming connections and allow outgoing?"
+    $confirmation = Read-Host "Block incoming connections and allow outgoing?"
     if ($confirmation -eq 'y') {
         Set-NetConnectionProfile -NetworkCategory Private
         netsh advfirewall set allprofiles state on
@@ -66,7 +66,7 @@ function set_firewall {
 ### DNS
 
 function set_dns {
-    $confirmation = Read-Host "yellow" "Set IPv4 & IPv6 DNS servers to Cloudflare?"
+    $confirmation = Read-Host "Set IPv4 & IPv6 DNS servers to Cloudflare?"
     if ($confirmation -eq 'y') {
         Set-DnsClientServerAddress -InterfaceAlias Ethernet -ServerAddresses 1.1.1.1,1.0.0.1
         Set-DnsClientServerAddress -InterfaceAlias Ethernet -ServerAddresses 2606:4700:4700::1111,2606:4700:4700::1001
@@ -98,7 +98,7 @@ function power_settings {
 ### Environment Variables
 
 function install_envar {
-    $confirmation = Read-Host "yellow" "Appliquer les variables d'environnement ? (pour les dossiers dotfiles, notes et code)"
+    $confirmation = Read-Host "Appliquer les variables d'environnement ? (pour les dossiers dotfiles, notes et code)"
     if ($confirmation -eq 'y') {
         $cloudpath = Read-Host 'Enter cloud folder path (ex: C:\Users\Bob\Seafile)'
         while (!(Test-path $cloudpath)) {
