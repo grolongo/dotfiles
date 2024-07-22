@@ -229,6 +229,7 @@ function install_winget {
         "nomacs.nomacs",
         "OBSProject.OBSStudio",
         "Microsoft.PowerToys",
+        "Python.Python.3.12",
         "BurntSushi.ripgrep.MSVC",
         "koalaman.shellcheck",
         "OpenWhisperSystems.Signal",
@@ -266,8 +267,10 @@ function install_winget {
 
 function install_qbittorrent {
     # choco install qbittorrent
+    winget install qBittorrent.qBittorrent
 
     New-Variable -Name "PLUGIN_FOLDER" -Value "$HOME\AppData\Local\qBittorrent\nova3\engines"
+    New-Item -Force -Path "$PLUGIN_FOLDER" -ItemType directory
 
     ## RARBG and ThePirateBay should already be installed by default
 
