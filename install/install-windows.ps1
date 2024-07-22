@@ -309,7 +309,7 @@ function usage {
     Write-Host "  powersettings     - disables power saving modes on AC power"
     Write-Host "  envar             - setups environment variables"
     Write-Host "  hostname          - changes hostname"
-    Write-Host "  features          - enables several Windows Optional Features (WSL)"
+    Write-Host "  features          - enables several Windows Optional Features"
     Write-Host "  ctrltocaps        - remap CTRL key to Caps Lock"
     Write-Host "  wsl               - enables WSL2 and installs Ubuntu or Debian"
     Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
