@@ -209,7 +209,7 @@ function install_winget {
         } while ($response -ne "y" -and $response -ne "n")
 
         if ($response -eq "y") {
-            winget install "$p"
+            winget install -e --id "$p"
         }
     }
 }
