@@ -157,6 +157,7 @@ function install_choco {
 function install_winget {
 
     $packages = @(
+        "9P3JFR0CLLL6", # mpv
         "7zip.7zip",
         "aria2.aria2",
         "AutoHotkey.AutoHotkey",
