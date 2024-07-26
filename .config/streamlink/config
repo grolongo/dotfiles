@@ -1,6 +1,7 @@
 # when mpv isn't in the path i use exact path
 #player="C:\Program Files\mpv\mpv.exe"
-player="mpv --cache=no"
+player=mpv
+player-args="--cache=no"
 
 # RTMP streams are downloaded using rtmpdump. Full path or relative path
 # to the rtmpdump exe should be specified here.
@@ -9,7 +10,7 @@ player="mpv --cache=no"
 # FFMPEG is used to mux separate video and audio streams in to a single
 # stream so that they can be played. The full or relative path to ffmpeg
 # or avconv should be specified here.
-ffmpeg-ffmpeg="C:\Program Files\Streamlink\ffmpeg\ffmpeg.exe"
+# ffmpeg-ffmpeg="C:\Users\max\AppData\Local\Programs\Streamlink\ffmpeg.exe"
 
 stream-segment-threads=10
 
