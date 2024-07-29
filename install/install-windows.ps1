@@ -2,6 +2,26 @@
 
 #Requires -RunAsAdministrator
 
+### Common functions
+
+function ask {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$question
+    )
+    do {
+        $response = Read-Host "$question [y/n]"
+        $response = $response.ToLower()
+        switch ($response) {
+            'y' { return $true }
+            'n' { return $false }
+            default {
+                Write-Host "Please enter 'y' or 'n'"
+            }
+        }
+    } while ($response -ne 'y' -and $response -ne 'n')
+}
+
 ### UI Preferences
 
 function set_uipreferences {
@@ -38,8 +58,7 @@ function set_uipreferences {
 ### Firewall
 
 function set_firewall {
-    $confirmation = Read-Host "Block incoming connections and allow outgoing?"
-    if ($confirmation -eq 'y') {
+    if (ask -question "Block incoming connections and allow outgoing?") {
         Set-NetConnectionProfile -NetworkCategory Private
         netsh advfirewall set allprofiles state on
         netsh advfirewall set domainprofile firewallpolicy blockinboundalways,allowoutbound
@@ -62,22 +81,21 @@ function power_settings {
     powercfg -change -standby-timeout-ac 0
     powercfg -change -disk-timeout-ac 0
     powercfg -change -hibernate-timeout-ac 0
-    powercfg.exe /HIBERNATE off
+    if (ask -question "Turn hibernate off (if on a laptop, answer no)?") {
+        powercfg.exe /HIBERNATE off
+    }
 }
 
 ### Environment Variables
 
 function install_envar {
-    $confirmation = Read-Host "Appliquer les variables d'environnement ? (pour les dossiers dotfiles, notes et code)"
-    if ($confirmation -eq 'y') {
-        $cloudpath = Read-Host 'Enter cloud folder path (ex: C:\Users\Bob\Seafile)'
-        while (!(Test-path $cloudpath)) {
-            $cloudpath = Read-Host 'Invalid path, please re-enter'
-        }
-        [Environment]::SetEnvironmentVariable('DOTFILES_DIR', "$cloudpath" + "\Dotfiles\", 'User')
-        [Environment]::SetEnvironmentVariable('NOTES_DIR', "$cloudpath" + "\Notes\", 'User')
-        [Environment]::SetEnvironmentVariable('PROJECTS_DIR', "$cloudpath" + "\Code\", 'User')
+    $cloudpath = Read-Host 'Enter cloud folder path (ex: C:\Users\Bob\Seafile)'
+    while (!(Test-path $cloudpath)) {
+        $cloudpath = Read-Host 'Invalid path, please re-enter'
     }
+    [Environment]::SetEnvironmentVariable('DOTFILES_DIR', "$cloudpath" + "\Dotfiles\", 'User')
+    [Environment]::SetEnvironmentVariable('NOTES_DIR', "$cloudpath" + "\Notes\", 'User')
+    [Environment]::SetEnvironmentVariable('PROJECTS_DIR', "$cloudpath" + "\Code\", 'User')
 }
 
 ### Hostname
@@ -157,7 +175,6 @@ function install_choco {
 function install_winget {
 
     $packages = @(
-        "9P3JFR0CLLL6", # mpv
         "7zip.7zip",
         "aria2.aria2",
         "AutoHotkey.AutoHotkey",
@@ -170,7 +187,6 @@ function install_winget {
         "sharkdp.fd",
         "Gyan.FFmpeg",
         "Mozilla.Firefox",
-        "Git.Git",
         "XavierRoche.HTTrack",
         "ImageMagick.ImageMagick",
         "DominikReichl.KeePass",
@@ -201,18 +217,11 @@ function install_winget {
     winget source update
 
     foreach ($p in $packages) {
-        do {
-            $response = Read-Host "Install '$p'? [y/n]"
-            $response = $response.ToLower()
-            if ($response -ne "y" -and $response -ne "n") {
-                Write-Host -ForegroundColor "yellow" "Please enter 'y' or 'n'"
-            }
-        } while ($response -ne "y" -and $response -ne "n")
-
-        if ($response -eq "y") {
-            winget install -e --id "$p"
-        }
+        if (ask -question "Install '$p'?") { winget install -e --id "$p" }
     }
+
+    if (ask -question "Install mpv?") { winget install -e --id 9P3JFR0CLLL6 }
+    if (ask -question "Install Git?") { winget install -e --id Git.Git --custom "/o:Components=icons,gitlfs /o:PathOption:CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption:CRLFCommitAsIs /o:CURLOption=WinSSL" }
 }
 
 ### qBittorrent
