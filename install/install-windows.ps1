@@ -55,6 +55,17 @@ function set_uipreferences {
     Write-Host -ForegroundColor "yellow" "Relog for changes to take effect."
 }
 
+### No sound
+
+function set_nosound {
+    msg_info "Switching Sound Scheme to no sounds..."
+    New-ItemProperty -Path HKCU:\AppEvents\Schemes -Name "(Default)" -Value ".None" -Force | Out-Null
+    Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps" -Recurse | Where-Object { $_.PSChildName -eq ".Current" } | Set-ItemProperty -Name "(Default)" -Value ""
+
+    msg_info "Turning Windows Startup sound off..."
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableStartupSound" -Value 1 -Type DWord -Force
+}
+
 ### Firewall
 
 function set_firewall {
@@ -270,6 +281,7 @@ function usage {
     Write-Host
     Write-Host "Usage:"
     Write-Host "  uipreferences     - windows explorer & taskbar preferences"
+    Write-Host "  nosound           - applies no sounds scheme and turn off startup sound"
     Write-Host "  firewall          - firewall rules: block incoming, allow outgoing"
     Write-Host "  ssh               - automatic startup of ssh agent"
     Write-Host "  powersettings     - disables power saving modes on AC power"
@@ -292,6 +304,7 @@ function main {
     if (!$cmd) { usage; exit 1 }
 
     if ($cmd -eq "uipreferences") { set_uipreferences }
+    elseif ($cmd -eq "nosound") { set_nosound }
     elseif ($cmd -eq "firewall") { set_firewall }
     elseif ($cmd -eq "ssh") { set_ssh }
     elseif ($cmd -eq "powersettings") { power_settings }
