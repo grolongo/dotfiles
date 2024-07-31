@@ -28,13 +28,11 @@ function set_uipreferences {
     $explorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
     $exploreradvanced = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
 
-    if(Test-Path -Path $explorer) {
+    if ((Test-Path -Path $explorer) -and (Test-Path -Path $exploreradvanced)) {
         # show icons notification area (always show = 0, not showing = 1)
         Write-Host -ForegroundColor "yellow" "Showing all tray icons..."
         Set-ItemProperty -Path $explorer -Name 'EnableAutoTray' -Value 0
-    }
 
-    if(Test-Path -Path $exploreradvanced) {
         # taskbar size (small = 1, large = 0)
         Write-Host -ForegroundColor "yellow" "Setting taskbar height size..."
         Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSmallIcons' -Value 1
@@ -46,12 +44,23 @@ function set_uipreferences {
         # lock taskbar (lock = 0, unlock = 1)
         Write-Host -ForegroundColor "yellow" "Locking the taskbar..."
         Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
+
+        # disable recent files, folders and cloud files (hidden = 0, show = 1)
+        Write-Host -ForegroundColor "yellow" "Disabling recent files and folders..."
+        Set-ItemProperty -Path $exploreradvanced -Name 'CloudFilesOnDemand' -Value 0
+        Set-ItemProperty -Path $exploreradvanced -Name 'Start_TrackDocs' -Value 0
+        Set-ItemProperty -Path $explorer -Name 'ShowFrequent' -Value 0
+
+        # Start menu layout
+        Write-Host -ForegroundColor "yellow" "Setting up the Start menu..."
+        Set-ItemProperty -Path $exploreradvanced -Name 'Start_Layout' -Value 1 # (1 = More pins, 2 = More recommendations, 3 = Default)
     }
 
     Write-Host -ForegroundColor "yellow" "Disabling sounds..."
     New-ItemProperty -Path HKCU:\AppEvents\Schemes -Name "(Default)" -Value ".None" -Force | Out-Null
     Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps\*\*\.current" | Set-ItemProperty -Name "(Default)" -Value ""
 
+    Stop-Process -Name explorer -Force
     Write-Host -ForegroundColor "yellow" "Relog for changes to take effect."
 }
 
