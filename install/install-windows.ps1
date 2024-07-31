@@ -162,6 +162,7 @@ function install_choco {
     choco install shellcheck
     choco install signal --params "/NoShortcut"
     choco install simplewall
+    choco install soundswitch
     choco install steam-client
     choco install streamlink
     choco install synologydrive
@@ -213,6 +214,7 @@ function install_winget {
         "koalaman.shellcheck",
         "OpenWhisperSystems.Signal",
         "Henry++.simplewall",
+        "AntoineAflalo.SoundSwitch",
         "Spotify.Spotify",
         "Valve.Steam",
         "Streamlink.Streamlink",
