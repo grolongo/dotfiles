@@ -22,40 +22,47 @@ function ask {
     } while ($response -ne 'y' -and $response -ne 'n')
 }
 
-### UI Preferences
+### UI/UX Preferences
 
 function set_uipreferences {
     $explorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
     $exploreradvanced = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
 
-    if ((Test-Path -Path $explorer) -and (Test-Path -Path $exploreradvanced)) {
-        # show icons notification area (always show = 0, not showing = 1)
-        Write-Host -ForegroundColor "yellow" "Showing all tray icons..."
-        Set-ItemProperty -Path $explorer -Name 'EnableAutoTray' -Value 0
+    # show icons notification area (always show = 0, not showing = 1)
+    Write-Host -ForegroundColor "yellow" "Showing all tray icons..."
+    Set-ItemProperty -Path $explorer -Name 'EnableAutoTray' -Value 0
 
-        # taskbar size (small = 1, large = 0)
-        Write-Host -ForegroundColor "yellow" "Setting taskbar height size..."
-        Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSmallIcons' -Value 1
+    # taskbar size (small = 1, large = 0)
+    Write-Host -ForegroundColor "yellow" "Setting taskbar height size..."
+    Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSmallIcons' -Value 1
 
-        # taskbar combine (always = 0, when full = 1, never = 2)
-        Write-Host -ForegroundColor "yellow" "Setting taskbar combine when full mode..."
-        Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarGlomLevel' -Value 1
+    # taskbar combine (always = 0, when full = 1, never = 2)
+    Write-Host -ForegroundColor "yellow" "Setting taskbar combine when full mode..."
+    Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarGlomLevel' -Value 1
 
-        # lock taskbar (lock = 0, unlock = 1)
-        Write-Host -ForegroundColor "yellow" "Locking the taskbar..."
-        Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
+    # lock taskbar (lock = 0, unlock = 1)
+    Write-Host -ForegroundColor "yellow" "Locking the taskbar..."
+    Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
 
-        # disable recent files, folders and cloud files (hidden = 0, show = 1)
-        Write-Host -ForegroundColor "yellow" "Disabling recent files and folders..."
-        Set-ItemProperty -Path $exploreradvanced -Name 'CloudFilesOnDemand' -Value 0
-        Set-ItemProperty -Path $exploreradvanced -Name 'Start_TrackDocs' -Value 0
-        Set-ItemProperty -Path $explorer -Name 'ShowFrequent' -Value 0
+    # disable recent files, folders and cloud files (hidden = 0, show = 1)
+    Write-Host -ForegroundColor "yellow" "Disabling recent files and folders..."
+    Set-ItemProperty -Path $exploreradvanced -Name 'CloudFilesOnDemand' -Value 0
+    Set-ItemProperty -Path $exploreradvanced -Name 'Start_TrackDocs' -Value 0
+    Set-ItemProperty -Path $explorer -Name 'ShowFrequent' -Value 0
 
-        # Start menu layout
-        Write-Host -ForegroundColor "yellow" "Setting up the Start menu..."
-        Set-ItemProperty -Path $exploreradvanced -Name 'Start_Layout' -Value 1 # (1 = More pins, 2 = More recommendations, 3 = Default)
-    }
+    # Start menu layout
+    Write-Host -ForegroundColor "yellow" "Setting up the Start menu..."
+    Set-ItemProperty -Path $exploreradvanced -Name 'Start_Layout' -Value 1 # (1 = More pins, 2 = More recommendations, 3 = Default)
 
+    # disable transparency (1 = enabled, 0 = disabled)
+    Write-Host -ForegroundColor "yellow" "Disabling transparency effects..."
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
+
+    # screenshot folder
+    Write-Host -ForegroundColor "yellow" "Setting the screenshot folder to Desktop..."
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value '$env:USERPROFILE\Desktop'
+
+    # sounds settings
     Write-Host -ForegroundColor "yellow" "Disabling sounds..."
     New-ItemProperty -Path HKCU:\AppEvents\Schemes -Name "(Default)" -Value ".None" -Force | Out-Null
     Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps\*\*\.current" | Set-ItemProperty -Name "(Default)" -Value ""
