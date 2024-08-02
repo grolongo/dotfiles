@@ -4,7 +4,7 @@
 
 ### Common functions
 
-function ask {
+function Ask-Question {
     param(
         [Parameter(Mandatory=$true)]
         [string]$question
@@ -22,6 +22,14 @@ function ask {
     } while ($response -ne 'y' -and $response -ne 'n')
 }
 
+function Write-Message {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$message
+    )
+    Write-Host -ForegroundColor 'yellow' $message
+}
+
 ### UI/UX Preferences
 
 function set_uipreferences {
@@ -29,63 +37,62 @@ function set_uipreferences {
     $exploreradvanced = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
 
     # show icons notification area (always show = 0, not showing = 1)
-    Write-Host -ForegroundColor "yellow" "Showing all tray icons..."
+    Write-Message 'Showing all tray icons...'
     Set-ItemProperty -Path $explorer -Name 'EnableAutoTray' -Value 0
 
     # taskbar size (small = 1, large = 0)
-    Write-Host -ForegroundColor "yellow" "Setting taskbar height size..."
+    Write-Message 'Setting taskbar height size...'
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSmallIcons' -Value 1
 
     # taskbar combine (always = 0, when full = 1, never = 2)
-    Write-Host -ForegroundColor "yellow" "Setting taskbar combine when full mode..."
+    Write-Message 'Setting taskbar combine when full mode...'
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarGlomLevel' -Value 1
 
     # lock taskbar (lock = 0, unlock = 1)
-    Write-Host -ForegroundColor "yellow" "Locking the taskbar..."
+    Write-Message 'Locking the taskbar...'
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
 
     # disable recent files, folders and cloud files (hidden = 0, show = 1)
-    Write-Host -ForegroundColor "yellow" "Disabling recent files and folders..."
+    Write-Message 'Disabling recent files and folders...'
     Set-ItemProperty -Path $exploreradvanced -Name 'CloudFilesOnDemand' -Value 0
     Set-ItemProperty -Path $exploreradvanced -Name 'Start_TrackDocs' -Value 0
     Set-ItemProperty -Path $explorer -Name 'ShowFrequent' -Value 0
 
     # Start menu layout
-    Write-Host -ForegroundColor "yellow" "Setting up the Start menu..."
+    Write-Message 'Setting up the Start menu...'
     Set-ItemProperty -Path $exploreradvanced -Name 'Start_Layout' -Value 1 # (1 = More pins, 2 = More recommendations, 3 = Default)
 
     # disable transparency (1 = enabled, 0 = disabled)
-    Write-Host -ForegroundColor "yellow" "Disabling transparency effects..."
+    Write-Message 'Disabling transparency effects...'
     Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
 
     # screenshot folder
-    Write-Host -ForegroundColor "yellow" "Setting the screenshot folder to Desktop..."
-    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value '$env:USERPROFILE\Desktop'
+    Write-Message 'Setting the screenshot folder to Desktop...'
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value "$env:USERPROFILE\Desktop"
 
-    # sounds settings
-    Write-Host -ForegroundColor "yellow" "Disabling sounds..."
-    New-ItemProperty -Path HKCU:\AppEvents\Schemes -Name "(Default)" -Value ".None" -Force | Out-Null
-    Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps\*\*\.current" | Set-ItemProperty -Name "(Default)" -Value ""
+    # excluding folders from AV scans
+    Write-Message 'Excluding Emacs from AV scanning...'
+    Add-MpPreference -ExclusionPath 'C:\Program Files\Emacs', "$env:APPDATA\.emacs.d"
 
     Stop-Process -Name explorer -Force
-    Write-Host -ForegroundColor "yellow" "Relog for changes to take effect."
+    Write-Message 'Relog for changes to take effect.'
 }
 
 ### No sound
 
 function set_nosound {
-    msg_info "Switching Sound Scheme to no sounds..."
-    New-ItemProperty -Path HKCU:\AppEvents\Schemes -Name "(Default)" -Value ".None" -Force | Out-Null
-    Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps" -Recurse | Where-Object { $_.PSChildName -eq ".Current" } | Set-ItemProperty -Name "(Default)" -Value ""
+    Write-Message 'Switching Sound Scheme to no sounds...'
+    New-ItemProperty -Path 'HKCU:\AppEvents\Schemes' -Name '(Default)' -Value '.None' -Force | Out-Null
+    Get-ChildItem -Path 'HKCU:\AppEvents\Schemes\Apps' -Recurse | Where-Object { $_.PSChildName -eq '.Current' } | Set-ItemProperty -Name '(Default)' -Value ''
 
-    msg_info "Turning Windows Startup sound off..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DisableStartupSound" -Value 1 -Type DWord -Force
+    Write-Message 'Turning Windows Startup sound off...'
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'DisableStartupSound' -Value 1 -Type DWord -Force
 }
 
 ### Firewall
 
 function set_firewall {
-    if (ask -question "Block incoming connections and allow outgoing?") {
+    if (Ask-Question 'Block incoming connections and allow outgoing?') {
         Set-NetConnectionProfile -NetworkCategory Private
         netsh advfirewall set allprofiles state on
         netsh advfirewall set domainprofile firewallpolicy blockinboundalways,allowoutbound
@@ -103,12 +110,12 @@ function set_ssh {
 ### Power Saving
 
 function power_settings {
-    Write-Host -ForegroundColor "yellow" "Turning off all power saving mode when on AC power..."
+    Write-Message 'Turning off all power saving mode when on AC power...'
     powercfg -change -monitor-timeout-ac 0
     powercfg -change -standby-timeout-ac 0
     powercfg -change -disk-timeout-ac 0
     powercfg -change -hibernate-timeout-ac 0
-    if (ask -question "Turn hibernate off (if on a laptop, answer no)?") {
+    if (Ask-Question 'Turn hibernate off (if on a laptop, answer no)?') {
         powercfg.exe /HIBERNATE off
     }
 }
@@ -128,12 +135,12 @@ function install_envar {
 ### Hostname
 
 function change_hostname {
-    $computername = Read-Host -Prompt "What name do you want? (e.g. 'windesk')"
+    $computername = Read-Host -Prompt 'What name do you want? (e.g. ''windesk'')'
     if ($env:computername -ne $computername) {
         Rename-Computer -NewName $computername
     }
 
-    Write-Host -ForegroundColor "yellow" "Restart to take effect."
+    Write-Message 'Restart to take effect.'
 }
 
 ### Ctrl to Caps
@@ -142,9 +149,9 @@ function remap_ctrltocaps {
     $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
     $kbLayout = 'HKLM:\System\CurrentControlSet\Control\Keyboard Layout';
 
-    New-ItemProperty -Path $kbLayout -Name "Scancode Map" -PropertyType Binary -Value ([byte[]]$hexified);
+    New-ItemProperty -Path $kbLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified);
 
-    Write-Host -ForegroundColor "yellow" "You need to reboot to take effect."
+    Write-Message 'You need to reboot to take effect.'
 }
 
 ### Chocolatey
@@ -162,12 +169,12 @@ function install_choco {
     choco install chatty
     choco install electrum
     choco install emacs
-    choco install everything --params "/client-service /efu-association /folder-context-menu /run-on-system-startup /start-menu-shortcuts"
+    choco install everything --params '/client-service /efu-association /folder-context-menu /run-on-system-startup /start-menu-shortcuts'
     choco install exiftool
     choco install fd
     choco install ffmpeg
     choco install firefox
-    choco install git --params "/GitAndUnixToolsOnPath /NoShellIntegration /NoOpenSSH /NoAutoCrlf /SChannel"
+    choco install git --params '/GitAndUnixToolsOnPath /NoShellIntegration /NoOpenSSH /NoAutoCrlf /SChannel'
     choco install imagemagick
     choco install keepass
     choco install microsoft-windows-terminal
@@ -176,7 +183,7 @@ function install_choco {
     choco install nomacs
     choco install obs-studio
     choco install shellcheck
-    choco install signal --params "/NoShortcut"
+    choco install signal --params '/NoShortcut'
     choco install simplewall
     choco install soundswitch
     choco install steam-client
@@ -203,54 +210,54 @@ function install_choco {
 function install_winget {
 
     $packages = @(
-        "7zip.7zip",
-        "aria2.aria2",
-        "AutoHotkey.AutoHotkey",
-        "Chatty.Chatty",
-        "Synology.DriveClient",
-        "Electrum.Electrum",
-        "GNU.Emacs",
-        "voidtools.Everything",
-        "OliverBetz.ExifTool",
-        "sharkdp.fd",
-        "Gyan.FFmpeg",
-        "Mozilla.Firefox",
-        "XavierRoche.HTTrack",
-        "ImageMagick.ImageMagick",
-        "DominikReichl.KeePass",
-        "GnuWin32.Make",
-        "MoritzBunkus.MKVToolNix",
-        "MullvadVPN.MullvadVPN",
-        "Insecure.Nmap",
-        "nomacs.nomacs",
-        "OBSProject.OBSStudio",
-        "Microsoft.PowerToys",
-        "Python.Python.3.12",
-        "BurntSushi.ripgrep.MSVC",
-        "koalaman.shellcheck",
-        "OpenWhisperSystems.Signal",
-        "Henry++.simplewall",
-        "AntoineAflalo.SoundSwitch",
-        "Spotify.Spotify",
-        "Valve.Steam",
-        "Streamlink.Streamlink",
-        "Telegram.TelegramDesktop",
-        "TorProject.TorBrowser",
-        "IDRIX.VeraCrypt",
-        "Microsoft.VisualStudioCode",
-        "Microsoft.WindowsTerminal",
-        "yt-dlp.yt-dlp"
+        '7zip.7zip',
+        'aria2.aria2',
+        'AutoHotkey.AutoHotkey',
+        'Chatty.Chatty',
+        'Synology.DriveClient',
+        'Electrum.Electrum',
+        'GNU.Emacs',
+        'voidtools.Everything',
+        'OliverBetz.ExifTool',
+        'sharkdp.fd',
+        'Gyan.FFmpeg',
+        'Mozilla.Firefox',
+        'XavierRoche.HTTrack',
+        'ImageMagick.ImageMagick',
+        'DominikReichl.KeePass',
+        'GnuWin32.Make',
+        'MoritzBunkus.MKVToolNix',
+        'MullvadVPN.MullvadVPN',
+        'Insecure.Nmap',
+        'nomacs.nomacs',
+        'OBSProject.OBSStudio',
+        'Microsoft.PowerToys',
+        'Python.Python.3.12',
+        'BurntSushi.ripgrep.MSVC',
+        'koalaman.shellcheck',
+        'OpenWhisperSystems.Signal',
+        'Henry++.simplewall',
+        'AntoineAflalo.SoundSwitch',
+        'Spotify.Spotify',
+        'Valve.Steam',
+        'Streamlink.Streamlink',
+        'Telegram.TelegramDesktop',
+        'TorProject.TorBrowser',
+        'IDRIX.VeraCrypt',
+        'Microsoft.VisualStudioCode',
+        'Microsoft.WindowsTerminal',
+        'yt-dlp.yt-dlp'
     )
 
-    Write-Host -ForegroundColor "yellow" "Updating sources list..."
+    Write-Message 'Updating sources list...'
     winget source update
 
     foreach ($p in $packages) {
-        if (ask -question "Install '$p'?") { winget install -e --id "$p" }
+        if (Ask-Question "Install ${p}?") { winget install -e --id "$p" }
     }
 
-    if (ask -question "Install mpv?") { winget install -e --id 9P3JFR0CLLL6 }
-    if (ask -question "Install Git?") { winget install -e --id Git.Git --custom "/o:Components=icons,gitlfs /o:PathOption:CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption:CRLFCommitAsIs /o:CURLOption=WinSSL" }
+    if (Ask-Question 'Install mpv?') { winget install -e --id 9P3JFR0CLLL6 }
+    if (Ask-Question 'Install Git?') { winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption:CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption:CRLFCommitAsIs /o:CURLOption=WinSSL' }
 }
 
 ### qBittorrent
@@ -259,59 +266,59 @@ function install_qbittorrent {
     # choco install qbittorrent
     winget install qBittorrent.qBittorrent
 
-    New-Variable -Name "PLUGIN_FOLDER" -Value "$HOME\AppData\Local\qBittorrent\nova3\engines"
+    New-Variable -Name 'PLUGIN_FOLDER' -Value "$HOME\AppData\Local\qBittorrent\nova3\engines"
     New-Item -Force -Path "$PLUGIN_FOLDER" -ItemType directory
 
     ## RARBG and ThePirateBay should already be installed by default
 
-    Invoke-WebRequest -Uri "https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py" -OutFile "$PLUGIN_FOLDER\one337x.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py" -OutFile "$PLUGIN_FOLDER\ettv.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py" -OutFile "$PLUGIN_FOLDER\glotorrents.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py" -OutFile "$PLUGIN_FOLDER\kickasstorrents.py"
-    Invoke-WebRequest -Uri "https://scare.ca/dl/qBittorrent/magnetdl.py" -OutFile "$PLUGIN_FOLDER\magnetdl.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py" -OutFile "$PLUGIN_FOLDER\linuxtracker.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py" -OutFile "$PLUGIN_FOLDER\rutor.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py" -OutFile "$PLUGIN_FOLDER\tokyotoshokan.py"
-    Invoke-WebRequest -Uri "https://scare.ca/dl/qBittorrent/torrentdownload.py" -OutFile "$PLUGIN_FOLDER\torrentdownload.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py" -OutFile "$PLUGIN_FOLDER\torrentgalaxy.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py" -OutFile "$PLUGIN_FOLDER\yts_am.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py" -OutFile "$PLUGIN_FOLDER\rutracker.py"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py" -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
+    Invoke-WebRequest -Uri 'https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py' -OutFile "$PLUGIN_FOLDER\one337x.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py' -OutFile "$PLUGIN_FOLDER\ettv.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py' -OutFile "$PLUGIN_FOLDER\glotorrents.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py' -OutFile "$PLUGIN_FOLDER\kickasstorrents.py"
+    Invoke-WebRequest -Uri 'https://scare.ca/dl/qBittorrent/magnetdl.py' -OutFile "$PLUGIN_FOLDER\magnetdl.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py' -OutFile "$PLUGIN_FOLDER\linuxtracker.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py' -OutFile "$PLUGIN_FOLDER\rutor.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py' -OutFile "$PLUGIN_FOLDER\tokyotoshokan.py"
+    Invoke-WebRequest -Uri 'https://scare.ca/dl/qBittorrent/torrentdownload.py' -OutFile "$PLUGIN_FOLDER\torrentdownload.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py' -OutFile "$PLUGIN_FOLDER\torrentgalaxy.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py' -OutFile "$PLUGIN_FOLDER\yts_am.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py' -OutFile "$PLUGIN_FOLDER\rutracker.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py' -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
 }
 
 ### Dotfiles
 
 function set_dotfiles {
     # check if we're in the correct install dir
-    if (-not (Test-Path "symlinks-windows.ps1")) { Write-Host -ForegroundColor "red" "Exiting. Please cd into the install directory or make sure symlinks-windows.ps1 is here."; exit }
+    if (-not (Test-Path 'symlinks-windows.ps1')) { Write-Host -ForegroundColor 'red' 'Exiting. Please cd into the install directory or make sure symlinks-windows.ps1 is here.'; exit }
     .\symlinks-windows
 }
 
 ### CTT Windows Utility
 
 function run_winutil {
-    irm "https://christitus.com/win" | iex
+    irm 'https://christitus.com/win' | iex
 }
 
 ### Menu
 
 function usage {
     Write-Host
-    Write-Host "Usage:"
-    Write-Host "  uipreferences     - windows explorer & taskbar preferences"
-    Write-Host "  nosound           - applies no sounds scheme and turn off startup sound"
-    Write-Host "  firewall          - firewall rules: block incoming, allow outgoing"
-    Write-Host "  ssh               - automatic startup of ssh agent"
-    Write-Host "  powersettings     - disables power saving modes on AC power"
-    Write-Host "  envar             - setups environment variables"
-    Write-Host "  hostname          - changes hostname"
-    Write-Host "  ctrltocaps        - remap CTRL key to Caps Lock"
-    Write-Host "  chocolatey        - downloads and sets chocolatey package manager"
-    Write-Host "  choco_packages    - downloads and installs listed packages with chocolatey"
-    Write-Host "  winget_packages   - downloads and installs listed packages with winget"
-    Write-Host "  qbit              - installs qBittorrent with plugins"
-    Write-Host "  dotfiles          - launches external dotfiles script"
-    Write-Host "  winutil           - runs Chris Titus Tech's Windows Utility"
+    Write-Host 'Usage:'
+    Write-Host '  uipreferences     - windows explorer & taskbar preferences'
+    Write-Host '  nosound           - applies no sounds scheme and turn off startup sound'
+    Write-Host '  firewall          - firewall rules: block incoming, allow outgoing'
+    Write-Host '  ssh               - automatic startup of ssh agent'
+    Write-Host '  powersettings     - disables power saving modes on AC power'
+    Write-Host '  envar             - setups environment variables'
+    Write-Host '  hostname          - changes hostname'
+    Write-Host '  ctrltocaps        - remap CTRL key to Caps Lock'
+    Write-Host '  chocolatey        - downloads and sets chocolatey package manager'
+    Write-Host '  choco_packages    - downloads and installs listed packages with chocolatey'
+    Write-Host '  winget_packages   - downloads and installs listed packages with winget'
+    Write-Host '  qbit              - installs qBittorrent with plugins'
+    Write-Host '  dotfiles          - launches external dotfiles script'
+    Write-Host '  winutil           - runs Chris Titus Techs Windows Utility'
     Write-Host
 }
 
@@ -321,20 +328,20 @@ function main {
     # return error if nothing is specified
     if (!$cmd) { usage; exit 1 }
 
-    if ($cmd -eq "uipreferences") { set_uipreferences }
-    elseif ($cmd -eq "nosound") { set_nosound }
-    elseif ($cmd -eq "firewall") { set_firewall }
-    elseif ($cmd -eq "ssh") { set_ssh }
-    elseif ($cmd -eq "powersettings") { power_settings }
-    elseif ($cmd -eq "envar") { install_envar }
-    elseif ($cmd -eq "hostname") { change_hostname }
-    elseif ($cmd -eq "ctrltocaps") {remap_ctrltocaps}
-    elseif ($cmd -eq "chocolatey") { install_chocolatey }
-    elseif ($cmd -eq "choco_packages") { install_choco }
-    elseif ($cmd -eq "winget_packages") { install_winget }
-    elseif ($cmd -eq "qbit") { install_qbittorrent }
-    elseif ($cmd -eq "dotfiles") { set_dotfiles }
-    elseif ($cmd -eq "winutil") { run_winutil }
+    if ($cmd -eq 'uipreferences') { set_uipreferences }
+    elseif ($cmd -eq 'nosound') { set_nosound }
+    elseif ($cmd -eq 'firewall') { set_firewall }
+    elseif ($cmd -eq 'ssh') { set_ssh }
+    elseif ($cmd -eq 'powersettings') { power_settings }
+    elseif ($cmd -eq 'envar') { install_envar }
+    elseif ($cmd -eq 'hostname') { change_hostname }
+    elseif ($cmd -eq 'ctrltocaps') {remap_ctrltocaps}
+    elseif ($cmd -eq 'chocolatey') { install_chocolatey }
+    elseif ($cmd -eq 'choco_packages') { install_choco }
+    elseif ($cmd -eq 'winget_packages') { install_winget }
+    elseif ($cmd -eq 'qbit') { install_qbittorrent }
+    elseif ($cmd -eq 'dotfiles') { set_dotfiles }
+    elseif ($cmd -eq 'winutil') { run_winutil }
     else { usage }
 }
 
