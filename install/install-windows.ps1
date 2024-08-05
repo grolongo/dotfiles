@@ -74,6 +74,10 @@ function set_uipreferences {
     Write-Message 'Excluding Emacs from AV scanning...'
     Add-MpPreference -ExclusionPath 'C:\Program Files\Emacs', "$env:APPDATA\.emacs.d"
 
+    if (Ask-Question 'Set time zone?') {
+        Set-TimeZone -Name 'Romance Standard Time'
+    }
+
     Stop-Process -Name explorer -Force
     Write-Message 'Relog for changes to take effect.'
 }
