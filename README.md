@@ -5,6 +5,9 @@
 ```bash
 cd ~
 git clone https://github.com/grolongo/dotfiles.git
+# after syncing ssh files do:
+git remote remove origin
+git remote add origin git@github.com:grolongo/dotfiles.git
 ```
 
 ### SSH
