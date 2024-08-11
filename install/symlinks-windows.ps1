@@ -45,10 +45,7 @@ if (Ask-Question 'Symlink mpv?') {
     New-Item -Force -Path "$env:APPDATA\mpv\scripts" -ItemType directory
     New-Item -Force -Path "$env:APPDATA\mpv\scripts\crop.lua" -ItemType SymbolicLink -Value "$base\.config\mpv\scripts\crop.lua"
     New-Item -Force -Path "$env:APPDATA\mpv\scripts\encode.lua" -ItemType SymbolicLink -Value "$base\.config\mpv\scripts\encode.lua"
-    New-Item -Force -Path "$env:APPDATA\mpv\script-opts" -ItemType directory
-    New-Item -Force -Path "$env:APPDATA\mpv\script-opts\encode_gif.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts\encode_gif.conf"
-    New-Item -Force -Path "$env:APPDATA\mpv\script-opts\encode_mp4.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts\encode_mp4.conf"
-    New-Item -Force -Path "$env:APPDATA\mpv\script-opts\encode_webm.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts\encode_webm.conf"
+    New-Item -Force -Path "$env:APPDATA\mpv\script-opts" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts"
 }
 
 # streamlink
