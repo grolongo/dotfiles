@@ -4,3 +4,6 @@
 
 [http]
   sslBackend = schannel
+
+[gpg]
+  program = 'C:\\Program Files (x86)\\gnupg\\bin\\gpg.exe'

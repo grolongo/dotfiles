@@ -227,6 +227,7 @@ function install_winget {
         'Gyan.FFmpeg',
         'Mozilla.Firefox',
         'XavierRoche.HTTrack',
+        'GnuPG.GnuPG',
         'ImageMagick.ImageMagick',
         'DominikReichl.KeePass',
         'GnuWin32.Make',
