@@ -1,9 +1,9 @@
 [core]
-  sshCommand = 'C:\\Windows\\System32\\OpenSSH\\ssh.exe'
+  sshCommand = C:\\Windows\\System32\\OpenSSH\\ssh.exe
   autocrlf = false
 
 [http]
   sslBackend = schannel
 
 [gpg]
-  program = 'C:\\Program Files (x86)\\gnupg\\bin\\gpg.exe'
+  program = C:\\Program Files (x86)\\gnupg\\bin\\gpg.exe

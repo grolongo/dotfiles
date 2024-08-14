@@ -57,7 +57,7 @@ if (Ask-Question 'Symlink streamlink?') {
 # git
 if (Ask-Question 'Symlink gitconfig?') {
     New-Item -Force -Path "$HOME\.gitconfig" -ItemType SymbolicLink -Value "$base\.config\git\config"
-    #New-Item -Force -Path "$HOME\.gitconfig-windows" -ItemType SymbolicLink -Value "$base\.config\git\config-windows"
+    New-Item -Force -Path "$HOME\.gitconfig-windows" -ItemType SymbolicLink -Value "$base\.config\git\config-windows"
 }
 
 # aria2
