@@ -42,9 +42,6 @@ if (Ask-Question 'Symlink mpv?') {
     New-Item -Force -Path "$env:APPDATA\mpv" -ItemType directory
     New-Item -Force -Path "$env:APPDATA\mpv\mpv.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\mpv.conf"
     New-Item -Force -Path "$env:APPDATA\mpv\input.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\input.conf"
-    New-Item -Force -Path "$env:APPDATA\mpv\scripts" -ItemType directory
-    New-Item -Force -Path "$env:APPDATA\mpv\scripts\crop.lua" -ItemType SymbolicLink -Value "$base\.config\mpv\scripts\crop.lua"
-    New-Item -Force -Path "$env:APPDATA\mpv\scripts\encode.lua" -ItemType SymbolicLink -Value "$base\.config\mpv\scripts\encode.lua"
     New-Item -Force -Path "$env:APPDATA\mpv\script-opts" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts"
 }
 

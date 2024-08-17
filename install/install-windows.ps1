@@ -261,8 +261,45 @@ function install_winget {
         if (Ask-Question "Install ${p}?") { winget install -e --id "$p" }
     }
 
-    if (Ask-Question 'Install mpv?') { winget install -e --id 9P3JFR0CLLL6 }
     if (Ask-Question 'Install Git?') { winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption:CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption:CRLFCommitAsIs /o:CURLOption=WinSSL' }
+}
+
+### mpv
+
+function install_mpv {
+    Write-Message "Creating variables and folders..."
+
+    New-Variable -Name 'mpvInstallPath' -Value 'C:\Program Files\mpv'
+    New-Variable -Name 'mpvConfigPath' -Value "$env:APPDATA\mpv"
+
+    New-Item -Force -Path "$mpvInstallPath" -ItemType directory
+    New-Item -Force -Path "$mpvConfigPath" -ItemType directory
+    New-Item -Force -Path "$mpvConfigPath\fonts" -ItemType directory
+    New-Item -Force -Path "$mpvConfigPath\scripts" -ItemType directory
+    New-Item -Force -Path "$mpvConfigPath\scripts\uosc" -ItemType directory
+
+    Write-Message "Installing latest mpv..."
+
+    Start-BitsTransfer -Source 'https://sourceforge.net/projects/mpv-player-windows/files/bootstrapper.zip' -Destination "$mpvInstallPath\bootstrapper.zip"
+    Expand-Archive -Path "$mpvInstallPath\bootstrapper.zip" -DestinationPath "$mpvInstallPath"
+
+    Push-Location "$mpvInstallPath"
+    & "$mpvInstallPath\updater.ps1"
+    Pop-Location
+
+    Remove-Item "$mpvInstallPath\bootstrapper.zip"
+
+    Write-Message "Installing plugins..."
+
+    Start-BitsTransfer -Source 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -Destination "$mpvConfigPath\uosc.zip"
+    Expand-Archive -Path "$mpvConfigPath\uosc.zip" -DestinationPath "$mpvConfigPath"
+
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile "$mpvConfigPath\scripts\thumbfast.lua"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile "$mpvConfigPath\scripts\visualizer.lua"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile "$mpvConfigPath\scripts\crop.lua"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile "$mpvConfigPath\scripts\encode.lua"
+
+    Remove-Item "$mpvConfigPath\uosc.zip"
 }
 
 ### qBittorrent
@@ -321,6 +358,7 @@ function usage {
     Write-Host '  chocolatey        - downloads and sets chocolatey package manager'
     Write-Host '  choco_packages    - downloads and installs listed packages with chocolatey'
     Write-Host '  winget_packages   - downloads and installs listed packages with winget'
+    Write-Host '  mpv               - installs mpv'
     Write-Host '  qbit              - installs qBittorrent with plugins'
     Write-Host '  dotfiles          - launches external dotfiles script'
     Write-Host '  winutil           - runs Chris Titus Techs Windows Utility'
@@ -344,6 +382,7 @@ function main {
     elseif ($cmd -eq 'chocolatey') { install_chocolatey }
     elseif ($cmd -eq 'choco_packages') { install_choco }
     elseif ($cmd -eq 'winget_packages') { install_winget }
+    elseif ($cmd -eq 'mpv') { install_mpv }
     elseif ($cmd -eq 'qbit') { install_qbittorrent }
     elseif ($cmd -eq 'dotfiles') { set_dotfiles }
     elseif ($cmd -eq 'winutil') { run_winutil }
