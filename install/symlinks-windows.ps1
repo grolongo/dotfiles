@@ -42,6 +42,7 @@ if (Ask-Question 'Symlink mpv?') {
     New-Item -Force -Path "$env:APPDATA\mpv" -ItemType directory
     New-Item -Force -Path "$env:APPDATA\mpv\mpv.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\mpv.conf"
     New-Item -Force -Path "$env:APPDATA\mpv\input.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\input.conf"
+    New-Item -Force -Path "$env:APPDATA\mpv\scripts\osctoggle.lua" -ItemType SymbolicLink -Value "$base\.config\mpv\scripts\osctoggle.lua"
     New-Item -Force -Path "$env:APPDATA\mpv\script-opts" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts"
 }
 
