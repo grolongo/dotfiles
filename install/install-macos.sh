@@ -393,6 +393,7 @@ usage() {
     printf "  homebrew     - setup homebrew if not installed\n"
     printf "  base         - installs base packages\n"
     printf "  casks        - setup caskroom & installs softwares\n"
+    printf "  mpv          - installs mpv with plugins\n"
     printf "  qbit         - installs qBittorrent with plugins\n"
     printf "  emacs        - building our own Emacs\n"
     printf "  macports     - setup MacPorts\n"
@@ -423,6 +424,8 @@ main() {
         install_base
     elif [ "$cmd" = "casks" ]; then
         install_casks
+    elif [ "$cmd" = "mpv" ]; then
+        install_mpv
     elif [ "$cmd" = "qbit" ]; then
         install_qbittorrent
     elif [ "$cmd" = "emacs" ]; then
