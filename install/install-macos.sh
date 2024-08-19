@@ -205,7 +205,6 @@ install_casks() {
         keepassxc
         knockknock
         lulu
-        mpv
         mullvadvpn
         rectangle
         signal
@@ -225,6 +224,35 @@ install_casks() {
     msg_info "Cleaning up install files..."
     brew cleanup
 }
+
+### mpv
+
+install_mpv() {
+    check_is_not_sudo
+
+    local MPV_CONFIG_PATH="${HOME}/.config/mpv"
+    local tmpdir
+    tmpdir=$(mktemp -d)
+
+    msg_info "Installing mpv..."
+    brew install --cask mpv
+
+    msg_info "Installing plugins..."
+
+    (
+        cd "$tmpdir" || exit 1
+        curl -L#o uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
+        unzip -n uosc.zip -d "${MPV_CONFIG_PATH}"
+    )
+
+    curl -L#o "${MPV_CONFIG_PATH}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
+    curl -L#o "${MPV_CONFIG_PATH}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
+    curl -L#o "${MPV_CONFIG_PATH}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
+    curl -L#o "${MPV_CONFIG_PATH}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
+
+    rm -rf "$tmpdir"
+}
+
 
 ### qbittorrent
 

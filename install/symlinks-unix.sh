@@ -80,14 +80,10 @@ confirm "Install symlinks for ${USER}?" && {
     confirm "link mpv files?" && {
         mkdir -vp "${HOME}/.config/mpv"
         mkdir -vp "${HOME}/.config/mpv/scripts"
-        mkdir -vp "${HOME}/.config/mpv/script-opts"
         symlink ".config/mpv/input.conf"
         symlink ".config/mpv/mpv.conf"
-        symlink ".config/mpv/scripts/crop.lua"
-        symlink ".config/mpv/scripts/encode.lua"
-        symlink ".config/mpv/script-opts/encode_gif.conf"
-        symlink ".config/mpv/script-opts/encode_mp4.conf"
-        symlink ".config/mpv/script-opts/encode_webm.conf"
+        symlink ".config/mpv/scripts/osctoggle.lua"
+        symlink ".config/mpv/script-opts"
     }
 
     # tmux
