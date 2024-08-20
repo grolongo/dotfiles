@@ -104,7 +104,6 @@ apt_common() {
         keepassxc
         mg
         mkvtoolnix
-        mpv
         ncat
         nmap
         pandoc
@@ -339,6 +338,34 @@ install_emacs() {
     )
 
     msg_info "Deleting temp folder..."
+    rm -rf "$tmpdir"
+}
+
+### mpv
+
+install_mpv() {
+    check_is_not_sudo
+
+    local MPV_CONFIG_PATH="${HOME}/.config/mpv"
+    local tmpdir
+    tmpdir=$(mktemp -d)
+
+    msg_info "Installing mpv..."
+    sudo apt install -y mpv
+
+    msg_info "Installing plugins..."
+
+    (
+        cd "$tmpdir" || exit 1
+        wget -O uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
+        unzip -n uosc.zip -d "${MPV_CONFIG_PATH}"
+    )
+
+    wget -O "${MPV_CONFIG_PATH}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
+    wget -O "${MPV_CONFIG_PATH}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
+    wget -O "${MPV_CONFIG_PATH}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
+    wget -O "${MPV_CONFIG_PATH}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
+
     rm -rf "$tmpdir"
 }
 
@@ -612,6 +639,7 @@ usage() {
     printf "  gsettings       - configures Gnome settings\n"
     printf "  i3          (s) - installs and sets up i3wm related configs\n"
     printf "  emacs       (s) - compile Emacs from tarball\n"
+    printf "  mpv             - installs mpv with plugins\n"
     printf "  driveclient (s) - installs Synology Drive Client\n"
     printf "  mullvad     (s) - installs Mullvad VPN from official repository\n"
     printf "  qbittorrent (s) - installs qBittorrent with plugins\n"
@@ -644,6 +672,8 @@ main() {
         set_i3wm
     elif [ "$cmd" = "emacs" ]; then
         install_emacs
+    elif [ "$cmd" = "mpv" ]; then
+        install_mpv
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
     elif [ "$cmd" = "mullvad" ]; then
