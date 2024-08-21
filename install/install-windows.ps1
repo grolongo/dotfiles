@@ -283,6 +283,9 @@ function install_mpv {
     Start-BitsTransfer -Source 'https://sourceforge.net/projects/mpv-player-windows/files/bootstrapper.zip' -Destination "$mpvInstallPath\bootstrapper.zip"
     Expand-Archive -Path "$mpvInstallPath\bootstrapper.zip" -DestinationPath "$mpvInstallPath"
 
+    Write-Message "Adding mpv to path..."
+    [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$mpvInstallPath", [EnvironmentVariableTarget]::User)
+
     Push-Location "$mpvInstallPath"
     & "$mpvInstallPath\updater.ps1"
     Pop-Location
