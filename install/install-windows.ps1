@@ -337,7 +337,6 @@ function install_qbittorrent {
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py'                                                       -OutFile "$PLUGIN_FOLDER\cpasbien.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py'                          -OutFile "$PLUGIN_FOLDER\tokyotoshokan.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py'                                                  -OutFile "$PLUGIN_FOLDER\torrentgalaxy.py"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py'                                                     -OutFile "$PLUGIN_FOLDER\yts_mx.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py'                                                               -OutFile "$PLUGIN_FOLDER\torrent9.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py'                                                     -OutFile "$PLUGIN_FOLDER\yts_mx.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py'                                                 -OutFile "$PLUGIN_FOLDER\zooqle.py"

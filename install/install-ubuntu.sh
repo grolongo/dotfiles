@@ -433,19 +433,34 @@ install_qbittorrent() {
     sudo -u "$SUDO_USER" bash -c '
     PLUGIN_FOLDER="${HOME}/.local/share/qBittorrent/nova3/engines"
     mkdir -p "$PLUGIN_FOLDER"
-    wget -O "${PLUGIN_FOLDER}/one337x.py" https://gist.githubusercontent.com/BurningMop/fa750daea6d9fa86c8fe5d686f12ed35/raw/16397ff605b1e2f60c70379166c3e7f8df28867d/one337x.py
-    wget -O "${PLUGIN_FOLDER}/ettv.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
-    wget -O "${PLUGIN_FOLDER}/glotorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
-    wget -O "${PLUGIN_FOLDER}/kickasstorrents.py" https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
-    wget -O "${PLUGIN_FOLDER}/magnetdl.py" https://scare.ca/dl/qBittorrent/magnetdl.py
-    wget -O "${PLUGIN_FOLDER}/linuxtracker.py" https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
-    wget -O "${PLUGIN_FOLDER}/rutor.py" https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-    wget -O "${PLUGIN_FOLDER}/tokyotoshokan.py" https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
-    wget -O "${PLUGIN_FOLDER}/torrentdownload.py" https://scare.ca/dl/qBittorrent/torrentdownload.py
-    wget -O "${PLUGIN_FOLDER}/torrentgalaxy.py" https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
-    wget -O "${PLUGIN_FOLDER}/yts_am.py" https://raw.githubusercontent.com/MaurizioRicci/qBittorrent_search_engine/master/yts_am.py
-    wget -O "${PLUGIN_FOLDER}/rutracker.py" https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
-    wget -O "${PLUGIN_FOLDER}/yggtorrent.py" https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+
+    wget -O "${PLUGIN_FOLDER}/bitsearch.py"        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
+    wget -O "${PLUGIN_FOLDER}/therarbg.py"         https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
+    wget -O "${PLUGIN_FOLDER}/solidtorrents.py"    https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/solidtorrents.py
+    wget -O "${PLUGIN_FOLDER}/torrentdownloads.py" https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py
+    wget -O "${PLUGIN_FOLDER}/ettv.py"             https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+    wget -O "${PLUGIN_FOLDER}/glotorrents.py"      https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+    wget -O "${PLUGIN_FOLDER}/kickasstorrents.py"  https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+    wget -O "${PLUGIN_FOLDER}/snowfl.py"           https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py
+    wget -O "${PLUGIN_FOLDER}/dodi_repacks.py"     https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py
+    wget -O "${PLUGIN_FOLDER}/fitgirl_repacks.py"  https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py
+    wget -O "${PLUGIN_FOLDER}/linuxtracker.py"     https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+    wget -O "${PLUGIN_FOLDER}/nyaasi.py"           https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py
+    wget -O "${PLUGIN_FOLDER}/torrentdownload.py"  https://scare.ca/dl/qBittorrent/torrentdownload.py
+    wget -O "${PLUGIN_FOLDER}/magnetdl.py"         https://scare.ca/dl/qBittorrent/magnetdl.py
+    wget -O "${PLUGIN_FOLDER}/rutor.py"            https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+    wget -O "${PLUGIN_FOLDER}/rutracker.py"        https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutracker.py
+    wget -O "${PLUGIN_FOLDER}/rutracker2.py"       https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+    wget -O "${PLUGIN_FOLDER}/one337.py"           https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py
+    wget -O "${PLUGIN_FOLDER}/animetosho.py"       https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
+    wget -O "${PLUGIN_FOLDER}/bt4gprx.py"          https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
+    wget -O "${PLUGIN_FOLDER}/cpasbien.py"         https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py
+    wget -O "${PLUGIN_FOLDER}/tokyoshokan.py"      https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
+    wget -O "${PLUGIN_FOLDER}/torrentgalaxy.py"    https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+    wget -O "${PLUGIN_FOLDER}/torrent9.py"         https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py
+    wget -O "${PLUGIN_FOLDER}/yts_mx.py"           https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
+    wget -O "${PLUGIN_FOLDER}/zooqle.py"           https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py
+    wget -O "${PLUGIN_FOLDER}/yggtorrent.py"       https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
     '
 }
 
