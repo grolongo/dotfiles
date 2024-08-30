@@ -455,7 +455,7 @@ install_qbittorrent() {
     wget -O "${PLUGIN_FOLDER}/animetosho.py"       https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
     wget -O "${PLUGIN_FOLDER}/bt4gprx.py"          https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
     wget -O "${PLUGIN_FOLDER}/cpasbien.py"         https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py
-    wget -O "${PLUGIN_FOLDER}/tokyoshokan.py"      https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
+    wget -O "${PLUGIN_FOLDER}/tokyotoshokan.py"      https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py
     wget -O "${PLUGIN_FOLDER}/torrentgalaxy.py"    https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
     wget -O "${PLUGIN_FOLDER}/torrent9.py"         https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py
     wget -O "${PLUGIN_FOLDER}/yts_mx.py"           https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
