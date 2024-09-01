@@ -293,8 +293,7 @@ install_qbittorrent() {
     curl -L#o "${PLUGIN_FOLDER}/torrentdownload.py"  https://scare.ca/dl/qBittorrent/torrentdownload.py
     curl -L#o "${PLUGIN_FOLDER}/magnetdl.py"         https://scare.ca/dl/qBittorrent/magnetdl.py
     curl -L#o "${PLUGIN_FOLDER}/rutor.py"            https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-    curl -L#o "${PLUGIN_FOLDER}/rutracker.py"        https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutracker.py
-    curl -L#o "${PLUGIN_FOLDER}/rutracker2.py"       https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+    curl -L#o "${PLUGIN_FOLDER}/rutracker.py"       https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
     curl -L#o "${PLUGIN_FOLDER}/one337.py"           https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py
     curl -L#o "${PLUGIN_FOLDER}/animetosho.py"       https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
     curl -L#o "${PLUGIN_FOLDER}/bt4gprx.py"          https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
