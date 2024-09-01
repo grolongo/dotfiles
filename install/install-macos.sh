@@ -280,7 +280,6 @@ install_qbittorrent() {
     # third-party
     curl -L#o "${PLUGIN_FOLDER}/bitsearch.py"        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
     curl -L#o "${PLUGIN_FOLDER}/therarbg.py"         https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
-    curl -L#o "${PLUGIN_FOLDER}/solidtorrents.py"    https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/solidtorrents.py
     curl -L#o "${PLUGIN_FOLDER}/torrentdownloads.py" https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py
     curl -L#o "${PLUGIN_FOLDER}/ettv.py"             https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
     curl -L#o "${PLUGIN_FOLDER}/glotorrents.py"      https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
