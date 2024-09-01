@@ -314,9 +314,18 @@ function install_qbittorrent {
     New-Variable -Name 'PLUGIN_FOLDER' -Value "$HOME\AppData\Local\qBittorrent\nova3\engines"
     New-Item -Force -Path "$PLUGIN_FOLDER" -ItemType directory
 
+    # Official plugins
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py'                                           -OutFile "$PLUGIN_FOLDER\eztv.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py'                                   -OutFile "$PLUGIN_FOLDER\limetorrents.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py'                                      -OutFile "$PLUGIN_FOLDER\piratebay.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py'                                  -OutFile "$PLUGIN_FOLDER\solidtorrents.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py'                                        -OutFile "$PLUGIN_FOLDER\torlock.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py'                                 -OutFile "$PLUGIN_FOLDER\torrentproject.py"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py'                                    -OutFile "$PLUGIN_FOLDER\torrentscsv.py"
+
+    # Third Party
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py'                                           -OutFile "$PLUGIN_FOLDER\bitsearch.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py'                                            -OutFile "$PLUGIN_FOLDER\therarbg.py"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/solidtorrents.py'                                       -OutFile "$PLUGIN_FOLDER\solidtorrents.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py'                                    -OutFile "$PLUGIN_FOLDER\torrentdownloads.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py'                                -OutFile "$PLUGIN_FOLDER\ettv.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py'                         -OutFile "$PLUGIN_FOLDER\glotorrents.py"
@@ -329,7 +338,6 @@ function install_qbittorrent {
     Invoke-WebRequest -Uri 'https://scare.ca/dl/qBittorrent/torrentdownload.py'                                                                                  -OutFile "$PLUGIN_FOLDER\torrentdownload.py"
     Invoke-WebRequest -Uri 'https://scare.ca/dl/qBittorrent/magnetdl.py'                                                                                         -OutFile "$PLUGIN_FOLDER\magnetdl.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py'                                                              -OutFile "$PLUGIN_FOLDER\rutor.py"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutracker.py'                                                          -OutFile "$PLUGIN_FOLDER\rutracker2.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py'                                       -OutFile "$PLUGIN_FOLDER\rutracker.py"
     Invoke-WebRequest -Uri 'https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py' -OutFile "$PLUGIN_FOLDER\one337x.py"
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py'                                -OutFile "$PLUGIN_FOLDER\animetosho.py"

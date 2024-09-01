@@ -268,6 +268,16 @@ install_qbittorrent() {
 
     msg_info "Downloading search plugins..."
 
+    # official plugins
+    curl -L#o "${PLUGIN_FOLDER}/eztv.py"             https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py
+    curl -L#o "${PLUGIN_FOLDER}/limetorrents.py"     https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py
+    curl -L#o "${PLUGIN_FOLDER}/piratebay.py"        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py
+    curl -L#o "${PLUGIN_FOLDER}/solidtorrents.py"    https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py
+    curl -L#o "${PLUGIN_FOLDER}/torlock.py"          https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py
+    curl -L#o "${PLUGIN_FOLDER}/torrentproject.py"   https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py
+    curl -L#o "${PLUGIN_FOLDER}/torrentscsv.py"      https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py
+
+    # third-party
     curl -L#o "${PLUGIN_FOLDER}/bitsearch.py"        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
     curl -L#o "${PLUGIN_FOLDER}/therarbg.py"         https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
     curl -L#o "${PLUGIN_FOLDER}/solidtorrents.py"    https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/solidtorrents.py
