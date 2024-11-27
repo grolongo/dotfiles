@@ -224,6 +224,7 @@ function install_winget {
         'voidtools.Everything',
         'OliverBetz.ExifTool',
         'sharkdp.fd',
+        'FeatherWallet.Feather',
         'Gyan.FFmpeg',
         'Mozilla.Firefox',
         'XavierRoche.HTTrack',
