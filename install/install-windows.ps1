@@ -233,6 +233,7 @@ function install_winget {
         'DominikReichl.KeePass',
         'GnuWin32.Make',
         'MoritzBunkus.MKVToolNix',
+        'Microsoft.MouseandKeyboardCenter',
         'MullvadVPN.MullvadVPN',
         'Insecure.Nmap',
         'nomacs.nomacs',
