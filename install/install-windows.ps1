@@ -251,6 +251,7 @@ function install_winget {
         'Telegram.TelegramDesktop',
         'TorProject.TorBrowser',
         'IDRIX.VeraCrypt',
+        'Oracle.VirtualBox',
         'Microsoft.VisualStudioCode',
         'Microsoft.WindowsTerminal',
         'yt-dlp.yt-dlp'
