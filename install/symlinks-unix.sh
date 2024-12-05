@@ -139,6 +139,7 @@ confirm "Install symlinks for ${USER}?" && {
         mkdir -vp "${HOME}/.config/i3status"
         symlink ".config/i3/config"
         symlink ".config/i3status/config"
+        symlink ".xsessionrc"
     }
 
     # X
