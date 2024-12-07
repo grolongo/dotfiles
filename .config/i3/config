@@ -1,38 +1,44 @@
-# Les commentaires inline ne fonctionnement pas avec i3
-# Un commentaire unique par ligne uniquement.
-
-font pango:Monospace 8
+set $mod Mod4
+font pango:monospace 8
+#font pango:DejaVu Sans Mono 8
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id nm-applet
+# Use pactl to adjust volume in PulseAudio.
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+floating_modifier $mod
+tiling_drag modifier titlebar
 
 ### FLOATING APPS
 
-# Use Mouse+$mod to drag floating windows to their wanted position
-floating_modifier $mod
-
-for_window [class="Tor Browser"]    floating enable
-for_window [class="Tor Messenger"]  floating enable
-for_window [class="Krita"]          floating enable
-for_window [class="VirtualBox"]     floating enable
-for_window [class="Steam"]          floating enable
-for_window [class="KeePass"]        floating enable
-for_window [class="Seafile"]        floating enable
-for_window [class="Veracrypt"]      floating enable
+for_window [class="Tor Browser"]   floating enable
+for_window [class="Tor Messenger"] floating enable
+for_window [class="Krita"]         floating enable
+for_window [class="VirtualBox"]    floating enable
+for_window [class="Steam"]         floating enable
+for_window [class="KeePass"]       floating enable
+for_window [class="Seafile"]       floating enable
+for_window [class="Veracrypt"]     floating enable
 
 ### BINDINGS
 
 # -------
 # General
 # -------
-set $mod Mod1
-bindsym $mod+d exec dmenu_run -l 10
+bindsym $mod+d exec --no-startup-id dmenu_run -l 10
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop  # only displays apps with a .desktop file
+bindsym $mod+Return exec urxvtcd
+bindsym $mod+Shift+q kill
+bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
-bindsym $mod+Return exec urxvtcd
-bindsym $mod+Shift+A kill
 bindsym $mod+Tab workspace next
-bindsym $mod+f fullscreen
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"# ------------
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # -------
 # Windows
@@ -40,17 +46,17 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 
 # change focused window
 # ---------------------
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+m focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
 
 # move focused window
 # -------------------
-bindsym $mod+Shift+j move left
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
-bindsym $mod+Shift+M move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
 
 # splits horizontal/vertical
 # --------------------------
@@ -62,32 +68,25 @@ bindsym $mod+v split v
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
 
-        # Pressing left will shrink the window’s width.
-        # Pressing right will grow the window’s width.
-        # Pressing up will shrink the window’s height.
-        # Pressing down will grow the window’s height.
-        bindsym j resize shrink width 10 px or 10 ppt
-        bindsym k resize grow height 10 px or 10 ppt
-        bindsym l resize shrink height 10 px or 10 ppt
-        bindsym m resize grow width 10 px or 10 ppt
-
         # same bindings, but for the arrow keys
         bindsym Left resize shrink width 10 px or 10 ppt
         bindsym Down resize grow height 10 px or 10 ppt
         bindsym Up resize shrink height 10 px or 10 ppt
         bindsym Right resize grow width 10 px or 10 ppt
 
-        # back to normal: Enter or Escape
+        # back to normal: Enter or Escape or $mod+r
         bindsym Return mode "default"
         bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
 }
+
 bindsym $mod+r mode "resize"
 
 # ------
 # Layout
 # ------
 bindsym $mod+s layout stacking
-bindsym $mod+z layout tabbed
+bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
@@ -98,31 +97,42 @@ bindsym $mod+q focus parent
 # Workspaces
 # ----------
 
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "Tor"
+set $ws6 "www"
+set $ws7 "7"
+set $ws8 "twitch"
+set $ws9 "spotify"
+set $ws10 "10"
+
 # switch to workspace
 # -------------------
-bindsym $mod+ampersand      workspace 1
-bindsym $mod+eacute         workspace 2
-bindsym $mod+quotedbl       workspace 3
-bindsym $mod+apostrophe     workspace 4
-bindsym $mod+parenleft      workspace 5: tor
-bindsym $mod+minus          workspace 6: www
-bindsym $mod+egrave         workspace 7: mail
-bindsym $mod+underscore     workspace 8: twitch
-bindsym $mod+ccedilla       workspace 9: spotify
-bindsym $mod+agrave         workspace 10
+bindsym $mod+ampersand  workspace number $ws1
+bindsym $mod+eacute     workspace number $ws2
+bindsym $mod+quotedbl   workspace number $ws3
+bindsym $mod+apostrophe workspace number $ws4
+bindsym $mod+parenleft  workspace number $ws5
+bindsym $mod+minus      workspace number $ws6
+bindsym $mod+egrave     workspace number $ws7
+bindsym $mod+underscore workspace number $ws8
+bindsym $mod+ccedilla   workspace number $ws9
+bindsym $mod+agrave     workspace number $ws10
 
 # move focused container to workspace
 # -----------------------------------
-bindsym $mod+Shift+1        move container to workspace 1
-bindsym $mod+Shift+eacute   move container to workspace 2
-bindsym $mod+Shift+3        move container to workspace 3
-bindsym $mod+Shift+4        move container to workspace 4
-bindsym $mod+Shift+5        move container to workspace 5: tor
-bindsym $mod+Shift+6        move container to workspace 6: www
-bindsym $mod+Shift+egrave   move container to workspace 7: mail
-bindsym $mod+Shift+8        move container to workspace 8: twitch
-bindsym $mod+Shift+ccedilla move container to workspace 9: spotify
-bindsym $mod+Shift+agrave   move container to workspace 10
+bindsym $mod+Shift+1        move container to workspace number $ws1
+bindsym $mod+Shift+eacute   move container to workspace number $ws2
+bindsym $mod+Shift+3        move container to workspace number $ws3
+bindsym $mod+Shift+4        move container to workspace number $ws4
+bindsym $mod+Shift+5        move container to workspace number $ws5
+bindsym $mod+Shift+6        move container to workspace number $ws6
+bindsym $mod+Shift+egrave   move container to workspace number $ws7
+bindsym $mod+Shift+8        move container to workspace number $ws8
+bindsym $mod+Shift+ccedilla move container to workspace number $ws9
+bindsym $mod+Shift+agrave   move container to workspace number $ws10
 
 ### ASSIGNMENTS
 
@@ -130,7 +140,6 @@ assign [class="Steam"] 4: steam
 assign [class="Tor Browser"] 5: tor
 assign [class="Tor Messenger"] 5: tor
 assign [class="chromium"] 6: www
-assign [class="Icedove"] 7: mail
 assign [class="chatty-Chatty"] 8: twitch
 assign [class="spotify"] 9: spotify
 
@@ -150,7 +159,7 @@ mode "$mode_system" {
     bindsym s exec --no-startup-id $Locker && systemctl suspend, mode "default"
     bindsym h exec --no-startup-id $Locker && systemctl hibernate, mode "default"
     bindsym r exec --no-startup-id sudo systemctl reboot, mode "default"
-    bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"  
+    bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
 
     # back to normal: Enter or Escape
     bindsym Return mode "default"
@@ -174,9 +183,9 @@ bindsym XF86KbdBrightnessUp exec "sudo keyboard-backlight up"
 
 # Audio Controls
 # --------------
-bindsym XF86AudioRaiseVolume exec "amixer set Master 10%+ unmute"
-bindsym XF86AudioLowerVolume exec "amixer set Master 10%- unmute"
-bindsym XF86AudioMute exec "amixer set Master toggle"
+# bindsym XF86AudioRaiseVolume exec "amixer set Master 10%+ unmute"
+# bindsym XF86AudioLowerVolume exec "amixer set Master 10%- unmute"
+# bindsym XF86AudioMute exec "amixer set Master toggle"
 
 # Multimedia Controls
 # -------------------
@@ -188,7 +197,6 @@ bindsym XF86AudioPrev exec "playerctl previous"
 
 #exec_always --no-startup-id mpd
 #exec_always --no-startup-id volumeicon
-exec_always --no-startup-id seafile-applet
 
 ### I3BAR
 
@@ -196,5 +204,5 @@ exec_always --no-startup-id seafile-applet
 # finds out, if available)
 bar {
         font pango:monospace 8
-        status_command i3status --config ~/.i3/status.conf
+        status_command i3status
 }
