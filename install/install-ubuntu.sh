@@ -228,15 +228,8 @@ set_i3wm() {
         fonts-noto
         i3
         network-manager
-<<<<<<< ours
-<<<<<<< Updated upstream
         pinentry-gtk2
-=======
         rxvt-unicode
->>>>>>> Stashed changes
-=======
-        rxvt-unicode
->>>>>>> theirs
         ubuntu-drivers-common
         ubuntu-restricted-extras
         ubuntu-restricted-addons
