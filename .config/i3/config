@@ -15,7 +15,6 @@ tiling_drag modifier titlebar
 
 ### FLOATING APPS
 
-for_window [class="Tor Browser"]   floating enable
 for_window [class="Tor Messenger"] floating enable
 for_window [class="Krita"]         floating enable
 for_window [class="VirtualBox"]    floating enable
@@ -97,15 +96,15 @@ bindsym $mod+q focus parent
 # Workspaces
 # ----------
 
-set $ws1 "1"
-set $ws2 "2"
+set $ws1 "1: Emacs"
+set $ws2 "2: www"
 set $ws3 "3"
 set $ws4 "4"
-set $ws5 "Tor"
-set $ws6 "www"
-set $ws7 "7"
-set $ws8 "twitch"
-set $ws9 "spotify"
+set $ws5 "5: Tor"
+set $ws6 "6: Spotify"
+set $ws7 "7: Twitch"
+set $ws8 "8"
+set $ws9 "9"
 set $ws10 "10"
 
 # switch to workspace
@@ -136,12 +135,17 @@ bindsym $mod+Shift+agrave   move container to workspace number $ws10
 
 ### ASSIGNMENTS
 
-assign [class="Steam"] 4: steam
-assign [class="Tor Browser"] 5: tor
-assign [class="Tor Messenger"] 5: tor
-assign [class="chromium"] 6: www
-assign [class="chatty-Chatty"] 8: twitch
-assign [class="spotify"] 9: spotify
+# to find the correct class => xprop | grep CLASS
+# if assign doesn't work, you can do:
+# for_window [class="Spotify"] move to workspace $ws6
+
+assign [class="Emacs"] $ws1
+assign [class="firefox"] $ws2
+assign [class="chromium"] $ws2
+assign [class="Tor Browser"] $ws5
+assign [class="Tor Messenger"] $ws5
+assign [class="Spotify"] $ws6
+assign [class="chatty-Chatty"] $ws7
 
 ### CUSTOM
 
@@ -203,6 +207,6 @@ bindsym XF86AudioPrev exec "playerctl previous"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        font pango:monospace 8
+        font pango:monospace 10
         status_command i3status
 }
