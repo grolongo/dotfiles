@@ -138,6 +138,7 @@ snaps() {
     check_is_sudo
 
     confirm "Install Emacs snap?" && { snap install emacs --classic; }
+    confirm "Install Firefox snap?" && { snap install firefox; }
     confirm "Install mu4e snap?" && { snap install maildir-utils; }
     confirm "Install steam snap?" && { snap install steam --beta; }
     confirm "Install chromium snap?" && { snap install chromium; }
@@ -227,6 +228,7 @@ set_i3wm() {
         fonts-noto
         i3
         network-manager
+        pinentry-gtk2
         ubuntu-drivers-common
         ubuntu-restricted-extras
         ubuntu-restricted-addons
