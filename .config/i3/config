@@ -3,7 +3,7 @@ font pango:monospace 8
 #font pango:DejaVu Sans Mono 8
 exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
-exec --no-startup-id nm-applet
+#exec --no-startup-id nm-applet
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
@@ -96,13 +96,13 @@ bindsym $mod+q focus parent
 # Workspaces
 # ----------
 
-set $ws1 "1: Emacs"
-set $ws2 "2: www"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5: Tor"
-set $ws6 "6: Spotify"
-set $ws7 "7: Twitch"
+set $ws1 "1"
+set $ws2 "2: Emacs"
+set $ws3 "3: www"
+set $ws4 "4: Tor"
+set $ws5 "5: Spotify"
+set $ws6 "6: Twitch"
+set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
@@ -139,13 +139,12 @@ bindsym $mod+Shift+agrave   move container to workspace number $ws10
 # if assign doesn't work, you can do:
 # for_window [class="Spotify"] move to workspace $ws6
 
-assign [class="Emacs"] $ws1
-assign [class="firefox"] $ws2
-assign [class="Chromium"] $ws2
-assign [class="Tor Browser"] $ws5
-assign [class="Tor Messenger"] $ws5
-assign [class="Spotify"] $ws6
-assign [class="chatty-Chatty"] $ws7
+assign [class="Emacs"] $ws2
+assign [class="firefox"] $ws3
+assign [class="Chromium"] $ws3
+assign [class="Tor Browser"] $ws4
+assign [class="Spotify"] $ws5
+assign [class="chatty-Chatty"] $ws6
 
 ### CUSTOM
 
