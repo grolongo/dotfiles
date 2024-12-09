@@ -141,7 +141,7 @@ bindsym $mod+Shift+agrave   move container to workspace number $ws10
 
 assign [class="Emacs"] $ws1
 assign [class="firefox"] $ws2
-assign [class="chromium"] $ws2
+assign [class="Chromium"] $ws2
 assign [class="Tor Browser"] $ws5
 assign [class="Tor Messenger"] $ws5
 assign [class="Spotify"] $ws6
