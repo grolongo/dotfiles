@@ -138,7 +138,6 @@ snaps_common() {
     check_is_sudo
 
     confirm "Install chromium (SNAP)?" && { snap install chromium; snap install chromium-ffmpeg; }
-    confirm "Install chromium-ffmpeg (SNAP)?" && { chromium-ffmpeg; }
     confirm "Install Emacs (SNAP)?" && { snap install emacs --classic; }
     confirm "Install mu4e (SNAP)?" && { snap install maildir-utils; }
     confirm "Install spotify (SNAP)?" && { snap install spotify; }
