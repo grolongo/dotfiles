@@ -227,6 +227,7 @@ set_i3wm() {
         fonts-noto
         i3
         pinentry-gtk2
+        playerctl
         rxvt-unicode
         ubuntu-drivers-common
         ubuntu-restricted-extras
@@ -333,7 +334,7 @@ install_mpv() {
     tmpdir=$(mktemp -d)
 
     msg_info "Installing mpv..."
-    sudo apt install -y mpv
+    sudo apt install -y mpv mpv-mpris
 
     msg_info "Installing plugins..."
 
