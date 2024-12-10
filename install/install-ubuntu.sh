@@ -134,15 +134,15 @@ apt_common() {
 
 ### snaps
 
-snaps() {
+snaps_common() {
     check_is_sudo
 
-    confirm "Install Emacs snap?" && { snap install emacs --classic; }
-    confirm "Install Firefox snap?" && { snap install firefox; }
-    confirm "Install mu4e snap?" && { snap install maildir-utils; }
-    confirm "Install steam snap?" && { snap install steam --beta; }
-    confirm "Install chromium snap?" && { snap install chromium; }
-    confirm "Install spotify snap?" && { snap install spotify; }
+    confirm "Install chromium (SNAP)?" && { snap install chromium; snap install chromium-ffmpeg; }
+    confirm "Install chromium-ffmpeg (SNAP)?" && { chromium-ffmpeg; }
+    confirm "Install Emacs (SNAP)?" && { snap install emacs --classic; }
+    confirm "Install mu4e (SNAP)?" && { snap install maildir-utils; }
+    confirm "Install spotify (SNAP)?" && { snap install spotify; }
+    confirm "Install steam (SNAP)?" && { snap install steam --beta; }
 
     snap refresh
 }
@@ -227,7 +227,6 @@ set_i3wm() {
     local packages=(
         fonts-noto
         i3
-        network-manager
         pinentry-gtk2
         rxvt-unicode
         ubuntu-drivers-common
@@ -243,6 +242,11 @@ set_i3wm() {
     done
 
     apt_clean
+
+    confirm "Install Firefox (SNAP)?" && { snap install firefox; }
+    confirm "Install Network-Manager (SNAP)?" && { snap install network-manager; }
+
+    snap refresh
 }
 
 ### Emacs
@@ -666,7 +670,7 @@ main() {
     elif [ "$cmd" = "aptcommon" ]; then
         apt_common
     elif [ "$cmd" = "snaps" ]; then
-        snaps
+        snaps_common
     elif [ "$cmd" = "gsettings" ]; then
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
