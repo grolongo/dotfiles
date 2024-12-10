@@ -170,8 +170,8 @@ bindsym $mod+Shift+BackSpace mode "$mode_system"
 
 # Screen Brightness Controls
 # --------------------------
-bindsym XF86MonBrightnessDown exec "light -U 20"
-bindsym XF86MonBrightnessUp exec "light -A 20"
+bindsym XF86MonBrightnessDown exec "brightnessctl set 10%-"
+bindsym XF86MonBrightnessUp exec "brightnessctl set 10%+"
 
 # Keyboard Brightness Controls
 # ----------------------------

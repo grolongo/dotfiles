@@ -224,6 +224,7 @@ set_i3wm() {
     check_is_sudo
 
     local packages=(
+        brightnessctl
         fonts-noto
         i3
         pinentry-gtk2
@@ -248,6 +249,9 @@ set_i3wm() {
     confirm "Install Network-Manager (SNAP)?" && { snap install network-manager; }
 
     snap refresh
+
+    msg_info "Adding ourselves to video group in order to use brightnessctl without sudo..."
+    usermod -aG video "${SUDO_USER}"
 }
 
 ### Emacs
