@@ -231,6 +231,7 @@ set_i3wm() {
         ubuntu-drivers-common
         ubuntu-restricted-extras
         ubuntu-restricted-addons
+        wireplumber
         xorg
         # pulseaudio
         sxiv
