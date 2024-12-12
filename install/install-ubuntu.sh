@@ -225,8 +225,10 @@ set_i3wm() {
 
     local packages=(
         brightnessctl
+        dosfstools
         fonts-noto
         i3
+        mtools
         pinentry-gtk2
         playerctl
         rxvt-unicode

@@ -37,10 +37,10 @@ xterm.vt100.metaSendsEscape:    true
 
 URxvt.reverseVideo:         true
 URxvt.letterSpace:          -1
-URxvt.font:                 xft:DejaVu Sans Mono:style=Book:size=10
-URxvt.boldFont:             xft:DejaVu Sans Mono:style=Bold:size=10
-URxvt.italicFont:           xft:DejaVu Sans Mono:style=Italic:size=10
-URxvt.boldItalicFont:       xft:Dejavu Sans Mono:style=Bold Italic:size=10
+URxvt.font:                 xft:DejaVu Sans Mono:style=Book:size=12
+URxvt.boldFont:             xft:DejaVu Sans Mono:style=Bold:size=12
+URxvt.italicFont:           xft:DejaVu Sans Mono:style=Italic:size=12
+URxvt.boldItalicFont:       xft:Dejavu Sans Mono:style=Bold Italic:size=12
 
 URxvt.scrollTtyOutput:      false
 URxvt.scrollWithBuffer:     true
