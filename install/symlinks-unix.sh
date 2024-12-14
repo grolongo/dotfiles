@@ -140,6 +140,8 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/i3/config"
         symlink ".config/i3status/config"
         symlink ".xsessionrc"
+        sudo mkdir -vp /etc/X11/xorg.conf.d
+        sudo ln -sniv "${base}/etc/X11/xorg.conf.d/30-touchpad.conf" "/etc/X11/xorg.conf.d/30-touchpad.conf"
     }
 
     # X
