@@ -142,6 +142,7 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".xsessionrc"
         sudo mkdir -vp /etc/X11/xorg.conf.d
         sudo ln -sniv "${base}/etc/X11/xorg.conf.d/30-touchpad.conf" "/etc/X11/xorg.conf.d/30-touchpad.conf"
+        sudo ln -sniv "${base}/etc/X11/xorg.conf.d/30-trackpoint.conf" "/etc/X11/xorg.conf.d/30-trackpoint.conf"
     }
 
     # X
