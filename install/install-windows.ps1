@@ -48,6 +48,9 @@ function set_uipreferences {
     Write-Message 'Setting taskbar combine when full mode...'
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarGlomLevel' -Value 1
 
+    # remove keyboard layout icon in the taskbar
+    Set-WinLanguageBarOption -UseLegacyLanguageBar: $true
+
     # lock taskbar (lock = 0, unlock = 1)
     Write-Message 'Locking the taskbar...'
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
