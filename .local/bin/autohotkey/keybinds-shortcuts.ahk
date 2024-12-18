@@ -4,6 +4,7 @@ SetWorkingDir(A_ScriptDir)  ; Ensures a consistent starting directory.
 
 #Enter::Run("wt.exe")
 <!Space::Run("everything.exe")
+#Space::return ; disables winkey+space from switching kbd layout
 
 ; mute hotkey
 F8::
