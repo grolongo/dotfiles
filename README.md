@@ -4,7 +4,7 @@
 
 #### HTTPS
 ```bash
-cd $HOME && git clone https://github.com/grolongo/dotfiles.git
+git clone https://github.com/grolongo/dotfiles.git
 ```
 
 After syncing SSH keys, do:
