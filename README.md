@@ -4,26 +4,26 @@
 
 #### HTTPS
 ```bash
-cd ~
-git clone https://github.com/grolongo/dotfiles.git
-# after syncing ssh files do:
-git remote set-url origin git@github.com:grolongo/dotfiles.git
+cd $HOME && git clone https://github.com/grolongo/dotfiles.git
+```
+
+After syncinc SSH keys, do:
+```bash
+cd $HOME/dotfiles && git remote set-url origin git@github.com:grolongo/dotfiles.git
 ```
 
 #### SSH
 ```bash
-cd ~
-git clone git@github.com:grolongo/dotfiles.git
+cd $HOME && git clone git@github.com:grolongo/dotfiles.git
 ```
 
 ### Git-free
 
 #### Linux/macOS
 ```bash
-cd ~
-curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv
+cd $HOME && curl -#L https://github.com/grolongo/dotfiles/tarball/master | tar -xzv
 # or
-wget -O - https://github.com/grolongo/dotfiles/tarball/master | tar -xzv
+cd $HOME && wget -O - https://github.com/grolongo/dotfiles/tarball/master | tar -xzv
 mv grolongo-dotfiles* dotfiles
 ```
 
