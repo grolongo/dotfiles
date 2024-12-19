@@ -31,8 +31,8 @@ mv grolongo-dotfiles* dotfiles
 ```powershell
 cd $HOME; `
 Invoke-WebRequest -Uri "https://github.com/grolongo/dotfiles/archive/refs/heads/master.zip" -OutFile dotfiles.zip; `
-Expand-Archive -Path "dotfiles.zip" -DestinationPath .; `
-Rename-Item -Path "dotfiles-master" -NewName "dotfiles-trash"; `
+Expand-Archive -Path "dotfiles.zip" -DestinationPath $PWD; `
+Rename-Item -Path "dotfiles-master" -NewName "dotfiles"; `
 Remove-Item -Path "dotfiles.zip" -Force
 ```
 
