@@ -7,7 +7,7 @@
 git clone https://github.com/grolongo/dotfiles.git
 ```
 
-After syncing SSH keys, do:
+After symlinking SSH keys & dotfiles, do:
 ```bash
 git remote set-url origin git@github.com:grolongo/dotfiles.git
 ```
@@ -41,4 +41,13 @@ Invoke-WebRequest -Uri "https://github.com/grolongo/dotfiles/archive/refs/heads/
 Expand-Archive -Path "dotfiles.zip" -DestinationPath $PWD; `
 Rename-Item -Path "dotfiles-master" -NewName "dotfiles"; `
 Remove-Item -Path "dotfiles.zip" -Force
+```
+
+After symlinking SSH keys & dotfiles, do:
+```shell
+git init
+git remote add origin git@github.com:grolongo/dotfiles.git
+git fetch
+git reset origin/master
+git branch --set-upstream-to=origin/master
 ```
