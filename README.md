@@ -42,19 +42,3 @@ Expand-Archive -Path "dotfiles.zip" -DestinationPath $PWD; `
 Rename-Item -Path "dotfiles-master" -NewName "dotfiles"; `
 Remove-Item -Path "dotfiles.zip" -Force
 ```
-
-## Config
-
-#### Linux / macOS
-```bash
-git config user.name "grolongo" && \
-git config user.email "34292770+grolongo@users.noreply.github.com" && \
-git config github.user "grolongo"
-```
-
-#### Windows
-```powershell
-git config user.name "grolongo"; `
-git config user.email "34292770+grolongo@users.noreply.github.com"; `
-git config github.user "grolongo"
-```
