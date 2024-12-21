@@ -364,14 +364,6 @@ function install_qbittorrent {
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py'                                        -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
 }
 
-### Dotfiles
-
-function set_dotfiles {
-    # check if we're in the correct install dir
-    if (-not (Test-Path 'symlinks-windows.ps1')) { Write-Host -ForegroundColor 'red' 'Exiting. Please cd into the install directory or make sure symlinks-windows.ps1 is here.'; exit }
-    .\symlinks-windows
-}
-
 ### CTT Windows Utility
 
 function run_winutil {
@@ -396,7 +388,6 @@ function usage {
     Write-Host '  winget_packages   - downloads and installs listed packages with winget'
     Write-Host '  mpv               - installs mpv'
     Write-Host '  qbit              - installs qBittorrent with plugins'
-    Write-Host '  dotfiles          - launches external dotfiles script'
     Write-Host '  winutil           - runs Chris Titus Techs Windows Utility'
     Write-Host
 }
@@ -420,7 +411,6 @@ function main {
     elseif ($cmd -eq 'winget_packages') { install_winget }
     elseif ($cmd -eq 'mpv') { install_mpv }
     elseif ($cmd -eq 'qbit') { install_qbittorrent }
-    elseif ($cmd -eq 'dotfiles') { set_dotfiles }
     elseif ($cmd -eq 'winutil') { run_winutil }
     else { usage }
 }
