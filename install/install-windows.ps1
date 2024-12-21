@@ -70,10 +70,6 @@ function set_uipreferences {
     Write-Message 'Setting the screenshot folder to Desktop...'
     Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value "$env:USERPROFILE\Desktop"
 
-    # excluding folders from AV scans
-    Write-Message 'Excluding Emacs from AV scanning...'
-    Add-MpPreference -ExclusionPath 'C:\Program Files\Emacs', "$env:APPDATA\.emacs.d"
-
     if (Ask-Question 'Set timezone/currency/timeformat to fr-FR?') {
         Set-TimeZone -Name 'Romance Standard Time'
         Set-Culture fr-FR
@@ -277,6 +273,15 @@ function install_winget {
     if (Ask-Question 'Install Git?') { winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption:CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption:CRLFCommitAsIs /o:CURLOption=WinSSL' }
 }
 
+### emacs
+
+function install_emacs {
+    winget install -e --id 'GNU.Emacs'
+
+    Write-Message 'Excluding Emacs from AV scanning to improve performance...'
+    Add-MpPreference -ExclusionPath 'C:\Program Files\Emacs', "$env:APPDATA\.emacs.d"
+}
+
 ### mpv
 
 function install_mpv {
@@ -322,7 +327,7 @@ function install_mpv {
 
 function install_qbittorrent {
     # choco install qbittorrent
-    winget install qBittorrent.qBittorrent
+    winget install -e --id 'qBittorrent.qBittorrent'
 
     New-Variable -Name 'PLUGIN_FOLDER' -Value "$HOME\AppData\Local\qBittorrent\nova3\engines"
     New-Item -Force -Path "$PLUGIN_FOLDER" -ItemType directory
@@ -386,6 +391,7 @@ function usage {
     Write-Host '  chocolatey        - downloads and sets chocolatey package manager'
     Write-Host '  choco_packages    - downloads and installs listed packages with chocolatey'
     Write-Host '  winget_packages   - downloads and installs listed packages with winget'
+    Write-Host '  emacs             - installs emacs'
     Write-Host '  mpv               - installs mpv'
     Write-Host '  qbit              - installs qBittorrent with plugins'
     Write-Host '  winutil           - runs Chris Titus Techs Windows Utility'
@@ -409,6 +415,7 @@ function main {
     elseif ($cmd -eq 'chocolatey') { install_chocolatey }
     elseif ($cmd -eq 'choco_packages') { install_choco }
     elseif ($cmd -eq 'winget_packages') { install_winget }
+    elseif ($cmd -eq 'emacs') { install_emacs }
     elseif ($cmd -eq 'mpv') { install_mpv }
     elseif ($cmd -eq 'qbit') { install_qbittorrent }
     elseif ($cmd -eq 'winutil') { run_winutil }
