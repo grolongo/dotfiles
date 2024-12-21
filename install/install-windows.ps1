@@ -48,9 +48,6 @@ function set_uipreferences {
     Write-Message 'Setting taskbar combine when full mode...'
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarGlomLevel' -Value 1
 
-    # remove keyboard layout icon in the taskbar
-    Set-WinLanguageBarOption -UseLegacyLanguageBar: $true
-
     # lock taskbar (lock = 0, unlock = 1)
     Write-Message 'Locking the taskbar...'
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
@@ -80,7 +77,6 @@ function set_uipreferences {
     if (Ask-Question 'Set timezone/currency/timeformat to fr-FR?') {
         Set-TimeZone -Name 'Romance Standard Time'
         Set-Culture fr-FR
-        Set-WinUserLanguageList fr-FR
     }
 
     Stop-Process -Name explorer -Force
