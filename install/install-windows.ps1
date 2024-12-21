@@ -262,6 +262,15 @@ function install_winget {
         'yt-dlp.yt-dlp'
     )
 
+    if (Ask-Question 'Install WinGet from GitHub (instead of Microsoft Store)?')
+    { $API_URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+      $DOWNLOAD_URL = $(Invoke-RestMethod $API_URL).assets.browser_download_url |
+        Where-Object {$_.EndsWith(".msixbundle")}
+
+      Invoke-WebRequest -Uri $DOWNLOAD_URL -OutFile "winget.msixbundle" -UseBasicParsing
+      Add-AppxPackage -Path "winget.msixbundle"
+      Remove-Item "winget.msixbundle" }
+
     Write-Message 'Updating sources list...'
     winget source update
 
