@@ -375,6 +375,12 @@ function run_winutil {
     irm 'https://christitus.com/win' | iex
 }
 
+### massgrave activation script
+
+function run_massgrave {
+    irm 'https://get.activated.win' | iex
+}
+
 ### Menu
 
 function usage {
@@ -395,6 +401,7 @@ function usage {
     Write-Host '  mpv               - installs mpv'
     Write-Host '  qbit              - installs qBittorrent with plugins'
     Write-Host '  winutil           - runs Chris Titus Techs Windows Utility'
+    Write-Host '  activate          - runs massgrave activation script'
     Write-Host
 }
 
@@ -419,6 +426,7 @@ function main {
     elseif ($cmd -eq 'mpv') { install_mpv }
     elseif ($cmd -eq 'qbit') { install_qbittorrent }
     elseif ($cmd -eq 'winutil') { run_winutil }
+    elseif ($cmd -eq 'activate') { run_massgrave }
     else { usage }
 }
 
