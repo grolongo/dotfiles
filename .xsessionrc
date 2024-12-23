@@ -1,4 +1,17 @@
-# better keyboard repeat rate
+# on Debian & derivatives:
+#
+# it reads ~/.xsessionrc if it exists.
+# if not, it  reads ~/.xsession if it exists.
+# if DM, WM & Terminal are not present, it reads:
+# 1. /usr/bin/x-session-manager
+# 2. /usr/bin/x-window-manager
+# 3. /usr/bin/x-terminal-emulator
+#
+# ~/.xinitrc is used by xinit with startx.
+# startx will fallback to ~/.xsessionrc if
+# ~/.xinitrc doesn't exist.
+
+# keyboard repeat rate
 xset r rate 300 50
 
 # fr layout & caps/ctrl switch
@@ -8,13 +21,7 @@ setxkbmap -layout fr -option ctrl:swapcaps
 
 xrdb -load $HOME/.Xresources
 
-# Debian reads ~/.xsessionrc if it exists.
-# Then Debian reads ~/.xsession if it exists.
-# If ~/.xsession is not present, it looks for:
-# first /usr/bin/x-session-manager
-# then /usr/bin/x-window-manager
-# then /usr/bin/x-terminal-emulator
-# reading the first it finds.
-
 # always last, our window manager
-#exec i3
+# on Debian this is commented, as it will
+# use /usr/bin/x-window-manager automatically
+# exec i3
