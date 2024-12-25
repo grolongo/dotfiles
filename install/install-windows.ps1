@@ -41,7 +41,7 @@ function set_uipreferences {
     Set-ItemProperty -Path $explorer -Name 'EnableAutoTray' -Value 0
 
     # taskbar size (small = 1, large = 0)
-    Write-Message 'Setting taskbar height size...'
+    Write-Message 'Setting taskbar height size to small...'
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSmallIcons' -Value 1
 
     # taskbar combine (always = 0, when full = 1, never = 2)
@@ -53,7 +53,7 @@ function set_uipreferences {
     Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
 
     # disable recent files, folders and cloud files (hidden = 0, show = 1)
-    Write-Message 'Disabling recent files and folders...'
+    Write-Message 'Disabling recent files and cloud folders...'
     Set-ItemProperty -Path $exploreradvanced -Name 'CloudFilesOnDemand' -Value 0
     Set-ItemProperty -Path $exploreradvanced -Name 'Start_TrackDocs' -Value 0
     Set-ItemProperty -Path $explorer -Name 'ShowFrequent' -Value 0
@@ -76,7 +76,7 @@ function set_uipreferences {
     }
 
     Stop-Process -Name explorer -Force
-    Write-Message 'Relog for changes to take effect.'
+    Write-Message 'Might need to relog for changes to take effect.'
 }
 
 ### No sound
