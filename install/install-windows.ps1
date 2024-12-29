@@ -90,6 +90,33 @@ function set_nosound {
     Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'DisableStartupSound' -Value 1 -Type DWord -Force
 }
 
+### BitLocker
+
+function enable_bitlocker {
+    $MachineDir = "$env:windir\system32\GroupPolicy\Machine\Registry.pol"
+    $RegPath = 'Software\Policies\Microsoft\FVE'
+    $RegType = 'DWord'
+
+    Install-Module -Name PolicyFileEditor
+
+    # Require additional authentication at startup
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseAdvancedStartup' -Data '1' -Type $RegType
+    # Doesn't allow BitLocker without TPM
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'EnableBDEWithNoTPM' -Data '0' -Type $RegType
+    # Require TPM
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPM'             -Data '1' -Type $RegType
+    # Require startup PIN with TPM
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMPIN'          -Data '1' -Type $RegType
+    # Do not allow startup key with TPM
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMKey'          -Data '0' -Type $RegType
+    # Do not allow startup key and PIN with TPM
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMKeyPIN'       -Data '0' -Type $RegType
+    # Allow enhanced PINs for startup
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseEnhancedPin'     -Data '1' -Type $RegType
+
+    gpupdate /force
+}
+
 ### Firewall
 
 function set_firewall {
@@ -388,6 +415,7 @@ function usage {
     Write-Host 'Usage:'
     Write-Host '  uipreferences     - windows explorer & taskbar preferences'
     Write-Host '  nosound           - applies no sounds scheme and turn off startup sound'
+    Write-Host '  bitlocker         - changes Group Policy settings for BitLocker and encrypts C:'
     Write-Host '  firewall          - firewall rules: block incoming, allow outgoing'
     Write-Host '  ssh               - automatic startup of ssh agent'
     Write-Host '  powersettings     - disables power saving modes on AC power'
@@ -413,6 +441,7 @@ function main {
 
     if ($cmd -eq 'uipreferences') { set_uipreferences }
     elseif ($cmd -eq 'nosound') { set_nosound }
+    elseif ($cmd -eq 'bitlocker') { enable_bitlocker }
     elseif ($cmd -eq 'firewall') { set_firewall }
     elseif ($cmd -eq 'ssh') { set_ssh }
     elseif ($cmd -eq 'powersettings') { power_settings }
