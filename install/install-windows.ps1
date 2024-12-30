@@ -103,8 +103,8 @@ function enable_bitlocker {
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseAdvancedStartup' -Data '1' -Type $RegType
     # Doesn't allow BitLocker without TPM
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'EnableBDEWithNoTPM' -Data '0' -Type $RegType
-    # Require TPM
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPM'             -Data '1' -Type $RegType
+    # Do not allow TPM solely
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPM'             -Data '0' -Type $RegType
     # Require startup PIN with TPM
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMPIN'          -Data '1' -Type $RegType
     # Do not allow startup key with TPM
