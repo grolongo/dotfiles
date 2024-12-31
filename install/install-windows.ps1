@@ -97,22 +97,48 @@ function enable_bitlocker {
     $RegPath = 'Software\Policies\Microsoft\FVE'
     $RegType = 'DWord'
 
-    Install-Module -Name PolicyFileEditor
+    if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
+        Install-Module -Name PolicyFileEditor -Force
+    }
 
-    # Require additional authentication at startup
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseAdvancedStartup' -Data '1' -Type $RegType
-    # Doesn't allow BitLocker without TPM
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'EnableBDEWithNoTPM' -Data '0' -Type $RegType
-    # Do not allow TPM solely
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPM'             -Data '0' -Type $RegType
-    # Require startup PIN with TPM
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMPIN'          -Data '1' -Type $RegType
-    # Do not allow startup key with TPM
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMKey'          -Data '0' -Type $RegType
-    # Do not allow startup key and PIN with TPM
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMKeyPIN'       -Data '0' -Type $RegType
-    # Allow enhanced PINs for startup
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseEnhancedPin'     -Data '1' -Type $RegType
+    # OS drive
+    Write-Message 'Enforce full disk encryption for OS drive instead of used space...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSEncryptionType'         -Data '1' -Type $RegType
+    Write-Message 'Require additional authentication at startup...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseAdvancedStartup'       -Data '1' -Type $RegType
+    Write-Message 'Do not allow BitLocker without TPM...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'EnableBDEWithNoTPM'       -Data '0' -Type $RegType
+    Write-Message 'Do not allow TPM solely...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPM'                   -Data '0' -Type $RegType
+    Write-Message 'Do not allow external startup key...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMKey'                -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMKeyPIN'             -Data '0' -Type $RegType
+    Write-Message 'Only require startup PIN with TPM...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMPIN'                -Data '1' -Type $RegType
+    Write-Message 'Allow enhanced PINs...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseEnhancedPin'           -Data '1' -Type $RegType
+    Write-Message 'Disabling recovery options for the OS drive...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecovery'               -Data '1' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSManageDRA'              -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecoveryKey'            -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecoveryPassword'       -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSHideRecoveryPage'       -Data '1' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSActiveDirectoryBackup'  -Data '0' -Type $RegType
+
+    # Fixed drives
+    Write-Message 'Enforce full disk encryption for fixed drives instead of used space...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVEncryptionType'        -Data '1' -Type $RegType
+    Write-Message 'Disabling recovery options for fixed drives...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecovery'              -Data '1' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVManageDRA'             -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryKey'           -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryPassword'      -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVHideRecoveryPage'      -Data '1' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVActiveDirectoryBackup' -Data '0' -Type $RegType
+    Write-Message 'Disabling smart cards option...'
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVAllowUserCert'         -Data '0' -Type $RegType
+
+    Start-Sleep -Seconds 5
 
     gpupdate /force
 }
