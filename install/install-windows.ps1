@@ -141,6 +141,14 @@ function enable_bitlocker {
     Start-Sleep -Seconds 5
 
     gpupdate /force
+
+    Start-Sleep -Seconds 3
+
+    if (Ask-Question 'Encrypt C: drive?') {
+        manage-bde -protectors -add c: -TPMAndPIN
+        Start-Sleep -Seconds 3
+        manage-bde -on c:
+    }
 }
 
 ### Firewall
