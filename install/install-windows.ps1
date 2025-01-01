@@ -117,7 +117,7 @@ function enable_bitlocker {
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseTPMPIN'                -Data '1' -Type $RegType
     Write-Message 'Allow enhanced PINs...'
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'UseEnhancedPin'           -Data '1' -Type $RegType
-    Write-Message 'Disabling recovery options for the OS drive...'
+    Write-Message 'Enabling only password recovery for the OS drive...'
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecovery'               -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSManageDRA'              -Data '0' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecoveryKey'            -Data '0' -Type $RegType
@@ -127,7 +127,7 @@ function enable_bitlocker {
     # Fixed drives
     Write-Message 'Enforce full disk encryption for fixed drives instead of used space...'
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVEncryptionType'        -Data '1' -Type $RegType
-    Write-Message 'Disabling recovery options for fixed drives...'
+    Write-Message 'Enabling only password recovery for fixed drives...'
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecovery'              -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVManageDRA'             -Data '0' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryKey'           -Data '0' -Type $RegType
