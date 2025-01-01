@@ -121,7 +121,7 @@ function enable_bitlocker {
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecovery'               -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSManageDRA'              -Data '0' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecoveryKey'            -Data '0' -Type $RegType
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecoveryPassword'       -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecoveryPassword'       -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSHideRecoveryPage'       -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSActiveDirectoryBackup'  -Data '0' -Type $RegType
 
@@ -132,7 +132,7 @@ function enable_bitlocker {
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecovery'              -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVManageDRA'             -Data '0' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryKey'           -Data '0' -Type $RegType
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryPassword'      -Data '0' -Type $RegType
+    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryPassword'      -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVHideRecoveryPage'      -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVActiveDirectoryBackup' -Data '0' -Type $RegType
     Write-Message 'Disabling smart cards option...'
@@ -147,7 +147,7 @@ function enable_bitlocker {
     if (Ask-Question 'Encrypt C: drive?') {
         manage-bde -protectors -add c: -TPMAndPIN
         Start-Sleep -Seconds 3
-        manage-bde -on c:
+        manage-bde -on c: -RecoveryPassword
     }
 }
 
