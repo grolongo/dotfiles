@@ -122,7 +122,6 @@ function enable_bitlocker {
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSManageDRA'              -Data '0' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecoveryKey'            -Data '0' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSRecoveryPassword'       -Data '1' -Type $RegType
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSHideRecoveryPage'       -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'OSActiveDirectoryBackup'  -Data '0' -Type $RegType
 
     # Fixed drives
@@ -133,7 +132,6 @@ function enable_bitlocker {
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVManageDRA'             -Data '0' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryKey'           -Data '0' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryPassword'      -Data '1' -Type $RegType
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVHideRecoveryPage'      -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVActiveDirectoryBackup' -Data '0' -Type $RegType
     Write-Message 'Disabling smart cards option...'
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVAllowUserCert'         -Data '0' -Type $RegType
