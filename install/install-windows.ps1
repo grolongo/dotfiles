@@ -1,4 +1,4 @@
-# Restriction: use "Set-ExecutionPolicy Bypass" as admin to allow this script to be run
+# Restriction: use "Set-ExecutionPolicy Bypass" as admin to allow this script to run
 
 #Requires -RunAsAdministrator
 
@@ -96,6 +96,7 @@ function enable_bitlocker {
     $MachineDir = "$env:windir\system32\GroupPolicy\Machine\Registry.pol"
     $RegPath = 'Software\Policies\Microsoft\FVE'
     $RegType = 'DWord'
+    $Drives = (BitlockerVolume | Where-Object {$_.AutoUnlockEnabled -eq $false}).MountPoint
 
     if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
         Install-Module -Name PolicyFileEditor -Force
@@ -127,16 +128,14 @@ function enable_bitlocker {
     # Fixed drives
     Write-Message 'Enforce full disk encryption for fixed drives instead of used space...'
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVEncryptionType'        -Data '1' -Type $RegType
-    Write-Message 'Enabling only password recovery for fixed drives...'
+    Write-Message 'Setting recovery options for fixed drives...'
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecovery'              -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVManageDRA'             -Data '0' -Type $RegType
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryKey'           -Data '0' -Type $RegType
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVRecoveryPassword'      -Data '1' -Type $RegType
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVActiveDirectoryBackup' -Data '0' -Type $RegType
     Write-Message 'Disabling smart cards option...'
     Set-PolicyFileEntry -Path $MachineDir -Key $RegPath -ValueName 'FDVAllowUserCert'         -Data '0' -Type $RegType
 
-    Start-Sleep -Seconds 5
+    Start-Sleep -Seconds 3
 
     gpupdate /force
 
@@ -146,6 +145,16 @@ function enable_bitlocker {
         manage-bde -protectors -add c: -TPMAndPIN
         Start-Sleep -Seconds 3
         manage-bde -on c: -RecoveryPassword
+    }
+
+    if ($Drives) {
+        foreach ($Drive in $Drives) {
+            if (Ask-Question "Automatically unlock $Drive at boot?") {
+                manage-bde -unlock "$Drive" -password
+                Start-Sleep -Seconds 3
+                manage-bde -autounlock -enable "$Drive"
+            }
+        }
     }
 }
 
@@ -446,22 +455,22 @@ function usage {
     Write-Host
     Write-Host 'Usage:'
     Write-Host '  uipreferences     - windows explorer & taskbar preferences'
-    Write-Host '  nosound           - applies no sounds scheme and turn off startup sound'
-    Write-Host '  bitlocker         - changes Group Policy settings for BitLocker and encrypts C:'
+    Write-Host '  nosound           - apply no sounds scheme and turn off startup sound'
+    Write-Host '  bitlocker         - change Group Policy settings for BitLocker and encrypts C:'
     Write-Host '  firewall          - firewall rules: block incoming, allow outgoing'
     Write-Host '  ssh               - automatic startup of ssh agent'
-    Write-Host '  powersettings     - disables power saving modes on AC power'
-    Write-Host '  envar             - setups environment variables'
-    Write-Host '  hostname          - changes hostname'
+    Write-Host '  powersettings     - disable power saving modes on AC power'
+    Write-Host '  envar             - setup environment variables'
+    Write-Host '  hostname          - change hostname'
     Write-Host '  ctrltocaps        - remap CTRL key to Caps Lock'
-    Write-Host '  chocolatey        - downloads and sets chocolatey package manager'
-    Write-Host '  choco_packages    - downloads and installs listed packages with chocolatey'
-    Write-Host '  winget_packages   - downloads and installs listed packages with winget'
-    Write-Host '  emacs             - installs emacs'
-    Write-Host '  mpv               - installs mpv'
-    Write-Host '  qbit              - installs qBittorrent with plugins'
-    Write-Host '  winutil           - runs Chris Titus Techs Windows Utility'
-    Write-Host '  activate          - runs massgrave activation script'
+    Write-Host '  chocolatey        - download and sets chocolatey package manager'
+    Write-Host '  choco_packages    - download and installs listed packages with chocolatey'
+    Write-Host '  winget_packages   - download and installs listed packages with winget'
+    Write-Host '  emacs             - install emacs'
+    Write-Host '  mpv               - install mpv'
+    Write-Host '  qbit              - install qBittorrent with plugins'
+    Write-Host '  winutil           - run Chris Titus Techs Windows Utility'
+    Write-Host '  activate          - run massgrave activation script'
     Write-Host
 }
 
