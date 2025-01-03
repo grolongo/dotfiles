@@ -41,6 +41,7 @@ Invoke-WebRequest -Uri "https://github.com/grolongo/dotfiles/archive/refs/heads/
 Expand-Archive -Path "dotfiles.zip" -DestinationPath $PWD; `
 Rename-Item -Path "dotfiles-master" -NewName "dotfiles"; `
 Remove-Item -Path "dotfiles.zip" -Force
+Set-ExecutionPolicy Bypass
 ```
 
 After symlinking SSH keys & dotfiles, do:
