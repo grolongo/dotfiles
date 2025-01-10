@@ -348,6 +348,8 @@ function install_emacs {
 
     Write-Message 'Excluding Emacs from AV scanning to improve performance...'
     Add-MpPreference -ExclusionPath 'C:\Program Files\Emacs', "$env:APPDATA\.emacs.d"
+    Add-MpPreference -ExclusionProcess "C:\Program Files\Emacs\*", 'runemacs.exe', 'emacs.exe', 'emacsclientw.exe', 'emacsclient.exe'
+    Add-MpPreference -ExclusionExtension ".el", ".elc", ".eln"
 }
 
 ### mpv
