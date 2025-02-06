@@ -33,6 +33,11 @@ function Write-Message {
 ### Group Policies
 
 function apply_gpo {
+
+    if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
+        Install-Module -Name PolicyFileEditor -Force
+    }
+
     $MachineDir = "$env:windir\System32\GroupPolicy\Machine\Registry.pol"
 
     $RegPath01 = 'Software\Policies\Microsoft\Windows\Personalization'
