@@ -40,7 +40,7 @@ rm dotfiles.zip
 Invoke-WebRequest -Uri "https://github.com/grolongo/dotfiles/archive/refs/heads/master.zip" -OutFile dotfiles.zip; `
 Expand-Archive -Path "dotfiles.zip" -DestinationPath $PWD; `
 Rename-Item -Path "dotfiles-master" -NewName "dotfiles"; `
-Remove-Item -Path "dotfiles.zip" -Force
+Remove-Item -Path "dotfiles.zip" -Force; `
 Set-ExecutionPolicy Bypass
 ```
 
