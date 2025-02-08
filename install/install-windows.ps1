@@ -578,15 +578,25 @@ function change_hostname {
     Write-Message 'Restart to take effect.'
 }
 
-### Ctrl to Caps
+### Keyboard settings
 
-function remap_ctrltocaps {
-    $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
-    $kbLayout = 'HKLM:\System\CurrentControlSet\Control\Keyboard Layout';
+function kbd_settings {
 
-    New-ItemProperty -Path $kbLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified);
+    if (Ask-Question 'Add FR keyboard layout?') {
+        $LanguageList = Get-WinUserLanguageList
+        $LanguageList[0].InputMethodTips.Add('0409:0000040C')
+        Set-WinUserLanguageList $LanguageList -Force
+        Set-WinDefaultInputMethodOverride -InputTip "0409:0000040C"
+    }
 
-    Write-Message 'You need to reboot to take effect.'
+    if (Ask-Question 'Remap ctrl to capslock key?') {
+        $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
+        $kbLayout = 'HKLM:\System\CurrentControlSet\Control\Keyboard Layout';
+
+        New-ItemProperty -Path $kbLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified);
+
+        Write-Message 'You need to reboot to take effect.'
+    }
 }
 
 ### Chocolatey
@@ -831,7 +841,7 @@ function usage {
     Write-Host '  powersettings     - disable power saving modes on AC power'
     Write-Host '  envar             - setup environment variables'
     Write-Host '  hostname          - change hostname'
-    Write-Host '  ctrltocaps        - remap CTRL key to Caps Lock'
+    Write-Host '  keyboard          - FR layout and CTRL key remap'
     Write-Host '  chocolatey        - download and sets chocolatey package manager'
     Write-Host '  choco_packages    - download and installs listed packages with chocolatey'
     Write-Host '  winget_packages   - download and installs listed packages with winget'
@@ -858,7 +868,7 @@ function main {
     elseif ($cmd -eq 'powersettings')   { power_settings }
     elseif ($cmd -eq 'envar')           { install_envar }
     elseif ($cmd -eq 'hostname')        { change_hostname }
-    elseif ($cmd -eq 'ctrltocaps')      {remap_ctrltocaps}
+    elseif ($cmd -eq 'keyboard')        { kbd_settings }
     elseif ($cmd -eq 'chocolatey')      { install_chocolatey }
     elseif ($cmd -eq 'choco_packages')  { install_choco }
     elseif ($cmd -eq 'winget_packages') { install_winget }
