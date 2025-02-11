@@ -661,7 +661,6 @@ function install_winget {
         'Chatty.Chatty',
         'Synology.DriveClient',
         'Electrum.Electrum',
-        'GNU.Emacs',
         'voidtools.Everything',
         'OliverBetz.ExifTool',
         'sharkdp.fd',
