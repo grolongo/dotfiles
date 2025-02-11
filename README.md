@@ -36,13 +36,16 @@ rm dotfiles.zip
 ```
 
 #### Windows
+
+Open Terminal:
 ```powershell
 Invoke-WebRequest -Uri "https://github.com/grolongo/dotfiles/archive/refs/heads/master.zip" -OutFile dotfiles.zip; `
 Expand-Archive -Path "dotfiles.zip" -DestinationPath $PWD; `
 Rename-Item -Path "dotfiles-master" -NewName "dotfiles"; `
-Remove-Item -Path "dotfiles.zip" -Force; `
-Set-ExecutionPolicy Bypass
+Remove-Item -Path "dotfiles.zip" -Force;
 ```
+
+Then, in an Administrator shell: `Set-ExecutionPolicy Bypass`
 
 After symlinking SSH keys & dotfiles, do:
 ```shell
