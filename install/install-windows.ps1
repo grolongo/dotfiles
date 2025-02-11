@@ -517,7 +517,7 @@ function enable_bitlocker {
         foreach ($Drive in $Drives) {
             if (Ask-Question "Automatically unlock $Drive at boot?") {
                 manage-bde -unlock "$Drive" -password
-                Start-Sleep -Seconds 3
+                Start-Sleep -Seconds 10
                 manage-bde -autounlock -enable "$Drive"
             }
         }
