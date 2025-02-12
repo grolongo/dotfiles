@@ -2,6 +2,8 @@
 !!! Commons !!!
 !!!!!!!!!!!!!!!
 
+*dpi:          120
+Xft.dpi:       120
 *scrollBar:    false
 *visualBell:   true
 *urgentOnBell: true
