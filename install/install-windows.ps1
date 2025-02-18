@@ -399,12 +399,34 @@ function apply_gpo {
 ### UI/UX Preferences
 
 function set_uipreferences {
-    $explorer = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
-    $exploreradvanced = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    $explorer = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"
+    $exploreradvanced = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    $personalize = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+
+    # dark mode
+    Write-Message 'Setting Windows dark mode...'
+    Set-ItemProperty -Path $personalize -Name AppsUseLightTheme -Value 0
+    Set-ItemProperty -Path $personalize -Name SystemUsesLightTheme -Value 0
+
+    # hidden files
+    Write-Message 'Show hidden files...'
+    Set-ItemProperty -Path $exploreradvanced -Name 'Hidden' -Value 1
+
+    # file extentions
+    Write-Message 'Show file extentions...'
+    Set-ItemProperty -Path $exploreradvanced -Name 'HideFileExt' -Value 0
+
+    # Bing search
+    Write-Message 'Disabling Bing search...'
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name 'BingSearchEnabled' -Value 0
 
     # show icons notification area (always show = 0, not showing = 1)
     Write-Message 'Showing all tray icons...'
     Set-ItemProperty -Path $explorer -Name 'EnableAutoTray' -Value 0
+
+    # taskbar alignment
+    Write-Message 'Align taskbar to the left...'
+    Set-ItemProperty -Path $exploreradvanced -Name "TaskbarAl" -Value 0
 
     # taskbar size (small = 1, large = 0)
     Write-Message 'Setting taskbar height size to small...'
@@ -430,11 +452,28 @@ function set_uipreferences {
 
     # disable transparency (1 = enabled, 0 = disabled)
     Write-Message 'Disabling transparency effects...'
-    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0
+    Set-ItemProperty -Path $personalize -Name 'EnableTransparency' -Value 0
+
+    # sticky keys
+    Write-Message 'Disabling sticky keys...'
+    Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name Flags -Value 58
+
+    # Snap windows
+    Write-Message 'Disabling snapping of windows on startup...'
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0
+    Write-Message 'Disabling snap assist suggestion on startup...'
+    Set-ItemProperty -Path $exploreradvanced -Name WindowArrangementActive -Value 0
+    Write-Message 'Disabling snap assist flyout on startup...'
+    Set-ItemProperty -Path $exploreradvanced -Name EnableSnapAssistFlyout -Value 0
+
+    # Recall
+    Write-Message "Disabling Recall..."
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI" -Name 'DisableAIDataAnalysis' -Value 1
+    DISM /Online /Disable-Feature /FeatureName:Recall
 
     # screenshot folder
     Write-Message 'Setting the screenshot folder to Desktop...'
-    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value "$env:USERPROFILE\Desktop"
+    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value "$env:USERPROFILE\Desktop"
 
     if (Ask-Question 'Set timezone/currency/timeformat to fr-FR?') {
         Set-TimeZone -Name 'Romance Standard Time'
@@ -449,11 +488,11 @@ function set_uipreferences {
 
 function set_nosound {
     Write-Message 'Switching Sound Scheme to no sounds...'
-    New-ItemProperty -Path 'HKCU:\AppEvents\Schemes' -Name '(Default)' -Value '.None' -Force | Out-Null
-    Get-ChildItem -Path 'HKCU:\AppEvents\Schemes\Apps' -Recurse | Where-Object { $_.PSChildName -eq '.Current' } | Set-ItemProperty -Name '(Default)' -Value ''
+    New-ItemProperty -Path "HKCU:\AppEvents\Schemes" -Name '(Default)' -Value '.None' -Force | Out-Null
+    Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps" -Recurse | Where-Object { $_.PSChildName -eq '.Current' } | Set-ItemProperty -Name '(Default)' -Value ''
 
     Write-Message 'Turning Windows Startup sound off...'
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'DisableStartupSound' -Value 1 -Type DWord -Force
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name 'DisableStartupSound' -Value 1 -Type DWord -Force
 }
 
 ### BitLocker
@@ -542,7 +581,7 @@ function set_ssh {
     Set-Service ssh-agent -StartupType Automatic
 }
 
-### Power Saving
+### Power Settings
 
 function power_settings {
     Write-Message 'Turning off all power saving mode when on AC power...'
@@ -550,7 +589,13 @@ function power_settings {
     powercfg -change -standby-timeout-ac 0
     powercfg -change -disk-timeout-ac 0
     powercfg -change -hibernate-timeout-ac 0
-    if (Ask-Question 'Turn hibernate off (if on a laptop, answer no)?') {
+
+    $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
+
+    if ($computerSystem.PCSystemType -eq 2) {
+        Write-Message 'Running on a laptop, keeping hibernate on...'
+    } else {
+        Write-Message 'Turning hibernate off...'
         powercfg.exe /HIBERNATE off
     }
 }
@@ -578,25 +623,35 @@ function change_hostname {
     Write-Message 'Restart to take effect.'
 }
 
-### Keyboard settings
+### Keyboard & mouse settings
 
 function kbd_settings {
 
-    if (Ask-Question 'Add FR keyboard layout?') {
-        $LanguageList = Get-WinUserLanguageList
-        $LanguageList[0].InputMethodTips.Add('0409:0000040C')
-        Set-WinUserLanguageList $LanguageList -Force
-        Set-WinDefaultInputMethodOverride -InputTip "0409:0000040C"
+    $LanguageList = Get-WinUserLanguageList
+
+    if (-not $LanguageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
+        if (Ask-Question 'FR keyboard layout not detected, install?') {
+            Write-Message 'Adding FR keyboard layout...'
+            $LanguageList[0].InputMethodTips.Add('0409:0000040C')
+            Set-WinUserLanguageList $LanguageList -Force
+            Set-WinDefaultInputMethodOverride -InputTip "0409:0000040C"
+        }
     }
 
     if (Ask-Question 'Remap ctrl to capslock key?') {
         $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
-        $kbLayout = 'HKLM:\System\CurrentControlSet\Control\Keyboard Layout';
+        $kbLayout = "HKLM:\System\CurrentControlSet\Control\Keyboard Layout";
 
         New-ItemProperty -Path $kbLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified);
 
         Write-Message 'You need to reboot to take effect.'
     }
+
+    Write-Message 'Disabling mouse acceleration...'
+    $mousepath = "HKCU:\Control Panel\Mouse"
+    Set-ItemProperty -Path $mousepath -Name MouseSpeed -Value 0
+    Set-ItemProperty -Path $mousepath -Name MouseThreshold1 -Value 0
+    Set-ItemProperty -Path $mousepath -Name MouseThreshold2 -Value 0
 }
 
 ### Chocolatey
@@ -672,7 +727,7 @@ function install_winget {
         'ImageMagick.ImageMagick',
         'DominikReichl.KeePass',
         'GnuWin32.Make',
-        'MoritzBunkus.MKVToolNix',
+        # 'MoritzBunkus.MKVToolNix',
         'Microsoft.MouseandKeyboardCenter',
         'MullvadVPN.MullvadVPN',
         'Insecure.Nmap',
@@ -686,6 +741,7 @@ function install_winget {
         'Henry++.simplewall',
         'AntoineAflalo.SoundSwitch',
         'Spotify.Spotify',
+        'Streamlink.Streamlink',
         'Valve.Steam',
         'Telegram.TelegramDesktop',
         'TorProject.TorBrowser',
@@ -712,18 +768,6 @@ function install_winget {
         if (Ask-Question "Install ${p}?") { winget install -e --id "$p" }
     }
 
-    if (Ask-Question 'Install Streamlink?') {
-        winget install -e --id 'Streamlink.Streamlink'
-
-        Write-Message 'Adding Streamlink to path...'
-        New-Variable -Name 'streamlinkPath' -Value "$HOME\AppData\Local\Programs\Streamlink\bin"
-        [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$streamlinkPath", [EnvironmentVariableTarget]::User)
-    }
-
-    if (Ask-Question 'Install Git?') {
-        winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption:CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption:CRLFCommitAsIs /o:CURLOption=WinSSL'
-    }
-
     if (Ask-Question 'Install Emacs?') {
         winget install -e --id 'GNU.Emacs'
 
@@ -731,6 +775,18 @@ function install_winget {
         Add-MpPreference -ExclusionPath 'C:\Program Files\Emacs', "$env:APPDATA\.emacs.d"
         Add-MpPreference -ExclusionProcess "C:\Program Files\Emacs\*", 'runemacs.exe', 'emacs.exe', 'emacsclientw.exe', 'emacsclient.exe'
         Add-MpPreference -ExclusionExtension ".el", ".elc", ".eln"
+    }
+
+    if (Ask-Question 'Install Git?') {
+        winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption:CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption:CRLFCommitAsIs /o:CURLOption=WinSSL'
+    }
+
+    if (Ask-Question 'Install MKVToolNix?') {
+        winget install -e --id 'MoritzBunkus.MKVToolNix'
+
+        Write-Message 'Adding MKVToolNix to path...'
+        New-Variable -Name 'mkvtnPath' -Value "C:\Program Files\MKVToolNix"
+        [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$mkvtnPath", [EnvironmentVariableTarget]::User)
     }
 
     if (Ask-Question 'Install qBittorrent?') {
@@ -844,7 +900,7 @@ function usage {
     Write-Host '  powersettings     - disable power saving modes on AC power'
     Write-Host '  envar             - setup environment variables'
     Write-Host '  hostname          - change hostname'
-    Write-Host '  keyboard          - FR layout and CTRL key remap'
+    Write-Host '  keyboard          - FR layout, CTRL key remap and no mouse acceleration'
     Write-Host '  chocolatey        - download and sets chocolatey package manager'
     Write-Host '  choco_packages    - download and installs listed packages with chocolatey'
     Write-Host '  winget_packages   - download and installs listed packages with winget'
