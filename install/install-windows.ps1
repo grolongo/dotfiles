@@ -830,6 +830,12 @@ function install_winget {
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py'                                                 -OutFile "$PLUGIN_FOLDER\zooqle.py"
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py'                                        -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
     }
+
+    if (-not ($env:PATH -split ";" -contains "$HOME\AppData\Local\Microsoft\WinGet\Links")) {
+        Write-Message 'WinGet Links folder not found in PATH, adding it...'
+        New-Variable -Name 'wingetLinks' -Value "$HOME\AppData\Local\Microsoft\WinGet\Links"
+        [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$wingetLinks", [EnvironmentVariableTarget]::User)
+    }
 }
 
 ### mpv
