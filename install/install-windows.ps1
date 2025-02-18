@@ -727,7 +727,6 @@ function install_winget {
         'ImageMagick.ImageMagick',
         'DominikReichl.KeePass',
         'GnuWin32.Make',
-        # 'MoritzBunkus.MKVToolNix',
         'Microsoft.MouseandKeyboardCenter',
         'MullvadVPN.MullvadVPN',
         'Insecure.Nmap',
@@ -831,6 +830,10 @@ function install_winget {
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py'                                                 -OutFile "$PLUGIN_FOLDER\zooqle.py"
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py'                                        -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
     }
+
+    Write-Message 'Adding WinGet Links folder to user path...'
+    New-Variable -Name 'wingetLinks' -Value "$HOME\AppData\Local\Microsoft\WinGet\Links"
+    [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$wingetLinks", [EnvironmentVariableTarget]::User)
 }
 
 ### mpv
