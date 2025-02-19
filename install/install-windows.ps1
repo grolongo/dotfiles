@@ -350,7 +350,6 @@ function apply_gpo {
     Set-PolicyFileEntry -Path $UserDir -Key $RegPath61 -ValueName 'DisableCharms'                                   -Data '1'        -Type 'DWord'
     Set-PolicyFileEntry -Path $UserDir -Key $RegPath61 -ValueName 'TurnOffBackstack'                                -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > File Explorer
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'AlwaysShowClassicMenu'                           -Data '1'        -Type 'DWord'
     Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'MaxRecentDocs'                                   -Data '0'        -Type 'DWord'
     Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'NoSearchInternetTryHarderButton'                 -Data '1'        -Type 'DWord'
     Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoChangeAnimation'                               -Data '1'        -Type 'DWord'
