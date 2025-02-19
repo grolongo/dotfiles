@@ -830,12 +830,6 @@ function install_winget {
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py'                                                 -OutFile "$PLUGIN_FOLDER\zooqle.py"
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py'                                        -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
     }
-
-    if (-not ($env:PATH -split ";" -contains "$HOME\AppData\Local\Microsoft\WinGet\Links")) {
-        Write-Message 'WinGet Links folder not found in PATH, adding it...'
-        New-Variable -Name 'wingetLinks' -Value "$HOME\AppData\Local\Microsoft\WinGet\Links"
-        [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$wingetLinks", [EnvironmentVariableTarget]::User)
-    }
 }
 
 ### mpv
@@ -879,12 +873,6 @@ function install_mpv {
     Remove-Item "$mpvConfigPath\uosc.zip"
 }
 
-### CTT Windows Utility
-
-function run_winutil {
-    irm 'https://christitus.com/win' | iex
-}
-
 ### massgrave activation script
 
 function run_massgrave {
@@ -910,7 +898,6 @@ function usage {
     Write-Host '  choco_packages    - download and installs listed packages with chocolatey'
     Write-Host '  winget_packages   - download and installs listed packages with winget'
     Write-Host '  mpv               - install mpv'
-    Write-Host '  winutil           - run Chris Titus Techs Windows Utility'
     Write-Host '  activate          - run massgrave activation script'
     Write-Host
 }
@@ -935,7 +922,6 @@ function main {
     elseif ($cmd -eq 'choco_packages')  { install_choco }
     elseif ($cmd -eq 'winget_packages') { install_winget }
     elseif ($cmd -eq 'mpv')             { install_mpv }
-    elseif ($cmd -eq 'winutil')         { run_winutil }
     elseif ($cmd -eq 'activate')        { run_massgrave }
     else { usage }
 }
