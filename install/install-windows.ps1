@@ -784,7 +784,7 @@ function install_winget {
         winget install -e --id 'MoritzBunkus.MKVToolNix'
 
         Write-Message 'Adding MKVToolNix to path...'
-        New-Variable -Name 'mkvtnPath' -Value "C:\Program Files\MKVToolNix"
+        New-Variable -Name 'mkvtnPath' -Value 'C:\Program Files\MKVToolNix'
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
         [Environment]::SetEnvironmentVariable("PATH", $env:Path + ";$mkvtnPath", [EnvironmentVariableTarget]::User)
     }
