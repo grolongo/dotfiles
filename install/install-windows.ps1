@@ -500,7 +500,6 @@ function enable_bitlocker {
     $MachineDir = "$env:windir\system32\GroupPolicy\Machine\Registry.pol"
     $RegPath = 'Software\Policies\Microsoft\FVE'
     $RegType = 'DWord'
-    $Drives = (BitlockerVolume | Where-Object {$_.AutoUnlockEnabled -eq $false}).MountPoint
 
     if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
         Install-Module -Name PolicyFileEditor -Force
@@ -550,6 +549,8 @@ function enable_bitlocker {
         Start-Sleep -Seconds 3
         manage-bde -on c: -RecoveryPassword
     }
+
+    $Drives = (BitlockerVolume | Where-Object {$_.AutoUnlockEnabled -eq $false}).MountPoint
 
     if ($Drives) {
         foreach ($Drive in $Drives) {
