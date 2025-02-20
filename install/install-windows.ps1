@@ -743,7 +743,6 @@ function install_winget {
         'Streamlink.Streamlink',
         'Valve.Steam',
         'Telegram.TelegramDesktop',
-        'TorProject.TorBrowser',
         'IDRIX.VeraCrypt',
         'Oracle.VirtualBox',
         'Microsoft.VisualStudioCode',
@@ -830,6 +829,11 @@ function install_winget {
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py'                                                     -OutFile "$PLUGIN_FOLDER\yts_mx.py"
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py'                                                 -OutFile "$PLUGIN_FOLDER\zooqle.py"
         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py'                                        -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
+    }
+
+    if (Ask-Question 'Install Tor Browser?') {
+        winget -e --id 'TorProject.TorBrowser'
+        Copy-item -Force -Path "C:\Program Files\Tor Browser\Tor Browser.lnk" -Destination "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Tor Browser.lnk"
     }
 }
 
