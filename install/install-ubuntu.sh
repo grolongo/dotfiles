@@ -227,11 +227,13 @@ set_i3wm() {
         brightnessctl
         dosfstools
         fonts-noto
+        fonts-ubuntu
         i3
         mtools
         pinentry-gtk2
         playerctl
         rxvt-unicode
+        ttf-mscorefonts-installer
         ubuntu-drivers-common
         ubuntu-restricted-extras
         ubuntu-restricted-addons
