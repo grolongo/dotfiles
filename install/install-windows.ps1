@@ -794,41 +794,49 @@ function install_winget {
         New-Variable -Name 'PLUGIN_FOLDER' -Value "$HOME\AppData\Local\qBittorrent\nova3\engines"
         New-Item -Force -Path "$PLUGIN_FOLDER" -ItemType directory
 
-        # Official plugins
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py'                                           -OutFile "$PLUGIN_FOLDER\eztv.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py'                                   -OutFile "$PLUGIN_FOLDER\limetorrents.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py'                                      -OutFile "$PLUGIN_FOLDER\piratebay.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py'                                  -OutFile "$PLUGIN_FOLDER\solidtorrents.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py'                                        -OutFile "$PLUGIN_FOLDER\torlock.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py'                                 -OutFile "$PLUGIN_FOLDER\torrentproject.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py'                                    -OutFile "$PLUGIN_FOLDER\torrentscsv.py"
+        $urls = @(
+            # Official plugins
+            'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py',
+            'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py',
+            'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py',
+            'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py',
+            'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py',
+            'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py',
+            'https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py',
 
-        # Third Party
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py'                                           -OutFile "$PLUGIN_FOLDER\bitsearch.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py'                                            -OutFile "$PLUGIN_FOLDER\therarbg.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py'                                    -OutFile "$PLUGIN_FOLDER\torrentdownloads.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py'                                -OutFile "$PLUGIN_FOLDER\ettv.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py'                         -OutFile "$PLUGIN_FOLDER\glotorrents.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py'                     -OutFile "$PLUGIN_FOLDER\kickasstorrents.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py'                              -OutFile "$PLUGIN_FOLDER\snowfl.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py'                                                      -OutFile "$PLUGIN_FOLDER\dodi_repacks.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py'                                                   -OutFile "$PLUGIN_FOLDER\fitgirl_repacks.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py' -OutFile "$PLUGIN_FOLDER\linuxtracker.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py'                                         -OutFile "$PLUGIN_FOLDER\nyaasi.py"
-        Invoke-WebRequest -Uri 'https://scare.ca/dl/qBittorrent/torrentdownload.py'                                                                                  -OutFile "$PLUGIN_FOLDER\torrentdownload.py"
-        Invoke-WebRequest -Uri 'https://scare.ca/dl/qBittorrent/magnetdl.py'                                                                                         -OutFile "$PLUGIN_FOLDER\magnetdl.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py'                                                              -OutFile "$PLUGIN_FOLDER\rutor.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py'                                       -OutFile "$PLUGIN_FOLDER\rutracker.py"
-        Invoke-WebRequest -Uri 'https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py' -OutFile "$PLUGIN_FOLDER\one337x.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py'                                -OutFile "$PLUGIN_FOLDER\animetosho.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py'                              -OutFile "$PLUGIN_FOLDER\bt4gprx.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py'                                                       -OutFile "$PLUGIN_FOLDER\cpasbien.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/BrunoReX/qBittorrent-Search-Plugin-TokyoToshokan/master/tokyotoshokan.py'                          -OutFile "$PLUGIN_FOLDER\tokyotoshokan.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py'                                                  -OutFile "$PLUGIN_FOLDER\torrentgalaxy.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py'                                                               -OutFile "$PLUGIN_FOLDER\torrent9.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py'                                                     -OutFile "$PLUGIN_FOLDER\yts_mx.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py'                                                 -OutFile "$PLUGIN_FOLDER\zooqle.py"
-        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py'                                        -OutFile "$PLUGIN_FOLDER\yggtorrent.py"
+            # Third Party
+            'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py',
+            'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py',
+            'https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py',
+            'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py',
+            'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py',
+            'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py',
+            'https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py',
+            'https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py',
+            'https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py',
+            'https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py',
+            'https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py',
+            'https://scare.ca/dl/qBittorrent/torrentdownload.py',
+            'https://scare.ca/dl/qBittorrent/magnetdl.py',
+            'https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py',
+            'https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py',
+            'https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py',
+            'https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py',
+            'https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py',
+            'https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py',
+            'https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py',
+            'https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py',
+            'https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py',
+            'https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py',
+            'https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py'
+        )
+
+        # Loop through each URL and download the file
+        foreach ($url in $urls) {
+            $fileName = [System.IO.Path]::GetFileName($url)
+            $outFile = Join-Path $PLUGIN_FOLDER $fileName
+            Invoke-WebRequest -Uri $url -OutFile $outFile
+        }
     }
 
     if (Ask-Question 'Install Tor Browser?') {
