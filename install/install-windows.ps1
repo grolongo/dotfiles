@@ -654,57 +654,6 @@ function kbd_settings {
     Set-ItemProperty -Path $mousepath -Name MouseThreshold2 -Value 0
 }
 
-### Chocolatey
-
-function install_chocolatey {
-    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-}
-
-### Packages
-
-function install_choco {
-    choco install 7zip
-    choco install aria2
-    choco install autohotkey
-    choco install chatty
-    choco install electrum
-    choco install emacs
-    choco install everything --params '/client-service /efu-association /folder-context-menu /run-on-system-startup /start-menu-shortcuts'
-    choco install exiftool
-    choco install fd
-    choco install ffmpeg
-    choco install firefox
-    choco install git --params '/GitAndUnixToolsOnPath /NoShellIntegration /NoOpenSSH /NoAutoCrlf /SChannel'
-    choco install imagemagick
-    choco install keepass
-    choco install microsoft-windows-terminal
-    choco install mkvtoolnix
-    choco install mpv
-    choco install nomacs
-    choco install obs-studio
-    choco install shellcheck
-    choco install signal --params '/NoShortcut'
-    choco install simplewall
-    choco install soundswitch
-    choco install steam-client
-    choco install streamlink
-    choco install synologydrive
-    choco install telegram
-    choco install thunderbird
-    choco install tor-browser
-    choco install veracrypt
-    choco install yt-dlp
-
-    choco pin add -n brave
-    choco pin add -n chatty
-    choco pin add -n signal
-    choco pin add -n simplewall
-    choco pin add -n steam-client
-    choco pin add -n telegram
-    choco pin add -n thunderbird
-    choco pin add -n tor-browser
-}
-
 ### Packages
 
 function install_winget {
@@ -908,8 +857,6 @@ function usage {
     Write-Host '  envar             - setup environment variables'
     Write-Host '  hostname          - change hostname'
     Write-Host '  keyboard          - FR layout, CTRL key remap and no mouse acceleration'
-    Write-Host '  chocolatey        - download and sets chocolatey package manager'
-    Write-Host '  choco_packages    - download and installs listed packages with chocolatey'
     Write-Host '  winget_packages   - download and installs listed packages with winget'
     Write-Host '  mpv               - install mpv'
     Write-Host '  activate          - run massgrave activation script'
@@ -932,8 +879,6 @@ function main {
     elseif ($cmd -eq 'envar')           { install_envar }
     elseif ($cmd -eq 'hostname')        { change_hostname }
     elseif ($cmd -eq 'keyboard')        { kbd_settings }
-    elseif ($cmd -eq 'chocolatey')      { install_chocolatey }
-    elseif ($cmd -eq 'choco_packages')  { install_choco }
     elseif ($cmd -eq 'winget_packages') { install_winget }
     elseif ($cmd -eq 'mpv')             { install_mpv }
     elseif ($cmd -eq 'activate')        { run_massgrave }
