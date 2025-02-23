@@ -479,19 +479,15 @@ function set_uipreferences {
         Set-Culture fr-FR
     }
 
-    Stop-Process -Name explorer -Force
-    Write-Message 'Might need to relog for changes to take effect.'
-}
-
-### No sound
-
-function set_nosound {
     Write-Message 'Switching Sound Scheme to no sounds...'
     New-ItemProperty -Path "HKCU:\AppEvents\Schemes" -Name '(Default)' -Value '.None' -Force | Out-Null
     Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps" -Recurse | Where-Object { $_.PSChildName -eq '.Current' } | Set-ItemProperty -Name '(Default)' -Value ''
 
     Write-Message 'Turning Windows Startup sound off...'
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name 'DisableStartupSound' -Value 1 -Type DWord -Force
+
+    Stop-Process -Name explorer -Force
+    Write-Message 'Might need to relog for changes to take effect.'
 }
 
 ### BitLocker
@@ -849,7 +845,6 @@ function usage {
     Write-Host 'Usage:'
     Write-Host '  gpo               - apply machine and user group policies'
     Write-Host '  uipreferences     - windows explorer & taskbar preferences'
-    Write-Host '  nosound           - apply no sounds scheme and turn off startup sound'
     Write-Host '  bitlocker         - change Group Policy settings for BitLocker and encrypts C:'
     Write-Host '  firewall          - firewall rules: block incoming, allow outgoing'
     Write-Host '  ssh               - automatic startup of ssh agent'
@@ -871,7 +866,6 @@ function main {
 
     if ($cmd -eq 'gpo')                 { apply_gpo }
     elseif ($cmd -eq 'uipreferences')   { set_uipreferences }
-    elseif ($cmd -eq 'nosound')         { set_nosound }
     elseif ($cmd -eq 'bitlocker')       { enable_bitlocker }
     elseif ($cmd -eq 'firewall')        { set_firewall }
     elseif ($cmd -eq 'ssh')             { set_ssh }
