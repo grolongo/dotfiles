@@ -457,7 +457,7 @@ function set_uipreferences {
     Write-Message 'Disabling sticky keys...'
     Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name Flags -Value 58
 
-    # Snap windows
+    # snap windows
     Write-Message 'Disabling snapping of windows on startup...'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0
     Write-Message 'Disabling snap assist suggestion on startup...'
@@ -465,7 +465,7 @@ function set_uipreferences {
     Write-Message 'Disabling snap assist flyout on startup...'
     Set-ItemProperty -Path $exploreradvanced -Name EnableSnapAssistFlyout -Value 0
 
-    # Recall
+    # recall
     Write-Message "Disabling Recall..."
     Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI" -Name 'DisableAIDataAnalysis' -Value 1
     DISM /Online /Disable-Feature /FeatureName:Recall
@@ -474,11 +474,17 @@ function set_uipreferences {
     Write-Message 'Setting the screenshot folder to Desktop...'
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value "$env:USERPROFILE\Desktop"
 
+    # region
     if (Ask-Question 'Set timezone/currency/timeformat to fr-FR?') {
         Set-TimeZone -Name 'Romance Standard Time'
         Set-Culture fr-FR
     }
 
+    # openssh
+    Write-Message 'Enabling OpenSSH at startup...'
+    Set-Service ssh-agent -StartupType Automatic
+
+    # no sound settings
     Write-Message 'Switching Sound Scheme to no sounds...'
     New-ItemProperty -Path "HKCU:\AppEvents\Schemes" -Name '(Default)' -Value '.None' -Force | Out-Null
     Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps" -Recurse | Where-Object { $_.PSChildName -eq '.Current' } | Set-ItemProperty -Name '(Default)' -Value ''
@@ -488,6 +494,34 @@ function set_uipreferences {
 
     Stop-Process -Name explorer -Force
     Write-Message 'Might need to relog for changes to take effect.'
+
+    # keyboard settings
+    $LanguageList = Get-WinUserLanguageList
+
+    if (-not $LanguageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
+        if (Ask-Question 'FR keyboard layout not detected, install?') {
+            Write-Message 'Adding FR keyboard layout...'
+            $LanguageList[0].InputMethodTips.Add('0409:0000040C')
+            Set-WinUserLanguageList $LanguageList -Force
+            Set-WinDefaultInputMethodOverride -InputTip "0409:0000040C"
+        }
+    }
+
+    if (Ask-Question 'Remap ctrl to capslock key?') {
+        $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
+        $kbLayout = "HKLM:\System\CurrentControlSet\Control\Keyboard Layout";
+
+        New-ItemProperty -Path $kbLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified);
+
+        Write-Message 'You need to reboot to take effect.'
+    }
+
+    # mouse settings
+    Write-Message 'Disabling mouse acceleration...'
+    $mousepath = "HKCU:\Control Panel\Mouse"
+    Set-ItemProperty -Path $mousepath -Name MouseSpeed -Value 0
+    Set-ItemProperty -Path $mousepath -Name MouseThreshold1 -Value 0
+    Set-ItemProperty -Path $mousepath -Name MouseThreshold2 -Value 0
 }
 
 ### BitLocker
@@ -571,12 +605,6 @@ function set_firewall {
     }
 }
 
-### SSH
-
-function set_ssh {
-    Set-Service ssh-agent -StartupType Automatic
-}
-
 ### Power Settings
 
 function power_settings {
@@ -596,18 +624,6 @@ function power_settings {
     }
 }
 
-### Environment Variables
-
-function install_envar {
-    $cloudpath = Read-Host 'Enter cloud folder path (ex: C:\Users\Bob\Seafile)'
-    while (!(Test-path $cloudpath)) {
-        $cloudpath = Read-Host 'Invalid path, please re-enter'
-    }
-    [Environment]::SetEnvironmentVariable('DOTFILES_DIR', "$cloudpath" + "\Dotfiles\", 'User')
-    [Environment]::SetEnvironmentVariable('NOTES_DIR', "$cloudpath" + "\Notes\", 'User')
-    [Environment]::SetEnvironmentVariable('PROJECTS_DIR', "$cloudpath" + "\Code\", 'User')
-}
-
 ### Hostname
 
 function change_hostname {
@@ -617,37 +633,6 @@ function change_hostname {
     }
 
     Write-Message 'Restart to take effect.'
-}
-
-### Keyboard & mouse settings
-
-function kbd_settings {
-
-    $LanguageList = Get-WinUserLanguageList
-
-    if (-not $LanguageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
-        if (Ask-Question 'FR keyboard layout not detected, install?') {
-            Write-Message 'Adding FR keyboard layout...'
-            $LanguageList[0].InputMethodTips.Add('0409:0000040C')
-            Set-WinUserLanguageList $LanguageList -Force
-            Set-WinDefaultInputMethodOverride -InputTip "0409:0000040C"
-        }
-    }
-
-    if (Ask-Question 'Remap ctrl to capslock key?') {
-        $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
-        $kbLayout = "HKLM:\System\CurrentControlSet\Control\Keyboard Layout";
-
-        New-ItemProperty -Path $kbLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified);
-
-        Write-Message 'You need to reboot to take effect.'
-    }
-
-    Write-Message 'Disabling mouse acceleration...'
-    $mousepath = "HKCU:\Control Panel\Mouse"
-    Set-ItemProperty -Path $mousepath -Name MouseSpeed -Value 0
-    Set-ItemProperty -Path $mousepath -Name MouseThreshold1 -Value 0
-    Set-ItemProperty -Path $mousepath -Name MouseThreshold2 -Value 0
 }
 
 ### Packages
@@ -843,18 +828,15 @@ function run_massgrave {
 function usage {
     Write-Host
     Write-Host 'Usage:'
-    Write-Host '  gpo               - apply machine and user group policies'
-    Write-Host '  uipreferences     - windows explorer & taskbar preferences'
-    Write-Host '  bitlocker         - change Group Policy settings for BitLocker and encrypts C:'
-    Write-Host '  firewall          - firewall rules: block incoming, allow outgoing'
-    Write-Host '  ssh               - automatic startup of ssh agent'
-    Write-Host '  powersettings     - disable power saving modes on AC power'
-    Write-Host '  envar             - setup environment variables'
-    Write-Host '  hostname          - change hostname'
-    Write-Host '  keyboard          - FR layout, CTRL key remap and no mouse acceleration'
-    Write-Host '  winget_packages   - download and installs listed packages with winget'
-    Write-Host '  mpv               - install mpv'
-    Write-Host '  activate          - run massgrave activation script'
+    Write-Host '  gpo             - apply machine and user group policies'
+    Write-Host '  uiuxprefs       - explorer, taskbar, keyboard and other preferences'
+    Write-Host '  bitlocker       - change Group Policy settings for BitLocker and encrypts C:'
+    Write-Host '  firewall        - firewall rules: block incoming, allow outgoing'
+    Write-Host '  powermngmt      - disable power saving modes on AC power'
+    Write-Host '  hostname        - change hostname'
+    Write-Host '  winget_packages - download and installs listed packages with winget'
+    Write-Host '  mpv             - install mpv'
+    Write-Host '  activate        - run massgrave activation script'
     Write-Host
 }
 
@@ -865,14 +847,11 @@ function main {
     if (!$cmd) { usage; exit 1 }
 
     if ($cmd -eq 'gpo')                 { apply_gpo }
-    elseif ($cmd -eq 'uipreferences')   { set_uipreferences }
+    elseif ($cmd -eq 'uiuxprefs')       { set_uipreferences }
     elseif ($cmd -eq 'bitlocker')       { enable_bitlocker }
     elseif ($cmd -eq 'firewall')        { set_firewall }
-    elseif ($cmd -eq 'ssh')             { set_ssh }
-    elseif ($cmd -eq 'powersettings')   { power_settings }
-    elseif ($cmd -eq 'envar')           { install_envar }
+    elseif ($cmd -eq 'powermngmt')      { power_settings }
     elseif ($cmd -eq 'hostname')        { change_hostname }
-    elseif ($cmd -eq 'keyboard')        { kbd_settings }
     elseif ($cmd -eq 'winget_packages') { install_winget }
     elseif ($cmd -eq 'mpv')             { install_mpv }
     elseif ($cmd -eq 'activate')        { run_massgrave }
