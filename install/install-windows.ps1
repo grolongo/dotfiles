@@ -771,7 +771,14 @@ function install_winget {
 
     if (Ask-Question 'Install Tor Browser?') {
         winget -e --id 'TorProject.TorBrowser'
-        Copy-item -Force -Path "C:\Program Files\Tor Browser\Tor Browser.lnk" -Destination "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Tor Browser.lnk"
+
+        Write-Message 'Creating Shortcut for Start Menu...'
+        $TargetFilePath = 'C:\Program Files\Tor Browser\Browser\firefox.exe'
+        $ShortcutLocation = "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Tor Browser.lnk"
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutLocation)
+        $Shortcut.TargetPath = $TargetFilePath
+        $Shortcut.Save()
     }
 }
 
