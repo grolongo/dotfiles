@@ -599,17 +599,6 @@ function power_settings {
     }
 }
 
-### Hostname
-
-function change_hostname {
-    $computername = Read-Host -Prompt 'What name do you want? (e.g. ''windesk'')'
-    if ($env:computername -ne $computername) {
-        Rename-Computer -NewName $computername
-    }
-
-    Write-Message 'Restart to take effect.'
-}
-
 ### Packages
 
 function install_winget {
@@ -815,7 +804,6 @@ function usage {
     Write-Host '  bitlocker       - change Group Policy settings for BitLocker and encrypts C:'
     Write-Host '  firewall        - firewall rules: block incoming, allow outgoing'
     Write-Host '  powermngmt      - disable power saving modes on AC power'
-    Write-Host '  hostname        - change hostname'
     Write-Host '  winget_packages - download and installs listed packages with winget'
     Write-Host '  mpv             - install mpv'
     Write-Host '  activate        - run massgrave activation script'
@@ -833,7 +821,6 @@ function main {
     elseif ($cmd -eq 'bitlocker')       { enable_bitlocker }
     elseif ($cmd -eq 'firewall')        { set_firewall }
     elseif ($cmd -eq 'powermngmt')      { power_settings }
-    elseif ($cmd -eq 'hostname')        { change_hostname }
     elseif ($cmd -eq 'winget_packages') { install_winget }
     elseif ($cmd -eq 'mpv')             { install_mpv }
     elseif ($cmd -eq 'activate')        { run_massgrave }
