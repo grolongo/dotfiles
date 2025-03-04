@@ -92,6 +92,7 @@ apt_common() {
         aria2
         bash-completion
         curl
+        emacs-lucid
         exiftool
         fd-find
         ffmpeg
@@ -263,18 +264,18 @@ set_i3wm() {
 install_emacs() {
     check_is_sudo
 
-    local source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz"
+    local source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-30.1.tar.gz"
 
     local tmpdir
     tmpdir="$(mktemp -d)"
 
-    read -r -p "Do you need PureGTK (Wayland only)? [y/n] " choice
+    read -r -p "Compile with PureGTK (Wayland only)? [y/n] " choice
     case "$choice" in
         [yY]es|[yY])
             local pgtk="--with-pgtk"
             ;;
         [nN]o|[nN])
-            local pgtk="--without-pgtk"
+            local pgtk="--with-x-toolkit=lucid"
             ;;
         *)
             msg_error "Please enter yes or no."
@@ -292,9 +293,6 @@ install_emacs() {
 
     msg_info "Installing extra dependencies for imagemagick support..."
     apt install -y libmagickcore-dev libmagick++-dev
-
-    msg_info "Installing extra dependencies for xwidgets support..."
-    apt install -y libwebkit2gtk-4.1-dev
 
     (
         msg_info "Creating temporary folder..."
@@ -315,11 +313,9 @@ install_emacs() {
             --prefix=/opt/emacs \
             --without-compress-install \
             --with-native-compilation=aot \
-            --with-json \
             --with-tree-sitter \
             --with-imagemagick \
             --with-mailutils \
-            --with-xwidgets \
             "$pgtk"
         make -j"$(nproc)"
 
