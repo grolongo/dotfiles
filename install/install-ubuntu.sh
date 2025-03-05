@@ -291,9 +291,6 @@ install_emacs() {
     msg_info "Installing all dependencies..."
     apt build-dep -y emacs
 
-    msg_info "Installing extra dependencies for imagemagick support..."
-    apt install -y libmagickcore-dev libmagick++-dev
-
     (
         msg_info "Creating temporary folder..."
         cd "$tmpdir" || exit 1
@@ -314,7 +311,6 @@ install_emacs() {
             --without-compress-install \
             --with-native-compilation=aot \
             --with-tree-sitter \
-            --with-imagemagick \
             --with-mailutils \
             "$pgtk"
         make -j"$(nproc)"
