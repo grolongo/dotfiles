@@ -804,7 +804,7 @@ function usage {
     Write-Host '  bitlocker       - change Group Policy settings for BitLocker and encrypts C:'
     Write-Host '  firewall        - firewall rules: block incoming, allow outgoing'
     Write-Host '  powermngmt      - disable power saving modes on AC power'
-    Write-Host '  winget_packages - download and installs listed packages with winget'
+    Write-Host '  winget_packages - download and install listed packages with winget'
     Write-Host '  mpv             - install mpv'
     Write-Host '  activate        - run massgrave activation script'
     Write-Host

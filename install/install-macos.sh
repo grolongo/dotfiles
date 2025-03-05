@@ -188,6 +188,17 @@ install_base() {
         confirm "Install ${p}?" && brew install "${p}"
     done
 
+    confirm "Install Mitsuharu's emacs-mac?" && {
+        msg_info "Tapping railwaycat/emacsmacport"
+        brew tap railwaycat/emacsmacport
+
+        msg_info "Building our Emacs with custom flags..."
+        brew install emacs-mac --with-emacs-big-sur-icon --with-native-compilation --with-mac-metal --with-librsvg
+
+        msg_info "Making GUI helper to Applications..."
+        cp -a "$(brew --prefix)"/opt/emacs-mac/Emacs.app /Applications
+    }
+
     brew_clean
 }
 
@@ -220,103 +231,79 @@ install_casks() {
         confirm "Install ${p}?" && brew install --cask "${p}"
     done
 
+    confirm "Install qbittorrent?" && {
+        brew install --cask qbittorrent
+
+        msg_info "Waiting 10 secs for folders to be created..."
+        sleep 10
+
+        local PLUGIN_FOLDER="${HOME}/Library/Application Support/qBittorrent/nova3/engines"
+
+        msg_info "Downloading search plugins..."
+
+        # official plugins
+        curl -L#o "${PLUGIN_FOLDER}/eztv.py"             https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py
+        curl -L#o "${PLUGIN_FOLDER}/limetorrents.py"     https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py
+        curl -L#o "${PLUGIN_FOLDER}/piratebay.py"        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py
+        curl -L#o "${PLUGIN_FOLDER}/solidtorrents.py"    https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py
+        curl -L#o "${PLUGIN_FOLDER}/torlock.py"          https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py
+        curl -L#o "${PLUGIN_FOLDER}/torrentproject.py"   https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py
+        curl -L#o "${PLUGIN_FOLDER}/torrentscsv.py"      https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py
+
+        # third-party
+        curl -L#o "${PLUGIN_FOLDER}/bitsearch.py"        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
+        curl -L#o "${PLUGIN_FOLDER}/therarbg.py"         https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
+        curl -L#o "${PLUGIN_FOLDER}/torrentdownloads.py" https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py
+        curl -L#o "${PLUGIN_FOLDER}/ettv.py"             https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+        curl -L#o "${PLUGIN_FOLDER}/glotorrents.py"      https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+        curl -L#o "${PLUGIN_FOLDER}/kickasstorrents.py"  https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+        curl -L#o "${PLUGIN_FOLDER}/snowfl.py"           https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py
+        curl -L#o "${PLUGIN_FOLDER}/dodi_repacks.py"     https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py
+        curl -L#o "${PLUGIN_FOLDER}/fitgirl_repacks.py"  https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py
+        curl -L#o "${PLUGIN_FOLDER}/linuxtracker.py"     https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+        curl -L#o "${PLUGIN_FOLDER}/nyaasi.py"           https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py
+        curl -L#o "${PLUGIN_FOLDER}/torrentdownload.py"  https://scare.ca/dl/qBittorrent/torrentdownload.py
+        curl -L#o "${PLUGIN_FOLDER}/magnetdl.py"         https://scare.ca/dl/qBittorrent/magnetdl.py
+        curl -L#o "${PLUGIN_FOLDER}/rutor.py"            https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+        curl -L#o "${PLUGIN_FOLDER}/rutracker.py"        https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+        curl -L#o "${PLUGIN_FOLDER}/one337.py"           https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py
+        curl -L#o "${PLUGIN_FOLDER}/animetosho.py"       https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
+        curl -L#o "${PLUGIN_FOLDER}/bt4gprx.py"          https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
+        curl -L#o "${PLUGIN_FOLDER}/cpasbien.py"         https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py
+        curl -L#o "${PLUGIN_FOLDER}/torrentgalaxy.py"    https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+        curl -L#o "${PLUGIN_FOLDER}/torrent9.py"         https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py
+        curl -L#o "${PLUGIN_FOLDER}/yts_mx.py"           https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
+        curl -L#o "${PLUGIN_FOLDER}/zooqle.py"           https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py
+        curl -L#o "${PLUGIN_FOLDER}/yggtorrent.py"       https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+    }
+
+    confirm "Install mpv?" && {
+        local MPV_CONFIG_PATH="${HOME}/.config/mpv"
+        local tmpdir
+        tmpdir=$(mktemp -d)
+
+        msg_info "Installing mpv..."
+        brew install --cask mpv
+
+        msg_info "Installing plugins..."
+
+        (
+            cd "$tmpdir" || exit 1
+            curl -L#o uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
+            unzip -n uosc.zip -d "${MPV_CONFIG_PATH}"
+        )
+
+        curl -L#o "${MPV_CONFIG_PATH}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
+        curl -L#o "${MPV_CONFIG_PATH}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
+        curl -L#o "${MPV_CONFIG_PATH}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
+        curl -L#o "${MPV_CONFIG_PATH}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
+
+        rm -rf "$tmpdir"
+    }
+
     echo
     msg_info "Cleaning up install files..."
     brew cleanup
-}
-
-### mpv
-
-install_mpv() {
-    check_is_not_sudo
-
-    local MPV_CONFIG_PATH="${HOME}/.config/mpv"
-    local tmpdir
-    tmpdir=$(mktemp -d)
-
-    msg_info "Installing mpv..."
-    brew install --cask mpv
-
-    msg_info "Installing plugins..."
-
-    (
-        cd "$tmpdir" || exit 1
-        curl -L#o uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
-        unzip -n uosc.zip -d "${MPV_CONFIG_PATH}"
-    )
-
-    curl -L#o "${MPV_CONFIG_PATH}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
-    curl -L#o "${MPV_CONFIG_PATH}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
-    curl -L#o "${MPV_CONFIG_PATH}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
-    curl -L#o "${MPV_CONFIG_PATH}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
-
-    rm -rf "$tmpdir"
-}
-
-
-### qbittorrent
-
-install_qbittorrent() {
-    check_is_not_sudo
-
-    brew install --cask qbittorrent
-
-    msg_info "Waiting 10 secs for folders to be made..."
-    sleep 10
-
-    local PLUGIN_FOLDER="${HOME}/Library/Application Support/qBittorrent/nova3/engines"
-
-    msg_info "Downloading search plugins..."
-
-    # official plugins
-    curl -L#o "${PLUGIN_FOLDER}/eztv.py"             https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py
-    curl -L#o "${PLUGIN_FOLDER}/limetorrents.py"     https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py
-    curl -L#o "${PLUGIN_FOLDER}/piratebay.py"        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py
-    curl -L#o "${PLUGIN_FOLDER}/solidtorrents.py"    https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py
-    curl -L#o "${PLUGIN_FOLDER}/torlock.py"          https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py
-    curl -L#o "${PLUGIN_FOLDER}/torrentproject.py"   https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py
-    curl -L#o "${PLUGIN_FOLDER}/torrentscsv.py"      https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py
-
-    # third-party
-    curl -L#o "${PLUGIN_FOLDER}/bitsearch.py"        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
-    curl -L#o "${PLUGIN_FOLDER}/therarbg.py"         https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
-    curl -L#o "${PLUGIN_FOLDER}/torrentdownloads.py" https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py
-    curl -L#o "${PLUGIN_FOLDER}/ettv.py"             https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
-    curl -L#o "${PLUGIN_FOLDER}/glotorrents.py"      https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
-    curl -L#o "${PLUGIN_FOLDER}/kickasstorrents.py"  https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
-    curl -L#o "${PLUGIN_FOLDER}/snowfl.py"           https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py
-    curl -L#o "${PLUGIN_FOLDER}/dodi_repacks.py"     https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py
-    curl -L#o "${PLUGIN_FOLDER}/fitgirl_repacks.py"  https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py
-    curl -L#o "${PLUGIN_FOLDER}/linuxtracker.py"     https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
-    curl -L#o "${PLUGIN_FOLDER}/nyaasi.py"           https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py
-    curl -L#o "${PLUGIN_FOLDER}/torrentdownload.py"  https://scare.ca/dl/qBittorrent/torrentdownload.py
-    curl -L#o "${PLUGIN_FOLDER}/magnetdl.py"         https://scare.ca/dl/qBittorrent/magnetdl.py
-    curl -L#o "${PLUGIN_FOLDER}/rutor.py"            https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-    curl -L#o "${PLUGIN_FOLDER}/rutracker.py"        https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
-    curl -L#o "${PLUGIN_FOLDER}/one337.py"           https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py
-    curl -L#o "${PLUGIN_FOLDER}/animetosho.py"       https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
-    curl -L#o "${PLUGIN_FOLDER}/bt4gprx.py"          https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
-    curl -L#o "${PLUGIN_FOLDER}/cpasbien.py"         https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py
-    curl -L#o "${PLUGIN_FOLDER}/torrentgalaxy.py"    https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
-    curl -L#o "${PLUGIN_FOLDER}/torrent9.py"         https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py
-    curl -L#o "${PLUGIN_FOLDER}/yts_mx.py"           https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
-    curl -L#o "${PLUGIN_FOLDER}/zooqle.py"           https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py
-    curl -L#o "${PLUGIN_FOLDER}/yggtorrent.py"       https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
-}
-
-### Emacs
-
-install_emacs() {
-    check_is_not_sudo
-
-    msg_info "Tapping railwaycat/emacsmacport"
-    brew tap railwaycat/emacsmacport
-
-    msg_info "Building our Emacs with custom flags..."
-    brew install emacs-mac --with-emacs-big-sur-icon --with-native-compilation --with-mac-metal --with-librsvg
-
-    msg_info "Making GUI helper to Applications..."
-    cp -a "$(brew --prefix)"/opt/emacs-mac/Emacs.app /Applications
 }
 
 ### MacPorts
@@ -397,8 +384,7 @@ install_ports() {
         confirm "Install ${p}?" && sudo port install "${p}"
     done
 
-    confirm "Install emacs?" && sudo port install emacs +imagemagick +nativecomp +treesitter +xwidgets
-
+    confirm "Install emacs?" && sudo port install emacs +nativecomp +treesitter +xwidgets
 }
 
 ### Menu
@@ -407,17 +393,14 @@ usage() {
     echo
     printf "Usage:\n"
     printf "  prefsettings - setup finder, trackpad, keyboard and dock settings\n"
-    printf "  firewall (s) - blocks incoming connection, stealth mode\n"
-    printf "  dns          - sets WiFi IPv4 & IPv6 DNS to Cloudflare\n"
-    printf "  hostname (s) - changes computer hostname\n"
+    printf "  firewall (s) - block incoming connection, stealth mode\n"
+    printf "  dns          - set WiFi IPv4 & IPv6 DNS to Cloudflare\n"
+    printf "  hostname (s) - change computer hostname\n"
     printf "  homebrew     - setup homebrew if not installed\n"
-    printf "  base         - installs base packages\n"
-    printf "  casks        - setup caskroom & installs softwares\n"
-    printf "  mpv          - installs mpv with plugins\n"
-    printf "  qbit         - installs qBittorrent with plugins\n"
-    printf "  emacs        - building our own Emacs\n"
+    printf "  formulae     - install base formulae\n"
+    printf "  casks        - setup caskroom & install softwares\n"
     printf "  macports     - setup MacPorts\n"
-    printf "  ports    (s) - installs ports\n"
+    printf "  ports    (s) - install ports\n"
     echo
 }
 
@@ -440,16 +423,10 @@ main() {
         change_hostname
     elif [ "$cmd" = "homebrew" ]; then
         install_homebrew
-    elif [ "$cmd" = "base" ]; then
+    elif [ "$cmd" = "formulae" ]; then
         install_base
     elif [ "$cmd" = "casks" ]; then
         install_casks
-    elif [ "$cmd" = "mpv" ]; then
-        install_mpv
-    elif [ "$cmd" = "qbit" ]; then
-        install_qbittorrent
-    elif [ "$cmd" = "emacs" ]; then
-        install_emacs
     elif [ "$cmd" = "macports" ]; then
         install_macports
     elif [ "$cmd" = "ports" ]; then
