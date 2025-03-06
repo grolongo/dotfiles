@@ -151,9 +151,9 @@ install_homebrew() {
     brew analytics off
 }
 
-### Brew formulaes
+### Formulae
 
-install_base() {
+install_formulae() {
     check_is_not_sudo
 
     msg_info "Initial update..."
@@ -188,15 +188,38 @@ install_base() {
         confirm "Install ${p}?" && brew install "${p}"
     done
 
-    confirm "Install Mitsuharu's emacs-mac?" && {
-        msg_info "Tapping railwaycat/emacsmacport"
-        brew tap railwaycat/emacsmacport
+    confirm "Install Emacs?" && {
+        while true; do
+            echo
+            printf "Select which Emacs version you want: \n"
+            printf "  [1] Mitsuharu's Emacs Mac port\n"
+            printf "  [2] d12frosted's Emacs Plus\n"
+            echo
+            read -r choice
 
-        msg_info "Building our Emacs with custom flags..."
-        brew install emacs-mac --with-emacs-big-sur-icon --with-native-compilation --with-mac-metal --with-librsvg
+            case "$choice" in
+                1)
+                    msg_info "Tapping railwaycat/emacsmacport"
+                    brew tap railwaycat/emacsmacport
 
-        msg_info "Making GUI helper to Applications..."
-        cp -a "$(brew --prefix)"/opt/emacs-mac/Emacs.app /Applications
+                    msg_info "Building our Emacs with custom flags..."
+                    brew install emacs-mac --with-emacs-big-sur-icon --with-native-compilation --with-mac-metal --with-librsvg
+
+                    msg_info "Making GUI helper to Applications..."
+                    cp -a "$(brew --prefix)"/opt/emacs-mac/Emacs.app /Applications
+                    ;;
+                2)
+                    msg_info "Tapping d12frosted/emacs-plus"
+                    brew tap d12frosted/emacs-plus
+
+                    msg_info "Building our Emacs with custom flags..."
+                    brew install emacs-plus --with-mailutils --with-dragon-icon
+                    ;;
+                *)
+                    msg_error "Please choose either option 1 or 2."
+                    ;;
+            esac
+        done
     }
 
     brew_clean
@@ -384,7 +407,28 @@ install_ports() {
         confirm "Install ${p}?" && sudo port install "${p}"
     done
 
-    confirm "Install emacs?" && sudo port install emacs +nativecomp +treesitter +xwidgets
+    confirm "Install Emacs?" && {
+        while true; do
+            echo
+            printf "Select which Emacs version you want: \n"
+            printf "  [1] Mitsuharu's Emacs Mac port\n"
+            printf "  [2] Vanilla Emacs for macOS\n"
+            echo
+            read -r choice
+
+            case "$choice" in
+                1)
+                    sudo port install emacs-mac-app +metal +nativecomp +rsvg +treesitter
+                    ;;
+                2)
+                    sudo port install emacs-app +nativecomp +rsvg +treesitter
+                    ;;
+                *)
+                    msg_error "Please choose either option 1 or 2."
+                    ;;
+            esac
+        done
+    }
 }
 
 ### Menu
@@ -424,7 +468,7 @@ main() {
     elif [ "$cmd" = "homebrew" ]; then
         install_homebrew
     elif [ "$cmd" = "formulae" ]; then
-        install_base
+        install_formulae
     elif [ "$cmd" = "casks" ]; then
         install_casks
     elif [ "$cmd" = "macports" ]; then
