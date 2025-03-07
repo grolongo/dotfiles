@@ -188,7 +188,7 @@ install_formulae() {
         confirm "Install ${p}?" && brew install "${p}"
     done
 
-    confirm "Install Emacs?" && {
+    confirm "Install emacs?" && {
         while true; do
             echo
             printf "Select which Emacs version you want: \n"
@@ -207,6 +207,8 @@ install_formulae() {
 
                     msg_info "Making GUI helper to Applications..."
                     cp -a "$(brew --prefix)"/opt/emacs-mac/Emacs.app /Applications
+
+                    break
                     ;;
                 2)
                     msg_info "Tapping d12frosted/emacs-plus"
@@ -214,6 +216,8 @@ install_formulae() {
 
                     msg_info "Building our Emacs with custom flags..."
                     brew install emacs-plus --with-mailutils --with-dragon-icon
+
+                    break
                     ;;
                 *)
                     msg_error "Please choose either option 1 or 2."
@@ -407,7 +411,7 @@ install_ports() {
         confirm "Install ${p}?" && sudo port install "${p}"
     done
 
-    confirm "Install Emacs?" && {
+    confirm "Install emacs?" && {
         while true; do
             echo
             printf "Select which Emacs version you want: \n"
@@ -419,9 +423,11 @@ install_ports() {
             case "$choice" in
                 1)
                     sudo port install emacs-mac-app +metal +nativecomp +rsvg +treesitter
+                    break
                     ;;
                 2)
                     sudo port install emacs-app +nativecomp +rsvg +treesitter
+                    break
                     ;;
                 *)
                     msg_error "Please choose either option 1 or 2."
