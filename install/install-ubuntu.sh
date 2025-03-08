@@ -312,7 +312,6 @@ install_emacs() {
             --with-native-compilation=aot \
             --with-sound=no \
             --with-tree-sitter \
-            --with-mailutils \
             --without-gsettings \
             "$pgtk"
         make -j"$(nproc)"
