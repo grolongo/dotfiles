@@ -310,8 +310,10 @@ install_emacs() {
             --prefix=/opt/emacs \
             --without-compress-install \
             --with-native-compilation=aot \
+            --with-sound=no \
             --with-tree-sitter \
             --with-mailutils \
+            --without-gsettings \
             "$pgtk"
         make -j"$(nproc)"
 
