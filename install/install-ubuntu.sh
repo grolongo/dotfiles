@@ -93,6 +93,7 @@ apt_common() {
         bash-completion
         curl
         emacs-lucid
+        emacs-pgtk
         exiftool
         fd-find
         ffmpeg
