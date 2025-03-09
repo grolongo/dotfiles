@@ -454,7 +454,7 @@ install_qbittorrent() {
         https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
         https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py
         https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
-        )
+    )
 
     # Loop over URLs and download each file
     for url in "${URLs[@]}"; do

@@ -265,43 +265,50 @@ install_casks() {
         sleep 10
 
         local PLUGIN_FOLDER="${HOME}/Library/Application Support/qBittorrent/nova3/engines"
-
         msg_info "Downloading search plugins..."
 
-        # official plugins
-        curl -L#o "${PLUGIN_FOLDER}/eztv.py"             https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py
-        curl -L#o "${PLUGIN_FOLDER}/limetorrents.py"     https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py
-        curl -L#o "${PLUGIN_FOLDER}/piratebay.py"        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py
-        curl -L#o "${PLUGIN_FOLDER}/solidtorrents.py"    https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py
-        curl -L#o "${PLUGIN_FOLDER}/torlock.py"          https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py
-        curl -L#o "${PLUGIN_FOLDER}/torrentproject.py"   https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py
-        curl -L#o "${PLUGIN_FOLDER}/torrentscsv.py"      https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py
+        URLs=(
+            # official plugins
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py
 
-        # third-party
-        curl -L#o "${PLUGIN_FOLDER}/bitsearch.py"        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
-        curl -L#o "${PLUGIN_FOLDER}/therarbg.py"         https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
-        curl -L#o "${PLUGIN_FOLDER}/torrentdownloads.py" https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py
-        curl -L#o "${PLUGIN_FOLDER}/ettv.py"             https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
-        curl -L#o "${PLUGIN_FOLDER}/glotorrents.py"      https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
-        curl -L#o "${PLUGIN_FOLDER}/kickasstorrents.py"  https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
-        curl -L#o "${PLUGIN_FOLDER}/snowfl.py"           https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py
-        curl -L#o "${PLUGIN_FOLDER}/dodi_repacks.py"     https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py
-        curl -L#o "${PLUGIN_FOLDER}/fitgirl_repacks.py"  https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py
-        curl -L#o "${PLUGIN_FOLDER}/linuxtracker.py"     https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
-        curl -L#o "${PLUGIN_FOLDER}/nyaasi.py"           https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py
-        curl -L#o "${PLUGIN_FOLDER}/torrentdownload.py"  https://scare.ca/dl/qBittorrent/torrentdownload.py
-        curl -L#o "${PLUGIN_FOLDER}/magnetdl.py"         https://scare.ca/dl/qBittorrent/magnetdl.py
-        curl -L#o "${PLUGIN_FOLDER}/rutor.py"            https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-        curl -L#o "${PLUGIN_FOLDER}/rutracker.py"        https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
-        curl -L#o "${PLUGIN_FOLDER}/one337.py"           https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py
-        curl -L#o "${PLUGIN_FOLDER}/animetosho.py"       https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
-        curl -L#o "${PLUGIN_FOLDER}/bt4gprx.py"          https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
-        curl -L#o "${PLUGIN_FOLDER}/cpasbien.py"         https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py
-        curl -L#o "${PLUGIN_FOLDER}/torrentgalaxy.py"    https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
-        curl -L#o "${PLUGIN_FOLDER}/torrent9.py"         https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py
-        curl -L#o "${PLUGIN_FOLDER}/yts_mx.py"           https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
-        curl -L#o "${PLUGIN_FOLDER}/zooqle.py"           https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py
-        curl -L#o "${PLUGIN_FOLDER}/yggtorrent.py"       https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+            # third party plugins
+            https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
+            https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
+            https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py
+            https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+            https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+            https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+            https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py
+            https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py
+            https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py
+            https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+            https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py
+            https://scare.ca/dl/qBittorrent/torrentdownload.py
+            https://scare.ca/dl/qBittorrent/magnetdl.py
+            https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+            https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+            https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py
+            https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
+            https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
+            https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py
+            https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+            https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py
+            https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
+            https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py
+            https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+        )
+
+        # Loop over URLs and download each file
+        for url in "${URLs[@]}"; do
+            filename=$(basename "$url")
+            curl -L#o "${PLUGIN_FOLDER}/${filename}" "${url}"
+        done
     }
 
     confirm "Install mpv?" && {
