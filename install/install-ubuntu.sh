@@ -135,7 +135,7 @@ apt_common() {
         sudo -u "${SUDO_USER}" bash -c '
         local plugin_folder
         plugin_folder="${HOME}/.local/share/qBittorrent/nova3/engines"
-        mkdir -p "${plugin_folder}"
+        mkdir -vp "${plugin_folder}"
 
         URLS=(
             # official plugins
@@ -191,6 +191,8 @@ apt_common() {
         mpv_config_path="${HOME}/.config/mpv"
         local tmpdir
         tmpdir=$(mktemp -d)
+
+        mkdir -vp "${mpv_config_path}"
 
         (
             cd "${tmpdir}" || exit 1
@@ -390,7 +392,7 @@ install_emacs() {
         cd "${tmpdir}" || exit 1
 
         msg_info "Downloading Emacs from official website..."
-        mkdir /home/"${SUDO_USER}"/git
+        mkdir -v /home/"${SUDO_USER}"/git
         wget -O emacs.tar.gz "$source"
         tar -xzvf emacs.tar.gz --directory /home/"${SUDO_USER}"/git
         mv /home/"${SUDO_USER}"/git/emacs* /home/"${SUDO_USER}"/git/emacs
