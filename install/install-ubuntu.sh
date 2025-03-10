@@ -124,7 +124,6 @@ apt_common() {
         obs-studio
     )
 
-    msg_info "Installing packages with no recommends..."
     for p in "${packagesnore[@]}"; do
         confirm "Install ${p}?" && apt install -y "${p}" --no-install-recommends
     done
@@ -206,12 +205,6 @@ apt_common() {
 
         rm -rf "${tmpdir}"
         '
-    }
-
-    confirm "Install veracrypt?" && {
-        add-apt-repository ppa:unit193/encryption
-        apt update
-        apt install -y veracrypt
     }
 
     apt_clean
@@ -571,6 +564,7 @@ set_i3wm() {
         ubuntu-drivers-common
         ubuntu-restricted-extras
         ubuntu-restricted-addons
+        unzip
         wireplumber
         xorg
         # pulseaudio
