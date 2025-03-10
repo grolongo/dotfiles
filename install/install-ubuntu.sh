@@ -58,6 +58,7 @@ apt_clean() {
 
 arch=$(dpkg --print-architecture)
 distrib=$(lsb_release -sc 2> /dev/null)
+tmpdir=$(mktemp -d)
 
 # Ubuntu OS check
 # sourcing /etc/os-release file which contains $ID variable
@@ -189,9 +190,6 @@ apt_common() {
         sudo -u "${SUDO_USER}" bash -c '
         local mpv_config_path
         mpv_config_path="${HOME}/.config/mpv"
-        local tmpdir
-        tmpdir=$(mktemp -d)
-
         mkdir -vp "${mpv_config_path}"
 
         (
@@ -291,9 +289,6 @@ apt_extra() {
         local version
         version="4.30.0"
 
-        local tmpdir
-        tmpdir="$(mktemp -d)"
-
         apt update
         apt install ca-certificates
 
@@ -362,9 +357,6 @@ install_emacs() {
     local source
     source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-30.1.tar.gz"
 
-    local tmpdir
-    tmpdir="$(mktemp -d)"
-
     read -r -p "Compile with PureGTK (Wayland only)? [y/n] " choice
     case "$choice" in
         [yY]es|[yY])
@@ -427,9 +419,6 @@ install_driveclient() {
     local source
     source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.5.0-16084/Ubuntu/Installer/synology-drive-client-16084.x86_64.deb"
 
-    local tmpdir
-    tmpdir="$(mktemp -d)"
-
     (
         msg_info "Creating temporary folder..."
         cd "${tmpdir}" || exit 1
@@ -459,9 +448,6 @@ install_chatty() {
     repo="https://github.com/chatty/chatty/releases/download/"
     local release
     release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
-
-    local tmpdir
-    tmpdir=$(mktemp -d)
 
     (
         msg_info "Creating temporary folder..."
