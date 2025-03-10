@@ -233,8 +233,8 @@ apt_extra() {
         cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
 		Types: deb
 		URIs: https://repository.mullvad.net/deb/stable
-		Architectures: "${arch}"
-		Suites: "${distrib}"
+		Architectures: ${arch}
+		Suites: ${distrib}
 		Components: main
 		Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
 		EOF
@@ -275,7 +275,7 @@ apt_extra() {
         cat <<-EOF > /etc/apt/sources.list.d/tor.sources
 		Types: deb deb-src
 		URIs: https://deb.torproject.org/torproject.org
-		Architectures: "${arch}"
+		Architectures: ${arch}
 		Suites: stable
 		Components: main
 		Signed-By: /etc/apt/keyrings/tor-archive-keyring.gpg
@@ -306,8 +306,8 @@ apt_extra() {
         cat <<-EOF > /etc/apt/sources.list.d/docker.sources
 		Types: deb
 		URIs: https://download.docker.com/linux/ubuntu
-		Architectures: "${arch}"
-		Suites: "${distrib}"
+		Architectures: ${arch}
+		Suites: ${distrib}
 		Components: stable
 		Signed-By: /etc/apt/keyrings/docker.asc
 		EOF
