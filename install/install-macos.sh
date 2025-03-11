@@ -4,7 +4,7 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-### Recurring functions
+### Recurring functions & variables
 
 msg_info() {
     echo
@@ -50,10 +50,10 @@ brew_clean() {
     brew cleanup
 }
 
+tmpdir=$(mktemp -d)
+
 # check if running macOS
 [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
-
-### macOS preferences settings
 
 setup_prefsettings() {
     check_is_not_sudo
@@ -98,8 +98,6 @@ setup_prefsettings() {
     confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
 }
 
-### Firewall
-
 setup_firewall() {
     check_is_sudo
 
@@ -109,8 +107,6 @@ setup_firewall() {
     msg_info "Enabling stealth mode..."
     /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 }
-
-### DNS
 
 setup_dns() {
     check_is_not_sudo
@@ -123,18 +119,14 @@ setup_dns() {
     sudo killall -HUP mDNSResponder
 }
 
-### Hostname
-
 change_hostname() {
     check_is_sudo
 
     read -r -p "Enter a new name: " newname
-    scutil --set ComputerName "$newname"
-    scutil --set LocalHostName "$newname"
-    scutil --set HostName "$newname"
+    scutil --set ComputerName "${newname}"
+    scutil --set LocalHostName "${newname}"
+    scutil --set HostName "${newname}"
 }
-
-### Homebrew installation
 
 install_homebrew() {
     check_is_not_sudo
@@ -150,8 +142,6 @@ install_homebrew() {
     msg_info "Turning analytics off..."
     brew analytics off
 }
-
-### Formulae
 
 install_formulae() {
     check_is_not_sudo
@@ -229,8 +219,6 @@ install_formulae() {
     brew_clean
 }
 
-### Brew casks
-
 install_casks() {
     check_is_not_sudo
 
@@ -264,7 +252,7 @@ install_casks() {
         msg_info "Waiting 10 secs for folders to be created..."
         sleep 10
 
-        local PLUGIN_FOLDER="${HOME}/Library/Application Support/qBittorrent/nova3/engines"
+        local plugin_folder="${HOME}/Library/Application Support/qBittorrent/nova3/engines"
         msg_info "Downloading search plugins..."
 
         URLs=(
@@ -307,14 +295,12 @@ install_casks() {
         # Loop over URLs and download each file
         for url in "${URLs[@]}"; do
             filename=$(basename "$url")
-            curl -L#o "${PLUGIN_FOLDER}/${filename}" "${url}"
+            curl -L#o "${plugin_folder}/${filename}" "${url}"
         done
     }
 
     confirm "Install mpv?" && {
-        local MPV_CONFIG_PATH="${HOME}/.config/mpv"
-        local tmpdir
-        tmpdir=$(mktemp -d)
+        local mpv_config_path="${HOME}/.config/mpv"
 
         msg_info "Installing mpv..."
         brew install --cask mpv
@@ -322,25 +308,23 @@ install_casks() {
         msg_info "Installing plugins..."
 
         (
-            cd "$tmpdir" || exit 1
+            cd "${tmpdir}" || exit 1
             curl -L#o uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
-            unzip -n uosc.zip -d "${MPV_CONFIG_PATH}"
+            unzip -n uosc.zip -d "${mpv_config_path}"
         )
 
-        curl -L#o "${MPV_CONFIG_PATH}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
-        curl -L#o "${MPV_CONFIG_PATH}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
-        curl -L#o "${MPV_CONFIG_PATH}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
-        curl -L#o "${MPV_CONFIG_PATH}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
+        curl -L#o "${mpv_config_path}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
+        curl -L#o "${mpv_config_path}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
+        curl -L#o "${mpv_config_path}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
+        curl -L#o "${mpv_config_path}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
 
-        rm -rf "$tmpdir"
+        rm -rf "${tmpdir}"
     }
 
     echo
     msg_info "Cleaning up install files..."
     brew cleanup
 }
-
-### MacPorts
 
 install_macports() {
     check_is_not_sudo
@@ -371,19 +355,16 @@ install_macports() {
     local repo="https://github.com/macports/macports-base/releases/download/"
     local release="v${macports_latest}/MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
 
-    local tmpdir
-    tmpdir=$(mktemp -d)
-
     (
         msg_info "Creating temporary folder..."
-        cd "$tmpdir" || exit 1
+        cd "${tmpdir}" || exit 1
 
         msg_info "Downloading MacPorts..."
         curl -#OL "${repo}${release}"
         open ./"MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
     )
 
-    confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "$tmpdir"
+    confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "${tmpdir}"
 }
 
 install_ports() {
@@ -443,8 +424,6 @@ install_ports() {
         done
     }
 }
-
-### Menu
 
 usage() {
     echo
