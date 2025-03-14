@@ -734,7 +734,12 @@ function install_winget {
     }
 
     if (Ask-Question 'Install Tor Browser?') {
-        winget -e --id 'TorProject.TorBrowser'
+        winget install -e --id 'TorProject.TorBrowser'
+
+        Start-Sleep -Seconds 5
+
+        Write-Message 'Moving install folder to Program Files...'
+        Move-Item -Path "$HOME\Desktop\Tor Browser" -Destination 'C:\Program Files\'
 
         Write-Message 'Creating Shortcut for Start Menu...'
         $TargetFilePath = 'C:\Program Files\Tor Browser\Browser\firefox.exe'
