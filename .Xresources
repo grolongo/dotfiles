@@ -2,6 +2,13 @@
 !!! Commons !!!
 !!!!!!!!!!!!!!!
 
+Xft.autohint:  0
+Xft.hinting:   1
+Xft.hintstyle: hintfull
+Xft.antialias: true
+Xft.rgba:      rgb
+Xft.lcdfilter: lcddefault
+
 *dpi:          120
 Xft.dpi:       120
 *scrollBar:    false
@@ -41,6 +48,7 @@ Xft.dpi:       120
 URxvt.reverseVideo:         true
 URxvt.letterSpace:          -1
 URxvt.font:                 xft:DejaVu Sans Mono:style=Book:size=12
+! URxvt.font:                 xft:Ubuntu Mono:pixelsize=14,style=regular
 URxvt.boldFont:             xft:DejaVu Sans Mono:style=Bold:size=12
 URxvt.italicFont:           xft:DejaVu Sans Mono:style=Italic:size=12
 URxvt.boldItalicFont:       xft:Dejavu Sans Mono:style=Bold Italic:size=12
