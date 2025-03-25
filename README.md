@@ -21,10 +21,10 @@ git clone git@github.com:grolongo/dotfiles.git
 
 #### Linux
 ```bash
-wget -O dotfiles.zip https://github.com/grolongo/dotfiles/archive/refs/heads/master.zip && \
-unzip dotfiles.zip && \
+wget -O dotfiles.tar.gz https://github.com/grolongo/dotfiles/archive/refs/heads/master.tar.gz && \
+tar -xvzf dotfiles.tar.gz && \
 mv dotfiles-master dotfiles && \
-rm dotfiles.zip
+rm dotfiles.tar.gz
 ```
 
 #### macOS

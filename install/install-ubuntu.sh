@@ -4,7 +4,7 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-### Recurring functions
+# Recurring functions & variables
 
 msg_info() {
     echo
@@ -56,8 +56,11 @@ apt_clean() {
     apt clean
 }
 
-### Ubuntu OS check
+arch=$(dpkg --print-architecture)
+distrib=$(lsb_release -sc 2> /dev/null)
+tmpdir=$(mktemp -d)
 
+# Ubuntu OS check
 # sourcing /etc/os-release file which contains $ID variable
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -68,13 +71,11 @@ fi
 
 [ "$ID" = ubuntu ] || { msg_error "Not running Ubuntu, exiting."; exit 1; }
 
-### Initial setup
-
 initial_setup() {
     check_is_sudo
 
-    msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers"
-    echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    msg_info "Adding passwordless sudo for ${SUDO_USER} to /etc/sudoers"
+    echo "${SUDO_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
     echo
 
     confirm "Disable ROOT account for security?" && {
@@ -83,8 +84,6 @@ initial_setup() {
     }
 }
 
-### Apt common
-
 apt_common() {
     check_is_sudo
 
@@ -92,6 +91,8 @@ apt_common() {
         aria2
         bash-completion
         curl
+        emacs-lucid
+        emacs-pgtk
         exiftool
         fd-find
         ffmpeg
@@ -117,36 +118,352 @@ apt_common() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install $p?" && apt install -y "$p"
+        confirm "Install ${p}?" && apt install -y "${p}"
     done
 
     local packagesnore=(
         obs-studio
     )
 
-    msg_info "Installing packages with no recommends..."
     for p in "${packagesnore[@]}"; do
-        confirm "Install $p?" && apt install -y "$p" --no-install-recommends
+        confirm "Install ${p}?" && apt install -y "${p}" --no-install-recommends
     done
+
+    confirm "Install qbittorrent?" && {
+        apt install -y qbittorrent
+
+        msg_info "Downloading search plugins..."
+        sudo -u "${SUDO_USER}" bash -c '
+        local plugin_folder
+        plugin_folder="${HOME}/.local/share/qBittorrent/nova3/engines"
+        mkdir -vp "${plugin_folder}"
+
+        URLS=(
+            # official plugins
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py
+            https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py
+
+            # third party plugins
+            https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
+            https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
+            https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py
+            https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
+            https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
+            https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
+            https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py
+            https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py
+            https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py
+            https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
+            https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py
+            https://scare.ca/dl/qBittorrent/torrentdownload.py
+            https://scare.ca/dl/qBittorrent/magnetdl.py
+            https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
+            https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
+            https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py
+            https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
+            https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
+            https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py
+            https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
+            https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py
+            https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
+            https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py
+            https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
+        )
+
+        # Loop over URLs and download each file
+        for url in "${URLS[@]}"; do
+            filename=$(basename "$url")
+            wget -O "${plugin_folder}/${filename}" "${url}"
+        done
+        '
+    }
+
+    confirm "Install mpv?" && {
+        apt install -y mpv mpv-mpris
+
+        msg_info "Downloading plugins..."
+        sudo -u "${SUDO_USER}" bash -c '
+        local mpv_config_path
+        mpv_config_path="${HOME}/.config/mpv"
+        mkdir -vp "${mpv_config_path}"
+
+        (
+            cd "${tmpdir}" || exit 1
+            wget -O uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
+            unzip -n uosc.zip -d "${mpv_config_path}"
+        )
+
+        wget -O "${mpv_config_path}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
+        wget -O "${mpv_config_path}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
+        wget -O "${mpv_config_path}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
+        wget -O "${mpv_config_path}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
+
+        rm -rf "${tmpdir}"
+        '
+    }
 
     apt_clean
 }
 
-### snaps
+apt_extra() {
+    check_is_sudo
+
+    confirm "Install veracrypt?" && {
+        msg_info "Adding Veracrypt PPA..."
+        add-apt-repository ppa:unit193/encryption
+        msg_info "Updating package database and installing Veracrypt..."
+        apt update
+        apt install -y veracrypt
+    }
+
+    confirm "Install mullvad vpn?" && {
+        msg_info "Downloading Mullvad signing key..."
+        install -m 0755 -d /etc/apt/keyrings
+        wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc | tee /etc/apt/keyrings/mullvad-keyring.asc >/dev/null
+        chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
+
+        msg_info "Adding Mullvad repository..."
+        cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
+		Types: deb
+		URIs: https://repository.mullvad.net/deb/stable
+		Architectures: ${arch}
+		Suites: ${distrib}
+		Components: main
+		Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
+		EOF
+
+        msg_info "Updating package database and installing Mullvad..."
+        apt update
+        apt install -y mullvad-vpn
+    }
+
+    confirm "Install signal?" && {
+        msg_info  "Downloading Signal signing key..."
+        install -m 0755 -d /etc/apt/keyrings
+        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg > /dev/null
+        chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
+
+        msg_info "Adding Signal repository..."
+        cat <<-EOF > /etc/apt/sources.list.d/signal-xenial.sources
+		Types: deb
+		URIs: https://updates.signal.org/desktop/apt
+		Architectures: amd64
+		Suites: xenial
+		Components: main
+		Signed-By: /etc/apt/keyrings/signal-desktop-keyring.gpg
+		EOF
+
+        msg_info "Updating package database and installing Signal..."
+        apt update
+        apt install -y signal-desktop
+    }
+
+    confirm "Install tor?" && {
+        msg_info "Adding the gpg key used to sign the packages..."
+        install -m 0755 -d /etc/apt/keyrings
+        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /etc/apt/keyrings/tor-archive-keyring.gpg > /dev/null
+        chmod a+r /etc/apt/keyrings/tor-archive-keyring.gpg
+
+        msg_info "Adding Tor Project repository..."
+        cat <<-EOF > /etc/apt/sources.list.d/tor.sources
+		Types: deb deb-src
+		URIs: https://deb.torproject.org/torproject.org
+		Architectures: ${arch}
+		Suites: stable
+		Components: main
+		Signed-By: /etc/apt/keyrings/tor-archive-keyring.gpg
+		EOF
+
+        msg_info "Updating package database and installing Tor..."
+        apt update
+        apt install -y deb.torproject.org-keyring
+        apt install -y tor torbrowser-launcher
+    }
+
+    confirm "Install docker?" && {
+        local version
+        version="4.30.0"
+
+        apt update
+        apt install ca-certificates
+
+        msg_info "Add the gpg key used to sign the packages"
+        install -m 0755 -d /etc/apt/keyrings
+        wget -qO- https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null
+        chmod a+r /etc/apt/keyrings/docker.asc
+
+        msg_info "Adding Docker repository..."
+        cat <<-EOF > /etc/apt/sources.list.d/docker.sources
+		Types: deb
+		URIs: https://download.docker.com/linux/ubuntu
+		Architectures: ${arch}
+		Suites: ${distrib}
+		Components: stable
+		Signed-By: /etc/apt/keyrings/docker.asc
+		EOF
+
+        apt update
+
+        msg_info "Choose if you want to install Docker for your server or desktop"
+
+        PS3="Select: "
+
+        select lng in Server Desktop
+        do
+            case "$lng" in
+                "Server")
+                    apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+                    break;;
+                "Desktop")
+                    (
+                        msg_info "Creating temporary folder..."
+                        cd "${tmpdir}" || exit 1
+                        wget https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-"${version}"-amd64.deb
+                        apt install ./docker-desktop-"${version}"-amd64.deb
+                    )
+
+                    msg_info "Deleting temp folder..."
+                    rm -rf "${tmpdir}"
+                    break;;
+                *)
+                    msg_error "Wrong input";;
+            esac
+        done
+    }
+
+    apt_clean
+}
 
 snaps_common() {
     check_is_sudo
 
-    confirm "Install chromium (SNAP)?" && { snap install chromium; snap install chromium-ffmpeg; }
-    confirm "Install Emacs (SNAP)?" && { snap install emacs --classic; }
-    confirm "Install mu4e (SNAP)?" && { snap install maildir-utils; }
-    confirm "Install spotify (SNAP)?" && { snap install spotify; }
-    confirm "Install steam (SNAP)?" && { snap install steam --beta; }
+    confirm "Install chromium (includes ffmpeg)?" && { snap install chromium; snap install chromium-ffmpeg; }
+    confirm "Install emacs?" && { snap install emacs --classic; }
+    confirm "Install mu4e?" && { snap install maildir-utils; }
+    confirm "Install spotify?" && { snap install spotify; }
+    confirm "Install steam?" && { snap install steam --beta; }
 
     snap refresh
 }
 
-### Gnome
+install_emacs() {
+    check_is_sudo
+
+    local source
+    source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-30.1.tar.gz"
+
+    read -r -p "Compile with PureGTK (Wayland only)? [y/n] " choice
+    case "$choice" in
+        [yY]es|[yY])
+            local pgtk="--with-pgtk"
+            ;;
+        [nN]o|[nN])
+            local pgtk="--with-x-toolkit=lucid"
+            ;;
+        *)
+            msg_error "Please enter yes or no."
+            ;;
+    esac
+
+    msg_info "Checking for source packages repository..."
+    if ! grep -q "Types: deb deb-src" /etc/apt/sources.list.d/ubuntu.sources; then
+        sed -i 's/Types: deb/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+        apt update
+    fi
+
+    msg_info "Installing all dependencies..."
+    apt build-dep -y emacs
+
+    (
+        msg_info "Creating temporary folder..."
+        cd "${tmpdir}" || exit 1
+
+        msg_info "Downloading Emacs from official website..."
+        mkdir -v /home/"${SUDO_USER}"/git
+        wget -O emacs.tar.gz "$source"
+        tar -xzvf emacs.tar.gz --directory /home/"${SUDO_USER}"/git
+        mv /home/"${SUDO_USER}"/git/emacs* /home/"${SUDO_USER}"/git/emacs
+
+        cd /home/"${SUDO_USER}"/git/emacs
+        export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
+
+        ./autogen.sh
+        # you can check the available flags with: ./configure --help
+        ./configure \
+            --prefix=/opt/emacs \
+            --without-compress-install \
+            --with-native-compilation=aot \
+            --with-sound=no \
+            --with-tree-sitter \
+            --without-gsettings \
+            "$pgtk"
+        make -j"$(nproc)"
+
+        msg_info "Changing ownership..."
+        chown -R "${SUDO_USER}":"${SUDO_USER}" /home/"${SUDO_USER}"/git
+        make install
+    )
+
+    msg_info "Deleting temp folder..."
+    rm -rf "${tmpdir}"
+}
+
+install_driveclient() {
+    check_is_sudo
+
+    local source
+    source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.5.0-16084/Ubuntu/Installer/synology-drive-client-16084.x86_64.deb"
+
+    (
+        msg_info "Creating temporary folder..."
+        cd "${tmpdir}" || exit 1
+
+        msg_info "Downloading and installing Synology Drive Client"
+        wget -O sdc.deb "$source"
+        apt install ./sdc.deb
+    )
+
+    msg_info "Deleting temp folder..."
+    rm -rf "${tmpdir}"
+}
+
+install_chatty() {
+    check_is_sudo
+
+    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+
+    msg_info "Installing java runtime environment..."
+    apt install default-jre
+
+    local chatty_latest
+    chatty_latest=$(wget -qO- "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
+    chatty_latest=${chatty_latest#v}
+
+    local repo
+    repo="https://github.com/chatty/chatty/releases/download/"
+    local release
+    release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
+
+    (
+        msg_info "Creating temporary folder..."
+        cd "${tmpdir}" || exit 1
+
+        msg_info "Creating Chatty dir in home folder..."
+        mkdir -vp /opt/Chatty
+
+        msg_info "Downloading and extracting Chatty..."
+        wget "${repo}${release}"
+        unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
+    )
+
+    msg_info "Deleting temp folder..."
+    rm -rf "${tmpdir}"
+}
 
 set_gsettings() {
     check_is_not_sudo
@@ -218,8 +535,6 @@ set_gsettings() {
     msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
 
-### i3wm
-
 set_i3wm() {
     check_is_sudo
 
@@ -237,6 +552,7 @@ set_i3wm() {
         ubuntu-drivers-common
         ubuntu-restricted-extras
         ubuntu-restricted-addons
+        unzip
         wireplumber
         xorg
         # pulseaudio
@@ -258,417 +574,20 @@ set_i3wm() {
     usermod -aG video "${SUDO_USER}"
 }
 
-### Emacs
-
-install_emacs() {
-    check_is_sudo
-
-    local source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-29.3.tar.gz"
-
-    local tmpdir
-    tmpdir="$(mktemp -d)"
-
-    read -r -p "Do you need PureGTK (Wayland only)? [y/n] " choice
-    case "$choice" in
-        [yY]es|[yY])
-            local pgtk="--with-pgtk"
-            ;;
-        [nN]o|[nN])
-            local pgtk="--without-pgtk"
-            ;;
-        *)
-            msg_error "Please enter yes or no."
-            ;;
-    esac
-
-    msg_info "Checking for source packages repository..."
-    if ! grep -q "Types: deb deb-src" /etc/apt/sources.list.d/ubuntu.sources; then
-        sed -i 's/Types: deb/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
-        apt update
-    fi
-
-    msg_info "Installing all dependencies..."
-    apt build-dep -y emacs
-
-    msg_info "Installing extra dependencies for imagemagick support..."
-    apt install -y libmagickcore-dev libmagick++-dev
-
-    msg_info "Installing extra dependencies for xwidgets support..."
-    apt install -y libwebkit2gtk-4.1-dev
-
-    (
-        msg_info "Creating temporary folder..."
-        cd "$tmpdir" || exit 1
-
-        msg_info "Downloading Emacs from official website..."
-        mkdir /home/"${SUDO_USER}"/git
-        wget -O emacs.tar.gz "$source"
-        tar -xzvf emacs.tar.gz --directory /home/"${SUDO_USER}"/git
-        mv /home/"${SUDO_USER}"/git/emacs* /home/"${SUDO_USER}"/git/emacs
-
-        cd /home/"${SUDO_USER}"/git/emacs
-        export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
-
-        ./autogen.sh
-        # you can check the available flags with: ./configure --help
-        ./configure \
-            --prefix=/opt/emacs \
-            --without-compress-install \
-            --with-native-compilation=aot \
-            --with-json \
-            --with-tree-sitter \
-            --with-imagemagick \
-            --with-mailutils \
-            --with-xwidgets \
-            "$pgtk"
-        make -j"$(nproc)"
-
-        msg_info "Changing ownership..."
-        chown -R "${SUDO_USER}":"${SUDO_USER}" /home/"${SUDO_USER}"/git
-        make install
-    )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "$tmpdir"
-}
-
-### mpv
-
-install_mpv() {
-    check_is_not_sudo
-
-    local MPV_CONFIG_PATH="${HOME}/.config/mpv"
-    local tmpdir
-    tmpdir=$(mktemp -d)
-
-    msg_info "Installing mpv..."
-    sudo apt install -y mpv mpv-mpris
-
-    msg_info "Installing plugins..."
-
-    (
-        cd "$tmpdir" || exit 1
-        wget -O uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
-        unzip -n uosc.zip -d "${MPV_CONFIG_PATH}"
-    )
-
-    wget -O "${MPV_CONFIG_PATH}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
-    wget -O "${MPV_CONFIG_PATH}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
-    wget -O "${MPV_CONFIG_PATH}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
-    wget -O "${MPV_CONFIG_PATH}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
-
-    rm -rf "$tmpdir"
-}
-
-### Synology Drive Client
-
-install_driveclient() {
-    check_is_sudo
-
-    local source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.5.0-16084/Ubuntu/Installer/synology-drive-client-16084.x86_64.deb"
-
-    local tmpdir
-    tmpdir="$(mktemp -d)"
-
-    (
-        msg_info "Creating temporary folder..."
-        cd "$tmpdir" || exit 1
-
-        msg_info "Downloading and installing Synology Drive Client"
-        wget -O sdc.deb "$source"
-        apt install ./sdc.deb
-    )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "$tmpdir"
-}
-
-install_mullvad() {
-    check_is_sudo
-
-    local distrib
-    distrib=$(lsb_release -sc 2> /dev/null)
-
-    local arch
-    arch=$(dpkg --print-architecture)
-
-    msg_info "Downloading Mullvad signing key..."
-    install -m 0755 -d /etc/apt/keyrings
-    wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc | tee /etc/apt/keyrings/mullvad-keyring.asc >/dev/null
-    chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
-
-    msg_info "Adding Mullvad repository..."
-    cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
-	Types: deb
-	URIs: https://repository.mullvad.net/deb/stable
-	Architectures: $arch
-	Suites: $distrib
-	Components: main
-	Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
-	EOF
-
-    msg_info "Update package database and installing Mullvad..."
-    apt update
-    apt install mullvad-vpn
-}
-
-### qBittorrent
-
-install_qbittorrent() {
-    check_is_sudo
-
-    apt install qbittorrent
-
-    msg_info "Downloading search plugins..."
-
-    sudo -u "$SUDO_USER" bash -c '
-    PLUGIN_FOLDER="${HOME}/.local/share/qBittorrent/nova3/engines"
-    mkdir -p "$PLUGIN_FOLDER"
-
-    URLs=(
-        # official plugins
-        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/eztv.py
-        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/limetorrents.py
-        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/piratebay.py
-        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/solidtorrents.py
-        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torlock.py
-        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentproject.py
-        https://raw.githubusercontent.com/qbittorrent/search-plugins/master/nova3/engines/torrentscsv.py
-
-        # third party plugins
-        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/bitsearch.py
-        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/therarbg.py
-        https://raw.githubusercontent.com/BurningMop/qBittorrent-Search-Plugins/main/torrentdownloads.py
-        https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/ettv.py
-        https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/glotorrents.py
-        https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/kickasstorrents.py
-        https://raw.githubusercontent.com/LightDestory/qBittorrent-Search-Plugins/master/src/engines/snowfl.py
-        https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/dodi_repacks.py
-        https://raw.githubusercontent.com/Bioux1/qbtSearchPlugins/main/fitgirl_repacks.py
-        https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/6074a7cccb90dfd5c81b7eaddd3138adec7f3377/engines/linuxtracker.py
-        https://raw.githubusercontent.com/MadeOfMagicAndWires/qBit-plugins/master/engines/nyaasi.py
-        https://scare.ca/dl/qBittorrent/torrentdownload.py
-        https://scare.ca/dl/qBittorrent/magnetdl.py
-        https://raw.githubusercontent.com/imDMG/qBt_SE/master/engines/rutor.py
-        https://raw.githubusercontent.com/nbusseneau/qBittorrent-rutracker-plugin/master/rutracker.py
-        https://gist.githubusercontent.com/scadams/56635407b8dfb8f5f7ede6873922ac8b/raw/f654c10468a0b9945bec9bf31e216993c9b7a961/one337x.py
-        https://raw.githubusercontent.com/AlaaBrahim/qBitTorrent-animetosho-search-plugin/main/animetosho.py
-        https://raw.githubusercontent.com/TuckerWarlock/qbittorrent-search-plugins/main/bt4gprx.com/bt4gprx.py
-        https://raw.githubusercontent.com/MarcBresson/cpasbien/master/src/cpasbien.py
-        https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/torrentgalaxy.py
-        https://raw.githubusercontent.com/menegop/qbfrench/master/torrent9.py
-        https://raw.githubusercontent.com/amongst-us/qbit-plugins/main/yts_mx/yts_mx.py
-        https://raw.githubusercontent.com/444995/qbit-search-plugins/main/engines/zooqle.py
-        https://raw.githubusercontent.com/CravateRouge/qBittorrentSearchPlugins/master/yggtorrent.py
-        )
-
-    # Loop over URLs and download each file
-    for url in "${URLs[@]}"; do
-        filename=$(basename "$url")
-        wget -O "${PLUGIN_FOLDER}/${filename}" "${url}"
-    done
-    '
-}
-
-### Signal
-
-install_signalapp() {
-    check_is_sudo
-
-    msg_info  "Downloading Signal signing key..."
-    install -m 0755 -d /etc/apt/keyrings
-    wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg > /dev/null
-    chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
-
-    msg_info "Adding Signal repository..."
-    cat <<-EOF > /etc/apt/sources.list.d/signal-xenial.sources
-	Types: deb
-	URIs: https://updates.signal.org/desktop/apt
-	Architectures: amd64
-	Suites: xenial
-	Components: main
-	Signed-By: /etc/apt/keyrings/signal-desktop-keyring.gpg
-	EOF
-
-    msg_info "Update package database and installing Signal..."
-    apt update
-    apt install signal-desktop
-}
-
-### Veracrypt
-
-install_veracrypt() {
-    check_is_sudo
-
-    add-apt-repository ppa:unit193/encryption
-    apt update
-    apt install veracrypt
-}
-
-### Chatty
-
-install_chatty() {
-    check_is_sudo
-
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
-
-    msg_info "Installing java runtime environment..."
-    apt install default-jre
-
-    local chatty_latest
-    chatty_latest=$(wget -qO- "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
-    chatty_latest=${chatty_latest#v}
-
-    local repo="https://github.com/chatty/chatty/releases/download/"
-    local release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
-
-    local tmpdir
-    tmpdir=$(mktemp -d)
-
-    (
-        msg_info "Creating temporary folder..."
-        cd "$tmpdir" || exit 1
-
-        msg_info "Creating Chatty dir in home folder..."
-        mkdir -vp /opt/Chatty
-
-        msg_info "Downloading and extracting Chatty..."
-        wget "${repo}${release}"
-        unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
-    )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "$tmpdir"
-}
-
-### Tor
-
-install_tor() {
-    check_is_sudo
-
-    local distrib
-    distrib=$(lsb_release -sc 2> /dev/null)
-
-    local arch
-    arch=$(dpkg --print-architecture)
-
-    msg_info "Installing apt-transport-https..."
-    apt update
-    apt install apt-transport-https -y
-
-    msg_info "Add the gpg key used to sign the packages"
-    install -m 0755 -d /etc/apt/keyrings
-    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /etc/apt/keyrings/tor-archive-keyring.gpg > /dev/null
-    chmod a+r /etc/apt/keyrings/tor-archive-keyring.gpg
-
-    msg_info "Adding Tor Project repository..."
-    cat <<-EOF > /etc/apt/sources.list.d/tor.sources
-	Types: deb deb-src
-	URIs: https://deb.torproject.org/torproject.org
-	Architectures: $arch
-	Suites: stable
-	Components: main
-	Signed-By: /etc/apt/keyrings/tor-archive-keyring.gpg
-	EOF
-
-    apt update
-    apt install deb.torproject.org-keyring -y
-
-    local packages=(
-        tor
-        torbrowser-launcher
-    )
-
-    for p in "${packages[@]}"; do
-        confirm "Install ${p}?" && apt install -y "${p}"
-    done
-}
-
-### Docker
-
-install_docker() {
-    check_is_sudo
-
-    local version
-    version="4.30.0"
-
-    local tmpdir
-    tmpdir="$(mktemp -d)"
-
-    local distrib
-    distrib=$(lsb_release -sc 2> /dev/null)
-
-    local arch
-    arch=$(dpkg --print-architecture)
-
-    apt update
-    apt install ca-certificates
-
-    msg_info "Add the gpg key used to sign the packages"
-    install -m 0755 -d /etc/apt/keyrings
-    wget -qO- https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null
-    chmod a+r /etc/apt/keyrings/docker.asc
-
-    msg_info "Adding Docker repository..."
-    cat <<-EOF > /etc/apt/sources.list.d/docker.sources
-	Types: deb
-	URIs: https://download.docker.com/linux/ubuntu
-	Architectures: $arch
-	Suites: $distrib
-	Components: stable
-	Signed-By: /etc/apt/keyrings/docker.asc
-	EOF
-
-    apt update
-
-    msg_info "Choose if you want to install Docker for your server or desktop"
-
-    PS3="Select: "
-
-    select lng in Server Desktop
-    do
-        case "$lng" in
-            "Server")
-                apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-                break;;
-            "Desktop")
-                (
-                    msg_info "Creating temporary folder..."
-                    cd "$tmpdir" || exit 1
-                    wget https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-"${version}"-amd64.deb
-                    apt install ./docker-desktop-"${version}"-amd64.deb
-                )
-
-                msg_info "Deleting temp folder..."
-                rm -rf "$tmpdir"
-                break;;
-            *)
-                msg_error "Wrong input";;
-        esac
-    done
-
-}
-
-### Menu
+# Menu
 
 usage() {
     echo
     printf "Usage:\n"
     printf "  isetup      (s) - passwordless sudo and lock root\n"
-    printf "  aptcommon   (s) - installs a few packages\n"
-    printf "  snaps       (s) - installs a few snaps\n"
+    printf "  aptcommon   (s) - install packages from main repository\n"
+    printf "  aptextra    (s) - install packages from third party repositories\n"
+    printf "  snaps       (s) - install a few snaps\n"
+    printf "  emacs       (s) - compile Emacs from latest stable\n"
+    printf "  driveclient (s) - install Synology Drive Client\n"
+    printf "  chatty      (s) - install Chatty with JRE\n"
     printf "  gsettings       - configures Gnome settings\n"
-    printf "  i3          (s) - installs and sets up i3wm related configs\n"
-    printf "  emacs       (s) - compile Emacs from tarball\n"
-    printf "  mpv             - installs mpv with plugins\n"
-    printf "  driveclient (s) - installs Synology Drive Client\n"
-    printf "  mullvad     (s) - installs Mullvad VPN from official repository\n"
-    printf "  qbittorrent (s) - installs qBittorrent with plugins\n"
-    printf "  signal      (s) - installs Signal messenger from official repository\n"
-    printf "  veracrypt   (s) - installs VeraCrypt from Unit193's PPA\n"
-    printf "  chatty      (s) - installs Chatty with JRE\n"
-    printf "  tor         (s) - installs Tor from official repository\n"
-    printf "  docker      (s) - installs Docker from official repository\n"
+    printf "  i3          (s) - install and sets up i3wm related packages & configs\n"
     echo
 }
 
@@ -685,32 +604,20 @@ main() {
         initial_setup
     elif [ "$cmd" = "aptcommon" ]; then
         apt_common
+    elif [ "$cmd" = "aptextra" ]; then
+        apt_extra
     elif [ "$cmd" = "snaps" ]; then
         snaps_common
+    elif [ "$cmd" = "emacs" ]; then
+        install_emacs
+    elif [ "$cmd" = "driveclient" ]; then
+        install_driveclient
+    elif [ "$cmd" = "chatty" ]; then
+        install_chatty
     elif [ "$cmd" = "gsettings" ]; then
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
         set_i3wm
-    elif [ "$cmd" = "emacs" ]; then
-        install_emacs
-    elif [ "$cmd" = "mpv" ]; then
-        install_mpv
-    elif [ "$cmd" = "driveclient" ]; then
-        install_driveclient
-    elif [ "$cmd" = "mullvad" ]; then
-        install_mullvad
-    elif [ "$cmd" = "qbittorrent" ]; then
-        install_qbittorrent
-    elif [ "$cmd" = "signal" ]; then
-        install_signalapp
-    elif [ "$cmd" = "veracrypt" ]; then
-        install_veracrypt
-    elif [ "$cmd" = "chatty" ]; then
-        install_chatty
-    elif [ "$cmd" = "tor" ]; then
-        install_tor
-    elif [ "$cmd" = "docker" ]; then
-        install_docker
     else
         usage
     fi
