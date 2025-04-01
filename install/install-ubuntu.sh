@@ -74,8 +74,8 @@ fi
 initial_setup() {
     check_is_sudo
 
-    msg_info "Adding passwordless sudo for ${SUDO_USER} to /etc/sudoers"
-    echo "${SUDO_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    msg_info "Adding passwordless sudo for ${SUDO_USER}"
+    echo "${SUDO_USER} ALL=(ALL:ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/"${SUDO_USER}"
     echo
 
     confirm "Disable ROOT account for security?" && {
