@@ -577,8 +577,8 @@ set_i3wm() {
 
         sudo -u "${SUDO_USER}" bash -c '
         mkdir -vp "${HOME}/.local/bin"
-        wget -O "${HOME}"/.local/bin/autotiling.py https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
-        chmod +x "${HOME}"/.local/bin/autotiling.py
+        wget -O "${HOME}"/.local/bin/autotiling https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
+        chmod +x "${HOME}"/.local/bin/autotiling
         '
     }
 
