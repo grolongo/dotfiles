@@ -572,6 +572,16 @@ set_i3wm() {
 
     snap refresh
 
+    confirm "Install autotiling script for i3wm?" && {
+        apt install python3-i3ipc
+
+        sudo -u "${SUDO_USER}" bash -c '
+        mkdir -vp "${HOME}/.local/bin"
+        wget -O "${HOME}"/.local/bin/autotiling.py https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
+        chmod +x "${HOME}"/.local/bin/autotiling.py
+        '
+    }
+
     msg_info "Adding ourselves to video group in order to use brightnessctl without sudo..."
     usermod -aG video "${SUDO_USER}"
 }
