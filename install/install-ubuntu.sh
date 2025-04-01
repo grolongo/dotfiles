@@ -98,7 +98,6 @@ apt_common() {
         ffmpeg
         ffmpegthumbnailer
         git
-        gnome-shell-extension-manager
         httrack
         imagemagick
         jq
@@ -508,6 +507,9 @@ set_gsettings() {
     gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
 
     msg_info "Installing extra extensions..."
+
+    sudo apt install gnome-shell-extension-manager
+
     # find the uuid by visiting the gnome extension page and lookup uuid in the source
     array=( system-monitor@gnome-shell-extensions.gcampax.github.com caffeine@patapon.info )
 
