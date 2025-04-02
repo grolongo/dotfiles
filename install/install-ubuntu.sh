@@ -544,6 +544,7 @@ set_i3wm() {
         brightnessctl
         dosfstools
         fonts-noto
+        fonts-spleen
         fonts-ubuntu
         i3
         mtools
