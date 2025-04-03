@@ -353,8 +353,14 @@ snaps_common() {
 install_emacs() {
     check_is_sudo
 
+    local install_path
+    install_path="/opt/emacs"
+
+    local emacs_version
+    emacs_version="30.1"
+
     local source
-    source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-30.1.tar.gz"
+    source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-${emacs_version}.tar.gz"
 
     read -r -p "Compile with PureGTK (Wayland only)? [y/n] " choice
     case "$choice" in
@@ -394,7 +400,7 @@ install_emacs() {
         ./autogen.sh
         # you can check the available flags with: ./configure --help
         ./configure \
-            --prefix=/opt/emacs \
+            --prefix="${install_path}" \
             --without-compress-install \
             --with-native-compilation=aot \
             --with-sound=no \
@@ -410,6 +416,8 @@ install_emacs() {
 
     msg_info "Deleting temp folder..."
     rm -rf "${tmpdir}"
+
+    ln -s "${install_path}"/bin/emacs-"${emacs_version}" /usr/local/bin/emacs
 }
 
 install_driveclient() {
