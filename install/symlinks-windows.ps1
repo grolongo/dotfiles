@@ -71,7 +71,7 @@ if (Ask-Question 'Symlink aria2?') {
 
 # autohotkey
 if (Ask-Question 'Symlink AutoHotKey scripts?') {
-    New-Item -Force -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\keybinds-shortcuts.ahk" -ItemType SymbolicLink -Value "$base\.local\bin\autohotkey\keybinds-shortcuts.ahk"
+    New-Item -Force -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\keybinds-shortcuts.ahk" -ItemType SymbolicLink -Value "$base\.local\bin\keybinds-shortcuts.ahk"
     takeown /f "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\keybinds-shortcuts.ahk"
 }
 
