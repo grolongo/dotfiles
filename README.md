@@ -1,6 +1,6 @@
-## Install
+# Install
 
-### Git
+## Git
 
 #### HTTPS
 ```bash
@@ -17,7 +17,7 @@ git remote set-url origin git@github.com:grolongo/dotfiles.git
 git clone git@github.com:grolongo/dotfiles.git
 ```
 
-### Git-free
+## Git-free
 
 #### Linux
 ```bash
@@ -44,7 +44,6 @@ Expand-Archive -Path "dotfiles.zip" -DestinationPath $PWD; `
 Rename-Item -Path "dotfiles-master" -NewName "dotfiles"; `
 Remove-Item -Path "dotfiles.zip" -Force
 ```
-
 Then, in an Administrator shell: `Set-ExecutionPolicy Bypass`
 
 After symlinking SSH keys & dotfiles, do:
