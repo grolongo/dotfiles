@@ -18,40 +18,15 @@ Xft.dpi:       120
 *saveLines: 999999
 
 !!!!!!!!!!!!!
-!!! xterm !!!
-!!!!!!!!!!!!!
-
-! xterm.termName:                 xterm-256color
-! xterm.vt100.background:         black
-! xterm.vt100.foreground:         lightgray
-! xterm.vt100.font:               xft:DejaVu Sans Mono:style=Book:size=12
-! xterm.vt100.boldFont:           xft:DejaVu Sans Mono:style=Bold:size=12
-! xterm.vt100.italicFont:         xft:DejaVu Sans Mono:style=Italic:size=12
-! xterm.vt100.boldItalicFont:     xft:Dejavu Sans Mono:style=Bold Italic:size=12
-! xterm.vt100.highlightSelection: false
-! xterm.vt100.selectToClipboard:  true
-
-! ! force utf8
-! xterm.utf8:                     true
-! xterm.vt100.locale:             false
-! xterm.vt100.utf8:               true
-
-! ! emacs
-! xterm.vt100.backarrowKey:       false
-! xterm.ttyModes:                 erase ^?
-! xterm.vt100.metaSendsEscape:    true
-
-!!!!!!!!!!!!!
 !!! URxvt !!!
 !!!!!!!!!!!!!
 
 URxvt.reverseVideo:         true
-URxvt.letterSpace:          -1
-URxvt.font:                 xft:DejaVu Sans Mono:style=Book:size=12
-! URxvt.font:                 xft:Ubuntu Mono:pixelsize=14,style=regular
-URxvt.boldFont:             xft:DejaVu Sans Mono:style=Bold:size=12
-URxvt.italicFont:           xft:DejaVu Sans Mono:style=Italic:size=12
-URxvt.boldItalicFont:       xft:Dejavu Sans Mono:style=Bold Italic:size=12
+!URxvt.letterSpace:          -1
+URxvt.font:                 -misc-spleen-medium-r-normal--24-240-72-72-c-120-iso10646-1
+URxvt.boldFont:             -misc-spleen-medium-r-normal--24-240-72-72-c-120-iso10646-1
+URxvt.italicFont:           -misc-spleen-medium-r-normal--24-240-72-72-c-120-iso10646-1
+URxvt.boldItalicFont:       -misc-spleen-medium-r-normal--24-240-72-72-c-120-iso10646-1
 
 URxvt.scrollTtyOutput:      false
 URxvt.scrollWithBuffer:     true

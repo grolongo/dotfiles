@@ -28,7 +28,7 @@ function Ask-Question {
 }
 
 # root dotfiles folder : "Split-Path" considers parent folder as default
-New-Variable -Name "base" -Value "$(Split-Path (Get-Location))"
+New-Variable -Name "base" -Value ((Get-Location).Path -replace "(\\[^\\]+){3}$", "")
 
 # emacs
 # if (Ask-Question 'Symlink Emacs?') {

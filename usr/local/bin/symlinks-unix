@@ -4,11 +4,14 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-# check if we are in the correct folder
-[ -e symlinks-unix.sh ] || { printf "Please cd into the install dir before running this script.\n" >&2; exit 1; }
-
-# base variable for where are our dotfiles
-base="${PWD%/*}"
+SOURCE=${BASH_SOURCE[0]}
+while [ -L "$SOURCE" ]; do
+    DIR=$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)
+    SOURCE=$(readlink "$SOURCE")
+    [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE
+done
+DIR=$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)
+base="${DIR%/*/*/*}"
 
 # yes/no prompt
 confirm() {
@@ -152,9 +155,10 @@ confirm "Install symlinks for ${USER}?" && {
 
     # bin
     confirm "link binary files?" && {
-        mkdir -vp "${HOME}/.local/bin"
-        symlink ".local/bin/extract"
-        chmod +x "${HOME}"/.local/bin/*
+        for file in $(find "$base/usr/local/bin" -type f -not -name "*.ahk" -not -name "*.ps1" -not -name "*.bat"); do
+            filename=$(basename "$file")
+            sudo ln -sniv "$file" "/usr/local/bin/$filename"
+        done
     }
 
 }
