@@ -1,23 +1,18 @@
-# Install
+# Installation
 
-## Git
+## with git
 
 #### HTTPS
 ```bash
-git clone https://github.com/grolongo/dotfiles.git
-```
-
-After symlinking SSH keys & dotfiles, do:
-```bash
-git remote set-url origin git@github.com:grolongo/dotfiles.git
+git clone https://github.com/grolongo/dotfiles.git "${HOME}/dotfiles"
 ```
 
 #### SSH
 ```bash
-git clone git@github.com:grolongo/dotfiles.git
+git clone git@github.com:grolongo/dotfiles.git "${HOME}/dotfiles"
 ```
 
-## Git-free
+## without git
 
 #### Linux
 ```bash
@@ -36,21 +31,10 @@ rm dotfiles.zip
 ```
 
 #### Windows
-
-Open Terminal:
 ```powershell
 Invoke-WebRequest -Uri "https://github.com/grolongo/dotfiles/archive/refs/heads/master.zip" -OutFile dotfiles.zip; `
 Expand-Archive -Path "dotfiles.zip" -DestinationPath $PWD; `
 Rename-Item -Path "dotfiles-master" -NewName "dotfiles"; `
 Remove-Item -Path "dotfiles.zip" -Force
 ```
-Then, in an Administrator shell: `Set-ExecutionPolicy Bypass`
-
-After symlinking SSH keys & dotfiles, do:
-```shell
-git init
-git remote add origin git@github.com:grolongo/dotfiles.git
-git fetch
-git reset origin/master
-git branch --set-upstream-to=origin/master
-```
+Then in an Administrator shell: `Set-ExecutionPolicy Bypass`

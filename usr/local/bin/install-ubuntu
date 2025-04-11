@@ -591,6 +591,23 @@ set_i3wm() {
     usermod -aG video "${SUDO_USER}"
 }
 
+set_git() {
+    check_is_not_sudo
+
+    (
+        cd "${HOME}/dotfiles"
+        if [ $(git rev-parse --is-inside-work-tree) ]; then
+            git remote set-url origin git@github.com:grolongo/dotfiles.git
+        else
+            git init
+            git remote add origin git@github.com:grolongo/dotfiles.git
+            git fetch
+            git reset origin/master
+            git branch --set-upstream-to=origin/master
+        fi
+    )
+}
+
 # Menu
 
 usage() {
@@ -604,7 +621,8 @@ usage() {
     printf "  driveclient (s) - install Synology Drive Client\n"
     printf "  chatty      (s) - install Chatty with JRE\n"
     printf "  gsettings       - configures Gnome settings\n"
-    printf "  i3          (s) - install and sets up i3wm related packages & configs\n"
+    printf "  i3          (s) - install and set up i3wm related packages & configs\n"
+    printf "  git             - set correct SSH origin for this repository\n"
     echo
 }
 
@@ -635,6 +653,8 @@ main() {
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
         set_i3wm
+    elif [ "$cmd" = "git" ]; then
+        set_git
     else
         usage
     fi
