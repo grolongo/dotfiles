@@ -596,7 +596,7 @@ set_git() {
 
     (
         cd "${HOME}/dotfiles"
-        if [ $(git rev-parse --is-inside-work-tree) ]; then
+        if [ "$(git rev-parse --is-inside-work-tree)" ]; then
             git remote set-url origin git@github.com:grolongo/dotfiles.git
         else
             git init

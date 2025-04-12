@@ -799,6 +799,25 @@ function run_massgrave {
     irm 'https://get.activated.win' | iex
 }
 
+### git repo settings
+
+function set_git {
+    Push-Location
+    cd "${HOME}/dotfiles"
+
+    if (git rev-parse --is-inside-work-tree) {
+        git remote set-url origin git@github.com:grolongo/dotfiles.git
+    } else {
+        git init
+        git remote add origin git@github.com:grolongo/dotfiles.git
+        git fetch
+        git reset origin/master
+        git branch --set-upstream-to=origin/master
+    }
+
+    Pop-Location
+}
+
 ### Menu
 
 function usage {
@@ -812,6 +831,7 @@ function usage {
     Write-Host '  winget_packages - download and install listed packages with winget'
     Write-Host '  mpv             - install mpv'
     Write-Host '  activate        - run massgrave activation script'
+    Write-Host '  git             - set correct SSH origin for this repository'
     Write-Host
 }
 
@@ -829,6 +849,7 @@ function main {
     elseif ($cmd -eq 'winget_packages') { install_winget }
     elseif ($cmd -eq 'mpv')             { install_mpv }
     elseif ($cmd -eq 'activate')        { run_massgrave }
+    elseif ($cmd -eq 'git')             { set_git }
     else { usage }
 }
 
