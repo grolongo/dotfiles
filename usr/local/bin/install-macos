@@ -425,6 +425,23 @@ install_ports() {
     }
 }
 
+set_git() {
+    check_is_not_sudo
+
+    (
+        cd "${HOME}/dotfiles"
+        if [ "$(git rev-parse --is-inside-work-tree)" ]; then
+            git remote set-url origin git@github.com:grolongo/dotfiles.git
+        else
+            git init
+            git remote add origin git@github.com:grolongo/dotfiles.git
+            git fetch
+            git reset origin/master
+            git branch --set-upstream-to=origin/master
+        fi
+    )
+}
+
 usage() {
     echo
     printf "Usage:\n"
@@ -437,6 +454,7 @@ usage() {
     printf "  casks        - setup caskroom & install softwares\n"
     printf "  macports     - setup MacPorts\n"
     printf "  ports    (s) - install ports\n"
+    printf "  git          - set correct SSH origin for this repository\n"
     echo
 }
 
@@ -467,6 +485,8 @@ main() {
         install_macports
     elif [ "$cmd" = "ports" ]; then
         install_ports
+    elif [ "$cmd" = "git" ]; then
+        set_git
     else
         usage
     fi
