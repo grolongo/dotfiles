@@ -159,6 +159,10 @@ confirm "Install symlinks for ${USER}?" && {
             filename=$(basename "$file")
             sudo ln -sniv "$file" "/usr/local/bin/$filename"
         done
+        for file in $(find "$base/usr/local/sbin" -type f -not -name "*.ahk" -not -name "*.ps1" -not -name "*.bat"); do
+            filename=$(basename "$file")
+            sudo ln -sniv "$file" "/usr/local/sbin/$filename"
+        done
     }
 
 }

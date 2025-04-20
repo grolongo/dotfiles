@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -e
+set -u
+set -o pipefail
+IFS=$'\n\t'
+
+if [ $UID -ne 0 ]; then
+    printf "Please run this program as superuser.\n" >&2
+    exit 1
+fi
+
+while true; do
+    echo
+    printf "Choose which method to use:\n"
+    printf "  [1] wpa_supplicant\n"
+    printf "  [2] aircrack-ng\n"
+    read -r -p "Selected method => " choice
+    echo
+
+    case "$choice" in
+        1)
+            wpa_cli scan
+            echo "waiting 15 seconds before showing results..."
+            sleep 15
+            wpa_cli scan_results
+            break
+            ;;
+        2)
+            interface=$(ip route get 1.1.1.1 | grep -oP 'dev\s+\K[^ ]+')
+            airmon-ng start "${interface}"
+            airodump-ng "${interface}mon"
+            airmon-ng stop "${interface}mon"
+            break
+            ;;
+        *)
+            printf "Wront input, please choose either 1 or 2."
+            echo
+            ;;
+    esac
+done
