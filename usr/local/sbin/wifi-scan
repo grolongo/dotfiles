@@ -9,6 +9,15 @@ if [ $UID -ne 0 ]; then
     exit 1
 fi
 
+spin() {
+    sp='/-\|'
+    printf ' '
+    while sleep 0.1; do
+        printf '\b%.1s' "$sp"
+        sp=${sp#?}${sp%???}
+    done
+}
+
 while true; do
     echo
     printf "Choose which method to use:\n"
@@ -20,8 +29,11 @@ while true; do
     case "$choice" in
         1)
             wpa_cli scan
-            echo "waiting 15 seconds before showing results..."
-            sleep 15
+            printf "Waiting 20 seconds before showing results...\n"
+            spin & spinpid=$!
+            sleep 20
+            kill "${spinpid}"
+            echo
             wpa_cli scan_results
             break
             ;;

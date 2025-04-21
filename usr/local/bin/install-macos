@@ -50,6 +50,15 @@ brew_clean() {
     brew cleanup
 }
 
+spin() {
+    sp='/-\|'
+    printf ' '
+    while sleep 0.1; do
+        printf '\b%.1s' "$sp"
+        sp=${sp#?}${sp%???}
+    done
+}
+
 tmpdir=$(mktemp -d)
 
 # check if running macOS
@@ -249,8 +258,11 @@ install_casks() {
     confirm "Install qbittorrent?" && {
         brew install --cask qbittorrent
 
-        msg_info "Waiting 10 secs for folders to be created..."
+        msg_info "Waiting a few secs for folders to be created..."
+        spin & spinpid=$!
         sleep 10
+        kill "${spinpid}"
+        echo
 
         local plugin_folder="${HOME}/Library/Application Support/qBittorrent/nova3/engines"
         msg_info "Downloading search plugins..."

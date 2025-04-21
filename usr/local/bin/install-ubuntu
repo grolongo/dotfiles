@@ -56,6 +56,15 @@ apt_clean() {
     apt clean
 }
 
+spin() {
+    sp='/-\|'
+    printf ' '
+    while sleep 0.1; do
+        printf '\b%.1s' "$sp"
+        sp=${sp#?}${sp%???}
+    done
+}
+
 arch=$(dpkg --print-architecture)
 distrib=$(lsb_release -sc 2> /dev/null)
 tmpdir=$(mktemp -d)
@@ -527,8 +536,10 @@ set_gsettings() {
     done
 
     msg_info "Applying settings..."
-
+    spin & spinpid=$!
     sleep 5
+    kill "${spinpid}"
+    echo
 
     # caffeine settings
     gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-indicator always
