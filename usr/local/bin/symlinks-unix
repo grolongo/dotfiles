@@ -37,7 +37,7 @@ symlink() {
     targetlink="${HOME}"/"$1"
 
     if [ -e "$sourcefile" ]; then
-        ln -sniv "$sourcefile" "$targetlink"
+        ln -snfv "$sourcefile" "$targetlink"
     else
         printf '%s does not exist.\n' "$sourcefile" >&2
     fi
@@ -123,7 +123,7 @@ confirm "Install symlinks for ${USER}?" && {
     # streamlink
     confirm "link streamlink config file?" && {
         if [ "$(uname)" = Darwin ]; then
-            ln -sniv "${base}/.config/streamlink/config" "${HOME}/Library/Application Support/streamlink/config"
+            ln -snfv "${base}/.config/streamlink/config" "${HOME}/Library/Application Support/streamlink/config"
         else
             mkdir -vp "${HOME}/.config/streamlink"
             symlink ".config/streamlink/config"
@@ -144,8 +144,8 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/i3status/config"
         symlink ".xsessionrc"
         sudo mkdir -vp /etc/X11/xorg.conf.d
-        sudo ln -sniv "${base}/etc/X11/xorg.conf.d/30-touchpad.conf" "/etc/X11/xorg.conf.d/30-touchpad.conf"
-        sudo ln -sniv "${base}/etc/X11/xorg.conf.d/30-trackpoint.conf" "/etc/X11/xorg.conf.d/30-trackpoint.conf"
+        sudo ln -snfv "${base}/etc/X11/xorg.conf.d/30-touchpad.conf" "/etc/X11/xorg.conf.d/30-touchpad.conf"
+        sudo ln -snfv "${base}/etc/X11/xorg.conf.d/30-trackpoint.conf" "/etc/X11/xorg.conf.d/30-trackpoint.conf"
     }
 
     # X
@@ -157,11 +157,11 @@ confirm "Install symlinks for ${USER}?" && {
     confirm "link binary files?" && {
         for file in $(find "$base/usr/local/bin" -type f -not -name "*.ahk" -not -name "*.ps1" -not -name "*.bat"); do
             filename=$(basename "$file")
-            sudo ln -sniv "$file" "/usr/local/bin/$filename"
+            sudo ln -snfv "$file" "/usr/local/bin/$filename"
         done
         for file in $(find "$base/usr/local/sbin" -type f -not -name "*.ahk" -not -name "*.ps1" -not -name "*.bat"); do
             filename=$(basename "$file")
-            sudo ln -sniv "$file" "/usr/local/sbin/$filename"
+            sudo ln -snfv "$file" "/usr/local/sbin/$filename"
         done
     }
 
