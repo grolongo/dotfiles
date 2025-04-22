@@ -562,6 +562,7 @@ set_i3wm() {
     check_is_sudo
 
     local packages=(
+        aircrack-ng
         brightnessctl
         dosfstools
         fonts-noto
