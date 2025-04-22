@@ -248,6 +248,8 @@ apt_extra() {
         msg_info "Updating package database and installing Mullvad..."
         apt update
         apt install -y mullvad-vpn
+
+        ln -s "/opt/Mullvad VPN/mullvad-gui" "/usr/local/bin/mullvad-gui"
     }
 
     confirm "Install signal?" && {
