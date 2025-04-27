@@ -590,7 +590,11 @@ set_i3wm() {
 
     apt_clean
 
-    confirm "Install Firefox (SNAP)?" && { snap install firefox; }
+    confirm "Install Firefox (SNAP)?" && {
+        snap install firefox
+        mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
+        ln -s "${HOME}"/.config/fontconfig/fonts.conf ~/snap/firefox/current/.config/fontconfig/fonts.conf
+    }
     confirm "Install Network-Manager (SNAP)?" && { snap install network-manager; }
 
     snap refresh

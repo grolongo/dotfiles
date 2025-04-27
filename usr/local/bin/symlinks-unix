@@ -143,6 +143,8 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/i3/config"
         symlink ".config/i3status/config"
         symlink ".xsessionrc"
+        mkdir -vp "${HOME}/.config/fontconfig"
+        symlink ".config/fontconfig/fonts.conf"
         sudo mkdir -vp /etc/X11/xorg.conf.d
         sudo ln -snfv "${base}/etc/X11/xorg.conf.d/30-touchpad.conf" "/etc/X11/xorg.conf.d/30-touchpad.conf"
         sudo ln -snfv "${base}/etc/X11/xorg.conf.d/30-trackpoint.conf" "/etc/X11/xorg.conf.d/30-trackpoint.conf"
