@@ -15,14 +15,31 @@ Xft.dpi:       120
 *visualBell:   true
 *urgentOnBell: true
 ! using Tmux scrollback buffer
-*saveLines: 999999
+*saveLines:    999999
 
 !!!!!!!!!!!!!
 !!! URxvt !!!
 !!!!!!!!!!!!!
 
 URxvt.reverseVideo:         true
-!URxvt.letterSpace:          -1
+
+! DejaVu Sans Mono
+!!!!!!!!!!!!!!!!!!
+! URxvt.letterSpace:          -1
+! URxvt.font:                 xft:DejaVu Sans Mono:size=12:style=Book
+! URxvt.boldFont:             xft:DejaVu Sans Mono:size=12:style=Bold
+! URxvt.italicFont:           xft:DejaVu Sans Mono:size=12:style=Oblique
+! URxvt.boldItalicFont:       xft:DejaVu Sans Mono:size=12:style=Bold Oblique
+
+! Ubuntu Sans Mono
+!!!!!!!!!!!!!!!!!!
+! URxvt.font:                 xft:Ubuntu Sans Mono:size=12:style=Regular ! Regular, SemiBold, Light, ExtraLight, Medium
+! URxvt.boldFont:             xft:DejaVu Sans Mono:size=12:style=Regular
+! URxvt.italicFont:           xft:DejaVu Sans Mono:size=12:style=Italic
+! URxvt.boldItalicFont:       xft:DejaVu Sans Mono:size=12:style=Bold Italic
+
+! Spleen
+!!!!!!!!
 URxvt.font:                 -misc-spleen-medium-r-normal--24-240-72-72-c-120-iso10646-1
 URxvt.boldFont:             -misc-spleen-medium-r-normal--24-240-72-72-c-120-iso10646-1
 URxvt.italicFont:           -misc-spleen-medium-r-normal--24-240-72-72-c-120-iso10646-1
@@ -35,7 +52,7 @@ URxvt.scrollTtyKeypress:    true
 URxvt.clipboard.copycmd:    xclip -i -selection clipboard
 URxvt.clipboard.pastecmd:   xclip -o -selection clipboard
 
-URxvt.keysym.Button3: eval:paste_clipboard
+URxvt.keysym.Button3:       eval:paste_clipboard
 URxvt.perl-ext-common:      default,matcher,selection-to-clipboard,clipboard,-confirm-paste,font-size
 ! URxvt.perl-ext-common:
 URxvt.url-launcher:         firefox
