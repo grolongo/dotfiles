@@ -595,7 +595,6 @@ set_i3wm() {
         mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
         ln -s "${HOME}"/.config/fontconfig/fonts.conf ~/snap/firefox/current/.config/fontconfig/fonts.conf
     }
-    confirm "Install Network-Manager (SNAP)?" && { snap install network-manager; }
 
     snap refresh
 
