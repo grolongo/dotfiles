@@ -1,6 +1,11 @@
 #!/bin/bash
+set -e
+set -u
+set -o pipefail
+IFS=$'\n\t'
 
-BATTINFO=`acpi -b`
-if [[ `echo $BATTINFO | grep Discharging` && `echo $BATTINFO | cut -f 5 -d " "` < 00:15:00 ]] ; then
-    DISPLAY=:0.0 /usr/bin/notify-send --urgency=critical "LOW BATTERY" "$BATTINFO"
+BATTINFO="$(acpi -b)"
+
+if [[ "$(echo "${BATTINFO}" | grep "Discharging")" && "$(echo "${BATTINFO}" | cut -f 5 -d " ")" < 00:15:00 ]]; then
+    dunstify "LOW BATTERY" "$BATTINFO"
 fi
