@@ -1,11 +1,13 @@
 #!/bin/bash
 set -e
-set -u
+# set -u
 set -o pipefail
 IFS=$'\n\t'
 
-BATTINFO="$(acpi -b)"
+batinfo="$(acpi -b | grep "Discharging")"
+battime="$(acpi -b | cut -f 5 -d " ")"
 
-if [[ "$(echo "${BATTINFO}" | grep "Discharging")" && "$(echo "${BATTINFO}" | cut -f 5 -d " ")" < 00:15:00 ]]; then
-    dunstify "LOW BATTERY" "$BATTINFO"
+if [[ "${batinfo}" && "${battime}" < 00:15:00 ]]; then
+    batalert="$(acpi -b | cut -d ' ' -f4-)"
+    dunstify "LOW BATTERY" "${batalert}"
 fi
