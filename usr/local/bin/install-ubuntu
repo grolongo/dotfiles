@@ -562,7 +562,6 @@ set_i3wm() {
     check_is_sudo
 
     local packages=(
-        acpi
         aircrack-ng
         brightnessctl
         dosfstools

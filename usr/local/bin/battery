@@ -1,13 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
-# set -u
+set -u
 set -o pipefail
 IFS=$'\n\t'
 
-batinfo="$(acpi -b | grep "Discharging")"
-battime="$(acpi -b | cut -f 5 -d " ")"
+bat_path="/sys/class/power_supply/BAT0"
 
-if [[ "${batinfo}" && "${battime}" < 00:15:00 ]]; then
-    batalert="$(acpi -b | cut -d ' ' -f4-)"
-    dunstify "LOW BATTERY" "${batalert}"
+status=$(cat "${bat_path}"/status)
+energy_full=$(cat "${bat_path}"/energy_full_design)
+energy_now=$(cat "${bat_path}"/energy_now)
+
+bat_percent=$(printf "%.0f" "$(echo "scale=2; $energy_now / $energy_full * 100" | bc)")
+
+if [[ "${status}" == "Discharging" && "${bat_percent}" -lt 90 ]]; then
+    dunstify "LOW BATTERY" "${bat_percent}% remaining"
 fi
