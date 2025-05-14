@@ -1,0 +1,5 @@
+[Unit]
+Description=Execute battery check script
+
+[Service]
+ExecStart=/usr/local/bin/battery
