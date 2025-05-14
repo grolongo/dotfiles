@@ -155,6 +155,14 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".Xresources"
     }
 
+    # systemd
+    confirm "link systemd unit files?" && {
+        mkdir -vp "${HOME}/.config/systemd/user"
+        symlink ".config/systemd/user/battery.timer"
+        symlink ".config/systemd/user/battery.service"
+        systemctl --user enable battery.timer
+    }
+
     # bin
     confirm "link binary files?" && {
         for file in $(find "$base/usr/local/bin" -type f -not -name "*.ahk" -not -name "*.ps1" -not -name "*.bat"); do
