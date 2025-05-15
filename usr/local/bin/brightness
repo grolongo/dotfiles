@@ -7,12 +7,12 @@ IFS=$'\n\t'
 function get_brightness {
     brightness_current=$(brightnessctl get)
     brightness_max=$(brightnessctl max)
-    printf "%.0f" "$(echo "scale=2; $brightness_current / $brightness_max * 100" | bc)"
+    awk -v current="${brightness_current}" -v max="${brightness_max}" 'BEGIN { printf "%.0f", current/max*100 }'
 }
 
 function show_brightness_notif {
     brightness=$(get_brightness)
-    dunstify -t 3000 -h string:x-dunst-stack-tag:brightness_notif -h int:value:"${brightness}" "Brightness: ${brightness}%"
+    dunstify -u normal -t 3000 -h string:x-dunst-stack-tag:brightness_notif -h int:value:"${brightness}" "Brightness: ${brightness}%"
 }
 
 case $1 in
