@@ -7,13 +7,16 @@
 # If the above line is not correctly displayed, fix your editor first!
 
 general {
-        colors = true
         interval = 5
+        markup = "pango"
+        colors = true
+        # color_good = "#039FFE"
+        color_good = "#87FF15"
 }
 
-order += "run_watch DHCP"
-order += "run_watch VPNC"
-order += "path_exists VPN"
+# order += "run_watch DHCP"
+# order += "run_watch VPNC"
+# order += "path_exists VPN"
 order += "ethernet _first_"
 order += "wireless _first_"
 order += "ipv6"
@@ -26,7 +29,7 @@ order += "battery all"
 order += "tztime local"
 
 wireless _first_ {
-        format_up = "W: (%quality at %essid) %ip"
+        format_up = "W: (%essid) %ip" # %quality
         format_down = "W: down"
 }
 
@@ -36,7 +39,10 @@ ethernet _first_ {
 }
 
 battery all {
-        format = "%status %percentage %remaining"
+        format_percentage = "%.00f%s" # don't show decimals
+        format = "%status %percentage"
+        status_chr = "🔌"
+        status_full = "🔌 FULL"
 }
 
 disk "/" {
@@ -48,13 +54,14 @@ load {
 }
 
 memory {
-        format = "%used / %available"
+        decimals = 0
+        format = "%used / %total"
         threshold_degraded = "10%"
         format_degraded = "MEMORY < %available"
 }
 
 tztime local {
-        format = "%a %d/%m %H:%M"
+        format = "<span color='#039FFE'>%d/%m/%y %H:%M</span>"
 }
 
 run_watch DHCP {
@@ -71,14 +78,14 @@ path_exists VPN {
 }
 
 volume master {
-        format = "♪: %volume"
-        format_muted = "♪: muted (%volume)"
+        format = "<span color='#A3C0F2'>Vol: %volume</span>"
+        format_muted = "<span color='#A3C0F2'>muted (%volume)</span>"
         device = "default"
         mixer = "Master"
         mixer_idx = 0
 }
 
 cpu_temperature 0 {
-        format = "T: %degrees °C"
-#        path = "sys/devices/platform/coretemp.0/hwmon/hwmon0/temp1_input"
+        format = "%degrees °C"
+#        path = "/sys/devices/platform/coretemp.0/hwmon/hwmon0/temp1_input"
 }
