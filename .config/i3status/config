@@ -10,8 +10,9 @@ general {
         interval = 5
         markup = "pango"
         colors = true
-        # color_good = "#039FFE"
-        color_good = "#87FF15"
+        color_good = "#AEEA94"
+        color_degraded = "#A3C0F2"
+        color_bad = "#A3C0F2"
 }
 
 # order += "run_watch DHCP"
@@ -43,10 +44,14 @@ battery all {
         format = "%status %percentage"
         status_chr = "🔌"
         status_full = "🔌 FULL"
+        threshold_type = "percentage"
+        low_threshold = "10"
 }
 
 disk "/" {
         format = "%avail"
+        threshold_type = "percentage_avail"
+        low_threshold = 20
 }
 
 load {
@@ -61,7 +66,7 @@ memory {
 }
 
 tztime local {
-        format = "<span color='#039FFE'>%d/%m/%y %H:%M</span>"
+        format = "<span color='#B771E5'>%d/%m/%y %H:%M</span>"
 }
 
 run_watch DHCP {
@@ -78,8 +83,8 @@ path_exists VPN {
 }
 
 volume master {
-        format = "<span color='#A3C0F2'>Vol: %volume</span>"
-        format_muted = "<span color='#A3C0F2'>muted (%volume)</span>"
+        format = "Vol: %volume"
+        format_muted = "muted (%volume)"
         device = "default"
         mixer = "Master"
         mixer_idx = 0
@@ -87,5 +92,6 @@ volume master {
 
 cpu_temperature 0 {
         format = "%degrees °C"
+        max_threshold = 65
 #        path = "/sys/devices/platform/coretemp.0/hwmon/hwmon0/temp1_input"
 }
