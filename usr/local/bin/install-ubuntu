@@ -564,6 +564,7 @@ set_i3wm() {
     local packages=(
         aircrack-ng
         brightnessctl
+        caffeine
         dosfstools
         fonts-noto
         fonts-spleen
