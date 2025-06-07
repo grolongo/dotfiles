@@ -1,7 +1,10 @@
+# Bail out of rest of the setup if we're coming in from Tramp
+[ "${TERM}" = "dumb" ] && PS1='$ ' && return
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
-      *) return;;
+    *) return;;
 esac
 
 # make less more friendly for non-text input files, see lesspipe(1)
@@ -60,7 +63,7 @@ function git_branch_name()
 
         echo -e " ${1}${branchName}${s}";
     else
-	return;
+	    return;
     fi;
 }
 

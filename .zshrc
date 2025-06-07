@@ -1,3 +1,6 @@
+# Bail out of rest of the setup if we're coming in from Tramp
+[[ "${TERM}" == "dumb" ]] && unsetopt zle && PS1='$ ' && return
+
 if [ -r "$HOME/.aliases" ] && [ -f "$HOME/.aliases" ]; then
     . "$HOME/.aliases"
 fi
@@ -98,14 +101,10 @@ else
     hostStyle="%F{8}%m" # grey
 fi
 
-if [ "${TERM}" = "dumb" ]; then # for Tramp
-    unsetopt zle && PS1='$ ';
-else
-    PROMPT='%B%(!.%F{red}.%F{green})%n%f'
-    PROMPT+='@'
-    PROMPT+='$hostStyle '
-    PROMPT+='%F{blue}%~%f'
-    PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
-    PROMPT+=' %# '
-    PROMPT+='%b%E'
-fi;
+PROMPT='%B%(!.%F{red}.%F{green})%n%f'
+PROMPT+='@'
+PROMPT+='$hostStyle '
+PROMPT+='%F{blue}%~%f'
+PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
+PROMPT+=' %# '
+PROMPT+='%b%E'
