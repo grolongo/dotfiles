@@ -95,8 +95,6 @@ else
     PS1+="\[\e[0m\] ";                      # reset colors
 fi;
 
-export PS1;
-
 ### External
 
 for file in ~/.{aliases,exports}; do
