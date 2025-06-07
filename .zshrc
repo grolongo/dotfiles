@@ -98,10 +98,14 @@ else
     hostStyle="%F{8}%m" # grey
 fi
 
-PROMPT='%B%(!.%F{red}.%F{green})%n%f'
-PROMPT+='@'
-PROMPT+='$hostStyle '
-PROMPT+='%F{blue}%~%f'
-PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
-PROMPT+=' %# '
-PROMPT+='%b%E'
+if [ "${TERM}" = "dumb" ]; then # for Tramp
+    unsetopt zle && PS1='$ ';
+else
+    PROMPT='%B%(!.%F{red}.%F{green})%n%f'
+    PROMPT+='@'
+    PROMPT+='$hostStyle '
+    PROMPT+='%F{blue}%~%f'
+    PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
+    PROMPT+=' %# '
+    PROMPT+='%b%E'
+fi;
