@@ -5,17 +5,17 @@ export LANGUAGE=en_US.UTF-8
 
 # EDITORS
 export VISUAL="emacs -Q -nw \
-                     --eval '(menu-bar-mode -1)' \
-                     --eval '(setopt make-backup-files nil)' \
-                     --eval '(setopt ring-bell-function '\''ignore)' \
-                     --eval '(setopt column-number-mode t)' \
-                     --eval '(setopt visible-cursor nil)'"
+                     --eval \"(menu-bar-mode -1)\" \
+                     --eval \"(setopt make-backup-files nil)\" \
+                     --eval \"(setopt ring-bell-function '\''ignore)\" \
+                     --eval \"(setopt column-number-mode t)\" \
+                     --eval \"(setopt visible-cursor nil)\""
 export EDITOR="emacs -Q -nw \
-                     --eval '(menu-bar-mode -1)' \
-                     --eval '(setopt make-backup-files nil)' \
-                     --eval '(setopt ring-bell-function '\''ignore)' \
-                     --eval '(setopt column-number-mode t)' \
-                     --eval '(setopt visible-cursor nil)'"
+                     --eval \"(menu-bar-mode -1)\" \
+                     --eval \"(setopt make-backup-files nil)\" \
+                     --eval \"(setopt ring-bell-function 'ignore)\" \
+                     --eval \"(setopt column-number-mode t)\" \
+                     --eval \"(setopt visible-cursor nil)\""
 export PAGER=less
 
 # GPG
