@@ -101,7 +101,6 @@ apt_common() {
         bash-completion
         curl
         emacs-lucid
-        emacs-nox
         emacs-pgtk
         exiftool
         fd-find

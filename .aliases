@@ -34,6 +34,7 @@ alias clear=" clear"
 alias claer=" clear"
 alias exit=" exit"
 alias fd="fd --hidden"
+alias mg="mg -n"
 alias screenoff="setterm -blank 1"
 alias logo="sudo pkill -u $USER"
 alias curldl="curl --location --progress-bar --remote-name"
@@ -75,11 +76,3 @@ rgrep2 () { grep --binary-file=without-match --color=auto --ignore-case --line-n
 # ripgrep
 lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
 rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
-
-# emacs-mini
-edit () { emacs -Q -nw \
-                --eval '(menu-bar-mode -1)' \
-                --eval '(setopt make-backup-files nil)' \
-                --eval '(setopt ring-bell-function '\''ignore)' \
-                --eval '(setopt column-number-mode t)' \
-                --eval '(setopt visible-cursor nil)' "$@"; }
