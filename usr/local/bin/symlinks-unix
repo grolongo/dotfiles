@@ -54,7 +54,7 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".zshenv"
         symlink ".aliases"
         symlink ".exports"
-        #symlink ".zlogin" # pour i3
+        #symlink ".zlogin" # for i3
     }
 
     # bash
@@ -109,9 +109,14 @@ confirm "Install symlinks for ${USER}?" && {
     }
 
     # vim
-    confirm "link vim files?" && {
+    confirm "link vim file?" && {
         mkdir -vp "${HOME}/.vim"
         symlink ".vimrc"
+    }
+
+    # mg
+    confirm "link mg file?" && {
+        symlink ".mg"
     }
 
     # git
