@@ -13,6 +13,7 @@ set $right f
 # ------------------
 # Idle configuration
 # ------------------
+
 # exec swayidle -w \
 #          timeout 300 'swaylock -f -c 000000' \
 #          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
@@ -24,6 +25,7 @@ set $right f
 # ----------------------
 # Input(s) configuration
 # ----------------------
+
 input type:keyboard {
     xkb_layout "fr"
     xkb_options ctrl:nocaps
