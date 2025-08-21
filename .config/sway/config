@@ -1,5 +1,6 @@
 xwayland disable
 for_window [shell="xwayland"] title_format "[XWayland] %title"
+exec_always autotiling
 
 set $mod  Mod4
 set $term foot
