@@ -621,6 +621,7 @@ set_sway() {
         fonts-noto
         fonts-spleen
         fonts-ubuntu
+        i3status
         mtools
         pinentry-gtk2
         playerctl
