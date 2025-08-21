@@ -353,7 +353,8 @@ snaps_common() {
     check_is_sudo
 
     confirm "Install chromium (includes ffmpeg)?" && { snap install chromium; snap install chromium-ffmpeg; }
-    confirm "Install emacs?" && { snap install emacs --classic; }
+    confirm "Install emacs (non-pgtk)?" && { snap install emacs --classic; }
+    confirm "Install emacs (pgtk)?" && { snap install emacs --channel=pgtk/stable --classic; }
     confirm "Install mu4e?" && { snap install maildir-utils; }
     confirm "Install spotify?" && { snap install spotify; }
     confirm "Install steam?" && { snap install steam --beta; }
@@ -609,6 +610,50 @@ set_i3wm() {
     usermod -aG video "${SUDO_USER}"
 }
 
+set_sway() {
+    check_is_sudo
+
+    local packages=(
+        aircrack-ng
+        brightnessctl
+        caffeine
+        dosfstools
+        fonts-noto
+        fonts-spleen
+        fonts-ubuntu
+        mtools
+        pinentry-gtk2
+        playerctl
+        sway
+        ttf-mscorefonts-installer
+        ubuntu-drivers-common
+        ubuntu-restricted-extras
+        ubuntu-restricted-addons
+        unzip
+        wireplumber
+        # pulseaudio
+    )
+
+    for p in "${packages[@]}"; do
+        confirm "Install ${p}?" && apt install -y "${p}"
+    done
+
+    apt_clean
+
+    confirm "Install Firefox (SNAP)?" && { snap install firefox; }
+
+    snap refresh
+
+    confirm "Install autotiling script for sway?" && {
+        apt install python3-i3ipc
+        wget -O /usr/local/bin/autotiling https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
+        chmod +x /usr/local/bin/autotiling
+    }
+
+    msg_info "Adding ourselves to video group in order to use brightnessctl without sudo..."
+    usermod -aG video "${SUDO_USER}"
+}
+
 set_git() {
     check_is_not_sudo
 
@@ -640,6 +685,7 @@ usage() {
     printf "  chatty      (s) - install Chatty with JRE\n"
     printf "  gsettings       - configures Gnome settings\n"
     printf "  i3          (s) - install and set up i3wm related packages & configs\n"
+    printf "  sway        (s) - install and set up sway related packages & configs\n"
     printf "  git             - set correct SSH origin for this repository\n"
     echo
 }
@@ -671,6 +717,8 @@ main() {
         set_gsettings
     elif [ "$cmd" = "i3" ]; then
         set_i3wm
+    elif [ "$cmd" = "sway" ]; then
+        set_sway
     elif [ "$cmd" = "git" ]; then
         set_git
     else
