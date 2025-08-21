@@ -155,6 +155,14 @@ confirm "Install symlinks for ${USER}?" && {
         sudo ln -snfv "${base}/etc/X11/xorg.conf.d/30-trackpoint.conf" "/etc/X11/xorg.conf.d/30-trackpoint.conf"
     }
 
+    # sway
+    confirm "link sway files?" && {
+        mkdir -vp "${HOME}/.config/sway"
+        mkdir -vp "${HOME}/.config/i3status"
+        symlink ".config/sway/config"
+        symlink ".config/i3status/config"
+    }
+
     # X
     confirm "link Xresources config file?" && {
         symlink ".Xresources"
