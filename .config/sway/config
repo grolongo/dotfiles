@@ -192,13 +192,18 @@ bindsym Print exec grim
 
 bar {
     position bottom
-
     status_command i3status
 
     colors {
+        background #000000
         statusline #ffffff
-        background #323232
-        inactive_workspace #32323200 #32323200 #5c5c5c
+        separator #666666
+
+        focused_workspace  #4c7899 #285577 #ffffff
+        active_workspace   #333333 #5f676a #ffffff
+        inactive_workspace #333333 #222222 #888888
+        urgent_workspace   #2f343a #900000 #ffffff
+        binding_mode       #2f343a #900000 #ffffff
     }
 }
 
