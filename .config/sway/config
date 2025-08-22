@@ -57,21 +57,22 @@ input type:pointer {
 # -----------------
 
 # Workspaces
-set $ws1 "1"
+set $ws1 "1: foot"
 set $ws2 "2: Emacs"
 set $ws3 "3: www"
 set $ws4 "4: Tor"
 set $ws5 "5: Spotify"
-set $ws6 "6: Twitch"
-set $ws7 "7: KeePass"
+set $ws6 "6: KeePass"
+set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
 # Assignments
-assign [app_id="Emacs"]         $ws2
+assign [app_id="foot"]          $ws1
+assign [app_id="emacs"]         $ws2
 assign [app_id="firefox"]       $ws3
-assign [app_id="Chromium"]      $ws3
+assign [app_id="chromium"]      $ws3
 assign [app_id="Tor Browser"]   $ws4
 assign [app_id="Spotify"]       $ws5
 assign [app_id="chatty-Chatty"] $ws6
