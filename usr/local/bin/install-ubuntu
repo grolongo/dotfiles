@@ -625,6 +625,7 @@ set_sway() {
         mtools
         pinentry-gtk2
         playerctl
+        # pulseaudio
         sway
         ttf-mscorefonts-installer
         ubuntu-drivers-common
@@ -632,7 +633,7 @@ set_sway() {
         ubuntu-restricted-addons
         unzip
         wireplumber
-        # pulseaudio
+        xwayland
     )
 
     for p in "${packages[@]}"; do
