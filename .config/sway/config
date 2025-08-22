@@ -52,6 +52,43 @@ input type:pointer {
     # scroll_factor
 }
 
+# -----------------
+# Window Management
+# -----------------
+
+# Workspaces
+set $ws1 "1"
+set $ws2 "2: Emacs"
+set $ws3 "3: www"
+set $ws4 "4: Tor"
+set $ws5 "5: Spotify"
+set $ws6 "6: Twitch"
+set $ws7 "7: KeePass"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Assignments
+assign [app_id="Emacs"]         $ws2
+assign [app_id="firefox"]       $ws3
+assign [app_id="Chromium"]      $ws3
+assign [app_id="Tor Browser"]   $ws4
+assign [app_id="Spotify"]       $ws5
+assign [app_id="chatty-Chatty"] $ws6
+assign [app_id="KeePassXC"]     $ws7
+
+# Floating Apps
+floating_modifier $mod normal
+for_window [window_type="dialog"]   floating enable
+for_window [window_role="dialog"]   floating enable
+for_window [app_id="Tor Messenger"] floating enable
+for_window [app_id="Krita"]         floating enable
+for_window [app_id="VirtualBox"]    floating enable
+for_window [app_id="Steam"]         floating enable
+# for_window [app_id="KeePass"]       floating enable
+for_window [app_id="Seafile"]       floating enable
+for_window [app_id="Veracrypt"]     floating enable
+
 # --------
 # Bindings
 # --------
@@ -147,43 +184,6 @@ bindsym XF86KbdBrightnessUp   exec "sudo keyboard-backlight up"
 
 # Special key to take a screenshot with grim
 bindsym Print exec grim
-
-# -----------------
-# Window Management
-# -----------------
-
-# Workspaces
-set $ws1 "1"
-set $ws2 "2: Emacs"
-set $ws3 "3: www"
-set $ws4 "4: Tor"
-set $ws5 "5: Spotify"
-set $ws6 "6: Twitch"
-set $ws7 "7: KeePass"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
-
-# Assignments
-assign [app_id="Emacs"]         $ws2
-assign [app_id="firefox"]       $ws3
-assign [app_id="Chromium"]      $ws3
-assign [app_id="Tor Browser"]   $ws4
-assign [app_id="Spotify"]       $ws5
-assign [app_id="chatty-Chatty"] $ws6
-assign [app_id="KeePassXC"]     $ws7
-
-# Floating Apps
-floating_modifier $mod normal
-for_window [window_type="dialog"]   floating enable
-for_window [window_role="dialog"]   floating enable
-for_window [app_id="Tor Messenger"] floating enable
-for_window [app_id="Krita"]         floating enable
-for_window [app_id="VirtualBox"]    floating enable
-for_window [app_id="Steam"]         floating enable
-# for_window [app_id="KeePass"]       floating enable
-for_window [app_id="Seafile"]       floating enable
-for_window [app_id="Veracrypt"]     floating enable
 
 # ----------
 # Status Bar
