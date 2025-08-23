@@ -163,6 +163,8 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/i3status/config"
         mkdir -vp "${HOME}/.config/fontconfig"
         symlink ".config/fontconfig/fonts.conf"
+        mkdir -vp "${HOME}/.config/foot"
+        symlink ".config/foot/foot.ini"
     }
 
     # X
