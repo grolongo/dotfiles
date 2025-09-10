@@ -98,7 +98,7 @@ if [ -n "${SSH_TTY}" ] || \
        [ -n "${SSH_CLIENT}" ]; then
     hostStyle="%F{yellow}%m" # yellow
 else
-    hostStyle="%F{8}%m" # grey
+    hostStyle="%F{green}%m" # green
 fi
 
 PROMPT='%B%(!.%F{red}.%F{green})%n%f'

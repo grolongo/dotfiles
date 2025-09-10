@@ -80,7 +80,7 @@ if [ -n "${SSH_TTY}" ] || \
        [ -n "${SSH_CLIENT}" ]; then
     hostStyle="\[\e[1;33m\]";       # yellow
 else
-    hostStyle="\[\e[1;30m\]";       # grey
+    hostStyle="\[\e[1;32m\]";       # green
 fi;
 
 if [ "${TERM}" = "dumb" ]; then # for Tramp
