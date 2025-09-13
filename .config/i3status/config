@@ -12,7 +12,7 @@ general {
         colors = true
         color_good = "#AEEA94"
         color_degraded = "#A3C0F2"
-        color_bad = "#A3C0F2"
+        color_bad = "#F76464"
 }
 
 # order += "run_watch DHCP"
