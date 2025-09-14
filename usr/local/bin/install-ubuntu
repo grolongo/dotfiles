@@ -627,6 +627,8 @@ set_sway() {
         playerctl
         # pulseaudio
         sway
+        swaylock
+        swayidle
         ttf-mscorefonts-installer
         ubuntu-drivers-common
         ubuntu-restricted-extras
