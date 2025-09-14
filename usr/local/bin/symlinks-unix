@@ -158,8 +158,10 @@ confirm "Install symlinks for ${USER}?" && {
     # sway
     confirm "link sway files?" && {
         mkdir -vp "${HOME}/.config/sway"
-        mkdir -vp "${HOME}/.config/i3status"
         symlink ".config/sway/config"
+        mkdir -vp "${HOME}/.config/swaylock"
+        symlink ".config/swaylock/config"
+        mkdir -vp "${HOME}/.config/i3status"
         symlink ".config/i3status/config"
         mkdir -vp "${HOME}/.config/fontconfig"
         symlink ".config/fontconfig/fonts.conf"
