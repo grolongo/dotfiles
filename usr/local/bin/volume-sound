@@ -18,7 +18,7 @@ fi
 ID=$(cat $HOME/.config/dunst/.dunst_volume)
 if [ $ID -gt "0" ]
 then
-    dunstify -p -r $ID "Volume: $TEXT" >$HOME/.config/dunst/.dunst_volume
+    notify-send -p -r $ID "Volume: $TEXT" >$HOME/.config/dunst/.dunst_volume
 else
-    dunstify -p "Volume: $TEXT" >$HOME/.config/dunst/.dunst_volume
+    notify-send -p "Volume: $TEXT" >$HOME/.config/dunst/.dunst_volume
 fi
