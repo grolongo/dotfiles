@@ -567,10 +567,12 @@ set_i3wm() {
         brightnessctl
         caffeine
         dosfstools
+        dunst
         fonts-noto
         fonts-spleen
         fonts-ubuntu
         i3
+        libnotify-bin
         mtools
         pinentry-gtk2
         playerctl
@@ -622,6 +624,7 @@ set_sway() {
         fonts-spleen
         fonts-ubuntu
         i3status
+        libnotify-bin
         mtools
         pinentry-gtk2
         playerctl
