@@ -620,6 +620,7 @@ set_sway() {
         brightnessctl
         caffeine
         dosfstools
+        dunst
         fonts-noto
         fonts-spleen
         fonts-ubuntu
