@@ -610,6 +610,9 @@ set_i3wm() {
 
     msg_info "Adding ourselves to video group in order to use brightnessctl without sudo..."
     usermod -aG video "${SUDO_USER}"
+
+    msg_info "Setting up timezone..."
+    timedatectl set-timezone Europe/Paris
 }
 
 set_sway() {
@@ -660,6 +663,9 @@ set_sway() {
 
     msg_info "Adding ourselves to video group in order to use brightnessctl without sudo..."
     usermod -aG video "${SUDO_USER}"
+
+    msg_info "Setting up timezone..."
+    timedatectl set-timezone Europe/Paris
 }
 
 set_git() {
