@@ -12,7 +12,7 @@ function get_brightness {
 
 function show_brightness_notif {
     brightness=$(get_brightness)
-    notify-send -u normal -t 3000 -h string:x-dunst-stack-tag:brightness_notif -h int:value:"${brightness}" "Brightness: ${brightness}%"
+    notify-send -u low -t 3000 -h string:x-dunst-stack-tag:brightness_notif -h int:value:"${brightness}" "Brightness: ${brightness}%"
 }
 
 case $1 in
