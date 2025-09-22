@@ -21,13 +21,12 @@
     # Dunst 1.11
     # progress_bar_corners = bottom-left, top-right
 
-    icon_corner_radius = 0
     indicate_hidden = yes
     transparency = 0
     separator_height = 2
     padding = 15
-    horizontal_padding = 8
-    text_icon_padding = 12
+    horizontal_padding = 15
+    text_icon_padding = 15
     frame_width = 1
     frame_color = "#a0a0a0"
     gap_size = 6
@@ -50,6 +49,7 @@
     show_indicators = yes
 
     ### Icons ###
+    icon_corner_radius = 0
     enable_recursive_icon_lookup = true
     icon_theme = Adwaita
     icon_position = left
