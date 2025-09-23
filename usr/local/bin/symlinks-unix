@@ -135,18 +135,14 @@ confirm "Install symlinks for ${USER}?" && {
         fi
     }
 
-    # dunst
-    confirm "link dunst config file?" && {
-        mkdir -vp "${HOME}/.config/dunst"
-        symlink ".config/dunst/dunstrc"
-    }
-
     # i3
     confirm "link i3 files?" && {
         mkdir -vp "${HOME}/.config/i3"
-        mkdir -vp "${HOME}/.config/i3status"
         symlink ".config/i3/config"
+        mkdir -vp "${HOME}/.config/i3status"
         symlink ".config/i3status/config"
+        mkdir -vp "${HOME}/.config/dunst"
+        symlink ".config/dunst/dunstrc"
         symlink ".xsessionrc"
         mkdir -vp "${HOME}/.config/fontconfig"
         symlink ".config/fontconfig/fonts.conf"
@@ -167,6 +163,10 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/fontconfig/fonts.conf"
         mkdir -vp "${HOME}/.config/foot"
         symlink ".config/foot/foot.ini"
+        mkdir -vp "${HOME}/.config/tofi"
+        symlink ".config/tofi/config"
+        mkdir -vp "${HOME}/.config/dunst"
+        symlink ".config/dunst/dunstrc"
     }
 
     # X

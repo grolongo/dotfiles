@@ -636,6 +636,7 @@ set_sway() {
         sway
         swaylock
         swayidle
+        tofi
         ttf-mscorefonts-installer
         ubuntu-drivers-common
         ubuntu-restricted-extras
