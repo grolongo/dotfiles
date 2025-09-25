@@ -157,6 +157,8 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/sway/config"
         mkdir -vp "${HOME}/.config/swaylock"
         symlink ".config/swaylock/config"
+        mkdir -vp "${HOME}/.config/swayimg"
+        symlink ".config/swayimg/config"
         mkdir -vp "${HOME}/.config/i3status"
         symlink ".config/i3status/config"
         mkdir -vp "${HOME}/.config/fontconfig"
@@ -165,8 +167,8 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/foot/foot.ini"
         mkdir -vp "${HOME}/.config/tofi"
         symlink ".config/tofi/config"
-        mkdir -vp "${HOME}/.config/dunst"
-        symlink ".config/dunst/dunstrc"
+        mkdir -vp "${HOME}/.config/mako"
+        symlink ".config/mako/config"
     }
 
     # X

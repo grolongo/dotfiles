@@ -1,0 +1,9 @@
+[general]
+transparency = none
+background = #000000
+
+[font]
+name = Ubuntu Sans Mono
+
+[info]
+mode = off

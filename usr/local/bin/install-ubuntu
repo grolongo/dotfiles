@@ -621,21 +621,20 @@ set_sway() {
     local packages=(
         aircrack-ng
         brightnessctl
-        caffeine
         dosfstools
-        dunst
         fonts-noto
         fonts-spleen
         fonts-ubuntu
         i3status
         libnotify-bin
+        mako-notifier
         mtools
         pinentry-gtk2
         playerctl
-        # pulseaudio
         sway
         swaylock
         swayidle
+        swayimg
         tofi
         ttf-mscorefonts-installer
         ubuntu-drivers-common
