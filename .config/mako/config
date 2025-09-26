@@ -1,0 +1,29 @@
+on-button-right=dismiss-all
+font="Ubuntu Sans Mono" 10
+
+background-color=#222222
+text-color=#ffffff
+progress-color=over #BDB7AB
+
+width=350
+height=300
+outer-margin=25,0
+padding=15
+border-size=1
+border-radius=6
+
+icons=1
+icon-path=/usr/share/icons/Adwaita:/usr/share/icons/Humanity
+
+max-visible=-1
+
+[urgency=low]
+default-timeout=5000
+border-color=#808080
+
+[urgency=normal]
+border-color=#5e5086
+
+[urgency=critical]
+border-color=#d54e53
+default-timeout=0
