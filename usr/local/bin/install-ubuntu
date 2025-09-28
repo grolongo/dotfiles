@@ -201,6 +201,7 @@ apt_common() {
         mkdir -vp "${mpv_config_path}"
 
         (
+            tmpdir=$(mktemp -d)
             cd "${tmpdir}" || exit 1
             wget -O uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
             unzip -n uosc.zip -d "${mpv_config_path}"
