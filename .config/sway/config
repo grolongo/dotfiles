@@ -13,6 +13,8 @@ set $down  n
 set $up    p
 set $right f
 
+titlebar_padding 4 2
+
 # ------------------
 # Idle configuration
 # ------------------
