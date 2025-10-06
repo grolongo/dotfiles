@@ -624,7 +624,6 @@ set_sway() {
         brightnessctl
         dosfstools
         fonts-noto
-        fonts-spleen
         fonts-ubuntu
         #i3status
         libnotify-bin
