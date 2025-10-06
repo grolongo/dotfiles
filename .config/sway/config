@@ -1,5 +1,6 @@
 # xwayland disable
 for_window [shell="xwayland"] title_format "[XWayland] %title"
+#exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec_always autotiling
 exec mako
 exec synology-drive
@@ -192,21 +193,23 @@ bindsym Print exec grim
 # Status Bar
 # ----------
 
-bar {
-    position bottom
-    status_command i3status
+exec waybar
 
-    colors {
-        background #000000
-        statusline #ffffff
-        separator #666666
+# bar {
+#     position bottom
+#     status_command i3status
 
-        focused_workspace  #4c7899 #285577 #ffffff
-        active_workspace   #333333 #5f676a #ffffff
-        inactive_workspace #333333 #222222 #888888
-        urgent_workspace   #2f343a #900000 #ffffff
-        binding_mode       #2f343a #900000 #ffffff
-    }
-}
+#     colors {
+#         background #000000
+#         statusline #ffffff
+#         separator #666666
+
+#         focused_workspace  #4c7899 #285577 #ffffff
+#         active_workspace   #333333 #5f676a #ffffff
+#         inactive_workspace #333333 #222222 #888888
+#         urgent_workspace   #2f343a #900000 #ffffff
+#         binding_mode       #2f343a #900000 #ffffff
+#     }
+# }
 
 include @sysconfdir@/sway/config.d/*
