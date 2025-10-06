@@ -626,7 +626,7 @@ set_sway() {
         fonts-noto
         fonts-spleen
         fonts-ubuntu
-        i3status
+        #i3status
         libnotify-bin
         mako-notifier
         mtools
@@ -642,6 +642,7 @@ set_sway() {
         ubuntu-restricted-extras
         ubuntu-restricted-addons
         unzip
+        waybar
         wireplumber
         xwayland
     )

@@ -1,0 +1,81 @@
+* {
+    font-family: FontAwesome, Symbols Nerd Font Mono, DejaVu Sans Mono;
+    font-size: 14px;
+}
+
+#custom-sep {
+    color: #666666;
+    margin: 0 2px;
+}
+
+window#waybar {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+button {
+    box-shadow: none;
+    text-shadow: none;
+    background: none;
+    transition: none;
+    border: none;
+    border-radius: 0;
+}
+
+#workspaces button {
+    border: 1px solid #333333;
+    background-color: #222222;
+    color: #888888;
+    padding: 0 6px;
+    margin: 2 2px;
+}
+
+#workspaces button.focused {
+    border: 1px solid #4c7899;
+    background-color: #285577;
+    color: #ffffff;
+}
+
+#workspaces button.urgent {
+    border: 1px solid #2f343a;
+    background-color: #900000;
+    color: #ffffff;
+}
+
+#mode {
+    background-color: #444444;
+}
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#custom-media,
+#tray,
+#mode,
+#idle_inhibitor,
+#scratchpad,
+#window,
+
+#workspaces {
+    margin: 0 5px;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+#network.disconnected {
+    color: #f53c3c;
+}
+
+#temperature.critical {
+    color: #f53c3c;
+}

@@ -169,6 +169,9 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/tofi/config"
         mkdir -vp "${HOME}/.config/mako"
         symlink ".config/mako/config"
+        mkdir -vp "${HOME}/.config/waybar"
+        symlink ".config/waybar/config.jsonc"
+        symlink ".config/waybar/style.css"
     }
 
     # X
