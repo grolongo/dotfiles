@@ -643,6 +643,7 @@ set_sway() {
         unzip
         waybar
         wireplumber
+        wl-clipboard
         xwayland
     )
 
