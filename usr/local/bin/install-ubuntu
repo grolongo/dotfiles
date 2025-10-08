@@ -625,12 +625,14 @@ set_sway() {
         dosfstools
         fonts-noto
         fonts-ubuntu
+        grim
         #i3status
         libnotify-bin
         mako-notifier
         mtools
         pinentry-gtk2
         playerctl
+        slurp
         sway
         swaylock
         swayidle
