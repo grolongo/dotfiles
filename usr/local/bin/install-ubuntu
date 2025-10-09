@@ -670,6 +670,34 @@ set_sway() {
 
     msg_info "Setting up timezone..."
     timedatectl set-timezone Europe/Paris
+
+    msg_info "Setting up extra fonts..."
+    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+
+    local nerdfonts_latest
+    nerdfonts_latest=$(wget -qO- "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest" | jq --raw-output .tag_name)
+    nerdfonts_latest=${nerdfonts_latest#v}
+
+    local repo
+    repo="https://github.com/ryanoasis/nerd-fonts/releases/download/"
+    local release
+    release="v${nerdfonts_latest}/NerdFontsSymbolsOnly.zip"
+
+    (
+        msg_info "Creating temporary folder..."
+        cd "${tmpdir}" || exit 1
+
+        msg_info "Downloading and extracting nerd fonts..."
+        wget "${repo}${release}"
+        unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype
+
+    )
+
+    msg_info "Updating font cache..."
+    fc-cache -f -v
+
+    msg_info "Deleting temp folder..."
+    rm -rf "${tmpdir}"
 }
 
 set_git() {
