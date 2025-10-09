@@ -675,7 +675,7 @@ set_sway() {
     msg_info "Setting up timezone..."
     timedatectl set-timezone Europe/Paris
 
-    msg_info "Setting up extra fonts..."
+    msg_info "Setting up Nerd fonts..."
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
     local nerdfonts_latest
@@ -693,14 +693,30 @@ set_sway() {
 
         msg_info "Downloading and extracting nerd fonts..."
         wget "${repo}${release}"
-        unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype
+        unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype/nerdfonts
     )
-
-    msg_info "Updating font cache..."
-    fc-cache -f -v
 
     msg_info "Deleting temp folder..."
     rm -rf "${tmpdir}"
+
+    msg_info "Setting up Font Awesome..."
+
+    (
+        msg_info "Creating temporary folder..."
+        cd "${tmpdir}" || exit 1
+
+        msg_info "Downloading and extracting Font Awesome..."
+        wget https://use.fontawesome.com/releases/v7.1.0/fontawesome-free-7.1.0-desktop.zip
+        unzip fontawesome-free-7.1.0-desktop.zip
+        mkdir -vp /usr/share/fonts/opentype/font-awesome-7
+        mv ./fontawesome-free-7.1.0-desktop/otfs/*.otf /usr/share/fonts/opentype/font-awesome-7
+    )
+
+    msg_info "Deleting temp folder..."
+    rm -rf "${tmpdir}"
+
+    msg_info "Updating font cache..."
+    fc-cache -f -v
 }
 
 set_git() {
