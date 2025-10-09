@@ -91,6 +91,10 @@ initial_setup() {
         passwd --delete root
         passwd --lock root
     }
+
+    msg_info "Creating Downloads folder in home..."
+    mkdir -vp "/home/${SUDO_USER}/Downloads"
+    chown "${SUDO_USER}":"${SUDO_USER}" "/home/${SUDO_USER}/Downloads"
 }
 
 apt_common() {
