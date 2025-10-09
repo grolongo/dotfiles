@@ -690,7 +690,6 @@ set_sway() {
         msg_info "Downloading and extracting nerd fonts..."
         wget "${repo}${release}"
         unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype
-
     )
 
     msg_info "Updating font cache..."
