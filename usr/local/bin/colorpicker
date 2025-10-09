@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -e
+set -u
+set -o pipefail
+IFS=$'\n\t'
+
+TMP=$(mktemp --suffix=.png); trap 'rm -f "$TMP"' EXIT
+
+# grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:-
+# grim -g "$(slurp -p)" -t ppm - | magick "$TMP" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2>/dev/null || echo "#??????"
+
+# hex=$(magick "$TMP" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2>/dev/null || echo "#??????")
+
+# echo "$hex" | xclip -selection clipboard -i && notify-send -i "$TMP" "Color: $hex"
+
+
+TMP="/tmp/color.png"
+
+HEX=$(stream "$TMP" -scale 1x1\! -format "#%[hex:p{0,0}]" info:)
+
+notify-send -i "$TMP" $HEX
+
+rm "$TMP"
