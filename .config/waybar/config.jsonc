@@ -23,7 +23,7 @@
         // "wireplumber",
         // "custom/sep",
         "battery",
-        "power-profiles-daemon",
+        // "power-profiles-daemon",
         "custom/sep",
         "clock",
         "custom/sep",

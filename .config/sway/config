@@ -77,8 +77,7 @@ assign [app_id="firefox"]       $ws3
 assign [app_id="chromium"]      $ws3
 assign [app_id="Tor Browser"]   $ws4
 assign [app_id="Spotify"]       $ws5
-assign [app_id="chatty-Chatty"] $ws6
-assign [app_id="KeePassXC"]     $ws7
+assign [app_id="KeePassXC"]     $ws6
 
 # Floating Apps
 floating_modifier $mod normal
