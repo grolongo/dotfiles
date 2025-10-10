@@ -7,7 +7,7 @@
 compress_backup () {
     read -r -e -p "Enter sync folder path: " syncpath
 
-    tmpdir=$(mktemp -d)
+    tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
     tarfile="$tmpdir"/backup.tar.gz
 
     echo "Creating tar file..."

@@ -59,7 +59,7 @@ spin() {
     done
 }
 
-tmpdir=$(mktemp -d)
+tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
 
 # check if running macOS
 [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
@@ -329,8 +329,6 @@ install_casks() {
         curl -L#o "${mpv_config_path}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
         curl -L#o "${mpv_config_path}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
         curl -L#o "${mpv_config_path}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
-
-        rm -rf "${tmpdir}"
     }
 
     echo
@@ -367,16 +365,18 @@ install_macports() {
     local repo="https://github.com/macports/macports-base/releases/download/"
     local release="v${macports_latest}/MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
 
+    tmpdir_mp=$(mktemp -d)
+
     (
         msg_info "Creating temporary folder..."
-        cd "${tmpdir}" || exit 1
+        cd "${tmpdir_mp}" || exit 1
 
         msg_info "Downloading MacPorts..."
         curl -#OL "${repo}${release}"
         open ./"MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
     )
 
-    confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "${tmpdir}"
+    confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "${tmpdir_mp}"
 }
 
 install_ports() {

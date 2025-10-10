@@ -56,6 +56,8 @@ apt_clean() {
     apt clean
 }
 
+tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
+
 # sourcing /etc/os-release file which contains $ID variable
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -272,8 +274,6 @@ install_seafile() {
     repo="https://github.com/haiwen/seafile-rpi/releases/download/"
     release="v${sf_latest}/seafile-server_${sf_latest}_stable_pi.tar.gz"
 
-    tmpdir=$(mktemp -d)
-
     msg_info "Creating Seafile dir in home..."
     mkdir -vp "${HOME}"/Seafile
 
@@ -284,9 +284,6 @@ install_seafile() {
         msg_info "Downloading and extracting Seafile ${sf_latest}"
         curl -#L "${repo}${release}" | tar -C "${HOME}"/Seafile -xzf -
     )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "$tmpdir"
 
     local packages=(
         python2.7
@@ -461,8 +458,6 @@ install_fail2ban() {
     repo="https://github.com/fail2ban/fail2ban/archive/"
     release="${f2b_latest}.tar.gz"
 
-    tmpdir=$(mktemp -d)
-
     (
         msg_info "Creating temporary folder..."
         cd "$tmpdir" || exit 1
@@ -484,9 +479,6 @@ install_fail2ban() {
 
     msg_info "Starting the service..."
     service fail2ban start
-
-    msg_info "Deleting temp folder..."
-    rm -rf "$tmpdir"
 
     echo
     echo "You can now add your own jail.local and filters to /etc/fail2ban"
