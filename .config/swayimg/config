@@ -1,9 +1,8 @@
-[general]
-transparency = none
-background = #000000
+[viewer]
+window = #000000ff
 
 [font]
 name = Ubuntu Sans Mono
 
 [info]
-mode = off
+show = no
