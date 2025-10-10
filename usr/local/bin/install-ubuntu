@@ -67,7 +67,7 @@ spin() {
 
 arch=$(dpkg --print-architecture)
 distrib=$(lsb_release -sc 2> /dev/null)
-tmpdir=$(mktemp -d)
+tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
 
 # Ubuntu OS check
 # sourcing /etc/os-release file which contains $ID variable
@@ -205,7 +205,7 @@ apt_common() {
         mkdir -vp "${mpv_config_path}"
 
         (
-            tmpdir=$(mktemp -d)
+            tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
             cd "${tmpdir}" || exit 1
             wget -O uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
             unzip -n uosc.zip -d "${mpv_config_path}"
@@ -215,8 +215,6 @@ apt_common() {
         wget -O "${mpv_config_path}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
         wget -O "${mpv_config_path}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
         wget -O "${mpv_config_path}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
-
-        rm -rf "${tmpdir}"
         '
     }
 
@@ -342,8 +340,6 @@ apt_extra() {
                         apt install ./docker-desktop-"${version}"-amd64.deb
                     )
 
-                    msg_info "Deleting temp folder..."
-                    rm -rf "${tmpdir}"
                     break;;
                 *)
                     msg_error "Wrong input";;
@@ -431,9 +427,6 @@ install_emacs() {
         make install
     )
 
-    msg_info "Deleting temp folder..."
-    rm -rf "${tmpdir}"
-
     ln -s "${install_path}"/bin/emacs-"${emacs_version}" /usr/local/bin/emacs
 }
 
@@ -451,9 +444,6 @@ install_driveclient() {
         wget -O sdc.deb "$source"
         apt install ./sdc.deb
     )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "${tmpdir}"
 }
 
 install_chatty() {
@@ -484,9 +474,6 @@ install_chatty() {
         wget "${repo}${release}"
         unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
     )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "${tmpdir}"
 }
 
 set_gsettings() {
@@ -693,11 +680,8 @@ set_sway() {
 
         msg_info "Downloading and extracting nerd fonts..."
         wget "${repo}${release}"
-        unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype/nerdfonts
+        unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype/nerdfonts-test
     )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "${tmpdir}"
 
     msg_info "Setting up Font Awesome..."
 
@@ -708,12 +692,9 @@ set_sway() {
         msg_info "Downloading and extracting Font Awesome..."
         wget https://use.fontawesome.com/releases/v7.1.0/fontawesome-free-7.1.0-desktop.zip
         unzip fontawesome-free-7.1.0-desktop.zip
-        mkdir -vp /usr/share/fonts/opentype/font-awesome-7
-        mv ./fontawesome-free-7.1.0-desktop/otfs/*.otf /usr/share/fonts/opentype/font-awesome-7
+        mkdir -vp /usr/share/fonts/opentype/font-awesome-7-test
+        mv ./fontawesome-free-7.1.0-desktop/otfs/*.otf /usr/share/fonts/opentype/font-awesome-7-test
     )
-
-    msg_info "Deleting temp folder..."
-    rm -rf "${tmpdir}"
 
     msg_info "Updating font cache..."
     fc-cache -f -v
