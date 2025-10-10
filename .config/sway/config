@@ -43,8 +43,8 @@ input type:touchpad {
     natural_scroll enabled   # "reverse scrolling"
     middle_emulation enabled # middle click emulation
     accel_profile "flat"     # "adaptive" to enable
-    pointer_accel 0.5        # set mouse sensitivity (between -1 and 1)
-    # scroll_factor
+    pointer_accel 0          # set mouse sensitivity (between -1 and 1)
+    scroll_factor 0.4
 }
 
 input type:pointer {
