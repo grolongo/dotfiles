@@ -680,7 +680,7 @@ set_sway() {
 
         msg_info "Downloading and extracting nerd fonts..."
         wget "${repo}${release}"
-        unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype/nerdfonts-test
+        unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype/nerdfonts
     )
 
     msg_info "Setting up Font Awesome..."
@@ -692,8 +692,8 @@ set_sway() {
         msg_info "Downloading and extracting Font Awesome..."
         wget https://use.fontawesome.com/releases/v7.1.0/fontawesome-free-7.1.0-desktop.zip
         unzip fontawesome-free-7.1.0-desktop.zip
-        mkdir -vp /usr/share/fonts/opentype/font-awesome-7-test
-        mv ./fontawesome-free-7.1.0-desktop/otfs/*.otf /usr/share/fonts/opentype/font-awesome-7-test
+        mkdir -vp /usr/share/fonts/opentype/font-awesome-7
+        mv ./fontawesome-free-7.1.0-desktop/otfs/*.otf /usr/share/fonts/opentype/font-awesome-7
     )
 
     msg_info "Updating font cache..."
