@@ -1,3 +1,5 @@
+/* up, right, bottom, left */
+
 * {
     font-family: FontAwesome, Symbols Nerd Font Mono, DejaVu Sans Mono;
     font-size: 14px;
@@ -5,7 +7,7 @@
 
 #custom-sep {
     color: #666666;
-    margin: 0 2px;
+    margin: 0px 2px;
 }
 
 window#waybar {
@@ -19,15 +21,15 @@ button {
     background: none;
     transition: none;
     border: none;
-    border-radius: 0;
+    border-radius: 0px;
 }
 
 #workspaces button {
     border: 1px solid #333333;
     background-color: #222222;
     color: #888888;
-    padding: 0 4px;
-    margin: 2 1px;
+    padding: 0px 4px;
+    margin: 2px 1px;
 }
 
 #workspaces button.focused {
@@ -63,13 +65,17 @@ button {
 #scratchpad,
 #window,
 
-#workspaces {
-    margin: 0 5px;
-}
+/* #workspaces { */
+/* margin: 0px 5px; */
+/* } */
 
 /* If workspaces is the leftmost module, omit left margin */
 .modules-left > widget:first-child > #workspaces {
-    margin-left: 0;
+    margin-left: 0px;
+}
+
+#clock {
+    margin: 0px 10px 0px 0px;
 }
 
 #network.disconnected {
@@ -78,4 +84,30 @@ button {
 
 #temperature.critical {
     color: #f53c3c;
+}
+
+#language {
+    margin: 0px 2px 0px 0px;
+}
+
+#power-profiles-daemon.performance {
+    font-size: 16px;
+    color: #f53c3c;
+    margin: 0px 2px 0px 2px;
+}
+
+#power-profiles-daemon.balanced {
+    font-size: 16px;
+    margin: 0px 2px 0px 2px;
+}
+
+#power-profiles-daemon.power-saver {
+    font-size: 16px;
+    color: #aeea94;
+    margin: 0px 2px 0px 2px;
+}
+
+#idle_inhibitor {
+    font-size: 18px;
+    margin: 0px 4px 0px 2px;
 }

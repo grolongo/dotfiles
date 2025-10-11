@@ -1,6 +1,6 @@
 {
     "position": "bottom",
-    "height": 1,
+    "height": 0,
     "spacing": 0,
 
     "modules-left": [
@@ -23,11 +23,10 @@
         // "wireplumber",
         // "custom/sep",
         "battery",
-        // "power-profiles-daemon",
         "custom/sep",
         "clock",
-        "custom/sep",
         "sway/language",
+        "power-profiles-daemon",
         "idle_inhibitor",
         "tray"],
 
@@ -118,15 +117,14 @@
     },
 
     "power-profiles-daemon": {
-      "format": "{icon} {profile}",
-      "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
-      "tooltip": true,
+      "format": "{icon}",
       "format-icons": {
-        "default": "",
-        "performance": "",
-        "balanced": "",
-        "power-saver": ""
-      }
+        "default": "󰡴",
+        "performance": "󰡴",
+        "balanced": "",
+        "power-saver": "󰡳"
+      },
+      "tooltip": false
     },
 
     "clock": {
@@ -134,7 +132,7 @@
     },
 
     "sway/language": {
-        "format": "{short} {variant}",
+        "format": "{flag}",
         "on-click": "swaymsg input type:keyboard xkb_switch_layout next",
         "tooltip": false
     },
@@ -150,6 +148,6 @@
 
     "tray": {
         "icon-size": 20,
-        "spacing": 6
+        "spacing": 4
     }
 }

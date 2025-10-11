@@ -622,6 +622,7 @@ set_sway() {
         mako-notifier
         mtools
         pinentry-gtk2
+        power-profiles-daemon
         playerctl
         slurp
         sway

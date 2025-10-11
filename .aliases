@@ -10,6 +10,7 @@ if [[ "$OSTYPE" = linux* ]]; then
     alias mv="mv --interactive --verbose"
     alias rm="rm --interactive=once --verbose"
     alias fstabshow="column -t /etc/fstab"
+    alias img="swayimg"
 fi
 
 #############
