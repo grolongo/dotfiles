@@ -186,9 +186,9 @@ bindsym XF86KbdBrightnessDown exec "sudo keyboard-backlight down"
 bindsym XF86KbdBrightnessUp   exec "sudo keyboard-backlight up"
 
 # Special keys to take a screenshot with grim
-bindsym print        exec grim "${HOME}"/Downloads/$(date +'%s_grim.png')
-bindsym ctrl+print   exec grim -g "$(slurp)" "${HOME}"/Downloads/$(date +'%s_grim.png')
-bindsym ctrl+c+print exec grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | wl-copy
+bindsym print      exec grim "${HOME}"/Downloads/$(date +'screenshot_%d-%b-%Y_%Hh%M_%N.png')
+bindsym ctrl+print exec grim -g "$(slurp)" "${HOME}"/Downloads/$(date +'screenshot_%d-%b-%Y_%Hh%M_%N.png')
+bindsym $mod+c     exec colorpicker
 
 # ----------
 # Status Bar

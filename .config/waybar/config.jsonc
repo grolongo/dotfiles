@@ -24,11 +24,11 @@
         // "custom/sep",
         "battery",
         "custom/sep",
-        "clock",
         "sway/language",
         "power-profiles-daemon",
         "idle_inhibitor",
-        "tray"],
+        "tray",
+        "clock"],
 
     "custom/sep": {
         "format": "│",
@@ -128,7 +128,7 @@
     },
 
     "clock": {
-        "format-alt": "{:%a %d-%b-%Y %H:%M}"
+        "format-alt": "{:%a %d %b %H:%M}"
     },
 
     "sway/language": {
