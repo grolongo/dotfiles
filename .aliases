@@ -33,6 +33,7 @@ fi
 # utils (blank space so its not in history)
 alias clear=" clear"
 alias claer=" clear"
+alias cl=" clear"
 alias exit=" exit"
 alias fd="fd --hidden"
 alias mg="mg -n"

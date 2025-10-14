@@ -1,14 +1,13 @@
-/* up, right, bottom, left */
-
 * {
     font-family: FontAwesome, Symbols Nerd Font Mono, DejaVu Sans Mono;
     font-size: 14px;
 }
 
-#custom-sep {
-    color: #666666;
-    margin: 0px 2px;
-}
+/* ***************** */
+/* Main Bar Settings */
+/* ***************** */
+
+/* up, right, bottom, left */
 
 window#waybar {
     background-color: #000000;
@@ -48,31 +47,24 @@ button {
     background-color: #444444;
 }
 
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#backlight,
-#network,
-#pulseaudio,
-#wireplumber,
-#custom-media,
-#tray,
-#mode,
-#idle_inhibitor,
-#scratchpad,
-#window,
-
-/* #workspaces { */
-/* margin: 0px 5px; */
-/* } */
+#custom-sep {
+    color: #666666;
+    margin: 0px 2px;
+}
 
 /* If workspaces is the leftmost module, omit left margin */
 .modules-left > widget:first-child > #workspaces {
     margin-left: 0px;
 }
+
+/* **************** */
+/* Modules Settings */
+/* **************** */
+
+/* uncomment to have spaces between modules */
+/* #workspaces { */
+/* margin: 0px 5px; */
+/* } */
 
 #clock {
     margin: 0px 0px 0px 8px;
@@ -111,4 +103,12 @@ button {
 #idle_inhibitor {
     font-size: 18px;
     margin: 0px 4px 0px 2px;
+}
+
+#memory.critical {
+    color: #f53c3c;
+}
+
+#disk.critical {
+    color: #f53c3c;
 }
