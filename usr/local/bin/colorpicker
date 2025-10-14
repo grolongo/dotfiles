@@ -8,7 +8,7 @@ IFS=$'\n\t'
 # also waiting for https://github.com/emersion/mako/pull/585 to be merged,
 # mako will display 1x1 icon while dunst while show a proper size.
 
-tmpfile=$(mktemp --suffix=.png); trap 'rm -f "$tmpfile"' EXIT
+tmpfile=$(mktemp --suffix=.ppm); trap 'rm -f "$tmpfile"' EXIT
 
 grim -g "$(slurp -p)" -t ppm "$tmpfile"
 hex=$(magick "$tmpfile" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2>/dev/null || echo "#??????")
