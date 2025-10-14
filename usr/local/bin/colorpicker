@@ -4,20 +4,12 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-TMP=$(mktemp --suffix=.png); trap 'rm -f "$TMP"' EXIT
+# Note:
+# also waiting for https://github.com/emersion/mako/pull/585 to be merged,
+# mako will display 1x1 icon while dunst while show a proper size.
 
-# grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:-
-# grim -g "$(slurp -p)" -t ppm - | magick "$TMP" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2>/dev/null || echo "#??????"
+tmpfile=$(mktemp --suffix=.png); trap 'rm -f "$tmpfile"' EXIT
 
-# hex=$(magick "$TMP" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2>/dev/null || echo "#??????")
-
-# echo "$hex" | xclip -selection clipboard -i && notify-send -i "$TMP" "Color: $hex"
-
-
-TMP="/tmp/color.png"
-
-HEX=$(stream "$TMP" -scale 1x1\! -format "#%[hex:p{0,0}]" info:)
-
-notify-send -i "$TMP" $HEX
-
-rm "$TMP"
+grim -g "$(slurp -p)" -t ppm "$tmpfile"
+hex=$(magick "$tmpfile" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2>/dev/null || echo "#??????")
+echo "$hex" | wl-copy && notify-send -i "$tmpfile" "$hex"
