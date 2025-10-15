@@ -203,13 +203,16 @@ apt_common() {
         local mpv_config_path
         mpv_config_path="${HOME}/.config/mpv"
         mkdir -vp "${mpv_config_path}"
+        local tmpdir
+        tmpdir=$(mktemp -d)
 
         (
-            tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
             cd "${tmpdir}" || exit 1
             wget -O uosc.zip https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip
             unzip -n uosc.zip -d "${mpv_config_path}"
         )
+
+        rm -rf ${tmpdir}
 
         wget -O "${mpv_config_path}/scripts/thumbfast.lua" https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua
         wget -O "${mpv_config_path}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
