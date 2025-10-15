@@ -202,7 +202,7 @@ apt_common() {
         sudo -u "${SUDO_USER}" bash -c '
         local mpv_config_path
         mpv_config_path="${HOME}/.config/mpv"
-        mkdir -vp "${mpv_config_path}"
+        mkdir -vp "${mpv_config_path}/scripts"
         local tmpdir
         tmpdir=$(mktemp -d)
 
