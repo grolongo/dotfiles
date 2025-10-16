@@ -115,7 +115,6 @@ apt_common() {
         imagemagick
         jq
         keepassxc
-        mg
         mkvtoolnix
         ncat
         nmap
@@ -140,6 +139,11 @@ apt_common() {
     for p in "${packagesnore[@]}"; do
         confirm "Install ${p}?" && apt install -y "${p}" --no-install-recommends
     done
+
+    confirm "Install mg (editor)?" && {
+        apt install -y mg
+        update-alternatives --set editor /usr/bin/mg
+    }
 
     confirm "Install qbittorrent?" && {
         apt install -y qbittorrent
