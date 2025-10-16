@@ -4,9 +4,9 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
 # EDITORS
-export SUDO_EDITOR="mg -n"
-export VISUAL="mg -n"
-export EDITOR="mg -n"
+export SUDO_EDITOR="/usr/bin/mg"
+export VISUAL="/usr/bin/mg"
+export EDITOR="/usr/bin/mg"
 export PAGER=less
 
 # GPG
