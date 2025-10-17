@@ -646,6 +646,8 @@ set_sway() {
         wireplumber
         wl-clipboard
         xwayland
+        yaru-theme-gtk
+        yaru-theme-icon
     )
 
     for p in "${packages[@]}"; do
