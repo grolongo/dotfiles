@@ -82,15 +82,25 @@ assign [app_id="KeePassXC"]     $ws6
 
 # Floating Apps
 floating_modifier $mod normal
-for_window [window_type="dialog"]   floating enable
-for_window [window_role="dialog"]   floating enable
+
 for_window [app_id="Tor Messenger"] floating enable
 for_window [app_id="Krita"]         floating enable
 for_window [app_id="VirtualBox"]    floating enable
 for_window [app_id="Steam"]         floating enable
-# for_window [app_id="KeePass"]       floating enable
 for_window [app_id="Seafile"]       floating enable
 for_window [app_id="Veracrypt"]     floating enable
+
+for_window [window_role="dialog"]      floating enable
+for_window [window_role="pop-up"]      floating enable
+for_window [window_role="bubble"]      floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_role="About"]       floating enable
+
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"]   floating enable
+
+for_window [app_id="firefox_firefox" title="Library"] floating enable
 
 # --------
 # Bindings
