@@ -36,10 +36,6 @@
         "tooltip": false
     },
 
-    "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>"
-    },
-
     "bluetooth": {
         "format": "<span color='#309bff'>󰂯</span> {status}",
         "format-disabled": "<span color='#309bff'>󰂲</span>",

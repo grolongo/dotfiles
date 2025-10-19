@@ -7,7 +7,7 @@
 /* Main Bar Settings */
 /* ***************** */
 
-/* up, right, bottom, left */
+/* top, right, bottom, left */
 
 window#waybar {
     background-color: #000000;
@@ -20,15 +20,15 @@ button {
     background: none;
     transition: none;
     border: none;
-    border-radius: 0px;
+    border-radius: 0px 0px 0px 0px;
 }
 
 #workspaces button {
     border: 1px solid #333333;
     background-color: #222222;
     color: #888888;
-    padding: 0px 4px;
-    margin: 2px 1px;
+    padding: 0px 5px 0px 5px;
+    margin: 3px 3px 0px 0px;
 }
 
 #workspaces button.focused {
@@ -38,13 +38,17 @@ button {
 }
 
 #workspaces button.urgent {
-    border: 1px solid #2f343a;
+    border: 1px solid #ff0000;
     background-color: #900000;
     color: #ffffff;
 }
 
 #mode {
-    background-color: #444444;
+    border: 1px solid #ff0000;
+    background-color: #900000;
+    color: #ffffff;
+    padding: 0px 5px 0px 5px;
+    margin: 3px 3px 0px 0px;
 }
 
 #custom-sep {
