@@ -22,10 +22,10 @@ titlebar_padding 4 2
 # ------------------
 
 exec swayidle -w \
-         timeout 300 swaylock \
+         timeout 300 swaylock-rand \
          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
          timeout 1200 'systemctl suspend' \
-         before-sleep swaylock
+         before-sleep swaylock-rand
 
 # ----------------------
 # Input(s) configuration
@@ -111,7 +111,7 @@ bindsym $mod+Return  exec $term
 bindsym $mod+d       exec $menu
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+c reload
-bindsym $mod+Shift+l exec swaylock
+bindsym $mod+Shift+l exec swaylock-rand
 bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 
 # Move your focus around
