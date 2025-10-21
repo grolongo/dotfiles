@@ -619,6 +619,7 @@ set_sway() {
 
     local packages=(
         aircrack-ng
+        bluez
         brightnessctl
         dosfstools
         fonts-noto
@@ -626,6 +627,7 @@ set_sway() {
         grim
         #i3status
         libnotify-bin
+        libspa-0.2-bluetooth # pipewire bluetooth
         mako-notifier
         mtools
         pinentry-gtk2
