@@ -92,10 +92,7 @@
     "pulseaudio": {
         "format": "{volume}%  {icon}",
         "format-muted": "{volume}% ",
-        "format-bluetooth": "{volume}%  {icon} ",
-        "format-bluetooth-muted": "{volume}%  ",
         "format-icons": {
-            "headphone": "",
             "default": ["", "", ""]
         },
         "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
@@ -111,7 +108,6 @@
                          "",
                          "",
                          ""],
-        "format-alt": "{icon}",
         "tooltip": false
     },
 
