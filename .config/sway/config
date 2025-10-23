@@ -152,17 +152,17 @@ bindsym $mod+Shift+agrave   move container to workspace number $ws10
 # Layout stuff
 bindsym $mod+down        splith
 bindsym $mod+right       splitv
-bindsym $mod+s           layout   stacking
+# bindsym $mod+s           layout   stacking
 bindsym $mod+w           layout   tabbed
 bindsym $mod+e           layout   toggle split
-bindsym $mod+Shift+s     fullscreen
+bindsym $mod+Shift+u     fullscreen
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+space       focus    mode_toggle
 bindsym $mod+a           focus    parent
 
 # Scratchpad
-# bindsym $mod+Shift+minus move scratchpad
-# bindsym $mod+minus scratchpad show
+bindsym $mod+Shift+s move scratchpad
+bindsym $mod+s scratchpad show
 
 # Resizing containers:
 bindsym $mod+r mode "resize"

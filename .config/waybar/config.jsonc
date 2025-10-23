@@ -39,6 +39,12 @@
         "tooltip": false
     },
 
+    "sway/scratchpad": {
+        "format": "scratchpad: {count}",
+        "show-empty": false,
+        "tooltip": false
+    },
+
     "bluetooth": {
         "format": "<span color='#309bff'>󰂯</span> {status}",
         "format-disabled": "<span color='#309bff'>󰂲</span> disabled",
