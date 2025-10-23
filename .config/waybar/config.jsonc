@@ -47,7 +47,7 @@
 
     "bluetooth": {
         "format": "<span color='#309bff'>󰂯</span> {status}",
-        "format-disabled": "<span color='#309bff'>󰂲</span> disabled",
+        "format-disabled": "<span color='#309bff'>󰂲</span> off",
         "format-connected": "<span color='#309bff'>󰂯</span> ({num_connections}) {device_alias} {device_address}",
         "format-connected-battery": "<span color='#309bff'>󰂯</span> ({num_connections}) {device_alias} {device_address} {device_battery_percentage}%",
         "tooltip": false
