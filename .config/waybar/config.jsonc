@@ -5,7 +5,9 @@
 
     "modules-left": [
         "sway/workspaces",
-        "sway/mode"],
+        "sway/mode",
+        "sway/scratchpad"
+    ],
 
     "modules-right": [
         "bluetooth",
@@ -28,7 +30,8 @@
         "power-profiles-daemon",
         "idle_inhibitor",
         "tray",
-        "clock"],
+        "clock"
+    ],
 
     "custom/sep": {
         "format": "│",
@@ -123,7 +126,8 @@
     },
 
     "clock": {
-        "format-alt": "{:%a %d %b %H:%M}"
+        "format-alt": "{:%a %d %b %H:%M}",
+        "tooltip": false
     },
 
     "sway/language": {
