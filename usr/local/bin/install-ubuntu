@@ -83,13 +83,30 @@ fi
 initial_setup() {
     check_is_sudo
 
-    msg_info "Adding passwordless sudo for ${SUDO_USER}"
-    echo "${SUDO_USER} ALL=(ALL:ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/"${SUDO_USER}"
-    echo
+    confirm "Enable passwordless sudo for ${SUDO_USER}?" && {
+        msg_info "Adding passwordless sudo for ${SUDO_USER}"
+        echo "${SUDO_USER} ALL=(ALL:ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/"${SUDO_USER}"
+        echo
+    }
 
     confirm "Disable ROOT account for security?" && {
         passwd --delete root
         passwd --lock root
+    }
+
+    confirm "Enable architecture variant for apt packages?" && {
+        msg_info "Updating dpkg..."
+        apt update
+        apt install -y dpkg
+
+        msg_info "Checking compatibility..."
+        ld.so --help | grep 'supported'
+
+        read -r -p "Enter one of the supported version (type 'v3' if you choose x86-64-v3): " version_number
+
+        echo "APT::Architecture-Variants \"amd64${version_number}\";" | tee /etc/apt/apt.conf.d/99enable-amd64"${version_number}"
+        apt update
+        apt upgrade
     }
 
     msg_info "Creating Downloads folder in home..."
