@@ -664,6 +664,8 @@ set_sway() {
         waybar
         wireplumber
         wl-clipboard
+        xdg-desktop-portal
+        xdg-desktop-portal-wlr
         xwayland
         yaru-theme-gtk
         yaru-theme-icon
