@@ -99,12 +99,40 @@ initial_setup() {
         apt update
         apt install -y dpkg
 
-        msg_info "Checking compatibility..."
-        ld.so --help | grep 'supported'
+        msg_info "Checking available versions..."
+        mapfile -t results < <(ld.so --help | grep 'supported' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
 
-        read -r -p "Enter one of the supported version (type 'v3' if you choose x86-64-v3): " version_number
+        if [ ${#results[@]} -eq 0 ]; then
+            msg_error "No supported versions available."
+            exit 1
+        fi
 
-        echo "APT::Architecture-Variants \"amd64${version_number}\";" | tee /etc/apt/apt.conf.d/99enable-amd64"${version_number}"
+        PS3="Please select a version (enter number): "
+
+        select choice in "${results[@]}"; do
+            if [ -z "${choice}" ]; then
+                msg_error "Invalid choice. Try again."
+                continue
+            fi
+
+            case "${choice}" in
+                *v2*)
+                    version_number=v2
+                    break;;
+                *v3*)
+                    version_number=v3
+                    break;;
+                *v4*)
+                    version_number=v4
+                    break;;
+                *)
+                    echo "Couldn't find a matching version. Aborting."
+                    break;;
+            esac
+        done
+
+        [ -z "${version_number+x}" ] && printf '%s\n' "APT::Architecture-Variants \"amd64${version_number}\";" > /etc/apt/apt.conf.d/99enable-amd64"${version_number}"
+
         apt update
         apt upgrade
     }
