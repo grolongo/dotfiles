@@ -287,7 +287,7 @@ apt_extra() {
     confirm "Install mullvad vpn?" && {
         msg_info "Downloading Mullvad signing key..."
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc | tee /etc/apt/keyrings/mullvad-keyring.asc >/dev/null
+        wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc | tee /etc/apt/keyrings/mullvad-keyring.asc > /dev/null
         chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
 
         msg_info "Adding Mullvad repository..."
@@ -310,7 +310,7 @@ apt_extra() {
     confirm "Install signal?" && {
         msg_info  "Downloading Signal signing key..."
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg >/dev/null
+        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg > /dev/null
         chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
         msg_info "Adding Signal repository..."
