@@ -126,7 +126,7 @@ initial_setup() {
                     version_number=v4
                     break;;
                 *)
-                    echo "Couldn't find a matching version. Aborting."
+                    msg_error "Couldn't find a matching version. Aborting."
                     break;;
             esac
         done
