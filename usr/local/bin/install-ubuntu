@@ -310,7 +310,7 @@ apt_extra() {
     confirm "Install signal?" && {
         msg_info  "Downloading Signal signing key..."
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg > /dev/null
+        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg >/dev/null
         chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
         msg_info "Adding Signal repository..."
