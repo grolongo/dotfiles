@@ -85,7 +85,7 @@ initial_setup() {
 
     confirm "Enable passwordless sudo for ${SUDO_USER}?" && {
         msg_info "Adding passwordless sudo for ${SUDO_USER}"
-        echo "${SUDO_USER} ALL=(ALL:ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/"${SUDO_USER}"
+        printf '%s\n' "${SUDO_USER} ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${SUDO_USER}"
         echo
     }
 
