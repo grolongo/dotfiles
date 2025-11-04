@@ -287,7 +287,7 @@ apt_extra() {
     confirm "Install mullvad vpn?" && {
         msg_info "Downloading Mullvad signing key..."
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc | tee /etc/apt/keyrings/mullvad-keyring.asc > /dev/null
+        wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc > /etc/apt/keyrings/mullvad-keyring.asc
         chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
 
         msg_info "Adding Mullvad repository..."
@@ -310,11 +310,11 @@ apt_extra() {
     confirm "Install signal?" && {
         msg_info  "Downloading Signal signing key..."
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor | tee /etc/apt/keyrings/signal-desktop-keyring.gpg > /dev/null
+        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /etc/apt/keyrings/signal-desktop-keyring.gpg
         chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
         msg_info "Adding Signal repository..."
-        cat <<-EOF > /etc/apt/sources.list.d/signal-xenial.sources
+        cat <<-EOF > /etc/apt/sources.list.d/signal-desktop.sources
 		Types: deb
 		URIs: https://updates.signal.org/desktop/apt
 		Architectures: amd64
@@ -331,7 +331,7 @@ apt_extra() {
     confirm "Install tor?" && {
         msg_info "Adding the gpg key used to sign the packages..."
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /etc/apt/keyrings/tor-archive-keyring.gpg > /dev/null
+        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor > /etc/apt/keyrings/tor-archive-keyring.gpg
         chmod a+r /etc/apt/keyrings/tor-archive-keyring.gpg
 
         msg_info "Adding Tor Project repository..."
@@ -359,7 +359,7 @@ apt_extra() {
 
         msg_info "Add the gpg key used to sign the packages"
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null
+        wget -qO- https://download.docker.com/linux/ubuntu/gpg > /etc/apt/keyrings/docker.asc
         chmod a+r /etc/apt/keyrings/docker.asc
 
         msg_info "Adding Docker repository..."
