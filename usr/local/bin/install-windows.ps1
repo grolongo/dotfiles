@@ -749,6 +749,10 @@ function install_winget {
         $Shortcut.TargetPath = $TargetFilePath
         $Shortcut.Save()
     }
+
+    if (Ask-Question 'Install iCloud?') {
+        winget install --source msstore 9PKTQ5699M62
+    }
 }
 
 ### mpv
