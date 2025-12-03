@@ -662,11 +662,21 @@ function install_winget {
 
     if (Ask-Question 'Install Emacs?') {
         winget install -e --id 'GNU.Emacs'
+        winget install -e --id 'FSFhu.Hunspell'
 
         Write-Message 'Excluding Emacs from AV scanning to improve performance...'
         Add-MpPreference -ExclusionPath 'C:\Program Files\Emacs', "$env:APPDATA\.emacs.d"
         Add-MpPreference -ExclusionProcess "C:\Program Files\Emacs\*", 'runemacs.exe', 'emacs.exe', 'emacsclientw.exe', 'emacsclient.exe'
         Add-MpPreference -ExclusionExtension ".el", ".elc", ".eln"
+
+        Write-Message 'Downloading English and French dictionaries for Flyspell...'
+        New-Variable -Name 'HUNSPELL_FOLDER' -Value "$env:APPDATA\.emacs.d\hunspell"
+        New-Item -Force -Path "$HUNSPELL_FOLDER" -ItemType directory
+
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile "$HUNSPELL_FOLDER\en_US.aff"
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.dic' -OutFile "$HUNSPELL_FOLDER\en_US.dic"
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.aff' -OutFile "$HUNSPELL_FOLDER\fr_FR.aff"
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic' -OutFile "$HUNSPELL_FOLDER\fr_FR.dic"
     }
 
     if (Ask-Question 'Install Git?') {

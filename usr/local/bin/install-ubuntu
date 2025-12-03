@@ -157,6 +157,9 @@ apt_common() {
         ffmpegthumbnailer
         git
         httrack
+        hunspell
+        hunspell-fr
+        hunspell-en-us
         imagemagick
         jq
         keepassxc
@@ -415,7 +418,7 @@ snaps_common() {
     snap refresh
 }
 
-install_emacs() {
+build_emacs() {
     check_is_sudo
 
     local install_path
@@ -785,7 +788,7 @@ usage() {
     printf "  aptcommon   (s) - install packages from main repository\n"
     printf "  aptextra    (s) - install packages from third party repositories\n"
     printf "  snaps       (s) - install a few snaps\n"
-    printf "  emacs       (s) - compile Emacs from latest stable\n"
+    printf "  emacs       (s) - build Emacs from latest stable\n"
     printf "  driveclient (s) - install Synology Drive Client\n"
     printf "  chatty      (s) - install Chatty with JRE\n"
     printf "  gsettings       - configures Gnome settings\n"
@@ -813,7 +816,7 @@ main() {
     elif [ "$cmd" = "snaps" ]; then
         snaps_common
     elif [ "$cmd" = "emacs" ]; then
-        install_emacs
+        build_emacs
     elif [ "$cmd" = "driveclient" ]; then
         install_driveclient
     elif [ "$cmd" = "chatty" ]; then
