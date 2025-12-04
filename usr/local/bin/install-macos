@@ -163,6 +163,7 @@ install_formulae() {
 
     local packages=(
         aria2
+        enchant
         exiftool
         fd
         ffmpeg
