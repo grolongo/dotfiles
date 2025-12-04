@@ -280,12 +280,6 @@ apt_extra() {
     check_is_sudo
 
     confirm "Install veracrypt?" && {
-        # msg_info "Adding Veracrypt PPA..."
-        # add-apt-repository ppa:unit193/encryption
-        # msg_info "Updating package database and installing Veracrypt..."
-        # apt update
-        # apt install -y veracrypt
-
         command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
         local vc_latest
