@@ -18,7 +18,7 @@ fi
 ### History
 shopt -s histappend
 HISTFILE=~/.cache/bash/history
-HISTCONTROL=ignoreboth
+HISTCONTROL=ignoreboth:erasedups
 HISTSIZE=9999
 HISTFILESIZE=9999
 HISTIGNORE="cd:cd ..:clear:exit:l:ls :pwd"
