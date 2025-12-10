@@ -179,6 +179,12 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".Xresources"
     }
 
+    # TLP
+    confirm "link TLP config file?" && {
+        sudo mkdir -vp /etc/tlp.d
+        sudo ln -snfv "${base}/etc/tlp.d/01-t480s-i5-8250u.conf" "/etc/tlp.d/01-t480s-i5-8250u.conf"
+    }
+
     # systemd
     confirm "link systemd unit files?" && {
         mkdir -vp "${HOME}/.config/systemd/user"

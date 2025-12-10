@@ -419,6 +419,13 @@ apt_extra() {
         done
     }
 
+    confirm "Install TLP?" && {
+        add-apt-repository ppa:linrunner/tlp
+        apt update
+        apt install -y tlp --no-install-recommends
+        apt install -y tlp-pd
+    }
+
     apt_clean
 }
 
