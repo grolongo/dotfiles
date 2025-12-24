@@ -127,6 +127,10 @@ confirm && {
     wipefs --all --force /dev/"${device}"? /dev/"${device}"
     sleep 5
 
+    msg_info "Zapping all GPT/MBR partition tables..."
+    sgdisk --zap-all /dev/"${device}"
+    sleep 5
+
     msg_info "Updating partition table changes..."
     partprobe /dev/"${device}"
     sleep 5
