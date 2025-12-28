@@ -1,3 +1,4 @@
+set editing-mode emacs
 set bell-style none
 
 # History incremental search
@@ -20,3 +21,5 @@ set completion-query-items 250
 set input-meta on
 set output-meta on
 set convert-meta off
+
+set keymap emacs
