@@ -23,3 +23,5 @@ set output-meta on
 set convert-meta off
 
 set keymap emacs
+"\C-p": history-search-backward
+"\C-n": history-search-forward
