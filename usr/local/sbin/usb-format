@@ -14,11 +14,11 @@ msg_error() {
 
 [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
 
-devices=$(fdisk -l | grep -E '/dev/sd[a-z][^0-9]')
+devices=$(fdisk -l | grep -E '/dev/sd[a-z][^0-9]|nvme[0-9]n[0-9][^a-z]')
 
 msg_info "List of available devices:"
 echo "${devices}"
-read -r -p "Type in the device to modify (example: sdb): " device
+read -r -p "Type in the device to modify (example: sda/nvme0n1): " device
 
 echo
 PS3="Choose your partition scheme: "
@@ -119,12 +119,20 @@ confirm && {
     echo
     msg_info "Unmounting drive..."
     # return true to avoid exiting when the device is not mounted
-    umount /dev/"${device}"? || :
+    if [[ "${device}" =~ nvme ]]; then
+        umount /dev/"${device}"p? || :
+    else
+        umount /dev/"${device}"? || :
+    fi
     sync
     sleep 5
 
     msg_info "Wiping all signatures..."
-    wipefs --all --force /dev/"${device}"? /dev/"${device}"
+    if [[ "${device}" =~ nvme ]]; then
+        wipefs --all --force /dev/"${device}"p? /dev/"${device}"
+    else
+        wipefs --all --force /dev/"${device}"? /dev/"${device}"
+    fi
     sleep 5
 
     msg_info "Zapping all GPT/MBR partition tables..."
@@ -166,8 +174,5 @@ confirm && {
     sync
     sleep 5
 
-    msg_info "Powering-off the device..."
-    udisksctl power-off --block-device=/dev/"${device}"
-
-    msg_info "You can now remove and reinsert the disk."
+    msg_info "Operation finished."
 }
