@@ -43,6 +43,17 @@ symlink() {
     fi
 }
 
+symlink_root() {
+    sourcefile="${base}"/"$1"
+    targetlink=/"$1"
+
+    if [ -e "$sourcefile" ]; then
+        sudo ln -snfv "$sourcefile" "$targetlink"
+    else
+        printf '%s does not exist.\n' "$sourcefile" >&2
+    fi
+}
+
 # user symlinks
 echo
 confirm "Install symlinks for ${USER}?" && {
@@ -147,8 +158,8 @@ confirm "Install symlinks for ${USER}?" && {
         mkdir -vp "${HOME}/.config/fontconfig"
         symlink ".config/fontconfig/fonts.conf"
         sudo mkdir -vp /etc/X11/xorg.conf.d
-        sudo ln -snfv "${base}/etc/X11/xorg.conf.d/30-touchpad.conf" "/etc/X11/xorg.conf.d/30-touchpad.conf"
-        sudo ln -snfv "${base}/etc/X11/xorg.conf.d/30-trackpoint.conf" "/etc/X11/xorg.conf.d/30-trackpoint.conf"
+        symlink_root "etc/X11/xorg.conf.d/30-touchpad.conf"
+        symlink_root "etc/X11/xorg.conf.d/30-trackpoint.conf"
     }
 
     # sway
@@ -182,7 +193,7 @@ confirm "Install symlinks for ${USER}?" && {
     # TLP
     confirm "link TLP config file?" && {
         sudo mkdir -vp /etc/tlp.d
-        sudo ln -snfv "${base}/etc/tlp.d/01-t480s-i5-8250u.conf" "/etc/tlp.d/01-t480s-i5-8250u.conf"
+        symlink_root "etc/tlp.d/01-t480s-i5-8250u.conf"
     }
 
     # systemd
@@ -195,14 +206,26 @@ confirm "Install symlinks for ${USER}?" && {
 
     # bin
     confirm "link binary files?" && {
-        for file in $(find "$base/usr/local/bin" -type f -not -name "*.ahk" -not -name "*.ps1" -not -name "*.bat"); do
-            filename=$(basename "$file")
-            sudo ln -snfv "$file" "/usr/local/bin/$filename"
-        done
-        for file in $(find "$base/usr/local/sbin" -type f -not -name "*.ahk" -not -name "*.ps1" -not -name "*.bat"); do
-            filename=$(basename "$file")
-            sudo ln -snfv "$file" "/usr/local/sbin/$filename"
-        done
+        symlink "extract"
+        symlink "symlinks-unix"
+        symlink "url"
+        if [ "$(uname)" = Darwin ]; then
+            sudo ln -snfv "${base}/usr/local/bin/backup-darwin"      "/usr/local/bin/backup"
+            sudo ln -snfv "${base}/usr/local/bin/install-darwin"     "/usr/local/bin/install"
+            sudo ln -snfv "${base}/usr/local/sbin/usb-format-darwin" "/usr/local/sbin/usb-format"
+        else
+            sudo ln -snfv "${base}/usr/local/bin/backup-linux"      "/usr/local/bin/backup"
+            sudo ln -snfv "${base}/usr/local/bin/install-ubuntu"    "/usr/local/bin/install"
+            sudo ln -snfv "${base}/usr/local/sbin/usb-format-linux" "/usr/local/sbin/usb-format"
+            symlink_root "usr/local/bin/battery"
+            symlink_root "usr/local/bin/brightness"
+            symlink_root "usr/local/bin/colorpicker"
+            symlink_root "usr/local/bin/swaylock-rand"
+            symlink_root "usr/local/bin/volume-sound"
+            symlink_root "usr/local/sbin/keyboard-backlight"
+            symlink_root "usr/local/sbin/password-store-cryptsetup"
+            symlink_root "usr/local/sbin/wifi-scan"
+        fi
     }
 
 }
