@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+set -e
+set -u
+set -o pipefail
+IFS=$'\n\t'
+
+msg_info() {
+    printf '\033[33m%s\033[0m\n' "$1"
+}
+
+msg_error() {
+    printf '\033[91m%s\033[0m\n' "$1" >&2
+}
+
+# check root privileges
+[ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
+
+# check if running macOS
+[ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+
+devices=$(diskutil list)
+
+msg_info "List of available devices:"
+echo "${devices}"
+read -r -p "Type in the TOP disk identifier to modify (example: disk1/disk2/etc.): " device
+
+echo
+PS3="Choose your partition scheme: "
+select opt in MBR GPT; do
+    case $opt in
+        MBR)
+            scheme=mbr
+            break
+            ;;
+        GPT)
+            scheme=gpt
+            break
+            ;;
+        *)
+            echo "Invalid option $REPLY"
+            ;;
+    esac
+done
+
+echo
+PS3="Choose your file system type: "
+select opt in FAT32 exFAT APFS; do
+    case $opt in
+        FAT32)
+            filesystem=FAT32
+            break
+            ;;
+        exFAT)
+            filesystem=exFAT
+            break
+            ;;
+        APFS)
+            filesystem=APFS
+            break
+            ;;
+        *)
+            echo "Invalid option $REPLY"
+            ;;
+    esac
+done
+
+echo
+while true; do
+    read -r -p "Enter device new name (max 11 chars): " label
+    label="${label#"${label%%[![:space:]]*}"}"
+    label="${label%"${label##*[![:space:]]}"}"
+    label="${label^^}"
+
+    if [ -z "$label" ]; then
+        echo "Name cannot be empty."
+        continue
+    fi
+
+    if ! [[ "$label" =~ ^[A-Za-z0-9-]+$ ]]; then
+        echo "Invalid characters. Use only letters, numbers, or -."
+        continue
+    fi
+
+    if  [ "${#label}" -le 11 ]; then
+        break
+    else
+        echo "Too long (${#label} chars). Try again."
+    fi
+done
+
+echo
+msg_info "  ============="
+msg_info "  LAST REMINDER"
+msg_info "  ============="
+msg_info "  Selected drive: /dev/${device}"
+msg_info "  Partition scheme: ${scheme}"
+msg_info "  File system: ${filesystem}"
+msg_info "  Name: ${label}"
+
+confirm() {
+    while true; do
+        read -r -p "Are you sure you want to continue? [y/n] " choice
+        case "$choice" in
+            [yY]es|[yY])
+                return 0
+                ;;
+            [nN]o|[nN])
+                return 1
+                ;;
+            *)
+                msg_error "Please enter yes or no."
+                ;;
+        esac
+    done
+}
+
+echo
+confirm && {
+    echo
+    msg_info "Unmounting drive..."
+    # return true to avoid exiting when the device is not mounted
+    diskutil unmount /dev/"${device}" || :
+    sync
+    sleep 5
+
+    msg_info "Wiping all signatures and partition tables..."
+    gpt destroy /dev/"${device}"
+    sleep 5
+    diskutil eraseDisk free none /dev/"${device}"
+    sleep 5
+
+    msg_info "Creating ${scheme^^} partition scheme..."
+    diskutil eraseDisk "${filesystem}" "${label}" "${scheme}" /dev/"${device}"
+    sleep 5
+
+    msg_info "Operation finished."
+}
