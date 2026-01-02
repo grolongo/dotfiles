@@ -12,7 +12,11 @@ msg_error() {
     printf '\033[91m%s\033[0m\n' "$1" >&2
 }
 
+# check root privileges
 [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
+
+# check if running Linux
+[ "$(uname)" = Linux ] || { msg_error "You are not running macOS, exiting."; exit 1; }
 
 devices=$(fdisk -l | grep -E '/dev/sd[a-z][^0-9]|nvme[0-9]n[0-9][^a-z]')
 
