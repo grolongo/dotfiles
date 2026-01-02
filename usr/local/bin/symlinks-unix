@@ -210,12 +210,12 @@ confirm "Install symlinks for ${USER}?" && {
         symlink_root "usr/local/bin/symlinks-unix"
         symlink_root "usr/local/bin/url"
         if [ "$(uname)" = Darwin ]; then
+            symlink_root "usr/local/bin/install-darwin"
             sudo ln -snfv "${base}/usr/local/bin/backup-darwin"      "/usr/local/bin/backup"
-            sudo ln -snfv "${base}/usr/local/bin/install-darwin"     "/usr/local/bin/install"
             sudo ln -snfv "${base}/usr/local/sbin/usb-format-darwin" "/usr/local/sbin/usb-format"
         else
+            symlink_root "usr/local/bin/install-ubuntu"
             sudo ln -snfv "${base}/usr/local/bin/backup-linux"      "/usr/local/bin/backup"
-            sudo ln -snfv "${base}/usr/local/bin/install-ubuntu"    "/usr/local/bin/install"
             sudo ln -snfv "${base}/usr/local/sbin/usb-format-linux" "/usr/local/sbin/usb-format"
             symlink_root "usr/local/bin/battery"
             symlink_root "usr/local/bin/brightness"
