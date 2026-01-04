@@ -120,7 +120,7 @@ confirm && {
     echo
     msg_info "Unmounting drive..."
     # return true to avoid exiting when the device is not mounted
-    diskutil unmount /dev/"${device}" || :
+    diskutil unmountDisk /dev/"${device}" || :
     sync
     sleep 5
 
@@ -130,7 +130,7 @@ confirm && {
     diskutil eraseDisk free none /dev/"${device}"
     sleep 5
 
-    msg_info "Creating ${scheme^^} partition scheme..."
+    msg_info "Creating ${scheme^^} partition scheme and filesystem..."
     diskutil eraseDisk "${filesystem}" "${label}" "${scheme}" /dev/"${device}"
     sleep 5
 
