@@ -22,6 +22,7 @@ devices=$(diskutil list)
 
 msg_info "List of available devices:"
 echo "${devices}"
+echo
 read -r -p "Type in the TOP disk identifier to modify (example: disk1/disk2/etc.): " device
 
 echo
