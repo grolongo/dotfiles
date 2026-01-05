@@ -135,7 +135,7 @@ confirm && {
     msg_info "Wiping all signatures and partition tables..."
     gpt destroy /dev/"${device}"
     sleep 5
-    diskutil eraseDisk free none /dev/"${device}"
+    diskutil eraseDisk FREE none /dev/"${device}"
     sleep 5
 
     msg_info "Creating ${scheme^^} partition scheme and filesystem..."
