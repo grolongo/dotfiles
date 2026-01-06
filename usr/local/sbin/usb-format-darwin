@@ -45,7 +45,7 @@ done
 
 echo
 PS3="Choose your file system type: "
-select opt in FAT32 exFAT APFS APFS-Enc JHFS+ HFS+; do
+select opt in FAT32 exFAT APFS APFS-Encrypted JHFS+ HFS+; do
     case $opt in
         FAT32)
             filesystem=FAT32
@@ -59,7 +59,7 @@ select opt in FAT32 exFAT APFS APFS-Enc JHFS+ HFS+; do
             filesystem=APFS
             break
             ;;
-        APFS-Enc)
+        APFS-Encrypted)
             filesystem=APFS
             encryption=enabled
             break
@@ -152,7 +152,7 @@ confirm && {
     diskutil eraseDisk "${filesystem}" "${label}" "${scheme}" /dev/"${device}"
     sleep 5
 
-    if [ "${opt}" = "APFS-Enc" ]; then
+    if [ "${opt}" = "APFS-Encrypted" ]; then
         msg_info "Beginning encryption..."
         disk_id=$(diskutil info "${label}" | grep "Device Identifier" | awk '{print $NF}')
         diskutil apfs encryptVolume "${disk_id}" -user disk
