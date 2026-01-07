@@ -12,96 +12,120 @@ msg_error() {
     printf '\033[91m%s\033[0m\n' "$1" >&2
 }
 
-# check root privileges
-[ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
+initial_check() {
+    # check root privileges
+    [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
+    # check if running Linux
+    [ "$(uname)" = Linux ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+}
 
-# check if running Linux
-[ "$(uname)" = Linux ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+device_selection() {
+    devices=$(fdisk -l | grep -E '/dev/sd[a-z][^0-9]|nvme[0-9]n[0-9][^a-z]')
+    msg_info "List of available devices:"
+    echo "${devices}"
+    read -r -p "Type in the device to modify (example: sda/nvme0n1): " device
+}
 
-devices=$(fdisk -l | grep -E '/dev/sd[a-z][^0-9]|nvme[0-9]n[0-9][^a-z]')
+scheme_selection() {
+    PS3="Choose your partition scheme: "
+    select opt in MBR GPT; do
+        case $opt in
+            MBR)
+                scheme=mbr
+                break
+                ;;
+            GPT)
+                scheme=gpt
+                break
+                ;;
+            *)
+                echo "Invalid option $REPLY"
+                ;;
+        esac
+    done
+}
 
-msg_info "List of available devices:"
-echo "${devices}"
-read -r -p "Type in the device to modify (example: sda/nvme0n1): " device
+filetype_selection() {
+    PS3="Choose your file system type: "
+    select opt in FAT32 exFAT NTFS ext4; do
+        case $opt in
+            FAT32)
+                filesystem=vfat
+                break
+                ;;
+            exFAT)
+                filesystem=exfat
+                break
+                ;;
+            NTFS)
+                filesystem=ntfs
+                break
+                ;;
+            ext4)
+                filesystem=ext4
+                break
+                ;;
+            *)
+                echo "Invalid option $REPLY"
+                ;;
+        esac
+    done
+}
 
-echo
-PS3="Choose your partition scheme: "
-select opt in MBR GPT; do
-    case $opt in
-        MBR)
-            scheme=mbr
+encryption_selection() {
+    while true; do
+        read -r -p "Enable encryption? [y/n] " choice
+        case "$choice" in
+            [yY]es|[yY])
+                encryption=enabled
+                break
+                ;;
+            [nN]o|[nN])
+                encryption=disabled
+                break
+                ;;
+            *)
+                echo "Invalid option $REPLY"
+                ;;
+        esac
+    done
+}
+
+name_selection() {
+    while true; do
+        read -r -p "Enter device new name (max 11 chars): " label
+        label="${label#"${label%%[![:space:]]*}"}"
+        label="${label%"${label##*[![:space:]]}"}"
+        label="${label^^}"
+
+        if [ -z "$label" ]; then
+            echo "Name cannot be empty."
+            continue
+        fi
+
+        if ! [[ "$label" =~ ^[A-Za-z0-9-]+$ ]]; then
+            echo "Invalid characters. Use only letters, numbers, or -."
+            continue
+        fi
+
+        if  [ "${#label}" -le 11 ]; then
             break
-            ;;
-        GPT)
-            scheme=gpt
-            break
-            ;;
-        *)
-            echo "Invalid option $REPLY"
-            ;;
-    esac
-done
+        else
+            echo "Too long (${#label} chars). Try again."
+        fi
+    done
+}
 
-echo
-PS3="Choose your file system type: "
-select opt in FAT32 exFAT NTFS ext4; do
-    case $opt in
-        FAT32)
-            filesystem=vfat
-            break
-            ;;
-        exFAT)
-            filesystem=exfat
-            break
-            ;;
-        NTFS)
-            filesystem=ntfs
-            break
-            ;;
-        ext4)
-            filesystem=ext4
-            break
-            ;;
-        *)
-            echo "Invalid option $REPLY"
-            ;;
-    esac
-done
+final_warning() {
+    msg_info "  ============="
+    msg_info "  LAST REMINDER"
+    msg_info "  ============="
+    msg_info "  Selected drive: /dev/${device}"
+    msg_info "  Partition scheme: ${scheme}"
+    msg_info "  File system: ${filesystem}"
+    msg_info "  Encryption: ${encryption}"
+    msg_info "  Name: ${label}"
 
-echo
-while true; do
-    read -r -p "Enter device new name (max 11 chars): " label
-    label="${label#"${label%%[![:space:]]*}"}"
-    label="${label%"${label##*[![:space:]]}"}"
-    label="${label^^}"
-
-    if [ -z "$label" ]; then
-        echo "Name cannot be empty."
-        continue
-    fi
-
-    if ! [[ "$label" =~ ^[A-Za-z0-9-]+$ ]]; then
-        echo "Invalid characters. Use only letters, numbers, or -."
-        continue
-    fi
-
-    if  [ "${#label}" -le 11 ]; then
-        break
-    else
-        echo "Too long (${#label} chars). Try again."
-    fi
-done
-
-echo
-msg_info "  ============="
-msg_info "  LAST REMINDER"
-msg_info "  ============="
-msg_info "  Selected drive: /dev/${device}"
-msg_info "  Partition scheme: ${scheme}"
-msg_info "  File system: ${filesystem}"
-msg_info "  Name: ${label}"
-
-confirm() {
     while true; do
         read -r -p "Are you sure you want to continue? [y/n] " choice
         case "$choice" in
@@ -109,6 +133,7 @@ confirm() {
                 return 0
                 ;;
             [nN]o|[nN])
+                msg_info "Operation cancelled."
                 return 1
                 ;;
             *)
@@ -118,9 +143,7 @@ confirm() {
     done
 }
 
-echo
-confirm && {
-    echo
+sanitize() {
     msg_info "Unmounting drive..."
     # return true to avoid exiting when the device is not mounted
     if [[ "${device}" =~ nvme ]]; then
@@ -146,7 +169,9 @@ confirm && {
     msg_info "Updating partition table changes..."
     partprobe /dev/"${device}"
     sleep 5
+}
 
+partitioning() {
     msg_info "Creating ${scheme^^} partition scheme..."
     parted --script /dev/"${device}" mklabel "${scheme}"
     sleep 5
@@ -164,19 +189,53 @@ confirm && {
     msg_info "Updating partition table changes..."
     partprobe /dev/"${device}"
     sleep 5
+}
 
-    msg_info "Formatting the new partition..."
+formatting() {
     if [ "${filesystem}" == vfat ]; then
-        mkfs."${filesystem}" -F32 -n "${label}" /dev/"${device}"1
+        mkfs."${filesystem}" -F32 -n "${label}" "${target}"
     elif [ "${filesystem}" == exfat ]; then
-        mkfs."${filesystem}" --volume-label="${label}" /dev/"${device}"1
+        mkfs."${filesystem}" --volume-label="${label}" "${target}"
     elif [ "${filesystem}" == ntfs ]; then
-        mkfs."${filesystem}" --fast --label "${label}" /dev/"${device}"1
+        mkfs."${filesystem}" --fast --label "${label}" "${target}"
     else
-        mkfs."${filesystem}" -L "${label}" /dev/"${device}"1
+        mkfs."${filesystem}" -L "${label}" "${target}"
     fi
-    sync
-    sleep 5
+}
 
+encryption_check() {
+    if [ "${encryption}" = disabled ]; then
+        msg_info "Formatting the new partition..."
+        target=/dev/"${device}"1
+        formatting
+    else
+        msg_info "Formatting & encrypting the new partition..."
+        target=/dev/mapper/disk
+        cryptsetup luksFormat --batch-mode --verify-passphrase /dev/"${device}"1
+        sleep 5
+        sync
+        cryptsetup luksOpen /dev/"${device}"1 disk
+        sleep 5
+        formatting
+        sleep 5
+        sync
+        cryptsetup close disk
+    fi
     msg_info "Operation finished."
 }
+
+main() {
+    initial_check
+    device_selection
+    scheme_selection
+    filetype_selection
+    encryption_selection
+    name_selection
+    final_warning && {
+        sanitize
+        partitioning
+        encryption_check
+    }
+}
+
+main
