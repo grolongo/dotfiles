@@ -47,7 +47,7 @@ scheme_selection() {
 
 filetype_selection() {
     PS3="Choose your file system type: "
-    select opt in FAT32 exFAT NTFS ext4; do
+    select opt in FAT32 exFAT NTFS ext4 Btrfs XFS; do
         case $opt in
             FAT32)
                 filesystem=vfat
@@ -63,6 +63,14 @@ filetype_selection() {
                 ;;
             ext4)
                 filesystem=ext4
+                break
+                ;;
+            Btrfs)
+                filesystem=btrfs
+                break
+                ;;
+            XFS)
+                filesystem=xfs
                 break
                 ;;
             *)
@@ -198,7 +206,11 @@ formatting() {
         mkfs."${filesystem}" --volume-label="${label}" "${target}"
     elif [ "${filesystem}" == ntfs ]; then
         mkfs."${filesystem}" --fast --label "${label}" "${target}"
-    else
+    elif [ "${filesystem}" == ext4 ]; then
+        mkfs."${filesystem}" -L "${label}" "${target}"
+    elif [ "${filesystem}" == btrfs ]; then
+        mkfs."${filesystem}" --label "${label}" "${target}"
+    elif [ "${filesystem}" == xfs ]; then
         mkfs."${filesystem}" -L "${label}" "${target}"
     fi
 }
