@@ -223,7 +223,7 @@ encryption_check() {
     else
         msg_info "Formatting & encrypting the new partition..."
         target=/dev/mapper/disk
-        cryptsetup luksFormat --batch-mode --verify-passphrase /dev/"${device}"1
+        cryptsetup luksFormat --batch-mode --verify-passphrase --label "${label}CRYPT" /dev/"${device}"1
         sleep 5
         sync
         cryptsetup luksOpen /dev/"${device}"1 disk
