@@ -164,9 +164,10 @@ sanitize() {
 
     msg_info "Wiping all signatures..."
     if [[ "${device}" =~ nvme ]]; then
-        wipefs --all --force /dev/"${device}"p? /dev/"${device}"
+        # return true to avoid exiting when device has no partition
+        wipefs --all --force /dev/"${device}"p? /dev/"${device}" || :
     else
-        wipefs --all --force /dev/"${device}"? /dev/"${device}"
+        wipefs --all --force /dev/"${device}"? /dev/"${device}" || :
     fi
     sleep 5
 
