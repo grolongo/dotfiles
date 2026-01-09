@@ -23,7 +23,7 @@ device_selection() {
     devices=$(fdisk -l | grep -E '/dev/sd[a-z][^0-9]|nvme[0-9]n[0-9][^a-z]')
     msg_info "List of available devices:"
     echo "${devices}"
-    read -r -p "Type in the device to modify (example: sda/nvme0n1): " device
+    read -r -p "Type in the device to modify (example: sda / sdb / nvme0n1 / etc.): " device
 }
 
 scheme_selection() {
@@ -161,6 +161,18 @@ sanitize() {
     fi
     sync
     sleep 5
+
+    msg_info "Checking for LUKS encrypted partition(s)..."
+    for partition in /dev/"${device}"*; do
+        # skip the loop if no partition exists or if not a block device
+        [[ -b "${partition}" ]] || continue
+
+        if cryptsetup isLuks "${partition}"; then
+            msg_info "Found LUKS partition: ${partition}..."
+            msg_info "Erasing LUKS header on ${partition}..."
+            cryptsetup erase --batch-mode "${partition}"
+        fi
+    done
 
     msg_info "Wiping all signatures..."
     if [[ "${device}" =~ nvme ]]; then
