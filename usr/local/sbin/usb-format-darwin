@@ -12,111 +12,114 @@ msg_error() {
     printf '\033[91m%s\033[0m\n' "$1" >&2
 }
 
-# check root privileges
-[ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
+initial_check() {
+    # check root privileges
+    [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
+    # check if running macOS
+    [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+}
 
-# check if running macOS
-[ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+device_selection() {
+    devices=$(diskutil list)
+    msg_info "List of available devices:"
+    echo "${devices}"
+    read -r -p "Type in the TOP disk identifier to modify (example: disk1 /disk2 / etc.): " device
+}
 
-devices=$(diskutil list)
+scheme_selection() {
+    PS3="Choose your partition scheme: "
+    select opt in MBR GPT; do
+        case $opt in
+            MBR)
+                scheme=mbr
+                break
+                ;;
+            GPT)
+                scheme=gpt
+                break
+                ;;
+            *)
+                echo "Invalid option $REPLY"
+                ;;
+        esac
+    done
+}
 
-msg_info "List of available devices:"
-echo "${devices}"
-echo
-read -r -p "Type in the TOP disk identifier to modify (example: disk1/disk2/etc.): " device
+filetype_selection() {
+    PS3="Choose your file system type: "
+    select opt in FAT32 exFAT APFS APFS-Encrypted JHFS+ HFS+; do
+        case $opt in
+            FAT32)
+                filesystem=FAT32
+                break
+                ;;
+            exFAT)
+                filesystem=exFAT
+                break
+                ;;
+            APFS)
+                filesystem=APFS
+                break
+                ;;
+            APFS-Encrypted)
+                filesystem=APFS
+                encryption=enabled
+                break
+                ;;
+            JHFS+)
+                filesystem=JHFS+
+                break
+                ;;
+            HFS+)
+                filesystem=HFS+
+                break
+                ;;
+            *)
+                echo "Invalid option $REPLY"
+                ;;
+        esac
+    done
 
-echo
-PS3="Choose your partition scheme: "
-select opt in MBR GPT; do
-    case $opt in
-        MBR)
-            scheme=mbr
-            break
-            ;;
-        GPT)
-            scheme=gpt
-            break
-            ;;
-        *)
-            echo "Invalid option $REPLY"
-            ;;
-    esac
-done
-
-echo
-PS3="Choose your file system type: "
-select opt in FAT32 exFAT APFS APFS-Encrypted JHFS+ HFS+; do
-    case $opt in
-        FAT32)
-            filesystem=FAT32
-            break
-            ;;
-        exFAT)
-            filesystem=exFAT
-            break
-            ;;
-        APFS)
-            filesystem=APFS
-            break
-            ;;
-        APFS-Encrypted)
-            filesystem=APFS
-            encryption=enabled
-            break
-            ;;
-        JHFS+)
-            filesystem=JHFS+
-            break
-            ;;
-        HFS+)
-            filesystem=HFS+
-            break
-            ;;
-        *)
-            echo "Invalid option $REPLY"
-            ;;
-    esac
-done
-
-if [ -z "${encryption:-}" ]; then
-    encryption=none
-fi
-
-echo
-while true; do
-    read -r -p "Enter device new name (max 11 chars): " label
-    label="${label#"${label%%[![:space:]]*}"}"
-    label="${label%"${label##*[![:space:]]}"}"
-    label="${label^^}"
-
-    if [ -z "$label" ]; then
-        echo "Name cannot be empty."
-        continue
+    if [ -z "${encryption:-}" ]; then
+        encryption=none
     fi
+}
 
-    if ! [[ "$label" =~ ^[A-Za-z0-9-]+$ ]]; then
-        echo "Invalid characters. Use only letters, numbers, or -."
-        continue
-    fi
+name_selection() {
+    while true; do
+        read -r -p "Enter device new name (max 11 chars): " label
+        label="${label#"${label%%[![:space:]]*}"}"
+        label="${label%"${label##*[![:space:]]}"}"
+        label="${label^^}"
 
-    if  [ "${#label}" -le 11 ]; then
-        break
-    else
-        echo "Too long (${#label} chars). Try again."
-    fi
-done
+        if [ -z "$label" ]; then
+            echo "Name cannot be empty."
+            continue
+        fi
 
-echo
-msg_info "  ============="
-msg_info "  LAST REMINDER"
-msg_info "  ============="
-msg_info "  Selected drive: /dev/${device}"
-msg_info "  Partition scheme: ${scheme^^}"
-msg_info "  File system: ${filesystem}"
-msg_info "  Encryption: ${encryption}"
-msg_info "  Name: ${label}"
+        if ! [[ "$label" =~ ^[A-Za-z0-9-]+$ ]]; then
+            echo "Invalid characters. Use only letters, numbers, or -."
+            continue
+        fi
 
-confirm() {
+        if  [ "${#label}" -le 11 ]; then
+            break
+        else
+            echo "Too long (${#label} chars). Try again."
+        fi
+    done
+}
+
+final_warning() {
+    msg_info "  ============="
+    msg_info "  LAST REMINDER"
+    msg_info "  ============="
+    msg_info "  Selected drive: /dev/${device}"
+    msg_info "  Partition scheme: ${scheme^^}"
+    msg_info "  File system: ${filesystem}"
+    msg_info "  Encryption: ${encryption}"
+    msg_info "  Name: ${label}"
+
     while true; do
         read -r -p "Are you sure you want to continue? [y/n] " choice
         case "$choice" in
@@ -133,9 +136,7 @@ confirm() {
     done
 }
 
-echo
-confirm && {
-    echo
+sanitize() {
     msg_info "Unmounting drive..."
     # return true to avoid exiting when the device is not mounted
     diskutil unmountDisk /dev/"${device}" || :
@@ -147,7 +148,9 @@ confirm && {
     sleep 5
     diskutil eraseDisk FREE none /dev/"${device}"
     sleep 5
+}
 
+formatting() {
     msg_info "Creating ${scheme^^} partition scheme and filesystem..."
     diskutil eraseDisk "${filesystem}" "${label}" "${scheme}" /dev/"${device}"
     sleep 5
@@ -160,3 +163,17 @@ confirm && {
 
     msg_info "Operation finished."
 }
+
+main() {
+    initial_check
+    device_selection
+    scheme_selection
+    filetype_selection
+    name_selection
+    final_warning && {
+        sanitize
+        formatting
+    }
+}
+
+main
