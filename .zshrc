@@ -13,10 +13,17 @@ HISTSIZE=9999
 HISTFILE=~/.cache/zsh/history
 SAVEHIST=9999
 HISTORY_IGNORE="(cd|cd ..|clear|exit|l|ls |pwd)"
-setopt HIST_IGNORE_SPACE # doesnt add <space>ls to the history
-setopt HIST_NO_STORE     # doesnt add history cmd to the history
-setopt HIST_IGNORE_DUPS  # doesnt add cmd if duplicate as previous event
-setopt SHARE_HISTORY
+setopt SHARE_HISTORY          # share history between all sessions
+setopt INC_APPEND_HISTORY     # write to the history file immediately, not when the shell exits
+setopt HIST_IGNORE_SPACE      # doesnt add <space>ls to the history
+setopt HIST_NO_STORE          # doesnt add history cmd to the history
+setopt HIST_IGNORE_DUPS       # don't record an entry that was just recorded again
+setopt HIST_IGNORE_ALL_DUPS   # delete old recorded entry if new entry is a duplicate
+setopt HIST_EXPIRE_DUPS_FIRST # expire duplicate entries first when trimming history
+setopt HIST_VERIFY            # don't execute immediately upon history expansion
+setopt HIST_FIND_NO_DUPS      # do not display a line previously found
+setopt HIST_SAVE_NO_DUPS      # don't write duplicate entries in the history file
+setopt HIST_REDUCE_BLANKS     # remove superfluous blanks before recording entry
 
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
