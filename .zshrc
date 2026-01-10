@@ -9,9 +9,9 @@ setopt CHASE_LINKS # cd into the exact symlink path
 unsetopt BEEP
 
 ### History
-HISTSIZE=9999
+HISTSIZE=9999999
 HISTFILE=~/.cache/zsh/history
-SAVEHIST=9999
+SAVEHIST=9999999
 HISTORY_IGNORE="(cd|cd ..|clear|exit|l|ls |pwd)"
 setopt SHARE_HISTORY          # share history between all sessions
 setopt INC_APPEND_HISTORY     # write to the history file immediately, not when the shell exits
