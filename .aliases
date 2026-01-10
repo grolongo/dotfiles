@@ -52,6 +52,11 @@ alias wgetws="wget -mpEk" # add "--wait=seconds" if ban occurs
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
 alias metaimgremove="exiftool -overwrite_original -all="
 
+# zsh specific
+if [ "${ZSH_NAME}" ]; then
+    alias history="history 1"
+fi
+
 #################
 ### functions ###
 #################
