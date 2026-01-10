@@ -20,8 +20,8 @@ shopt -s histappend
 PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
 HISTFILE=~/.cache/bash/history
 HISTCONTROL=ignoreboth:erasedups
-HISTSIZE=9999
-HISTFILESIZE=9999
+HISTSIZE=-1
+HISTFILESIZE=-1
 HISTIGNORE="cd:cd ..:clear:exit:l:ls :pwd"
 
 # check the window size after each command and, if necessary,
