@@ -17,6 +17,7 @@ fi
 
 ### History
 shopt -s histappend
+PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
 HISTFILE=~/.cache/bash/history
 HISTCONTROL=ignoreboth:erasedups
 HISTSIZE=9999
