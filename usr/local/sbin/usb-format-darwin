@@ -23,7 +23,7 @@ device_selection() {
     devices=$(diskutil list)
     msg_info "List of available devices:"
     echo "${devices}"
-    read -r -p "Type in the TOP disk identifier to modify (example: disk1 /disk2 / etc.): " device
+    read -r -p "Type in the TOP disk identifier to modify (example: disk1 / disk2 / etc.): " device
 }
 
 scheme_selection() {
