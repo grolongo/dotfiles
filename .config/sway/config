@@ -3,6 +3,7 @@ primary_selection disabled
 for_window [shell="xwayland"] title_format "[XWayland] %title"
 #exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec_always autotiling
+exec rfkill block bluetooth
 exec mako
 exec synology-drive
 
