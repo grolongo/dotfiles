@@ -16,8 +16,6 @@ set $down  n
 set $up    p
 set $right f
 
-titlebar_padding 4 2
-
 # ------------------
 # Idle configuration
 # ------------------
@@ -215,6 +213,14 @@ exec_always {
     gsettings set $gnome-schema font-name 'Ubuntu Sans'
     gsettings set $gnome-schema monospace-font-name 'Ubuntu Sans Mono'
 }
+
+# ------
+# Design
+# ------
+
+titlebar_padding 4 2
+# purple scheme
+client.focused #8066bb #6141ab #ffffff #8066bb #8066bb
 
 # ----------
 # Status Bar
