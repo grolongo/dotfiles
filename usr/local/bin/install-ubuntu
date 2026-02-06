@@ -513,7 +513,7 @@ install_driveclient() {
     check_is_sudo
 
     local source
-    source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/3.5.2-16111/Ubuntu/Installer/synology-drive-client-16111.x86_64.deb"
+    source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.2-17889/Ubuntu/Installer/synology-drive-client-17889.x86_64.deb"
 
     (
         msg_info "Creating temporary folder..."
