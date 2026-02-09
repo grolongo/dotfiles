@@ -160,6 +160,7 @@ confirm "Install symlinks for ${USER}?" && {
         sudo mkdir -vp /etc/X11/xorg.conf.d
         symlink_root "etc/X11/xorg.conf.d/30-touchpad.conf"
         symlink_root "etc/X11/xorg.conf.d/30-trackpoint.conf"
+        symlink ".config/mimeapps.list"
     }
 
     # sway
@@ -183,6 +184,7 @@ confirm "Install symlinks for ${USER}?" && {
         mkdir -vp "${HOME}/.config/waybar"
         symlink ".config/waybar/config.jsonc"
         symlink ".config/waybar/style.css"
+        symlink ".config/mimeapps.list"
     }
 
     # X

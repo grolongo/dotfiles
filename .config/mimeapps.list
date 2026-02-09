@@ -1,0 +1,29 @@
+# "xdg-mime query filetype foo.jpg" to check attribute like "image/jpeg"
+# application.desktop names are located at: /usr/share/applications
+
+[Default Applications]
+
+application/x-synology-drive-doc=synology-drive-open-file.desktop
+application/x-synology-drive-sheet=synology-drive-open-file.desktop
+application/x-synology-drive-slides=synology-drive-open-file.desktop
+
+x-scheme-handler/magnet=org.qbittorrent.qBittorrent.desktop
+application/x-bittorrent=org.qbittorrent.qBittorrent.desktop
+
+x-scheme-handler/http=firefox_firefox.desktop
+x-scheme-handler/https=firefox_firefox.desktop
+text/html=firefox_firefox.desktop
+application/pdf=firefox_firefox.desktop
+
+image/jpeg=swayimg.desktop
+image/png=swayimg.desktop
+image/gif=swayimg.desktop
+image/svg=swayimg.desktop
+image/webp=swayimg.desktop
+image/bmp=swayimg.desktop
+image/avif=swayimg.desktop
+
+video/mp4=mpv.desktop
+video/mpeg=mpv.desktop
+video/ogg=mpv.desktop
+video/webm=mpv.desktop
