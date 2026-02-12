@@ -1,18 +1,4 @@
-# when mpv isn't in the path i use exact path
 player=mpv
 player-args="--cache=no"
-
-# RTMP streams are downloaded using rtmpdump. Full path or relative path
-# to the rtmpdump exe should be specified here.
-#rtmpdump=C:\Program Files (x86)\Streamlink\rtmpdump\rtmpdump.exe
-
-# FFMPEG is used to mux separate video and audio streams in to a single
-# stream so that they can be played. The full or relative path to ffmpeg
-# or avconv should be specified here.
-# ffmpeg-ffmpeg="C:\Users\max\AppData\Local\Programs\Streamlink\ffmpeg.exe"
-
 stream-segment-threads=10
-
-# Twitch settings
 twitch-low-latency
-ffmpeg-ffmpeg=C:\Program Files\Streamlink\ffmpeg\ffmpeg.exe
