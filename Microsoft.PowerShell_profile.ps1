@@ -44,6 +44,6 @@ if (Test-Path($ChocolateyProfile)) {
 }
 
 # Disable cursor blinking
-if ($PSVersionTable.PSVersion -gt [version]"7.0") {
+if ($PSVersionTable.PSVersion.Major -ge 7) {
     echo "`e[?12l"
 }
