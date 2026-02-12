@@ -626,6 +626,7 @@ function install_winget {
         'Insecure.Nmap',
         'nomacs.nomacs',
         'OBSProject.OBSStudio',
+        'Microsoft.PowerShell',
         'Microsoft.PowerToys',
         'Python.Python.3.12',
         'BurntSushi.ripgrep.MSVC',

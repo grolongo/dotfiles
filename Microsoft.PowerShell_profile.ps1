@@ -42,3 +42,8 @@ $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
     Import-Module "$ChocolateyProfile"
 }
+
+# Disable cursor blinking
+if ($PSVersionTable.PSVersion -gt [version]"7.0") {
+    echo "`e[?12l"
+}

@@ -77,6 +77,9 @@ if (Ask-Question 'Symlink AutoHotKey scripts?') {
 
 # powershell profile
 if (Ask-Question 'Symlink PowerShell profile?') {
+    # powershell v4
     New-Item -Force -Path "$PROFILE" -ItemType SymbolicLink -Value "$base\Microsoft.PowerShell_profile.ps1"
+    # powershell v7
+    New-Item -Force -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" -ItemType SymbolicLink -Value "$base\Microsoft.PowerShell_profile.ps1"
     takeown /f "$HOME\Documents\WindowsPowershell" /r
 }
