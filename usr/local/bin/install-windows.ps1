@@ -681,7 +681,7 @@ function install_winget {
     }
 
     if (Ask-Question 'Install Git?') {
-        winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption:CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption:CRLFCommitAsIs /o:CURLOption=WinSSL'
+        winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption=CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption=CRLFCommitAsIs /o:CURLOption=WinSSL'
     }
 
     if (Ask-Question 'Install MKVToolNix?') {
