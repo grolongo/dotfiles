@@ -764,8 +764,7 @@ function Install-MPV {
     New-Item -Force -Path "$configDest\scripts\uosc" -ItemType directory
 
     Write-Message 'Installing latest mpv...'
-    Start-BitsTransfer -Source 'https://sourceforge.net/projects/mpv-player-windows/files/bootstrapper.zip' -Destination "$tempFolder\bootstrapper.zip"
-    Expand-Archive -Path "$tempFolder\bootstrapper.zip" -DestinationPath "$installDest"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/shinchiro/mpv-packaging/refs/heads/master/mpv-root/installer/updater.ps1' -OutFile "$installDest\updater.ps1"
 
     Write-Message 'Adding mpv to path...'
     [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDest", [EnvironmentVariableTarget]::User)
@@ -773,8 +772,6 @@ function Install-MPV {
     Push-Location "$installDest"
     & "$installDest\updater.ps1"
     Pop-Location
-
-    Remove-Item "$tempFolder\bootstrapper.zip"
 
     Write-Message 'Installing plugins...'
 
