@@ -688,9 +688,7 @@ function install_winget {
         winget install -e --id 'MoritzBunkus.MKVToolNix'
 
         Write-Message 'Adding MKVToolNix to path...'
-        New-Variable -Name 'mkvtnPath' -Value 'C:\Program Files\MKVToolNix'
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-        [Environment]::SetEnvironmentVariable("PATH", $env:Path + ";$mkvtnPath", [EnvironmentVariableTarget]::User)
+        [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\MKVToolNix", [EnvironmentVariableTarget]::User)
     }
 
     if (Ask-Question 'Install qBittorrent?') {
@@ -786,8 +784,7 @@ function install_mpv {
     Expand-Archive -Path "$mpvInstallPath\bootstrapper.zip" -DestinationPath "$mpvInstallPath"
 
     Write-Message 'Adding mpv to path...'
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-    [Environment]::SetEnvironmentVariable("PATH", $env:Path + ";$mpvInstallPath", [EnvironmentVariableTarget]::User)
+    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallPath", [EnvironmentVariableTarget]::User)
 
     Push-Location "$mpvInstallPath"
     & "$mpvInstallPath\updater.ps1"
