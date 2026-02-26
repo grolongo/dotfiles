@@ -2,7 +2,7 @@
 
 #Requires -RunAsAdministrator
 
-### Common functions
+$tempFolder = [System.Environment]::GetEnvironmentVariable('TEMP','User')
 
 function Ask-Question {
     param(
@@ -30,398 +30,394 @@ function Write-Message {
     Write-Host -ForegroundColor 'yellow' $message
 }
 
-### Group Policies
-
-function apply_gpo {
+function Apply-GPO {
 
     if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
         Install-Module -Name PolicyFileEditor -Force
     }
 
-    $MachineDir = "$env:windir\System32\GroupPolicy\Machine\Registry.pol"
+    $machineDir = "$env:windir\System32\GroupPolicy\Machine\Registry.pol"
 
-    $RegPath01 = 'Software\Policies\Microsoft\Windows\Personalization'
-    $RegPath02 = 'Software\Policies\Microsoft\InputPersonalization'
-    $RegPath03 = 'Software\Policies\Microsoft\MUI\Settings'
-    $RegPath04 = 'Software\Policies\Microsoft\Control Panel\International'
-    $RegPath06 = 'Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'
-    $RegPath07 = 'Software\Policies\Microsoft\Windows\System'
-    $RegPath08 = 'Software\Policies\Microsoft\WindowsFirewall\DomainProfile'
-    $RegPath09 = 'Software\Policies\Microsoft\WindowsFirewall\StandardProfile'
-    $RegPath10 = 'Software\Policies\Microsoft\Windows\Explorer'
-    $RegPath11 = 'Software\Policies\Microsoft\SQMClient\Windows'
-    $RegPath12 = 'Software\Policies\Microsoft\PCHealth\ErrorReporting'
-    $RegPath13 = 'Software\Policies\Microsoft\Windows\Windows Error Reporting'
-    $RegPath14 = 'Software\Policies\Microsoft\Messenger\Client'
-    $RegPath15 = 'Software\Policies\Microsoft\Windows NT\SystemRestore'
-    $RegPath16 = 'Software\Policies\Microsoft\Windows\AdvertisingInfo'
-    $RegPath17 = 'Software\Policies\Microsoft\Windows\AppPrivacy'
-    $RegPath18 = 'Software\Microsoft\Windows\CurrentVersion\Policies\System'
-    $RegPath19 = 'Software\Policies\Microsoft\Windows\AppCompat'
-    $RegPath20 = 'Software\Policies\Microsoft\Windows\Windows Chat'
-    $RegPath21 = 'Software\Policies\Microsoft\Windows\CloudContent'
-    $RegPath22 = 'Software\Policies\Microsoft\Windows\PreviewBuilds'
-    $RegPath23 = 'Software\Policies\Microsoft\Windows\DataCollection'
-    $RegPath24 = 'Software\Policies\Microsoft\Windows\DWM'
-    $RegPath25 = 'Software\Policies\Microsoft\Windows\EdgeUI'
-    $RegPath26 = 'Software\Policies\Microsoft\Windows\LocationAndSensors'
-    $RegPath27 = 'Software\Policies\Microsoft\Windows\Maps'
-    $RegPath28 = 'Software\Policies\Microsoft\MicrosoftAccount'
-    $RegPath29 = 'Software\Policies\Microsoft\Windows Defender'
-    $RegPath30 = 'Software\Policies\Microsoft\MicrosoftEdge\ServiceUI'
-    $RegPath31 = 'Software\Policies\Microsoft\MicrosoftEdge\Addons'
-    $RegPath32 = 'Software\Policies\Microsoft\MicrosoftEdge\BooksLibrary'
-    $RegPath33 = 'Software\Policies\Microsoft\MicrosoftEdge\Main'
-    $RegPath34 = 'Software\Policies\Microsoft\MicrosoftEdge\TabPreloader'
-    $RegPath35 = 'Software\Policies\Microsoft\MicrosoftEdge\Internet Settings'
-    $RegPath36 = 'Software\Policies\Microsoft\MicrosoftEdge\SearchScopes'
-    $RegPath38 = 'Software\Microsoft\OneDrive'
-    $RegPath39 = 'Software\Policies\Microsoft\Windows\OneDrive'
-    $RegPath40 = 'Software\Policies\Microsoft\Windows NT\Terminal Services'
-    $RegPath41 = 'Software\Policies\Microsoft\Windows\Windows Search'
-    $RegPath42 = 'Software\Policies\Microsoft\WindowsStore'
-    $RegPath43 = 'Software\Policies\Microsoft\Dsh'
-    $RegPath44 = 'Software\Policies\Microsoft\Windows\GameDVR'
-    $RegPath45 = 'Software\Policies\Microsoft\PassportForWork'
-    $RegPath46 = 'Software\Policies\Microsoft\WindowsInkWorkspace'
-    $RegPath47 = 'Software\Policies\Microsoft\WindowsMediaPlayer'
-    $RegPath48 = 'Software\Policies\Microsoft\Messenger\Client'
-    $RegPath49 = 'Software\Policies\Microsoft\Windows\WinRM\Service\WinRS'
-    $RegPath50 = 'Software\Policies\Microsoft\FVE'
+    $regPath01 = 'Software\Policies\Microsoft\Windows\Personalization'
+    $regPath02 = 'Software\Policies\Microsoft\InputPersonalization'
+    $regPath03 = 'Software\Policies\Microsoft\MUI\Settings'
+    $regPath04 = 'Software\Policies\Microsoft\Control Panel\International'
+    $regPath06 = 'Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+    $regPath07 = 'Software\Policies\Microsoft\Windows\System'
+    $regPath08 = 'Software\Policies\Microsoft\WindowsFirewall\DomainProfile'
+    $regPath09 = 'Software\Policies\Microsoft\WindowsFirewall\StandardProfile'
+    $regPath10 = 'Software\Policies\Microsoft\Windows\Explorer'
+    $regPath11 = 'Software\Policies\Microsoft\SQMClient\Windows'
+    $regPath12 = 'Software\Policies\Microsoft\PCHealth\ErrorReporting'
+    $regPath13 = 'Software\Policies\Microsoft\Windows\Windows Error Reporting'
+    $regPath14 = 'Software\Policies\Microsoft\Messenger\Client'
+    $regPath15 = 'Software\Policies\Microsoft\Windows NT\SystemRestore'
+    $regPath16 = 'Software\Policies\Microsoft\Windows\AdvertisingInfo'
+    $regPath17 = 'Software\Policies\Microsoft\Windows\AppPrivacy'
+    $regPath18 = 'Software\Microsoft\Windows\CurrentVersion\Policies\System'
+    $regPath19 = 'Software\Policies\Microsoft\Windows\AppCompat'
+    $regPath20 = 'Software\Policies\Microsoft\Windows\Windows Chat'
+    $regPath21 = 'Software\Policies\Microsoft\Windows\CloudContent'
+    $regPath22 = 'Software\Policies\Microsoft\Windows\PreviewBuilds'
+    $regPath23 = 'Software\Policies\Microsoft\Windows\DataCollection'
+    $regPath24 = 'Software\Policies\Microsoft\Windows\DWM'
+    $regPath25 = 'Software\Policies\Microsoft\Windows\EdgeUI'
+    $regPath26 = 'Software\Policies\Microsoft\Windows\LocationAndSensors'
+    $regPath27 = 'Software\Policies\Microsoft\Windows\Maps'
+    $regPath28 = 'Software\Policies\Microsoft\MicrosoftAccount'
+    $regPath29 = 'Software\Policies\Microsoft\Windows Defender'
+    $regPath30 = 'Software\Policies\Microsoft\MicrosoftEdge\ServiceUI'
+    $regPath31 = 'Software\Policies\Microsoft\MicrosoftEdge\Addons'
+    $regPath32 = 'Software\Policies\Microsoft\MicrosoftEdge\BooksLibrary'
+    $regPath33 = 'Software\Policies\Microsoft\MicrosoftEdge\Main'
+    $regPath34 = 'Software\Policies\Microsoft\MicrosoftEdge\TabPreloader'
+    $regPath35 = 'Software\Policies\Microsoft\MicrosoftEdge\Internet Settings'
+    $regPath36 = 'Software\Policies\Microsoft\MicrosoftEdge\SearchScopes'
+    $regPath38 = 'Software\Microsoft\OneDrive'
+    $regPath39 = 'Software\Policies\Microsoft\Windows\OneDrive'
+    $regPath40 = 'Software\Policies\Microsoft\Windows NT\Terminal Services'
+    $regPath41 = 'Software\Policies\Microsoft\Windows\Windows Search'
+    $regPath42 = 'Software\Policies\Microsoft\WindowsStore'
+    $regPath43 = 'Software\Policies\Microsoft\Dsh'
+    $regPath44 = 'Software\Policies\Microsoft\Windows\GameDVR'
+    $regPath45 = 'Software\Policies\Microsoft\PassportForWork'
+    $regPath46 = 'Software\Policies\Microsoft\WindowsInkWorkspace'
+    $regPath47 = 'Software\Policies\Microsoft\WindowsMediaPlayer'
+    $regPath48 = 'Software\Policies\Microsoft\Messenger\Client'
+    $regPath49 = 'Software\Policies\Microsoft\Windows\WinRM\Service\WinRS'
+    $regPath50 = 'Software\Policies\Microsoft\FVE'
 
     # Computer Configuration > Administrative Templates > Control Panel > Personalization
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath01 -ValueName 'AnimateLockScreenBackground'                  -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath01 -ValueName 'NoChangingStartMenuBackground'                -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath01 -ValueName 'NoLockScreenCamera'                           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath01 -ValueName 'NoLockScreenSlideshow'                        -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath01 -ValueName 'AnimateLockScreenBackground'                  -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath01 -ValueName 'NoChangingStartMenuBackground'                -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath01 -ValueName 'NoLockScreenCamera'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath01 -ValueName 'NoLockScreenSlideshow'                        -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Control Panel > Regional and Language Options
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath02 -ValueName 'AllowInputPersonalization'                    -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath02 -ValueName 'PreferredUILanguages'                         -Data 'en-US' -Type 'String'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath03 -ValueName 'MachineUILock'                                -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath04 -ValueName 'RestrictLanguagePacksAndFeaturesInstall'      -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath02 -ValueName 'AllowInputPersonalization'                    -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath02 -ValueName 'PreferredUILanguages'                         -Data 'en-US' -Type 'String'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath03 -ValueName 'MachineUILock'                                -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath04 -ValueName 'RestrictLanguagePacksAndFeaturesInstall'      -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Control Panel > Regional and Language Options > Handwriting personalization
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath02 -ValueName 'RestrictImplicitTextCollection'               -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath02 -ValueName 'RestrictImplicitInkCollection'                -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath02 -ValueName 'RestrictImplicitTextCollection'               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath02 -ValueName 'RestrictImplicitInkCollection'                -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Control Panel > User Accounts
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'UseDefaultTile'                               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'UseDefaultTile'                               -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Control Panel
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'AllowOnlineTips'                              -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'AllowOnlineTips'                              -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Network > Fonts
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath07 -ValueName 'EnableFontProviders'                          -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath07 -ValueName 'EnableFontProviders'                          -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Network > Network Connections > Windows Defender Firewall > Domain Profile
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath08 -ValueName 'EnableFirewall'                               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath08 -ValueName 'EnableFirewall'                               -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Network > Network Connections > Windows Defender Firewall > Standard Profile
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath09 -ValueName 'EnableFirewall'                               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath09 -ValueName 'EnableFirewall'                               -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Start Menu and Taskbar
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'ForceStartSize'                               -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'HideRecentlyAddedApps'                        -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'HideRecommendedPersonalizedSites'             -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'HideRecommendedSection'                       -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'ShowOrHideMostUsedApps'                       -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'NoRecentDocsHistory'                          -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'HideTaskViewButton'                           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'TaskbarNoPinnedList'                          -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'NoStartMenuMFUprogramsList'                   -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'ForceStartSize'                               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'HideRecentlyAddedApps'                        -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'HideRecommendedPersonalizedSites'             -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'HideRecommendedSection'                       -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'ShowOrHideMostUsedApps'                       -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'NoRecentDocsHistory'                          -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'HideTaskViewButton'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'TaskbarNoPinnedList'                          -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'NoStartMenuMFUprogramsList'                   -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > System > Internet Communication Management > Internet Communication settings
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath11 -ValueName 'CEIPEnable'                                   -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath12 -ValueName 'DoReport'                                     -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath13 -ValueName 'Disabled'                                     -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'NoInternetOpenWith'                           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'NoUseStoreOpenWith'                           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'NoWebServices'                                -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'NoOnlinePrintsWizard'                         -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'NoPublishingWizard'                           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath14 -ValueName 'CEIP'                                         -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath11 -ValueName 'CEIPEnable'                                   -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath12 -ValueName 'DoReport'                                     -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath13 -ValueName 'Disabled'                                     -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'NoInternetOpenWith'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'NoUseStoreOpenWith'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'NoWebServices'                                -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'NoOnlinePrintsWizard'                         -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'NoPublishingWizard'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath14 -ValueName 'CEIP'                                         -Data '2'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > System > Logon
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath07 -ValueName 'BlockUserFromShowingAccountDetailsOnSignin'   -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath07 -ValueName 'DisableLockScreenAppNotifications'            -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath07 -ValueName 'BlockUserFromShowingAccountDetailsOnSignin'   -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath07 -ValueName 'DisableLockScreenAppNotifications'            -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > System > System Restore
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath15 -ValueName 'DisableSR'                                    -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath15 -ValueName 'DisableConfig'                                -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath15 -ValueName 'DisableSR'                                    -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath15 -ValueName 'DisableConfig'                                -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > System > User Profiles
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath16 -ValueName 'DisabledByGroupPolicy'                        -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath16 -ValueName 'DisabledByGroupPolicy'                        -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > App Privacy
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessAccountInfo'                     -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessGazeInput'                       -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessCallHistory'                     -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessContacts'                        -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsGetDiagnosticInfo'                     -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessEmail'                           -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessLocation'                        -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessMessaging'                       -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessMotion'                          -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessCamera'                          -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessMicrophone'                      -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessBackgroundSpatialPerception'     -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsActivateWithVoice'                     -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsActivateWithVoiceAboveLock'            -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessRadios'                          -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessPhone'                           -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsRunInBackground'                       -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath17 -ValueName 'LetAppsAccessGraphicsCaptureProgrammatic'     -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessAccountInfo'                     -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessGazeInput'                       -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessCallHistory'                     -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessContacts'                        -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsGetDiagnosticInfo'                     -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessEmail'                           -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessLocation'                        -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessMessaging'                       -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessMotion'                          -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessCamera'                          -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessMicrophone'                      -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessBackgroundSpatialPerception'     -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsActivateWithVoice'                     -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsActivateWithVoiceAboveLock'            -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessRadios'                          -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessPhone'                           -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsRunInBackground'                       -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath17 -ValueName 'LetAppsAccessGraphicsCaptureProgrammatic'     -Data '2'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > App runtime
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath18 -ValueName 'MSAOptional'                                  -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath18 -ValueName 'MSAOptional'                                  -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Application Compatibility
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath19 -ValueName 'AITEnable'                                    -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath19 -ValueName 'DisableInventory'                             -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath19 -ValueName 'DisableUAR'                                   -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath19 -ValueName 'AITEnable'                                    -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath19 -ValueName 'DisableInventory'                             -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath19 -ValueName 'DisableUAR'                                   -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > AutoPlay Policies
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'NoDriveTypeAutoRun'                           -Data '255'   -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'NoAutoplayfornonVolume'                       -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath06 -ValueName 'NoAutorun'                                    -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'NoDriveTypeAutoRun'                           -Data '255'   -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'NoAutoplayfornonVolume'                       -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath06 -ValueName 'NoAutorun'                                    -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > BitLocker Drive Encryption > Fixed drives
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'FDVEncryptionType'                            -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'FDVRecovery'                                  -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'FDVManageDRA'                                 -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'FDVActiveDirectoryBackup'                     -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'FDVAllowUserCert'                             -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'FDVEncryptionType'                            -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'FDVRecovery'                                  -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'FDVManageDRA'                                 -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'FDVActiveDirectoryBackup'                     -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'FDVAllowUserCert'                             -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > BitLocker Drive Encryption > OS drive
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'OSEncryptionType'                             -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'UseAdvancedStartup'                           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'EnableBDEWithNoTPM'                           -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'UseTPM'                                       -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'UseTPMKey'                                    -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'UseTPMKeyPIN'                                 -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'UseTPMPIN'                                    -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'UseEnhancedPin'                               -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'OSRecovery'                                   -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'OSManageDRA'                                  -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'OSRecoveryKey'                                -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'OSRecoveryPassword'                           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath50 -ValueName 'OSActiveDirectoryBackup'                      -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'OSEncryptionType'                             -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'UseAdvancedStartup'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'EnableBDEWithNoTPM'                           -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'UseTPM'                                       -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'UseTPMKey'                                    -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'UseTPMKeyPIN'                                 -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'UseTPMPIN'                                    -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'UseEnhancedPin'                               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'OSRecovery'                                   -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'OSManageDRA'                                  -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'OSRecoveryKey'                                -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'OSRecoveryPassword'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath50 -ValueName 'OSActiveDirectoryBackup'                      -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Chat
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath20 -ValueName 'ChatIcon'                                     -Data '3'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath20 -ValueName 'ChatIcon'                                     -Data '3'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Cloud Content
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath21 -ValueName 'DisableSoftLanding'                           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath21 -ValueName 'DisableWindowsConsumerFeatures'               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath21 -ValueName 'DisableSoftLanding'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath21 -ValueName 'DisableWindowsConsumerFeatures'               -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Data Collection and Preview Builds
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath22 -ValueName 'AllowBuildPreview'                            -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath23 -ValueName 'AllowTelemetry'                               -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath23 -ValueName 'DisableTelemetryOptInSettingsUx'              -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath23 -ValueName 'LimitDiagnosticLogCollection'                 -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath23 -ValueName 'LimitDumpCollection'                          -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath23 -ValueName 'DoNotShowFeedbackNotifications'               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath22 -ValueName 'AllowBuildPreview'                            -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath23 -ValueName 'AllowTelemetry'                               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath23 -ValueName 'DisableTelemetryOptInSettingsUx'              -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath23 -ValueName 'LimitDiagnosticLogCollection'                 -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath23 -ValueName 'LimitDumpCollection'                          -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath23 -ValueName 'DoNotShowFeedbackNotifications'               -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Desktop Window Manager
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath24 -ValueName 'DisableAccentGradient'                        -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath24 -ValueName 'DisallowAnimations'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath24 -ValueName 'DisableAccentGradient'                        -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath24 -ValueName 'DisallowAnimations'                           -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Edge UI
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath25 -ValueName 'AllowEdgeSwipe'                               -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath25 -ValueName 'DisableHelpSticker'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath25 -ValueName 'AllowEdgeSwipe'                               -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath25 -ValueName 'DisableHelpSticker'                           -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > File Explorer
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'ExplorerRibbonStartsMinimized'                -Data '2'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath10 -ValueName 'DisableGraphRecentItems'                      -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'ExplorerRibbonStartsMinimized'                -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath10 -ValueName 'DisableGraphRecentItems'                      -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Location and Sensors
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath26 -ValueName 'DisableLocation'                              -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath26 -ValueName 'DisableLocationScripting'                     -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath26 -ValueName 'DisableLocation'                              -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath26 -ValueName 'DisableLocationScripting'                     -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Maps
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath27 -ValueName 'AutoDownloadAndUpdateMapData'                 -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath27 -ValueName 'AllowUntriggeredNetworkTrafficOnSettingsPage' -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath27 -ValueName 'AutoDownloadAndUpdateMapData'                 -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath27 -ValueName 'AllowUntriggeredNetworkTrafficOnSettingsPage' -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Microsoft accounts
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath28 -ValueName 'DisableUserAuth'                              -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath28 -ValueName 'DisableUserAuth'                              -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Microsoft Defender Antivirus
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath29 -ValueName 'PUAProtection'                                -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath29 -ValueName 'PUAProtection'                                -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Microsoft Edge
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath30 -ValueName 'ShowOneBox'                                   -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath31 -ValueName 'FlashPlayerEnabled'                           -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath32 -ValueName 'AllowConfigurationUpdateForBooksLibrary'      -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath33 -ValueName 'AllowFullScreenMode'                          -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath33 -ValueName 'AllowPrelaunch'                               -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath34 -ValueName 'AllowTabPreloading'                           -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath30 -ValueName 'AllowWebContentOnNewTabPage'                  -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath33 -ValueName 'Use FormSuggest'                              -Data 'no'    -Type 'String'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath33 -ValueName 'ConfigureFavoritesBar'                        -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath35 -ValueName 'ConfigureHomeButton'                          -Data '3'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath33 -ValueName 'AllowPopups'                                  -Data 'yes'   -Type 'String'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath36 -ValueName 'ShowSearchSuggestionsGlobal'                  -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath33 -ValueName 'SyncFavoritesBetweenIEAndMicrosoftEdge'       -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath33 -ValueName 'PreventLiveTileDataCollection'                -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath33 -ValueName 'PreventFirstRunPage'                          -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath30 -ValueName 'ShowOneBox'                                   -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath31 -ValueName 'FlashPlayerEnabled'                           -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath32 -ValueName 'AllowConfigurationUpdateForBooksLibrary'      -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath33 -ValueName 'AllowFullScreenMode'                          -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath33 -ValueName 'AllowPrelaunch'                               -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath34 -ValueName 'AllowTabPreloading'                           -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath30 -ValueName 'AllowWebContentOnNewTabPage'                  -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath33 -ValueName 'Use FormSuggest'                              -Data 'no'    -Type 'String'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath33 -ValueName 'ConfigureFavoritesBar'                        -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath35 -ValueName 'ConfigureHomeButton'                          -Data '3'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath33 -ValueName 'AllowPopups'                                  -Data 'yes'   -Type 'String'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath36 -ValueName 'ShowSearchSuggestionsGlobal'                  -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath33 -ValueName 'SyncFavoritesBetweenIEAndMicrosoftEdge'       -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath33 -ValueName 'PreventLiveTileDataCollection'                -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath33 -ValueName 'PreventFirstRunPage'                          -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > OneDrive
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath38 -ValueName 'PreventNetworkTrafficPreUserSignIn'           -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath39 -ValueName 'DisableFileSyncNGSC'                          -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath38 -ValueName 'PreventNetworkTrafficPreUserSignIn'           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath39 -ValueName 'DisableFileSyncNGSC'                          -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Remote Desktop Services > Remote Desktop Session Host > Connections
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath40 -ValueName 'fDenyTSConnections'                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath40 -ValueName 'fDenyTSConnections'                           -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Search
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath41 -ValueName 'AllowCloudSearch'                             -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath41 -ValueName 'AllowCortanaAboveLock'                        -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath41 -ValueName 'AllowCortana'                                 -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath41 -ValueName 'SearchOnTaskbarMode'                          -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath41 -ValueName 'DisableWebSearch'                             -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath41 -ValueName 'ConnectedSearchUseWeb'                        -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath41 -ValueName 'ConnectedSearchPrivacy'                       -Data '3'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath41 -ValueName 'ConnectedSearchSafeSearch'                    -Data '3'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath41 -ValueName 'AllowCloudSearch'                             -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath41 -ValueName 'AllowCortanaAboveLock'                        -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath41 -ValueName 'AllowCortana'                                 -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath41 -ValueName 'SearchOnTaskbarMode'                          -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath41 -ValueName 'DisableWebSearch'                             -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath41 -ValueName 'ConnectedSearchUseWeb'                        -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath41 -ValueName 'ConnectedSearchPrivacy'                       -Data '3'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath41 -ValueName 'ConnectedSearchSafeSearch'                    -Data '3'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Store
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath42 -ValueName 'DisableOSUpgrade'                             -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath42 -ValueName 'AutoDownload'                                 -Data '2'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath42 -ValueName 'DisableOSUpgrade'                             -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath42 -ValueName 'AutoDownload'                                 -Data '2'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Widgets
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath43 -ValueName 'AllowNewsAndInterests'                        -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath43 -ValueName 'DisableWidgetsOnLockScreen'                   -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath43 -ValueName 'AllowNewsAndInterests'                        -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath43 -ValueName 'DisableWidgetsOnLockScreen'                   -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Windows Game Recording and Broadcasting
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath44 -ValueName 'AllowGameDVR'                                 -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath44 -ValueName 'AllowGameDVR'                                 -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Windows Hello for Business
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath45 -ValueName 'Enabled'                                      -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath45 -ValueName 'Enabled'                                      -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Windows Ink Workspace
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath46 -ValueName 'AllowWindowsInkWorkspace'                     -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath46 -ValueName 'AllowWindowsInkWorkspace'                     -Data '0'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Windows Media Player
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath47 -ValueName 'QuickLaunchShortcut'                          -Data 'no'    -Type 'String'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath47 -ValueName 'QuickLaunchShortcut'                          -Data 'no'    -Type 'String'
     # Computer Configuration > Administrative Templates > Windows Components > Windows Messenger
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath48 -ValueName 'PreventRun'                                   -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath48 -ValueName 'PreventAutoRun'                               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath48 -ValueName 'PreventRun'                                   -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath48 -ValueName 'PreventAutoRun'                               -Data '1'     -Type 'DWord'
     # Computer Configuration > Administrative Templates > Windows Components > Windows Remote Shell
-    Set-PolicyFileEntry -Path $MachineDir -Key $RegPath49 -ValueName 'AllowRemoteShellAccess'                       -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $machineDir -Key $regPath49 -ValueName 'AllowRemoteShellAccess'                       -Data '0'     -Type 'DWord'
 
     # ===========
     # User Config
     # ===========
 
-    $UserDir = "$env:windir\System32\GroupPolicy\User\Registry.pol"
+    $userDir = "$env:windir\System32\GroupPolicy\User\Registry.pol"
 
-    $RegPath50 = 'Software\Policies\Microsoft\Windows\Control Panel\Desktop'
-    $RegPath51 = 'Software\Policies\Microsoft\InputPersonalization'
-    $RegPath52 = 'Software\Policies\Microsoft\Control Panel\Desktop'
-    $RegPath53 = 'Software\Policies\Microsoft\Control Panel\International'
-    $RegPath54 = 'Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'
-    $RegPath55 = 'Software\Policies\Microsoft\Windows\Explorer'
-    $RegPath56 = 'Software\Policies\Microsoft\Assistance\Client\1.0'
-    $RegPath57 = 'Software\Policies\Microsoft\Messenger\Client'
-    $RegPath58 = 'Software\Policies\Microsoft\Windows\CloudContent'
-    $RegPath59 = 'Software\Policies\Microsoft\Windows\DataCollection'
-    $RegPath60 = 'Software\Policies\Microsoft\Windows\DWM'
-    $RegPath61 = 'Software\Policies\Microsoft\Windows\EdgeUI'
-    $RegPath62 = 'Software\Policies\Microsoft\ime\imejp'
-    $RegPath63 = 'Software\Policies\Microsoft\ime\shared'
-    $RegPath64 = 'Software\Policies\Microsoft\Windows\LocationAndSensors'
-    $RegPath65 = 'Software\Policies\Microsoft\MicrosoftEdge\ServiceUI'
-    $RegPath66 = 'Software\Policies\Microsoft\MicrosoftEdge\Addons'
-    $RegPath67 = 'Software\Policies\Microsoft\MicrosoftEdge\BooksLibrary'
-    $RegPath68 = 'Software\Policies\Microsoft\MicrosoftEdge\Main'
-    $RegPath69 = 'Software\Policies\Microsoft\MicrosoftEdge\TabPreloader'
-    $RegPath70 = 'Software\Policies\Microsoft\MicrosoftEdge\Internet Settings'
-    $RegPath71 = 'Software\Policies\Microsoft\MicrosoftEdge\SearchScopes'
-    $RegPath72 = 'Software\Policies\Microsoft\WindowsStore'
-    $RegPath73 = 'Software\Policies\Microsoft\Windows\WindowsCopilot'
-    $RegPath74 = 'Software\Policies\Microsoft\Windows\Windows Error Reporting'
-    $RegPath75 = 'Software\Policies\Microsoft\PassportForWork'
-    $RegPath76 = 'Software\Policies\Microsoft\Messenger\Client'
+    $regPath50 = 'Software\Policies\Microsoft\Windows\Control Panel\Desktop'
+    $regPath51 = 'Software\Policies\Microsoft\InputPersonalization'
+    $regPath52 = 'Software\Policies\Microsoft\Control Panel\Desktop'
+    $regPath53 = 'Software\Policies\Microsoft\Control Panel\International'
+    $regPath54 = 'Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+    $regPath55 = 'Software\Policies\Microsoft\Windows\Explorer'
+    $regPath56 = 'Software\Policies\Microsoft\Assistance\Client\1.0'
+    $regPath57 = 'Software\Policies\Microsoft\Messenger\Client'
+    $regPath58 = 'Software\Policies\Microsoft\Windows\CloudContent'
+    $regPath59 = 'Software\Policies\Microsoft\Windows\DataCollection'
+    $regPath60 = 'Software\Policies\Microsoft\Windows\DWM'
+    $regPath61 = 'Software\Policies\Microsoft\Windows\EdgeUI'
+    $regPath62 = 'Software\Policies\Microsoft\ime\imejp'
+    $regPath63 = 'Software\Policies\Microsoft\ime\shared'
+    $regPath64 = 'Software\Policies\Microsoft\Windows\LocationAndSensors'
+    $regPath65 = 'Software\Policies\Microsoft\MicrosoftEdge\ServiceUI'
+    $regPath66 = 'Software\Policies\Microsoft\MicrosoftEdge\Addons'
+    $regPath67 = 'Software\Policies\Microsoft\MicrosoftEdge\BooksLibrary'
+    $regPath68 = 'Software\Policies\Microsoft\MicrosoftEdge\Main'
+    $regPath69 = 'Software\Policies\Microsoft\MicrosoftEdge\TabPreloader'
+    $regPath70 = 'Software\Policies\Microsoft\MicrosoftEdge\Internet Settings'
+    $regPath71 = 'Software\Policies\Microsoft\MicrosoftEdge\SearchScopes'
+    $regPath72 = 'Software\Policies\Microsoft\WindowsStore'
+    $regPath73 = 'Software\Policies\Microsoft\Windows\WindowsCopilot'
+    $regPath74 = 'Software\Policies\Microsoft\Windows\Windows Error Reporting'
+    $regPath75 = 'Software\Policies\Microsoft\PassportForWork'
+    $regPath76 = 'Software\Policies\Microsoft\Messenger\Client'
 
     # User Configuration > Administrative Templates > Control Panel > Personalization
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath50 -ValueName 'ScreenSaveActive'                                               -Data '0'        -Type 'String'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath50 -ValueName 'ScreenSaveActive'                                               -Data '0'        -Type 'String'
     # User Configuration > Administrative Templates > Control Panel > Regional and Language Options
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath52 -ValueName 'PreferredUILanguages'                                           -Data 'en-US'    -Type 'String'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath52 -ValueName 'MultiUILanguageID'                                              -Data '00000409' -Type 'String'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath53 -ValueName 'RestrictLanguagePacksAndFeaturesInstall'                        -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath53 -ValueName 'TurnOffAutocorrectMisspelledWords'                              -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath53 -ValueName 'TurnOffHighlightMisspelledWords'                                -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath53 -ValueName 'TurnOffOfferTextPredictions'                                    -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath52 -ValueName 'PreferredUILanguages'                                           -Data 'en-US'    -Type 'String'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath52 -ValueName 'MultiUILanguageID'                                              -Data '00000409' -Type 'String'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath53 -ValueName 'RestrictLanguagePacksAndFeaturesInstall'                        -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath53 -ValueName 'TurnOffAutocorrectMisspelledWords'                              -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath53 -ValueName 'TurnOffHighlightMisspelledWords'                                -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath53 -ValueName 'TurnOffOfferTextPredictions'                                    -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Control Panel > Regional and Language Options > Handwriting personalization
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath51 -ValueName 'RestrictImplicitTextCollection'                                 -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath51 -ValueName 'RestrictImplicitInkCollection'                                  -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath51 -ValueName 'RestrictImplicitTextCollection'                                 -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath51 -ValueName 'RestrictImplicitInkCollection'                                  -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Desktop
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoInternetIcon'                                                 -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoInternetIcon'                                                 -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Start Menu and Taskbar
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'ClearRecentDocsOnExit'                                          -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'ClearRecentProgForNewUserInStartMenu'                           -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoRecentDocsHistory'                                            -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'ForceStartSize'                                                 -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'HideTaskViewButton'                                             -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'LockTaskbar'                                                    -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoTaskGrouping'                                                 -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'HideRecentlyAddedApps'                                          -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoStartMenuMFUprogramsList'                                     -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'HideRecommendedPersonalizedSites'                               -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'TaskbarNoPinnedList'                                            -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoStartMenuPinnedList'                                          -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoRecentDocsMenu'                                               -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'HideRecommendedSection'                                         -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'HideSCAMeetNow'                                                 -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'HidePeopleBar'                                                  -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'ShowOrHideMostUsedApps'                                         -Data '2'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'ShowWindowsStoreAppsOnTaskbar'                                  -Data '2'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoAutoTrayNotify'                                               -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'ClearRecentDocsOnExit'                                          -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'ClearRecentProgForNewUserInStartMenu'                           -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoRecentDocsHistory'                                            -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'ForceStartSize'                                                 -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'HideTaskViewButton'                                             -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'LockTaskbar'                                                    -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoTaskGrouping'                                                 -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'HideRecentlyAddedApps'                                          -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoStartMenuMFUprogramsList'                                     -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'HideRecommendedPersonalizedSites'                               -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'TaskbarNoPinnedList'                                            -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoStartMenuPinnedList'                                          -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoRecentDocsMenu'                                               -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'HideRecommendedSection'                                         -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'HideSCAMeetNow'                                                 -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'HidePeopleBar'                                                  -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'ShowOrHideMostUsedApps'                                         -Data '2'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'ShowWindowsStoreAppsOnTaskbar'                                  -Data '2'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoAutoTrayNotify'                                               -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > System > Internet Communication Management > Internet Communication settings
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'NoUseStoreOpenWith'                                             -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath56 -ValueName 'NoImplicitFeedback'                                             -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoWebServices'                                                  -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoInternetOpenWith'                                             -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoOnlinePrintsWizard'                                           -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoPublishingWizard'                                             -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath57 -ValueName 'CEIP'                                                           -Data '2'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath56 -ValueName 'NoOnlineAssist'                                                 -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'NoUseStoreOpenWith'                                             -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath56 -ValueName 'NoImplicitFeedback'                                             -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoWebServices'                                                  -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoInternetOpenWith'                                             -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoOnlinePrintsWizard'                                           -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoPublishingWizard'                                             -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath57 -ValueName 'CEIP'                                                           -Data '2'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath56 -ValueName 'NoOnlineAssist'                                                 -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > AutoPlay Policies
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoAutorun'                                                      -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoDriveTypeAutoRun'                                             -Data '255'      -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'NoAutoplayfornonVolume'                                         -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoAutorun'                                                      -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoDriveTypeAutoRun'                                             -Data '255'      -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'NoAutoplayfornonVolume'                                         -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Cloud Content
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath58 -ValueName 'ConfigureWindowsSpotlight'                                      -Data '2'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath58 -ValueName 'DisableThirdPartySuggestions'                                   -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath58 -ValueName 'DisableTailoredExperiencesWithDiagnosticData'                   -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath58 -ValueName 'DisableWindowsSpotlightFeatures'                                -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath58 -ValueName 'DisableSpotlightCollectionOnDesktop'                            -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath58 -ValueName 'DisableWindowsSpotlightWindowsWelcomeExperience'                -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath58 -ValueName 'DisableWindowsSpotlightOnActionCenter'                          -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath58 -ValueName 'DisableWindowsSpotlightOnSettings'                              -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath58 -ValueName 'ConfigureWindowsSpotlight'                                      -Data '2'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath58 -ValueName 'DisableThirdPartySuggestions'                                   -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath58 -ValueName 'DisableTailoredExperiencesWithDiagnosticData'                   -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath58 -ValueName 'DisableWindowsSpotlightFeatures'                                -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath58 -ValueName 'DisableSpotlightCollectionOnDesktop'                            -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath58 -ValueName 'DisableWindowsSpotlightWindowsWelcomeExperience'                -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath58 -ValueName 'DisableWindowsSpotlightOnActionCenter'                          -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath58 -ValueName 'DisableWindowsSpotlightOnSettings'                              -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Data Collection and Preview Builds
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath59 -ValueName 'AllowTelemetry'                                                 -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath59 -ValueName 'AllowTelemetry'                                                 -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Desktop Window Manager
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath60 -ValueName 'DisallowAnimations'                                             -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath60 -ValueName 'DisallowAnimations'                                             -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Edge UI
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath61 -ValueName 'AllowEdgeSwipe'                                                 -Data '0'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath61 -ValueName 'DisableHelpSticker'                                             -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath61 -ValueName 'DisableRecentApps'                                              -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath61 -ValueName 'DisableCharms'                                                  -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath61 -ValueName 'TurnOffBackstack'                                               -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath61 -ValueName 'AllowEdgeSwipe'                                                 -Data '0'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath61 -ValueName 'DisableHelpSticker'                                             -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath61 -ValueName 'DisableRecentApps'                                              -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath61 -ValueName 'DisableCharms'                                                  -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath61 -ValueName 'TurnOffBackstack'                                               -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > File Explorer
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'MaxRecentDocs'                                                  -Data '0'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'NoSearchInternetTryHarderButton'                                -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'NoChangeAnimation'                                              -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'ExplorerRibbonStartsMinimized'                                  -Data '2'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath54 -ValueName 'TurnOffSPIAnimations'                                           -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'DisableSearchBoxSuggestions'                                    -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'MaxRecentDocs'                                                  -Data '0'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'NoSearchInternetTryHarderButton'                                -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'NoChangeAnimation'                                              -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'ExplorerRibbonStartsMinimized'                                  -Data '2'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath54 -ValueName 'TurnOffSPIAnimations'                                           -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'DisableSearchBoxSuggestions'                                    -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > IME
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath62 -ValueName 'UseHistorybasedPredictiveInput'                                 -Data '0'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath63 -ValueName 'SearchPlugin'                                                   -Data '0'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath62 -ValueName 'UseHistorybasedPredictiveInput'                                 -Data '0'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath63 -ValueName 'SearchPlugin'                                                   -Data '0'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Location and Sensors
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath64 -ValueName 'DisableLocation'                                                -Data '1'        -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath64 -ValueName 'DisableLocationScripting'                                       -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath64 -ValueName 'DisableLocation'                                                -Data '1'        -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath64 -ValueName 'DisableLocationScripting'                                       -Data '1'        -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Microsoft Edge
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath65 -ValueName 'ShowOneBox'                                                     -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath66 -ValueName 'FlashPlayerEnabled'                                             -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath67 -ValueName 'AllowConfigurationUpdateForBooksLibrary'                        -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath68 -ValueName 'AllowFullScreenMode'                                            -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath68 -ValueName 'AllowPrelaunch'                                                 -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath69 -ValueName 'AllowTabPreloading'                                             -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath65 -ValueName 'AllowWebContentOnNewTabPage'                                    -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath68 -ValueName 'Use FormSuggest'                                                -Data 'no'    -Type 'String'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath68 -ValueName 'ConfigureFavoritesBar'                                          -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath70 -ValueName 'ConfigureHomeButton'                                            -Data '3'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath68 -ValueName 'AllowPopups'                                                    -Data 'yes'   -Type 'String'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath71 -ValueName 'ShowSearchSuggestionsGlobal'                                    -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath68 -ValueName 'SyncFavoritesBetweenIEAndMicrosoftEdge'                         -Data '0'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath68 -ValueName 'PreventLiveTileDataCollection'                                  -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath68 -ValueName 'PreventFirstRunPage'                                            -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath65 -ValueName 'ShowOneBox'                                                     -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath66 -ValueName 'FlashPlayerEnabled'                                             -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath67 -ValueName 'AllowConfigurationUpdateForBooksLibrary'                        -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath68 -ValueName 'AllowFullScreenMode'                                            -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath68 -ValueName 'AllowPrelaunch'                                                 -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath69 -ValueName 'AllowTabPreloading'                                             -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath65 -ValueName 'AllowWebContentOnNewTabPage'                                    -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath68 -ValueName 'Use FormSuggest'                                                -Data 'no'    -Type 'String'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath68 -ValueName 'ConfigureFavoritesBar'                                          -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath70 -ValueName 'ConfigureHomeButton'                                            -Data '3'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath68 -ValueName 'AllowPopups'                                                    -Data 'yes'   -Type 'String'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath71 -ValueName 'ShowSearchSuggestionsGlobal'                                    -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath68 -ValueName 'SyncFavoritesBetweenIEAndMicrosoftEdge'                         -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath68 -ValueName 'PreventLiveTileDataCollection'                                  -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath68 -ValueName 'PreventFirstRunPage'                                            -Data '1'     -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Search
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath55 -ValueName 'DisableSearchHistory'                                           -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath55 -ValueName 'DisableSearchHistory'                                           -Data '1'     -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Store
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath72 -ValueName 'DisableOSUpgrade'                                               -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath72 -ValueName 'DisableOSUpgrade'                                               -Data '1'     -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Windows Copilot
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath73 -ValueName 'TurnOffWindowsCopilot'                                          -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath73 -ValueName 'TurnOffWindowsCopilot'                                          -Data '1'     -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Windows Error Reporting
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath74 -ValueName 'Disabled'                                                       -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath74 -ValueName 'Disabled'                                                       -Data '1'     -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Windows Hello for Business
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath75 -ValueName 'Enabled'                                                        -Data '0'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath75 -ValueName 'Enabled'                                                        -Data '0'     -Type 'DWord'
     # User Configuration > Administrative Templates > Windows Components > Windows Messenger
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath76 -ValueName 'PreventRun'                                                     -Data '1'     -Type 'DWord'
-    Set-PolicyFileEntry -Path $UserDir -Key $RegPath76 -ValueName 'PreventAutoRun'                                                 -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath76 -ValueName 'PreventRun'                                                     -Data '1'     -Type 'DWord'
+    Set-PolicyFileEntry -Path $userDir -Key $regPath76 -ValueName 'PreventAutoRun'                                                 -Data '1'     -Type 'DWord'
 
     Start-Sleep -Seconds 5
     gpupdate /force
 }
 
-### UI/UX Preferences
-
-function set_uipreferences {
+function Set-UIPreferences {
     $explorer = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"
-    $exploreradvanced = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    $explorerAdvanced = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
     $personalize = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 
     # dark mode
@@ -431,11 +427,11 @@ function set_uipreferences {
 
     # hidden files
     Write-Message 'Show hidden files...'
-    Set-ItemProperty -Path $exploreradvanced -Name 'Hidden' -Value 1
+    Set-ItemProperty -Path $explorerAdvanced -Name 'Hidden' -Value 1
 
     # file extentions
     Write-Message 'Show file extentions...'
-    Set-ItemProperty -Path $exploreradvanced -Name 'HideFileExt' -Value 0
+    Set-ItemProperty -Path $explorerAdvanced -Name 'HideFileExt' -Value 0
 
     # Bing search
     Write-Message 'Disabling Bing search...'
@@ -447,29 +443,29 @@ function set_uipreferences {
 
     # taskbar alignment
     Write-Message 'Align taskbar to the left...'
-    Set-ItemProperty -Path $exploreradvanced -Name "TaskbarAl" -Value 0
+    Set-ItemProperty -Path $explorerAdvanced -Name "TaskbarAl" -Value 0
 
     # taskbar size (small = 1, large = 0)
     Write-Message 'Setting taskbar height size to small...'
-    Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSmallIcons' -Value 1
+    Set-ItemProperty -Path $explorerAdvanced -Name 'TaskbarSmallIcons' -Value 1
 
     # taskbar combine (always = 0, when full = 1, never = 2)
     Write-Message 'Setting taskbar combine when full mode...'
-    Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarGlomLevel' -Value 1
+    Set-ItemProperty -Path $explorerAdvanced -Name 'TaskbarGlomLevel' -Value 1
 
     # lock taskbar (lock = 0, unlock = 1)
     Write-Message 'Locking the taskbar...'
-    Set-ItemProperty -Path $exploreradvanced -Name 'TaskbarSizeMove' -Value 0
+    Set-ItemProperty -Path $explorerAdvanced -Name 'TaskbarSizeMove' -Value 0
 
     # disable recent files, folders and cloud files (hidden = 0, show = 1)
     Write-Message 'Disabling recent files and cloud folders...'
-    Set-ItemProperty -Path $exploreradvanced -Name 'CloudFilesOnDemand' -Value 0
-    Set-ItemProperty -Path $exploreradvanced -Name 'Start_TrackDocs' -Value 0
+    Set-ItemProperty -Path $explorerAdvanced -Name 'CloudFilesOnDemand' -Value 0
+    Set-ItemProperty -Path $explorerAdvanced -Name 'Start_TrackDocs' -Value 0
     Set-ItemProperty -Path $explorer -Name 'ShowFrequent' -Value 0
 
     # Start menu layout
     Write-Message 'Setting up the Start menu...'
-    Set-ItemProperty -Path $exploreradvanced -Name 'Start_Layout' -Value 1 # (1 = More pins, 2 = More recommendations, 3 = Default)
+    Set-ItemProperty -Path $explorerAdvanced -Name 'Start_Layout' -Value 1 # (1 = More pins, 2 = More recommendations, 3 = Default)
 
     # disable transparency (1 = enabled, 0 = disabled)
     Write-Message 'Disabling transparency effects...'
@@ -483,9 +479,9 @@ function set_uipreferences {
     Write-Message 'Disabling snapping of windows on startup...'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0
     Write-Message 'Disabling snap assist suggestion on startup...'
-    Set-ItemProperty -Path $exploreradvanced -Name WindowArrangementActive -Value 0
+    Set-ItemProperty -Path $explorerAdvanced -Name WindowArrangementActive -Value 0
     Write-Message 'Disabling snap assist flyout on startup...'
-    Set-ItemProperty -Path $exploreradvanced -Name EnableSnapAssistFlyout -Value 0
+    Set-ItemProperty -Path $explorerAdvanced -Name EnableSnapAssistFlyout -Value 0
 
     # recall
     Write-Message "Disabling Recall..."
@@ -518,13 +514,13 @@ function set_uipreferences {
     Write-Message 'Might need to relog for changes to take effect.'
 
     # keyboard settings
-    $LanguageList = Get-WinUserLanguageList
+    $languageList = Get-WinUserLanguageList
 
-    if (-not $LanguageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
+    if (-not $languageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
         if (Ask-Question 'FR keyboard layout not detected, install?') {
             Write-Message 'Adding FR keyboard layout...'
-            $LanguageList[0].InputMethodTips.Add('0409:0000040C')
-            Set-WinUserLanguageList $LanguageList -Force
+            $languageList[0].InputMethodTips.Add('0409:0000040C')
+            Set-WinUserLanguageList $languageList -Force
             Set-WinDefaultInputMethodOverride -InputTip "0409:0000040C"
         }
     }
@@ -540,37 +536,33 @@ function set_uipreferences {
 
     # mouse settings
     Write-Message 'Disabling mouse acceleration...'
-    $mousepath = "HKCU:\Control Panel\Mouse"
-    Set-ItemProperty -Path $mousepath -Name MouseSpeed -Value 0
-    Set-ItemProperty -Path $mousepath -Name MouseThreshold1 -Value 0
-    Set-ItemProperty -Path $mousepath -Name MouseThreshold2 -Value 0
+    $mousePath = "HKCU:\Control Panel\Mouse"
+    Set-ItemProperty -Path $mousePath -Name MouseSpeed -Value 0
+    Set-ItemProperty -Path $mousePath -Name MouseThreshold1 -Value 0
+    Set-ItemProperty -Path $mousePath -Name MouseThreshold2 -Value 0
 }
 
-### BitLocker
-
-function enable_bitlocker {
+function Enable-BitLocker {
     if (Ask-Question 'Encrypt C: drive?') {
         manage-bde -protectors -add c: -TPMAndPIN
         Start-Sleep -Seconds 3
         manage-bde -on c: -RecoveryPassword
     }
 
-    $Drives = (BitlockerVolume | Where-Object {$_.AutoUnlockEnabled -eq $false}).MountPoint
+    $drives = (BitlockerVolume | Where-Object {$_.AutoUnlockEnabled -eq $false}).MountPoint
 
-    if ($Drives) {
-        foreach ($Drive in $Drives) {
-            if (Ask-Question "Automatically unlock $Drive at boot?") {
-                manage-bde -unlock "$Drive" -password
+    if ($drives) {
+        foreach ($drive in $drives) {
+            if (Ask-Question "Automatically unlock $drive at boot?") {
+                manage-bde -unlock "$drive" -password
                 Start-Sleep -Seconds 10
-                manage-bde -autounlock -enable "$Drive"
+                manage-bde -autounlock -enable "$drive"
             }
         }
     }
 }
 
-### Firewall
-
-function set_firewall {
+function Set-FireWall {
     if (Ask-Question 'Block incoming connections and allow outgoing?') {
         Set-NetConnectionProfile -NetworkCategory Private
         netsh advfirewall set allprofiles state on
@@ -580,9 +572,7 @@ function set_firewall {
     }
 }
 
-### Power Settings
-
-function power_settings {
+function Set-PowerSettings {
     Write-Message 'Turning off all power saving mode when on AC power...'
     powercfg -change -monitor-timeout-ac 0
     powercfg -change -standby-timeout-ac 0
@@ -599,9 +589,7 @@ function power_settings {
     }
 }
 
-### Packages
-
-function install_winget {
+function Install-WinGet {
 
     $packages = @(
         '7zip.7zip',
@@ -646,11 +634,11 @@ function install_winget {
     )
 
     if (Ask-Question 'Install WinGet from GitHub (instead of Microsoft Store)?') {
-        $API_URL = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-        $DOWNLOAD_URL = $(Invoke-RestMethod $API_URL).assets.browser_download_url |
+        $apiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+        $downloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url |
           Where-Object {$_.EndsWith(".msixbundle")}
 
-        Invoke-WebRequest -Uri $DOWNLOAD_URL -OutFile "winget.msixbundle" -UseBasicParsing
+        Invoke-WebRequest -Uri $downloadUrl -OutFile "winget.msixbundle" -UseBasicParsing
         Add-AppxPackage -Path "winget.msixbundle"
         Remove-Item "winget.msixbundle" }
 
@@ -671,13 +659,13 @@ function install_winget {
         Add-MpPreference -ExclusionExtension ".el", ".elc", ".eln"
 
         Write-Message 'Downloading English and French dictionaries for Flyspell...'
-        New-Variable -Name 'HUNSPELL_FOLDER' -Value "$env:APPDATA\.emacs.d\hunspell"
-        New-Item -Force -Path "$HUNSPELL_FOLDER" -ItemType directory
+        $hunspellDir = "$env:APPDATA\.emacs.d\hunspell"
+        New-Item -Force -Path "$hunspellDir" -ItemType directory
 
-        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile "$HUNSPELL_FOLDER\en_US.aff"
-        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.dic' -OutFile "$HUNSPELL_FOLDER\en_US.dic"
-        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.aff' -OutFile "$HUNSPELL_FOLDER\fr_FR.aff"
-        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic' -OutFile "$HUNSPELL_FOLDER\fr_FR.dic"
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile "$hunspellDir\en_US.aff"
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.dic' -OutFile "$hunspellDir\en_US.dic"
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.aff' -OutFile "$hunspellDir\fr_FR.aff"
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic' -OutFile "$hunspellDir\fr_FR.dic"
     }
 
     if (Ask-Question 'Install Git?') {
@@ -694,8 +682,8 @@ function install_winget {
     if (Ask-Question 'Install qBittorrent?') {
         winget install -e --id 'qBittorrent.qBittorrent'
 
-        New-Variable -Name 'PLUGIN_FOLDER' -Value "$HOME\AppData\Local\qBittorrent\nova3\engines"
-        New-Item -Force -Path "$PLUGIN_FOLDER" -ItemType directory
+        $pluginDir = "$HOME\AppData\Local\qBittorrent\nova3\engines"
+        New-Item -Force -Path "$pluginDir" -ItemType directory
 
         $urls = @(
             # Official plugins
@@ -737,7 +725,7 @@ function install_winget {
         # Loop through each URL and download the file
         foreach ($url in $urls) {
             $fileName = [System.IO.Path]::GetFileName($url)
-            $outFile = Join-Path $PLUGIN_FOLDER $fileName
+            $outFile = Join-Path $pluginDir $fileName
             Invoke-WebRequest -Uri $url -OutFile $outFile
         }
     }
@@ -751,12 +739,12 @@ function install_winget {
         Move-Item -Path "$HOME\Desktop\Tor Browser" -Destination 'C:\Program Files\'
 
         Write-Message 'Creating Shortcut for Start Menu...'
-        $TargetFilePath = 'C:\Program Files\Tor Browser\Browser\firefox.exe'
-        $ShortcutLocation = "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Tor Browser.lnk"
+        $targetFilePath = 'C:\Program Files\Tor Browser\Browser\firefox.exe'
+        $shortcutLocation = "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Tor Browser.lnk"
         $WScriptShell = New-Object -ComObject WScript.Shell
-        $Shortcut = $WScriptShell.CreateShortcut($ShortcutLocation)
-        $Shortcut.TargetPath = $TargetFilePath
-        $Shortcut.Save()
+        $shortcut = $WScriptShell.CreateShortcut($shortcutLocation)
+        $shortcut.TargetPath = $targetFilePath
+        $shortcut.Save()
     }
 
     if (Ask-Question 'Install iCloud?') {
@@ -764,57 +752,50 @@ function install_winget {
     }
 }
 
-### mpv
-
-function install_mpv {
+function Install-MPV {
     Write-Message 'Creating variables and folders...'
+    $installDest = 'C:\Program Files\mpv'
+    $configDest = "$env:APPDATA\mpv"
 
-    New-Variable -Name 'mpvInstallPath' -Value 'C:\Program Files\mpv'
-    New-Variable -Name 'mpvConfigPath' -Value "$env:APPDATA\mpv"
-
-    New-Item -Force -Path "$mpvInstallPath" -ItemType directory
-    New-Item -Force -Path "$mpvConfigPath" -ItemType directory
-    New-Item -Force -Path "$mpvConfigPath\fonts" -ItemType directory
-    New-Item -Force -Path "$mpvConfigPath\scripts" -ItemType directory
-    New-Item -Force -Path "$mpvConfigPath\scripts\uosc" -ItemType directory
+    New-Item -Force -Path "$installDest" -ItemType directory
+    New-Item -Force -Path "$configDest" -ItemType directory
+    New-Item -Force -Path "$configDest\fonts" -ItemType directory
+    New-Item -Force -Path "$configDest\scripts" -ItemType directory
+    New-Item -Force -Path "$configDest\scripts\uosc" -ItemType directory
 
     Write-Message 'Installing latest mpv...'
-
-    Start-BitsTransfer -Source 'https://sourceforge.net/projects/mpv-player-windows/files/bootstrapper.zip' -Destination "$mpvInstallPath\bootstrapper.zip"
-    Expand-Archive -Path "$mpvInstallPath\bootstrapper.zip" -DestinationPath "$mpvInstallPath"
+    Start-BitsTransfer -Source 'https://sourceforge.net/projects/mpv-player-windows/files/bootstrapper.zip' -Destination "$tempFolder\bootstrapper.zip"
+    Expand-Archive -Path "$tempFolder\bootstrapper.zip" -DestinationPath "$installDest"
 
     Write-Message 'Adding mpv to path...'
-    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallPath", [EnvironmentVariableTarget]::User)
+    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDest", [EnvironmentVariableTarget]::User)
 
-    Push-Location "$mpvInstallPath"
-    & "$mpvInstallPath\updater.ps1"
+    Push-Location "$installDest"
+    & "$installDest\updater.ps1"
     Pop-Location
 
-    Remove-Item "$mpvInstallPath\bootstrapper.zip"
+    Remove-Item "$tempFolder\bootstrapper.zip"
 
     Write-Message 'Installing plugins...'
 
-    Start-BitsTransfer -Source 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -Destination "$mpvConfigPath\uosc.zip"
-    Expand-Archive -Path "$mpvConfigPath\uosc.zip" -DestinationPath "$mpvConfigPath"
+    Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile "$tempFolder\uosc.zip"
+    Expand-Archive -Path "$tempFolder\uosc.zip" -DestinationPath "$configDest"
 
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile "$mpvConfigPath\scripts\thumbfast.lua"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile "$mpvConfigPath\scripts\visualizer.lua"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile "$mpvConfigPath\scripts\crop.lua"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile "$mpvConfigPath\scripts\encode.lua"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile "$configDest\scripts\thumbfast.lua"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile "$configDest\scripts\visualizer.lua"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile "$configDest\scripts\crop.lua"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile "$configDest\scripts\encode.lua"
 
-    Remove-Item "$mpvConfigPath\uosc.zip"
+    Remove-Item "$tempFolder\uosc.zip"
 }
 
-### GNU findutils
-
-function install_findutils {
-    $tempFolder = [System.Environment]::GetEnvironmentVariable('TEMP','User')
-    $downloadUrl = "https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst"
+function Install-Findutils {
+    Write-Message 'Creating variables and folders...'
     $downloadDest = "$tempFolder\findutils.pkg.tar.zst"
     $installDest = "C:\Program Files\GnuFindutils"
 
     Write-Message 'Downloading findutils...'
-    Invoke-WebRequest -Uri "$downloadUrl" -OutFile "$downloadDest"
+    Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile "$downloadDest"
 
     Write-Message 'Extracting...'
     New-Item -Force -Path "$installDest" -ItemType directory
@@ -826,15 +807,11 @@ function install_findutils {
     Remove-Item "$downloadDest"
 }
 
-### massgrave activation script
-
-function run_massgrave {
+function Run-Massgrave {
     irm 'https://get.activated.win' | iex
 }
 
-### git repo settings
-
-function set_git {
+function Set-Git {
     Push-Location
     cd "${HOME}/dotfiles"
 
@@ -850,8 +827,6 @@ function set_git {
 
     Pop-Location
 }
-
-### Menu
 
 function usage {
     Write-Host
@@ -875,16 +850,16 @@ function main {
     # return error if nothing is specified
     if (!$cmd) { usage; exit 1 }
 
-    if ($cmd -eq 'gpo')                 { apply_gpo }
-    elseif ($cmd -eq 'uiuxprefs')       { set_uipreferences }
-    elseif ($cmd -eq 'bitlocker')       { enable_bitlocker }
-    elseif ($cmd -eq 'firewall')        { set_firewall }
-    elseif ($cmd -eq 'powermngmt')      { power_settings }
-    elseif ($cmd -eq 'winget_packages') { install_winget }
-    elseif ($cmd -eq 'mpv')             { install_mpv }
-    elseif ($cmd -eq 'findutils')       { install_findutils }
-    elseif ($cmd -eq 'activate')        { run_massgrave }
-    elseif ($cmd -eq 'git')             { set_git }
+    if ($cmd -eq 'gpo')                 { Apply-GPO }
+    elseif ($cmd -eq 'uiuxprefs')       { Set-UIPreferences }
+    elseif ($cmd -eq 'bitlocker')       { Enable-BitLocker }
+    elseif ($cmd -eq 'firewall')        { Set-FireWall }
+    elseif ($cmd -eq 'powermngmt')      { Set-PowerSettings }
+    elseif ($cmd -eq 'winget_packages') { Install-WinGet }
+    elseif ($cmd -eq 'mpv')             { Install-MPV }
+    elseif ($cmd -eq 'findutils')       { Install-Findutils }
+    elseif ($cmd -eq 'activate')        { Run-Massgrave }
+    elseif ($cmd -eq 'git')             { Set-Git }
     else { usage }
 }
 
