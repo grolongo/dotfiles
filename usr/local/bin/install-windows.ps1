@@ -805,6 +805,27 @@ function install_mpv {
     Remove-Item "$mpvConfigPath\uosc.zip"
 }
 
+### GNU findutils
+
+function install_findutils {
+    $tempFolder = [System.Environment]::GetEnvironmentVariable('TEMP','User')
+    $downloadUrl = "https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst"
+    $downloadDest = "$tempFolder\findutils.pkg.tar.zst"
+    $installDest = "C:\Program Files\GnuFindutils"
+
+    Write-Message 'Downloading findutils...'
+    Invoke-WebRequest -Uri "$downloadUrl" -OutFile "$downloadDest"
+
+    Write-Message 'Extracting...'
+    New-Item -Force -Path "$installDest" -ItemType directory
+    tar --extract --file="$downloadDest" --directory="$installDest"
+
+    Write-Message 'Adding binaries to the path...'
+    [Environment]::SetEnvironmentVariable("Path", "$installDest\usr\bin;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
+
+    Remove-Item "$downloadDest"
+}
+
 ### massgrave activation script
 
 function run_massgrave {
@@ -842,6 +863,7 @@ function usage {
     Write-Host '  powermngmt      - disable power saving modes on AC power'
     Write-Host '  winget_packages - download and install listed packages with winget'
     Write-Host '  mpv             - install mpv'
+    Write-Host '  findutils       - install GNU Findutils'
     Write-Host '  activate        - run massgrave activation script'
     Write-Host '  git             - set correct SSH origin for this repository'
     Write-Host
@@ -860,6 +882,7 @@ function main {
     elseif ($cmd -eq 'powermngmt')      { power_settings }
     elseif ($cmd -eq 'winget_packages') { install_winget }
     elseif ($cmd -eq 'mpv')             { install_mpv }
+    elseif ($cmd -eq 'findutils')       { install_findutils }
     elseif ($cmd -eq 'activate')        { run_massgrave }
     elseif ($cmd -eq 'git')             { set_git }
     else { usage }
