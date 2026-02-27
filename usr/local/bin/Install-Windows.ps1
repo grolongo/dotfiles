@@ -754,24 +754,28 @@ function Install-WinGet {
 
 function Install-MPV {
     Write-Message 'Creating variables and folders...'
-    $installDest = 'C:\Program Files\mpv'
+    $downloadDest = "$tempFolder\mpv.zip"
+    $installDest = 'C:\Program Files'
     $configDest = "$env:APPDATA\mpv"
 
-    New-Item -Force -Path "$installDest" -ItemType directory
+    # New-Item -Force -Path "$installDest" -ItemType directory
     New-Item -Force -Path "$configDest" -ItemType directory
     New-Item -Force -Path "$configDest\fonts" -ItemType directory
     New-Item -Force -Path "$configDest\scripts" -ItemType directory
     New-Item -Force -Path "$configDest\scripts\uosc" -ItemType directory
 
     Write-Message 'Installing latest mpv...'
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/shinchiro/mpv-packaging/refs/heads/master/mpv-root/installer/updater.ps1' -OutFile "$installDest\updater.ps1"
+    Invoke-WebRequest -Uri 'https://github.com/shinchiro/mpv-packaging/archive/refs/heads/master.zip' -OutFile "$downloadDest"
+    Expand-Archive -Path "$tempFolder\mpv.zip" -DestinationPath "$installDest"
+    Rename-Item -Path "$installDest\mpv-packaging-master" -NewName "mpv"
 
     Write-Message 'Adding mpv to path...'
-    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDest", [EnvironmentVariableTarget]::User)
+    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDest\mpv\mpv-root", [EnvironmentVariableTarget]::User)
 
-    Push-Location "$installDest"
-    & "$installDest\updater.ps1"
-    Pop-Location
+    & "$installDest\mpv\mpv-root\updater.bat"
+    & "$installDest\mpv\mpv-root\installer\mpv-install.bat"
+
+    Remove-Item "$tempFolder\mpv.zip"
 
     Write-Message 'Installing plugins...'
 
