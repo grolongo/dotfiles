@@ -758,7 +758,6 @@ function Install-MPV {
     $installDest = 'C:\Program Files'
     $configDest = "$env:APPDATA\mpv"
 
-    # New-Item -Force -Path "$installDest" -ItemType directory
     New-Item -Force -Path "$configDest" -ItemType directory
     New-Item -Force -Path "$configDest\fonts" -ItemType directory
     New-Item -Force -Path "$configDest\scripts" -ItemType directory
