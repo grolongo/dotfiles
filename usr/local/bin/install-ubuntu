@@ -432,12 +432,13 @@ apt_extra() {
 snaps_common() {
     check_is_sudo
 
-    confirm "Install chromium (includes ffmpeg)?" && { snap install chromium; snap install chromium-ffmpeg; }
-    confirm "Install emacs (non-pgtk)?" && { snap install emacs --classic; }
-    confirm "Install emacs (pgtk)?" && { snap install emacs --channel=pgtk/stable --classic; }
-    confirm "Install mu4e?" && { snap install maildir-utils; }
-    confirm "Install spotify?" && { snap install spotify; }
-    confirm "Install steam?" && { snap install steam --beta; }
+    confirm "Install Chromium (includes ffmpeg)?" && { snap install chromium; snap install chromium-ffmpeg; }
+    confirm "Install Emacs (non-pgtk)?" && { snap install emacs --classic; }
+    confirm "Install Emacs (pgtk)?" && { snap install emacs --channel=pgtk/stable --classic; }
+    confirm "Install Mu4e?" && { snap install maildir-utils; }
+    confirm "Install Spotify?" && { snap install spotify; }
+    confirm "Install Steam?" && { snap install steam --beta; }
+    confirm "Install PowerShell?" && { snap install powershell --classic; }
 
     snap refresh
 }
