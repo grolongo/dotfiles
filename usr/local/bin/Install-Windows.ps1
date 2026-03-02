@@ -4,7 +4,7 @@
 
 $tempFolder = [System.Environment]::GetEnvironmentVariable('TEMP','User')
 
-function Ask-Question {
+function Read-Question {
     param(
         [Parameter(Mandatory=$true)]
         [string]$question
@@ -30,7 +30,7 @@ function Write-Message {
     Write-Host -ForegroundColor 'yellow' $message
 }
 
-function Apply-GPO {
+function Set-GPO {
 
     if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
         Install-Module -Name PolicyFileEditor -Force
@@ -493,7 +493,7 @@ function Set-UIPreferences {
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value "$env:USERPROFILE\Desktop"
 
     # region
-    if (Ask-Question 'Set timezone/currency/timeformat to fr-FR?') {
+    if (Read-Question 'Set timezone/currency/timeformat to fr-FR?') {
         Set-TimeZone -Name 'Romance Standard Time'
         Set-Culture fr-FR
     }
@@ -517,7 +517,7 @@ function Set-UIPreferences {
     $languageList = Get-WinUserLanguageList
 
     if (-not $languageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
-        if (Ask-Question 'FR keyboard layout not detected, install?') {
+        if (Read-Question 'FR keyboard layout not detected, install?') {
             Write-Message 'Adding FR keyboard layout...'
             $languageList[0].InputMethodTips.Add('0409:0000040C')
             Set-WinUserLanguageList $languageList -Force
@@ -525,8 +525,8 @@ function Set-UIPreferences {
         }
     }
 
-    if (Ask-Question 'Remap ctrl to capslock key?') {
-        $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | % { "0x$_"};
+    if (Read-Question 'Remap ctrl to capslock key?') {
+        $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | ForEach-Object { "0x$_"};
         $kbLayout = "HKLM:\System\CurrentControlSet\Control\Keyboard Layout";
 
         New-ItemProperty -Path $kbLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified);
@@ -543,17 +543,17 @@ function Set-UIPreferences {
 }
 
 function Enable-BitLocker {
-    if (Ask-Question 'Encrypt C: drive?') {
+    if (Read-Question 'Encrypt C: drive?') {
         manage-bde -protectors -add c: -TPMAndPIN
         Start-Sleep -Seconds 3
         manage-bde -on c: -RecoveryPassword
     }
 
-    $drives = (BitlockerVolume | Where-Object {$_.AutoUnlockEnabled -eq $false}).MountPoint
+    $drives = (Get-BitlockerVolume | Where-Object {$_.AutoUnlockEnabled -eq $false}).MountPoint
 
     if ($drives) {
         foreach ($drive in $drives) {
-            if (Ask-Question "Automatically unlock $drive at boot?") {
+            if (Read-Question "Automatically unlock $drive at boot?") {
                 manage-bde -unlock "$drive" -password
                 Start-Sleep -Seconds 10
                 manage-bde -autounlock -enable "$drive"
@@ -563,7 +563,7 @@ function Enable-BitLocker {
 }
 
 function Set-FireWall {
-    if (Ask-Question 'Block incoming connections and allow outgoing?') {
+    if (Read-Question 'Block incoming connections and allow outgoing?') {
         Set-NetConnectionProfile -NetworkCategory Private
         netsh advfirewall set allprofiles state on
         netsh advfirewall set domainprofile firewallpolicy blockinboundalways,allowoutbound
@@ -633,7 +633,7 @@ function Install-WinGet {
         'yt-dlp.yt-dlp'
     )
 
-    if (Ask-Question 'Install WinGet from GitHub (instead of Microsoft Store)?') {
+    if (Read-Question 'Install WinGet from GitHub (instead of Microsoft Store)?') {
         $apiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
         $downloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url |
           Where-Object {$_.EndsWith(".msixbundle")}
@@ -646,10 +646,10 @@ function Install-WinGet {
     winget source update
 
     foreach ($p in $packages) {
-        if (Ask-Question "Install ${p}?") { winget install -e --id "$p" }
+        if (Read-Question "Install ${p}?") { winget install -e --id "$p" }
     }
 
-    if (Ask-Question 'Install Emacs?') {
+    if (Read-Question 'Install Emacs?') {
         winget install -e --id 'GNU.Emacs'
         winget install -e --id 'FSFhu.Hunspell'
 
@@ -668,18 +668,18 @@ function Install-WinGet {
         Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic' -OutFile "$hunspellDir\fr_FR.dic"
     }
 
-    if (Ask-Question 'Install Git?') {
-        winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption=CmdTools /o:SSHOption=ExternalOpenSSH /o:CRLFOption=CRLFCommitAsIs /o:CURLOption=WinSSL'
+    if (Read-Question 'Install Git?') {
+        winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption=Cmd /o:SSHOption=ExternalOpenSSH /o:CRLFOption=CRLFCommitAsIs /o:CURLOption=WinSSL'
     }
 
-    if (Ask-Question 'Install MKVToolNix?') {
+    if (Read-Question 'Install MKVToolNix?') {
         winget install -e --id 'MoritzBunkus.MKVToolNix'
 
         Write-Message 'Adding MKVToolNix to path...'
         [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\MKVToolNix", [EnvironmentVariableTarget]::User)
     }
 
-    if (Ask-Question 'Install qBittorrent?') {
+    if (Read-Question 'Install qBittorrent?') {
         winget install -e --id 'qBittorrent.qBittorrent'
 
         $pluginDir = "$HOME\AppData\Local\qBittorrent\nova3\engines"
@@ -730,7 +730,7 @@ function Install-WinGet {
         }
     }
 
-    if (Ask-Question 'Install Tor Browser?') {
+    if (Read-Question 'Install Tor Browser?') {
         winget install -e --id 'TorProject.TorBrowser'
 
         Start-Sleep -Seconds 5
@@ -747,73 +747,78 @@ function Install-WinGet {
         $shortcut.Save()
     }
 
-    if (Ask-Question 'Install iCloud?') {
+    if (Read-Question 'Install iCloud?') {
         winget install --source msstore 9PKTQ5699M62
     }
 }
 
 function Install-MPV {
     Write-Message 'Creating variables and folders...'
-    $downloadDest = "$tempFolder\mpv.zip"
-    $installDest = 'C:\Program Files'
-    $configDest = "$env:APPDATA\mpv"
+    $apiUrl = "https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest"
+    $downloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.Contains('mpv-x86_64-v3')}
+    $downloadDest = (Join-Path $tempFolder 'mpv.7z')
+    $installDest = (Join-Path $env:ProgramFiles 'mpv')
+    $configDest = (Join-Path $env:APPDATA 'mpv')
 
     New-Item -Force -Path "$configDest" -ItemType directory
-    New-Item -Force -Path "$configDest\fonts" -ItemType directory
-    New-Item -Force -Path "$configDest\scripts" -ItemType directory
-    New-Item -Force -Path "$configDest\scripts\uosc" -ItemType directory
+    New-Item -Force -Path (Join-Path $configDest 'fonts') -ItemType directory
+    New-Item -Force -Path (Join-Path $configDest 'scripts') -ItemType directory
+    New-Item -Force -Path (Join-Path $configDest 'scripts' 'uosc') -ItemType directory
+
+    Write-Message 'Checking 7zip module availability...'
+    Install-Module -Name 7Zip4Powershell
 
     Write-Message 'Installing latest mpv...'
-    Invoke-WebRequest -Uri 'https://github.com/shinchiro/mpv-packaging/archive/refs/heads/master.zip' -OutFile "$downloadDest"
-    Expand-Archive -Path "$tempFolder\mpv.zip" -DestinationPath "$installDest"
-    Rename-Item -Path "$installDest\mpv-packaging-master" -NewName "mpv"
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $downloadDest
+    Expand-7zip -ArchiveFileName $downloadDest -TargetPath $installDest
 
     Write-Message 'Adding mpv to path...'
-    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDest\mpv\mpv-root", [EnvironmentVariableTarget]::User)
+    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDest", [EnvironmentVariableTarget]::User)
 
-    & "$installDest\mpv\mpv-root\updater.bat"
-    & "$installDest\mpv\mpv-root\installer\mpv-install.bat"
+    Write-Message 'Running mpv script(s)...'
+    Start-Process -FilePath (Join-Path $installDest 'installer' 'mpv-install.bat') -NoNewWindow -Wait
 
-    Remove-Item "$tempFolder\mpv.zip"
+    Write-Message 'Cleaning...'
+    Remove-Item $downloadDest
 
     Write-Message 'Installing plugins...'
 
-    Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile "$tempFolder\uosc.zip"
-    Expand-Archive -Path "$tempFolder\uosc.zip" -DestinationPath "$configDest"
+    Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile (Join-Path $tempFolder 'uosc.zip')
+    Expand-Archive -Path (Join-Path $tempFolder 'uosc.zip') -DestinationPath $configDest
 
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile "$configDest\scripts\thumbfast.lua"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile "$configDest\scripts\visualizer.lua"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile "$configDest\scripts\crop.lua"
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile "$configDest\scripts\encode.lua"
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile (Join-Path $configDest 'scripts' 'thumbfast.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile (Join-Path $configDest 'scripts' 'visualizer.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile (Join-Path $configDest 'scripts' 'crop.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile (Join-Path $configDest 'scripts' 'encode.lua')
 
-    Remove-Item "$tempFolder\uosc.zip"
+    Remove-Item (Join-Path $tempFolder 'uosc.zip')
 }
 
 function Install-Findutils {
     Write-Message 'Creating variables and folders...'
-    $downloadDest = "$tempFolder\findutils.pkg.tar.zst"
-    $installDest = "C:\Program Files\GnuFindutils"
+    $downloadDest = (Join-Path $tempFolder 'findutils.pkg.tar.zst')
+    $installDest = (Join-Path $env:ProgramFiles 'GnuFindutils')
 
     Write-Message 'Downloading findutils...'
-    Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile "$downloadDest"
+    Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile $downloadDest
 
     Write-Message 'Extracting...'
-    New-Item -Force -Path "$installDest" -ItemType directory
-    tar --extract --file="$downloadDest" --directory="$installDest"
+    New-Item -Force -Path $installDest -ItemType directory
+    tar --extract --file=$downloadDest --directory=$installDest
 
     Write-Message 'Adding binaries to the path...'
     [Environment]::SetEnvironmentVariable("Path", "$installDest\usr\bin;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
 
-    Remove-Item "$downloadDest"
+    Remove-Item $downloadDest
 }
 
-function Run-Massgrave {
-    irm 'https://get.activated.win' | iex
+function Use-Massgrave {
+    Invoke-RestMethod 'https://get.activated.win' | Invoke-Expression
 }
 
 function Set-Git {
     Push-Location
-    cd "${HOME}/dotfiles"
+    Set-Location (Join-Path $env:USERPROFILE "dotfiles")
 
     if (git rev-parse --is-inside-work-tree) {
         git remote set-url origin git@github.com:grolongo/dotfiles.git
@@ -850,7 +855,7 @@ function main {
     # return error if nothing is specified
     if (!$cmd) { usage; exit 1 }
 
-    if ($cmd -eq 'gpo')                 { Apply-GPO }
+    if ($cmd -eq 'gpo')                 { Set-GPO }
     elseif ($cmd -eq 'uiuxprefs')       { Set-UIPreferences }
     elseif ($cmd -eq 'bitlocker')       { Enable-BitLocker }
     elseif ($cmd -eq 'firewall')        { Set-FireWall }
@@ -858,7 +863,7 @@ function main {
     elseif ($cmd -eq 'winget_packages') { Install-WinGet }
     elseif ($cmd -eq 'mpv')             { Install-MPV }
     elseif ($cmd -eq 'findutils')       { Install-Findutils }
-    elseif ($cmd -eq 'activate')        { Run-Massgrave }
+    elseif ($cmd -eq 'activate')        { Use-Massgrave }
     elseif ($cmd -eq 'git')             { Set-Git }
     else { usage }
 }
