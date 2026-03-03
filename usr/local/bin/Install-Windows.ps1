@@ -2,9 +2,7 @@
 
 #Requires -RunAsAdministrator
 
-$tempFolder = [System.Environment]::GetEnvironmentVariable('TEMP','User')
-
-function Read-Question {
+function Request-Confirmation {
     param(
         [Parameter(Mandatory=$true)]
         [string]$question
@@ -16,28 +14,20 @@ function Read-Question {
             'y' { return $true }
             'n' { return $false }
             default {
-                Write-Host "Please enter 'y' or 'n'"
+                Write-Output "Please enter 'y' or 'n'"
             }
         }
     } while ($response -ne 'y' -and $response -ne 'n')
 }
 
-function Write-Message {
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$message
-    )
-    Write-Host -ForegroundColor 'yellow' $message
-}
-
 function Set-GPO {
+    Write-Output 'Setting up group policies...'
 
     if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
         Install-Module -Name PolicyFileEditor -Force
     }
 
     $machineDir = "$env:windir\System32\GroupPolicy\Machine\Registry.pol"
-
     $regPath01 = 'Software\Policies\Microsoft\Windows\Personalization'
     $regPath02 = 'Software\Policies\Microsoft\InputPersonalization'
     $regPath03 = 'Software\Policies\Microsoft\MUI\Settings'
@@ -273,7 +263,6 @@ function Set-GPO {
     # ===========
 
     $userDir = "$env:windir\System32\GroupPolicy\User\Registry.pol"
-
     $regPath50 = 'Software\Policies\Microsoft\Windows\Control Panel\Desktop'
     $regPath51 = 'Software\Policies\Microsoft\InputPersonalization'
     $regPath52 = 'Software\Policies\Microsoft\Control Panel\Desktop'
@@ -413,137 +402,139 @@ function Set-GPO {
 
     Start-Sleep -Seconds 5
     gpupdate /force
+
+    Write-Output 'Done.'
 }
 
-function Set-UIPreferences {
+function Set-UIPreference {
     $explorer = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"
     $explorerAdvanced = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
     $personalize = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 
     # dark mode
-    Write-Message 'Setting Windows dark mode...'
+    Write-Output 'Setting Windows dark mode...'
     Set-ItemProperty -Path $personalize -Name AppsUseLightTheme -Value 0
     Set-ItemProperty -Path $personalize -Name SystemUsesLightTheme -Value 0
 
     # hidden files
-    Write-Message 'Show hidden files...'
+    Write-Output 'Show hidden files...'
     Set-ItemProperty -Path $explorerAdvanced -Name 'Hidden' -Value 1
 
     # file extentions
-    Write-Message 'Show file extentions...'
+    Write-Output 'Show file extentions...'
     Set-ItemProperty -Path $explorerAdvanced -Name 'HideFileExt' -Value 0
 
     # Bing search
-    Write-Message 'Disabling Bing search...'
+    Write-Output 'Disabling Bing search...'
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name 'BingSearchEnabled' -Value 0
 
     # show icons notification area (always show = 0, not showing = 1)
-    Write-Message 'Showing all tray icons...'
+    Write-Output 'Showing all tray icons...'
     Set-ItemProperty -Path $explorer -Name 'EnableAutoTray' -Value 0
 
     # taskbar alignment
-    Write-Message 'Align taskbar to the left...'
+    Write-Output 'Align taskbar to the left...'
     Set-ItemProperty -Path $explorerAdvanced -Name "TaskbarAl" -Value 0
 
     # taskbar size (small = 1, large = 0)
-    Write-Message 'Setting taskbar height size to small...'
+    Write-Output 'Setting taskbar height size to small...'
     Set-ItemProperty -Path $explorerAdvanced -Name 'TaskbarSmallIcons' -Value 1
 
     # taskbar combine (always = 0, when full = 1, never = 2)
-    Write-Message 'Setting taskbar combine when full mode...'
+    Write-Output 'Setting taskbar combine when full mode...'
     Set-ItemProperty -Path $explorerAdvanced -Name 'TaskbarGlomLevel' -Value 1
 
     # lock taskbar (lock = 0, unlock = 1)
-    Write-Message 'Locking the taskbar...'
+    Write-Output 'Locking the taskbar...'
     Set-ItemProperty -Path $explorerAdvanced -Name 'TaskbarSizeMove' -Value 0
 
     # disable recent files, folders and cloud files (hidden = 0, show = 1)
-    Write-Message 'Disabling recent files and cloud folders...'
+    Write-Output 'Disabling recent files and cloud folders...'
     Set-ItemProperty -Path $explorerAdvanced -Name 'CloudFilesOnDemand' -Value 0
     Set-ItemProperty -Path $explorerAdvanced -Name 'Start_TrackDocs' -Value 0
     Set-ItemProperty -Path $explorer -Name 'ShowFrequent' -Value 0
 
     # Start menu layout
-    Write-Message 'Setting up the Start menu...'
+    Write-Output 'Setting up the Start menu...'
     Set-ItemProperty -Path $explorerAdvanced -Name 'Start_Layout' -Value 1 # (1 = More pins, 2 = More recommendations, 3 = Default)
 
     # disable transparency (1 = enabled, 0 = disabled)
-    Write-Message 'Disabling transparency effects...'
+    Write-Output 'Disabling transparency effects...'
     Set-ItemProperty -Path $personalize -Name 'EnableTransparency' -Value 0
 
     # sticky keys
-    Write-Message 'Disabling sticky keys...'
+    Write-Output 'Disabling sticky keys...'
     Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility\StickyKeys" -Name Flags -Value 58
 
     # snap windows
-    Write-Message 'Disabling snapping of windows on startup...'
+    Write-Output 'Disabling snapping of windows on startup...'
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WindowArrangementActive -Value 0
-    Write-Message 'Disabling snap assist suggestion on startup...'
+    Write-Output 'Disabling snap assist suggestion on startup...'
     Set-ItemProperty -Path $explorerAdvanced -Name WindowArrangementActive -Value 0
-    Write-Message 'Disabling snap assist flyout on startup...'
+    Write-Output 'Disabling snap assist flyout on startup...'
     Set-ItemProperty -Path $explorerAdvanced -Name EnableSnapAssistFlyout -Value 0
 
     # recall
-    Write-Message "Disabling Recall..."
+    Write-Output "Disabling Recall..."
     Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI" -Name 'DisableAIDataAnalysis' -Value 1
     DISM /Online /Disable-Feature /FeatureName:Recall
 
     # screenshot folder
-    Write-Message 'Setting the screenshot folder to Desktop...'
+    Write-Output 'Setting the screenshot folder to Desktop...'
     Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value "$env:USERPROFILE\Desktop"
 
     # region
-    if (Read-Question 'Set timezone/currency/timeformat to fr-FR?') {
+    if (Request-Confirmation 'Set timezone/currency/timeformat to fr-FR?') {
         Set-TimeZone -Name 'Romance Standard Time'
         Set-Culture fr-FR
     }
 
     # openssh
-    Write-Message 'Enabling OpenSSH at startup...'
+    Write-Output 'Enabling OpenSSH at startup...'
     Set-Service ssh-agent -StartupType Automatic
 
     # no sound settings
-    Write-Message 'Switching Sound Scheme to no sounds...'
+    Write-Output 'Switching Sound Scheme to no sounds...'
     New-ItemProperty -Path "HKCU:\AppEvents\Schemes" -Name '(Default)' -Value '.None' -Force | Out-Null
     Get-ChildItem -Path "HKCU:\AppEvents\Schemes\Apps" -Recurse | Where-Object { $_.PSChildName -eq '.Current' } | Set-ItemProperty -Name '(Default)' -Value ''
 
-    Write-Message 'Turning Windows Startup sound off...'
+    Write-Output 'Turning Windows Startup sound off...'
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name 'DisableStartupSound' -Value 1 -Type DWord -Force
 
     Stop-Process -Name explorer -Force
-    Write-Message 'Might need to relog for changes to take effect.'
+    Write-Output 'Might need to relog for changes to take effect.'
 
     # keyboard settings
     $languageList = Get-WinUserLanguageList
 
     if (-not $languageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
-        if (Read-Question 'FR keyboard layout not detected, install?') {
-            Write-Message 'Adding FR keyboard layout...'
+        if (Request-Confirmation 'FR keyboard layout not detected, install?') {
+            Write-Output 'Adding FR keyboard layout...'
             $languageList[0].InputMethodTips.Add('0409:0000040C')
             Set-WinUserLanguageList $languageList -Force
             Set-WinDefaultInputMethodOverride -InputTip "0409:0000040C"
         }
     }
 
-    if (Read-Question 'Remap ctrl to capslock key?') {
+    if (Request-Confirmation 'Remap ctrl to capslock key?') {
         $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | ForEach-Object { "0x$_"};
         $kbLayout = "HKLM:\System\CurrentControlSet\Control\Keyboard Layout";
 
         New-ItemProperty -Path $kbLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified);
 
-        Write-Message 'You need to reboot to take effect.'
+        Write-Output 'You need to reboot to take effect.'
     }
 
     # mouse settings
-    Write-Message 'Disabling mouse acceleration...'
+    Write-Output 'Disabling mouse acceleration...'
     $mousePath = "HKCU:\Control Panel\Mouse"
     Set-ItemProperty -Path $mousePath -Name MouseSpeed -Value 0
     Set-ItemProperty -Path $mousePath -Name MouseThreshold1 -Value 0
     Set-ItemProperty -Path $mousePath -Name MouseThreshold2 -Value 0
 }
 
-function Enable-BitLocker {
-    if (Read-Question 'Encrypt C: drive?') {
+function Set-BitLocker {
+    if (Request-Confirmation 'Encrypt C: drive?') {
         manage-bde -protectors -add c: -TPMAndPIN
         Start-Sleep -Seconds 3
         manage-bde -on c: -RecoveryPassword
@@ -553,7 +544,7 @@ function Enable-BitLocker {
 
     if ($drives) {
         foreach ($drive in $drives) {
-            if (Read-Question "Automatically unlock $drive at boot?") {
+            if (Request-Confirmation "Automatically unlock $drive at boot?") {
                 manage-bde -unlock "$drive" -password
                 Start-Sleep -Seconds 10
                 manage-bde -autounlock -enable "$drive"
@@ -563,7 +554,7 @@ function Enable-BitLocker {
 }
 
 function Set-FireWall {
-    if (Read-Question 'Block incoming connections and allow outgoing?') {
+    if (Request-Confirmation 'Block incoming connections and allow outgoing?') {
         Set-NetConnectionProfile -NetworkCategory Private
         netsh advfirewall set allprofiles state on
         netsh advfirewall set domainprofile firewallpolicy blockinboundalways,allowoutbound
@@ -572,8 +563,8 @@ function Set-FireWall {
     }
 }
 
-function Set-PowerSettings {
-    Write-Message 'Turning off all power saving mode when on AC power...'
+function Set-PowerSetting {
+    Write-Output 'Turning off all power saving mode when on AC power...'
     powercfg -change -monitor-timeout-ac 0
     powercfg -change -standby-timeout-ac 0
     powercfg -change -disk-timeout-ac 0
@@ -582,9 +573,9 @@ function Set-PowerSettings {
     $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
 
     if ($computerSystem.PCSystemType -eq 2) {
-        Write-Message 'Running on a laptop, keeping hibernate on...'
+        Write-Output 'Running on a laptop, keeping hibernate on...'
     } else {
-        Write-Message 'Turning hibernate off...'
+        Write-Output 'Turning hibernate off...'
         powercfg.exe /HIBERNATE off
     }
 }
@@ -633,7 +624,7 @@ function Install-WinGet {
         'yt-dlp.yt-dlp'
     )
 
-    if (Read-Question 'Install WinGet from GitHub (instead of Microsoft Store)?') {
+    if (Request-Confirmation 'Install WinGet from GitHub (instead of Microsoft Store)?') {
         $apiUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
         $downloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url |
           Where-Object {$_.EndsWith(".msixbundle")}
@@ -642,23 +633,23 @@ function Install-WinGet {
         Add-AppxPackage -Path "winget.msixbundle"
         Remove-Item "winget.msixbundle" }
 
-    Write-Message 'Updating sources list...'
+    Write-Output 'Updating sources list...'
     winget source update
 
     foreach ($p in $packages) {
-        if (Read-Question "Install ${p}?") { winget install -e --id "$p" }
+        if (Request-Confirmation "Install ${p}?") { winget install -e --id "$p" }
     }
 
-    if (Read-Question 'Install Emacs?') {
+    if (Request-Confirmation 'Install Emacs?') {
         winget install -e --id 'GNU.Emacs'
         winget install -e --id 'FSFhu.Hunspell'
 
-        Write-Message 'Excluding Emacs from AV scanning to improve performance...'
+        Write-Output 'Excluding Emacs from AV scanning to improve performance...'
         Add-MpPreference -ExclusionPath 'C:\Program Files\Emacs', "$env:APPDATA\.emacs.d"
         Add-MpPreference -ExclusionProcess "C:\Program Files\Emacs\*", 'runemacs.exe', 'emacs.exe', 'emacsclientw.exe', 'emacsclient.exe'
         Add-MpPreference -ExclusionExtension ".el", ".elc", ".eln"
 
-        Write-Message 'Downloading English and French dictionaries for Flyspell...'
+        Write-Output 'Downloading English and French dictionaries for Flyspell...'
         $hunspellDir = "$env:APPDATA\.emacs.d\hunspell"
         New-Item -Force -Path "$hunspellDir" -ItemType directory
 
@@ -668,18 +659,18 @@ function Install-WinGet {
         Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic' -OutFile "$hunspellDir\fr_FR.dic"
     }
 
-    if (Read-Question 'Install Git?') {
+    if (Request-Confirmation 'Install Git?') {
         winget install -e --id Git.Git --custom '/o:Components=icons,gitlfs /o:PathOption=Cmd /o:SSHOption=ExternalOpenSSH /o:CRLFOption=CRLFCommitAsIs /o:CURLOption=WinSSL'
     }
 
-    if (Read-Question 'Install MKVToolNix?') {
+    if (Request-Confirmation 'Install MKVToolNix?') {
         winget install -e --id 'MoritzBunkus.MKVToolNix'
 
-        Write-Message 'Adding MKVToolNix to path...'
+        Write-Output 'Adding MKVToolNix to path...'
         [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\MKVToolNix", [EnvironmentVariableTarget]::User)
     }
 
-    if (Read-Question 'Install qBittorrent?') {
+    if (Request-Confirmation 'Install qBittorrent?') {
         winget install -e --id 'qBittorrent.qBittorrent'
 
         $pluginDir = "$HOME\AppData\Local\qBittorrent\nova3\engines"
@@ -730,15 +721,15 @@ function Install-WinGet {
         }
     }
 
-    if (Read-Question 'Install Tor Browser?') {
+    if (Request-Confirmation 'Install Tor Browser?') {
         winget install -e --id 'TorProject.TorBrowser'
 
         Start-Sleep -Seconds 5
 
-        Write-Message 'Moving install folder to Program Files...'
+        Write-Output 'Moving install folder to Program Files...'
         Move-Item -Path "$HOME\Desktop\Tor Browser" -Destination 'C:\Program Files\'
 
-        Write-Message 'Creating Shortcut for Start Menu...'
+        Write-Output 'Creating Shortcut for Start Menu...'
         $targetFilePath = 'C:\Program Files\Tor Browser\Browser\firefox.exe'
         $shortcutLocation = "$HOME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Tor Browser.lnk"
         $WScriptShell = New-Object -ComObject WScript.Shell
@@ -747,69 +738,65 @@ function Install-WinGet {
         $shortcut.Save()
     }
 
-    if (Read-Question 'Install iCloud?') {
+    if (Request-Confirmation 'Install iCloud?') {
         winget install --source msstore 9PKTQ5699M62
     }
 }
 
 function Install-MPV {
-    Write-Message 'Creating variables and folders...'
+    Write-Output 'Installing latest mpv...'
+
     $apiUrl = "https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest"
-    $downloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.Contains('mpv-x86_64-v3')}
-    $downloadDest = (Join-Path $tempFolder 'mpv.7z')
-    $installDest = (Join-Path $env:ProgramFiles 'mpv')
-    $configDest = (Join-Path $env:APPDATA 'mpv')
+    $mpvDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.Contains('mpv-x86_64-v3')}
+    $mpvDownloadLocation = (Join-Path $env:TEMP 'mpv.7z')
+    $mpvInstallDirectory = (Join-Path $env:ProgramFiles 'mpv')
 
-    New-Item -Force -Path "$configDest" -ItemType directory
-    New-Item -Force -Path (Join-Path $configDest 'fonts') -ItemType directory
-    New-Item -Force -Path (Join-Path $configDest 'scripts') -ItemType directory
-    New-Item -Force -Path (Join-Path $configDest 'scripts' 'uosc') -ItemType directory
-
-    Write-Message 'Checking 7zip module availability...'
+    Invoke-WebRequest -Uri $mpvDownloadUrl -OutFile $mpvDownloadLocation
     Install-Module -Name 7Zip4Powershell
+    Expand-7zip -ArchiveFileName $mpvDownloadLocation -TargetPath $mpvInstallDirectory
+    Remove-Item $mpvDownloadLocation
+    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallDirectory", [EnvironmentVariableTarget]::User)
 
-    Write-Message 'Installing latest mpv...'
-    Invoke-WebRequest -Uri $downloadUrl -OutFile $downloadDest
-    Expand-7zip -ArchiveFileName $downloadDest -TargetPath $installDest
+    Write-Output 'Running mpv script(s)...'
+    Start-Process -FilePath (Join-Path $mpvInstallDirectory 'installer' 'mpv-install.bat') -NoNewWindow -Wait
 
-    Write-Message 'Adding mpv to path...'
-    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDest", [EnvironmentVariableTarget]::User)
+    Write-Output 'Installing plugins...'
 
-    Write-Message 'Running mpv script(s)...'
-    Start-Process -FilePath (Join-Path $installDest 'installer' 'mpv-install.bat') -NoNewWindow -Wait
+    $mpvConfigDirectory = (Join-Path $env:APPDATA 'mpv')
+    $mpvScriptDirectory = (Join-Path $mpvConfigDirectory 'scripts')
+    $uoscDirectory = (Join-Path $env:TEMP 'uosc.zip')
 
-    Write-Message 'Cleaning...'
-    Remove-Item $downloadDest
+    New-Item -Force -Path $mpvConfigDirectory -ItemType directory
+    New-Item -Force -Path (Join-Path $mpvConfigDirectory 'fonts') -ItemType directory
+    New-Item -Force -Path $mpvScriptDirectory -ItemType directory
+    New-Item -Force -Path (Join-Path $mpvScriptDirectory 'uosc') -ItemType directory
 
-    Write-Message 'Installing plugins...'
+    Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile $uoscDirectory
+    Expand-Archive -Path $uoscDirectory -DestinationPath $mpvConfigDirectory
+    Remove-Item $uoscDirectory
 
-    Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile (Join-Path $tempFolder 'uosc.zip')
-    Expand-Archive -Path (Join-Path $tempFolder 'uosc.zip') -DestinationPath $configDest
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile (Join-Path $mpvScriptDirectory 'thumbfast.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile (Join-Path $mpvScriptDirectory 'visualizer.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile (Join-Path $mpvScriptDirectory 'crop.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile (Join-Path $mpvScriptDirectory 'encode.lua')
 
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile (Join-Path $configDest 'scripts' 'thumbfast.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile (Join-Path $configDest 'scripts' 'visualizer.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile (Join-Path $configDest 'scripts' 'crop.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile (Join-Path $configDest 'scripts' 'encode.lua')
-
-    Remove-Item (Join-Path $tempFolder 'uosc.zip')
+    Write-Output 'Done.'
 }
 
 function Install-Findutils {
-    Write-Message 'Creating variables and folders...'
-    $downloadDest = (Join-Path $tempFolder 'findutils.pkg.tar.zst')
-    $installDest = (Join-Path $env:ProgramFiles 'GnuFindutils')
+    Write-Output 'Installing Findutils...'
 
-    Write-Message 'Downloading findutils...'
-    Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile $downloadDest
+    $findutilsDownloadLocation = (Join-Path $env:TEMP 'findutils.pkg.tar.zst')
+    $findutilsInstallDirectory = (Join-Path $env:ProgramFiles 'GnuFindutils')
+    $findutilsBinariesDirectory = (Join-Path $findutilsInstallDirectory 'usr' 'bin')
 
-    Write-Message 'Extracting...'
-    New-Item -Force -Path $installDest -ItemType directory
-    tar --extract --file=$downloadDest --directory=$installDest
+    New-Item -Force -Path $findutilsInstallDirectory -ItemType directory
+    Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile $findutilsDownloadLocation
+    tar --extract --file=$findutilsDownloadLocation --directory=$findutilsInstallDirectory
+    Remove-Item $findutilsDownloadLocation
+    [Environment]::SetEnvironmentVariable("Path", "$findutilsBinariesDirectory;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
 
-    Write-Message 'Adding binaries to the path...'
-    [Environment]::SetEnvironmentVariable("Path", "$installDest\usr\bin;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
-
-    Remove-Item $downloadDest
+    Write-Output 'Done.'
 }
 
 function Use-Massgrave {
@@ -817,6 +804,8 @@ function Use-Massgrave {
 }
 
 function Set-Git {
+    Write-Output 'Setting up origin for the git repository...'
+
     Push-Location
     Set-Location (Join-Path $env:USERPROFILE "dotfiles")
 
@@ -831,22 +820,24 @@ function Set-Git {
     }
 
     Pop-Location
+
+    Write-Output 'Done.'
 }
 
 function usage {
-    Write-Host
-    Write-Host 'Usage:'
-    Write-Host '  gpo             - apply machine and user group policies'
-    Write-Host '  uiuxprefs       - explorer, taskbar, keyboard and other preferences'
-    Write-Host '  bitlocker       - change Group Policy settings for BitLocker and encrypts C:'
-    Write-Host '  firewall        - firewall rules: block incoming, allow outgoing'
-    Write-Host '  powermngmt      - disable power saving modes on AC power'
-    Write-Host '  winget_packages - download and install listed packages with winget'
-    Write-Host '  mpv             - install mpv'
-    Write-Host '  findutils       - install GNU Findutils'
-    Write-Host '  activate        - run massgrave activation script'
-    Write-Host '  git             - set correct SSH origin for this repository'
-    Write-Host
+    Write-Output ''
+    Write-Output 'Usage:'
+    Write-Output '  gpo             - apply machine and user group policies'
+    Write-Output '  uisetting       - explorer, taskbar, keyboard and other preferences'
+    Write-Output '  bitlocker       - change Group Policy settings for BitLocker and encrypts C:'
+    Write-Output '  firewall        - firewall rules: block incoming, allow outgoing'
+    Write-Output '  powersetting    - disable power saving modes on AC power'
+    Write-Output '  winget          - download and install some packages with winget'
+    Write-Output '  mpv             - install mpv'
+    Write-Output '  findutils       - install GNU Findutils'
+    Write-Output '  activate        - run massgrave activation script'
+    Write-Output '  git             - set correct SSH origin for this repository'
+    Write-Output ''
 }
 
 function main {
@@ -856,11 +847,11 @@ function main {
     if (!$cmd) { usage; exit 1 }
 
     if ($cmd -eq 'gpo')                 { Set-GPO }
-    elseif ($cmd -eq 'uiuxprefs')       { Set-UIPreferences }
-    elseif ($cmd -eq 'bitlocker')       { Enable-BitLocker }
+    elseif ($cmd -eq 'uisetting')       { Set-UIPreference }
+    elseif ($cmd -eq 'bitlocker')       { Set-BitLocker }
     elseif ($cmd -eq 'firewall')        { Set-FireWall }
-    elseif ($cmd -eq 'powermngmt')      { Set-PowerSettings }
-    elseif ($cmd -eq 'winget_packages') { Install-WinGet }
+    elseif ($cmd -eq 'powersetting')    { Set-PowerSetting }
+    elseif ($cmd -eq 'winget')          { Install-WinGet }
     elseif ($cmd -eq 'mpv')             { Install-MPV }
     elseif ($cmd -eq 'findutils')       { Install-Findutils }
     elseif ($cmd -eq 'activate')        { Use-Massgrave }
