@@ -553,19 +553,22 @@ function Set-FireWall {
 }
 
 function Set-PowerSetting {
-    Write-Output 'Turning off all power saving mode when on AC power...'
-    powercfg -change -monitor-timeout-ac 0
-    powercfg -change -standby-timeout-ac 0
-    powercfg -change -disk-timeout-ac 0
-    powercfg -change -hibernate-timeout-ac 0
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
 
-    $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Turning off all powersaving mode when on AC power.')) {
+        powercfg -change -monitor-timeout-ac 0
+        powercfg -change -standby-timeout-ac 0
+        powercfg -change -disk-timeout-ac 0
+        powercfg -change -hibernate-timeout-ac 0
 
-    if ($computerSystem.PCSystemType -eq 2) {
-        Write-Output 'Running on a laptop, keeping hibernate on...'
-    } else {
-        Write-Output 'Turning hibernate off...'
-        powercfg.exe /HIBERNATE off
+        $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
+
+        if ($computerSystem.PCSystemType -eq 2) {
+            Write-Output 'Running on a laptop, keeping hibernate on...'
+        } else {
+            powercfg.exe /HIBERNATE off
+        }
     }
 }
 
@@ -766,8 +769,6 @@ function Install-MPV {
 }
 
 function Install-Findutils {
-    Write-Output 'Installing Findutils...'
-
     $findutilsDownloadLocation = Join-Path $env:TEMP 'findutils.pkg.tar.zst'
     $findutilsInstallDirectory = Join-Path $env:ProgramFiles 'GnuFindutils'
     $findutilsBinariesDirectory = Join-Path $findutilsInstallDirectory 'usr' 'bin'
@@ -784,22 +785,25 @@ function Use-Massgrave {
 }
 
 function Set-Git {
-    Write-Output 'Setting up origin for the git repository...'
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
 
-    Push-Location
-    Set-Location (Join-Path $env:USERPROFILE "dotfiles")
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Setting up correct origin for the dotfiles git repository.')) {
+        Push-Location
+        Set-Location (Join-Path $env:USERPROFILE "dotfiles")
 
-    if (git rev-parse --is-inside-work-tree) {
-        git remote set-url origin git@github.com:grolongo/dotfiles.git
-    } else {
-        git init
-        git remote add origin git@github.com:grolongo/dotfiles.git
-        git fetch
-        git reset origin/master
-        git branch --set-upstream-to=origin/master
+        if (git rev-parse --is-inside-work-tree) {
+            git remote set-url origin git@github.com:grolongo/dotfiles.git
+        } else {
+            git init
+            git remote add origin git@github.com:grolongo/dotfiles.git
+            git fetch
+            git reset origin/master
+            git branch --set-upstream-to=origin/master
+        }
+
+        Pop-Location
     }
-
-    Pop-Location
 }
 
 function usage {
