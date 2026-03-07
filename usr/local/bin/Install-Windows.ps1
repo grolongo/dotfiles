@@ -2,6 +2,12 @@
 
 #Requires -RunAsAdministrator
 
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Output ''
+    Write-Output 'This script is only compatible with PowerShell 7+'
+    Write-Output ''
+    exit 1 }
+
 function Set-GPO {
     [CmdletBinding(SupportsShouldProcess)]
     param()
@@ -12,55 +18,55 @@ function Set-GPO {
             Install-Module -Name PolicyFileEditor -Force
         }
 
-        $machineDirectory = Join-Path $env:windir 'System32' 'GroupPolicy' 'Machine' 'Registry.pol'
-        $registryPath01 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Personalization'
-        $registryPath02 = Join-Path 'Software' 'Policies' 'Microsoft' 'InputPersonalization'
-        $registryPath03 = Join-Path 'Software' 'Policies' 'Microsoft' 'MUI' 'Settings'
-        $registryPath04 = Join-Path 'Software' 'Policies' 'Microsoft' 'Control Panel' 'International'
-        $registryPath06 = Join-Path 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Policies' 'Explorer'
-        $registryPath07 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'System'
-        $registryPath08 = Join-Path 'Software' 'Policies' 'Microsoft' 'WindowsFirewall' 'DomainProfile'
-        $registryPath09 = Join-Path 'Software' 'Policies' 'Microsoft' 'WindowsFirewall' 'StandardProfile'
-        $registryPath10 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Explorer'
-        $registryPath11 = Join-Path 'Software' 'Policies' 'Microsoft' 'SQMClient' 'Windows'
-        $registryPath12 = Join-Path 'Software' 'Policies' 'Microsoft' 'PCHealth' 'ErrorReporting'
-        $registryPath13 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Windows Error Reporting'
-        $registryPath14 = Join-Path 'Software' 'Policies' 'Microsoft' 'Messenger' 'Client'
-        $registryPath15 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows NT' 'SystemRestore'
-        $registryPath16 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'AdvertisingInfo'
-        $registryPath17 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'AppPrivacy'
-        $registryPath18 = Join-Path 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Policies' 'System'
-        $registryPath19 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'AppCompat'
-        $registryPath20 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Windows Chat'
-        $registryPath21 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'CloudContent'
-        $registryPath22 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'PreviewBuilds'
-        $registryPath23 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'DataCollection'
-        $registryPath24 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'DWM'
-        $registryPath25 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'EdgeUI'
-        $registryPath26 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'LocationAndSensors'
-        $registryPath27 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Maps'
-        $registryPath28 = Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftAccount'
-        $registryPath29 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows Defender'
-        $registryPath30 = Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'ServiceUI'
-        $registryPath31 = Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'Addons'
-        $registryPath32 = Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'BooksLibrary'
-        $registryPath33 = Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'Main'
-        $registryPath34 = Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'TabPreloader'
-        $registryPath35 = Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'Internet Settings'
-        $registryPath36 = Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'SearchScopes'
-        $registryPath38 = Join-Path 'Software' 'Microsoft' 'OneDrive'
-        $registryPath39 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows OneDrive'
-        $registryPath40 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows NT' 'Terminal Services'
-        $registryPath41 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Windows Search'
-        $registryPath42 = Join-Path 'Software' 'Policies' 'Microsoft' 'WindowsStore'
-        $registryPath43 = Join-Path 'Software' 'Policies' 'Microsoft' 'Dsh'
-        $registryPath44 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows GameDVR'
-        $registryPath45 = Join-Path 'Software' 'Policies' 'Microsoft' 'PassportForWork'
-        $registryPath46 = Join-Path 'Software' 'Policies' 'Microsoft' 'WindowsInkWorkspace'
-        $registryPath47 = Join-Path 'Software' 'Policies' 'Microsoft' 'WindowsMediaPlayer'
-        $registryPath48 = Join-Path 'Software' 'Policies' 'Microsoft' 'Messenger' 'Client'
-        $registryPath49 = Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'WinRM' 'Service' 'WinRS'
-        $registryPath50 = Join-Path 'Software' 'Policies' 'Microsoft' 'FVE'
+        $machineDirectory = Join-Path -Path $env:windir -ChildPath 'System32' -AdditionalChildPath 'GroupPolicy', 'Machine', 'Registry.pol'
+        $registryPath01 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows',  'Personalization'
+        $registryPath02 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'InputPersonalization'
+        $registryPath03 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MUI',  'Settings'
+        $registryPath04 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Control Panel', 'International'
+        $registryPath06 = Join-Path -Path 'Software' -ChildPath 'Microsoft' -AdditionalChildPath 'Windows', 'CurrentVersion', 'Policies', 'Explorer'
+        $registryPath07 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'System'
+        $registryPath08 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'WindowsFirewall', 'DomainProfile'
+        $registryPath09 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'WindowsFirewall', 'StandardProfile'
+        $registryPath10 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Explorer'
+        $registryPath11 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'SQMClient', 'Windows'
+        $registryPath12 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'PCHealth', 'ErrorReporting'
+        $registryPath13 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Windows Error Reporting'
+        $registryPath14 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Messenger', 'Client'
+        $registryPath15 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows NT', 'SystemRestore'
+        $registryPath16 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'AdvertisingInfo'
+        $registryPath17 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'AppPrivacy'
+        $registryPath18 = Join-Path -Path 'Software' -ChildPath 'Microsoft' -AdditionalChildPath 'Windows', 'CurrentVersion', 'Policies', 'System'
+        $registryPath19 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'AppCompat'
+        $registryPath20 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Windows Chat'
+        $registryPath21 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'CloudContent'
+        $registryPath22 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'PreviewBuilds'
+        $registryPath23 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'DataCollection'
+        $registryPath24 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'DWM'
+        $registryPath25 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'EdgeUI'
+        $registryPath26 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'LocationAndSensors'
+        $registryPath27 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Maps'
+        $registryPath28 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftAccount'
+        $registryPath29 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows Defender'
+        $registryPath30 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'ServiceUI'
+        $registryPath31 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'Addons'
+        $registryPath32 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'BooksLibrary'
+        $registryPath33 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'Main'
+        $registryPath34 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'TabPreloader'
+        $registryPath35 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'Internet Settings'
+        $registryPath36 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'SearchScopes'
+        $registryPath38 = Join-Path -Path 'Software' -ChildPath 'Microsoft' -AdditionalChildPath 'OneDrive'
+        $registryPath39 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows OneDrive'
+        $registryPath40 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows NT', 'Terminal Services'
+        $registryPath41 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Windows Search'
+        $registryPath42 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'WindowsStore'
+        $registryPath43 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Dsh'
+        $registryPath44 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows GameDVR'
+        $registryPath45 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'PassportForWork'
+        $registryPath46 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'WindowsInkWorkspace'
+        $registryPath47 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'WindowsMediaPlayer'
+        $registryPath48 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Messenger', 'Client'
+        $registryPath49 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'WinRM', 'Service', 'WinRS'
+        $registryPath50 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'FVE'
 
         # Computer Configuration > Administrative Templates > Control Panel > Personalization
         Set-PolicyFileEntry -Path $machineDirectory -Key $registryPath01 -ValueName 'AnimateLockScreenBackground'                  -Data '1'     -Type 'DWord'
@@ -247,34 +253,34 @@ function Set-GPO {
         # User Config
         # ===========
 
-        $userDirectory = (Join-Path $env:windir 'System32' 'GroupPolicy' 'User' 'Registry.pol')
-        $registryPath50 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Control Panel' 'Desktop')
-        $registryPath51 = (Join-Path 'Software' 'Policies' 'Microsoft' 'InputPersonalization')
-        $registryPath52 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Control Panel' 'Desktop')
-        $registryPath53 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Control Panel' 'International')
-        $registryPath54 = (Join-Path 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Policies' 'Explorer')
-        $registryPath55 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Explorer')
-        $registryPath56 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Assistance' 'Client' '1.0')
-        $registryPath57 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Messenger' 'Client')
-        $registryPath58 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'CloudContent')
-        $registryPath59 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'DataCollection')
-        $registryPath60 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'DWM')
-        $registryPath61 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'EdgeUI')
-        $registryPath62 = (Join-Path 'Software' 'Policies' 'Microsoft' 'ime' 'imejp')
-        $registryPath63 = (Join-Path 'Software' 'Policies' 'Microsoft' 'ime' 'shared')
-        $registryPath64 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'LocationAndSensors')
-        $registryPath65 = (Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'ServiceUI')
-        $registryPath66 = (Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'Addons')
-        $registryPath67 = (Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'BooksLibrary')
-        $registryPath68 = (Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'Main')
-        $registryPath69 = (Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'TabPreloader')
-        $registryPath70 = (Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'Internet Settings')
-        $registryPath71 = (Join-Path 'Software' 'Policies' 'Microsoft' 'MicrosoftEdge' 'SearchScopes')
-        $registryPath72 = (Join-Path 'Software' 'Policies' 'Microsoft' 'WindowsStore')
-        $registryPath73 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'WindowsCopilot')
-        $registryPath74 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Windows' 'Windows Error Reporting')
-        $registryPath75 = (Join-Path 'Software' 'Policies' 'Microsoft' 'PassportForWork')
-        $registryPath76 = (Join-Path 'Software' 'Policies' 'Microsoft' 'Messenger' 'Client')
+        $userDirectory = Join-Path -Path $env:windir -ChildPath 'System32' -AdditionalChildPath 'GroupPolicy', 'User', 'Registry.pol'
+        $registryPath50 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Control Panel', 'Desktop'
+        $registryPath51 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'InputPersonalization'
+        $registryPath52 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Control Panel', 'Desktop'
+        $registryPath53 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Control Panel', 'International'
+        $registryPath54 = Join-Path -Path 'Software' -ChildPath 'Microsoft' -AdditionalChildPath 'Windows', 'CurrentVersion', 'Policies', 'Explorer'
+        $registryPath55 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Explorer'
+        $registryPath56 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Assistance', 'Client', '1.0'
+        $registryPath57 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Messenger', 'Client'
+        $registryPath58 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'CloudContent'
+        $registryPath59 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'DataCollection'
+        $registryPath60 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'DWM'
+        $registryPath61 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'EdgeUI'
+        $registryPath62 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'ime', 'imejp'
+        $registryPath63 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'ime', 'shared'
+        $registryPath64 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'LocationAndSensors'
+        $registryPath65 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'ServiceUI'
+        $registryPath66 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'Addons'
+        $registryPath67 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'BooksLibrary'
+        $registryPath68 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'Main'
+        $registryPath69 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'TabPreloader'
+        $registryPath70 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'Internet Settings'
+        $registryPath71 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MicrosoftEdge', 'SearchScopes'
+        $registryPath72 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'WindowsStore'
+        $registryPath73 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'WindowsCopilot'
+        $registryPath74 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Windows Error Reporting'
+        $registryPath75 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'PassportForWork'
+        $registryPath76 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Messenger', 'Client'
 
         # User Configuration > Administrative Templates > Control Panel > Personalization
         Set-PolicyFileEntry -Path $userDirectory -Key $registryPath50 -ValueName 'ScreenSaveActive'                                               -Data '0'        -Type 'String'
@@ -394,9 +400,9 @@ function Set-UIPreference {
     [CmdletBinding(SupportsShouldProcess)]
     param()
 
-    $explorer = Join-Path 'HKCU:' 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Explorer'
-    $explorerAdvanced = Join-Path 'HKCU:' 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Explorer' 'Advanced'
-    $personalize = Join-Path 'HKCU:' 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Themes' 'Personalize'
+    $explorer = Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Explorer'
+    $explorerAdvanced = Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Explorer', 'Advanced'
+    $personalize = Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Themes', 'Personalize'
 
     # dark mode
     Write-Output 'Setting Windows dark mode...'
@@ -413,7 +419,7 @@ function Set-UIPreference {
 
     # Bing search
     Write-Output 'Disabling Bing search...'
-    Set-ItemProperty -Path (Join-Path 'HKCU:' 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Search') -Name 'BingSearchEnabled' -Value 0
+    Set-ItemProperty -Path (Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Search') -Name 'BingSearchEnabled' -Value 0
 
     # show icons notification area (always show = 0, not showing = 1)
     Write-Output 'Showing all tray icons...'
@@ -451,11 +457,11 @@ function Set-UIPreference {
 
     # sticky keys
     Write-Output 'Disabling sticky keys...'
-    Set-ItemProperty -Path (Join-Path 'HKCU:' 'Control Panel' 'Accessibility' 'StickyKeys') -Name Flags -Value 58
+    Set-ItemProperty -Path (Join-Path -Path 'HKCU:' -ChildPath 'Control Panel' -AdditionalChildPath 'Accessibility', 'StickyKeys') -Name Flags -Value 58
 
     # snap windows
     Write-Output 'Disabling snapping of windows on startup...'
-    Set-ItemProperty -Path (Join-Path 'HKCU:' 'Control Panel' 'Desktop') -Name WindowArrangementActive -Value 0
+    Set-ItemProperty -Path (Join-Path -Path 'HKCU:' -ChildPath 'Control Panel' -AdditionalChildPath 'Desktop') -Name WindowArrangementActive -Value 0
     Write-Output 'Disabling snap assist suggestion on startup...'
     Set-ItemProperty -Path $explorerAdvanced -Name WindowArrangementActive -Value 0
     Write-Output 'Disabling snap assist flyout on startup...'
@@ -463,12 +469,12 @@ function Set-UIPreference {
 
     # recall
     Write-Output "Disabling Recall..."
-    Set-ItemProperty -Path (Join-Path 'HKLM:' 'Software' 'Policies' 'Microsoft' 'Windows' 'WindowsAI') -Name 'DisableAIDataAnalysis' -Value 1
+    Set-ItemProperty -Path (Join-Path -Path 'HKLM:' -ChildPath 'Software' -AdditionalChildPath 'Policies', 'Microsoft', 'Windows', 'WindowsAI') -Name 'DisableAIDataAnalysis' -Value 1
     DISM /Online /Disable-Feature /FeatureName:Recall
 
     # screenshot folder
     Write-Output 'Setting the screenshot folder to Desktop...'
-    Set-ItemProperty -Path (Join-Path 'HKCU:' 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Explorer' 'User Shell Folders') -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value (Join-Path $env:USERPROFILE 'Desktop')
+    Set-ItemProperty -Path (Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Explorer', 'User Shell Folders') -Name '{B7BEDE81-DF94-4682-A7D8-57A52620B86F}' -Value (Join-Path -Path $env:USERPROFILE -ChildPath 'Desktop')
 
     # region
     if ($PSCmdlet.ShouldContinue('Continue?', 'Setting timezone/currency/timeformat to fr-FR.')) {
@@ -482,11 +488,11 @@ function Set-UIPreference {
 
     # no sound settings
     Write-Output 'Switching Sound Scheme to no sounds...'
-    New-ItemProperty -Path (Join-Path 'HKCU:' 'AppEvents' 'Schemes') -Name '(Default)' -Value '.None' -Force | Out-Null
-    Get-ChildItem -Path (Join-Path 'HKCU:' 'AppEvents' 'Schemes' 'Apps') -Recurse | Where-Object { $_.PSChildName -eq '.Current' } | Set-ItemProperty -Name '(Default)' -Value ''
+    New-ItemProperty -Path (Join-Path -Path 'HKCU:' -ChildPath 'AppEvents' -AdditionalChildPath 'Schemes') -Name '(Default)' -Value '.None' -Force | Out-Null
+    Get-ChildItem -Path (Join-Path -Path 'HKCU:' -ChildPath 'AppEvents' -AdditionalChildPath 'Schemes', 'Apps') -Recurse | Where-Object { $_.PSChildName -eq '.Current' } | Set-ItemProperty -Name '(Default)' -Value ''
 
     Write-Output 'Turning Windows Startup sound off...'
-    Set-ItemProperty -Path (Join-Path 'HKLM:' 'Software' 'Microsoft' 'Windows' 'CurrentVersion' 'Policies' 'System') -Name 'DisableStartupSound' -Value 1 -Type DWord -Force
+    Set-ItemProperty -Path (Join-Path -Path 'HKLM:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Policies', 'System') -Name 'DisableStartupSound' -Value 1 -Type DWord -Force
 
     # keyboard settings
     $languageList = Get-WinUserLanguageList
@@ -501,13 +507,13 @@ function Set-UIPreference {
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Remapping CTRL to CAPSLOCK.')) {
         $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | ForEach-Object { "0x$_"}
-        $keyboardLayout = Join-Path 'HKLM:' 'System' 'CurrentControlSet' 'Control' 'Keyboard Layout'
+        $keyboardLayout = Join-Path -Path 'HKLM:' -ChildPath 'System' -AdditionalChildPath 'CurrentControlSet', 'Control', 'Keyboard Layout'
         New-ItemProperty -Path $keyboardLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified)
     }
 
     # mouse settings
     Write-Output 'Disabling mouse acceleration...'
-    $mousePath = Join-Path 'HKCU:' 'Control Panel' 'Mouse'
+    $mousePath = Join-Path -Path 'HKCU:' -ChildPath 'Control Panel' -AdditionalChildPath 'Mouse'
     Set-ItemProperty -Path $mousePath -Name MouseSpeed -Value 0
     Set-ItemProperty -Path $mousePath -Name MouseThreshold1 -Value 0
     Set-ItemProperty -Path $mousePath -Name MouseThreshold2 -Value 0
@@ -621,7 +627,7 @@ function Install-WinGet {
     if ($PSCmdlet.ShouldContinue('Do you want?', 'Installing WinGet from GitHub (instead of Microsoft Store).')) {
         $apiUrl = 'https://api.github.com/repos/microsoft/winget-cli/releases/latest'
         $wingetDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object {$_.EndsWith('.msixbundle')}
-        $wingetDownloadLocation = Join-Path $env:TEMP 'winget.msixbundle'
+        $wingetDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'winget.msixbundle'
 
         Invoke-WebRequest -Uri $wingetDownloadUrl -OutFile $wingetDownloadLocation
         Add-AppxPackage -Path $wingetDownloadLocation
@@ -636,19 +642,19 @@ function Install-WinGet {
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing Emacs')) {
         winget install -e --id 'GNU.Emacs'
-        $emacsInstallDirectory = Join-Path $env:ProgramFiles 'Emacs'
-        $emacsConfigDirectory = Join-Path $env:APPDATA '.emacs.d'
+        $emacsInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'Emacs'
+        $emacsConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath '.emacs.d'
         Add-MpPreference -ExclusionPath $emacsInstallDirectory, $emacsConfigDirectory
-        Add-MpPreference -ExclusionProcess (Join-Path $emacsInstallDirectory "*"), 'runemacs.exe', 'emacs.exe', 'emacsclientw.exe', 'emacsclient.exe'
+        Add-MpPreference -ExclusionProcess (Join-Path -Path $emacsInstallDirectory "*"), 'runemacs.exe', 'emacs.exe', 'emacsclientw.exe', 'emacsclient.exe'
         Add-MpPreference -ExclusionExtension ".el", ".elc", ".eln"
 
         winget install -e --id 'FSFhu.Hunspell'
-        $hunspellDirectory = Join-Path $env:APPDATA '.emacs.d' 'hunspell'
+        $hunspellDirectory = Join-Path -Path $env:APPDATA -ChildPath '.emacs.d' -AdditionalChildPath 'hunspell'
         New-Item -Force -Path $hunspellDirectory -ItemType directory
-        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path $hunspellDirectory 'en_US.aff')
-        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path $hunspellDirectory 'en_US.dic')
-        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path $hunspellDirectory 'fr_FR.aff')
-        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path $hunspellDirectory 'fr_FR.dic')
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path -Path $hunspellDirectory -ChildPath 'en_US.aff')
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path -Path $hunspellDirectory -ChildPath 'en_US.dic')
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path -Path $hunspellDirectory -ChildPath 'fr_FR.aff')
+        Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path -Path $hunspellDirectory -ChildPath 'fr_FR.dic')
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing Git')) {
@@ -657,13 +663,13 @@ function Install-WinGet {
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing MKVToolNix')) {
         winget install -e --id 'MoritzBunkus.MKVToolNix'
-        $mkvtoolnixInstallDirectory = Join-Path $env:ProgramFiles 'MKVToolNixx'
+        $mkvtoolnixInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'MKVToolNixx'
         [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mkvtoolnixInstallDirectory", [EnvironmentVariableTarget]::User)
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing qBittorrent')) {
         winget install -e --id 'qBittorrent.qBittorrent'
-        $pluginDirectory = Join-Path $env:USERPROFILE 'AppData' 'Local' 'qBittorrent' 'nova3' 'engines'
+        $pluginDirectory = Join-Path -Path $env:USERPROFILE -ChildPath 'AppData' -AdditionalChildPath 'Local', 'qBittorrent', 'nova3', 'engines'
         New-Item -Force -Path $pluginDirectory -ItemType directory
 
         $pluginUrl = @(
@@ -706,7 +712,7 @@ function Install-WinGet {
         # Loop through each URL and download the file
         foreach ($url in $pluginUrl) {
             $plugineFilename = [System.IO.Path]::GetFileName($url)
-            $pluginFileLocation = Join-Path $pluginDirectory $plugineFilename
+            $pluginFileLocation = Join-Path -Path $pluginDirectory -ChildPath $plugineFilename
             Invoke-WebRequest -Uri $url -OutFile $pluginFileLocation
         }
     }
@@ -714,10 +720,10 @@ function Install-WinGet {
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing Tor Browser')) {
         winget install -e --id 'TorProject.TorBrowser'
         Start-Sleep -Seconds 5
-        Move-Item -Path (Join-Path $env:USERPROFILE 'Desktop' 'Tor Browser') -Destination $env:ProgramFiles
+        Move-Item -Path (Join-Path -Path $env:USERPROFILE -ChildPath 'Desktop' -AdditionalChildPath 'Tor Browser') -Destination $env:ProgramFiles
 
-        $torProgramLocation = Join-Path $env:ProgramFiles 'Tor Browser' 'Browser' 'firefox.exe'
-        $torShortcutLocation = Join-Path $env:APPDATA 'Microsoft' 'Windows' 'Start Menu' 'Programs' 'Tor Browser.lnk'
+        $torProgramLocation = Join-Path -Path $env:ProgramFiles -ChildPath 'Tor Browser' -AdditionalChildPath 'Browser', 'firefox.exe'
+        $torShortcutLocation = Join-Path -Path $env:APPDATA -ChildPath 'Microsoft' -AdditionalChildPath 'Windows', 'Start Menu', 'Programs', 'Tor Browser.lnk'
 
         $WScriptShell = New-Object -ComObject WScript.Shell
         $shortcut = $WScriptShell.CreateShortcut($torShortcutLocation)
@@ -735,8 +741,8 @@ function Install-MPV {
 
     $apiUrl = "https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest"
     $mpvDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.Contains('mpv-x86_64-v3')}
-    $mpvDownloadLocation = Join-Path $env:TEMP 'mpv.7z'
-    $mpvInstallDirectory = Join-Path $env:ProgramFiles 'mpv'
+    $mpvDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'mpv.7z'
+    $mpvInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'mpv'
 
     Invoke-WebRequest -Uri $mpvDownloadUrl -OutFile $mpvDownloadLocation
     Install-Module -Name 7Zip4Powershell
@@ -745,33 +751,33 @@ function Install-MPV {
     [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallDirectory", [EnvironmentVariableTarget]::User)
 
     Write-Output 'Running mpv script(s)...'
-    Start-Process -FilePath (Join-Path $mpvInstallDirectory 'installer' 'mpv-install.bat') -NoNewWindow -Wait
+    Start-Process -FilePath (Join-Path -Path $mpvInstallDirectory -ChildPath 'installer' -AdditionalChildPath 'mpv-install.bat') -NoNewWindow -Wait
 
     Write-Output 'Installing plugins...'
 
-    $mpvConfigDirectory = Join-Path $env:APPDATA 'mpv'
-    $mpvScriptDirectory = Join-Path $mpvConfigDirectory 'scripts'
-    $uoscDirectory = Join-Path $env:TEMP 'uosc.zip'
+    $mpvConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath 'mpv'
+    $mpvScriptDirectory = Join-Path -Path $mpvConfigDirectory -ChildPath 'scripts'
+    $uoscDirectory = Join-Path -Path $env:TEMP -ChildPath 'uosc.zip'
 
     New-Item -Force -Path $mpvConfigDirectory -ItemType directory
-    New-Item -Force -Path (Join-Path $mpvConfigDirectory 'fonts') -ItemType directory
+    New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'fonts') -ItemType directory
     New-Item -Force -Path $mpvScriptDirectory -ItemType directory
-    New-Item -Force -Path (Join-Path $mpvScriptDirectory 'uosc') -ItemType directory
+    New-Item -Force -Path (Join-Path -Path $mpvScriptDirectory -ChildPath 'uosc') -ItemType directory
 
     Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile $uoscDirectory
     Expand-Archive -Path $uoscDirectory -DestinationPath $mpvConfigDirectory
     Remove-Item $uoscDirectory
 
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile (Join-Path $mpvScriptDirectory 'thumbfast.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile (Join-Path $mpvScriptDirectory 'visualizer.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile (Join-Path $mpvScriptDirectory 'crop.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile (Join-Path $mpvScriptDirectory 'encode.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'thumbfast.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'visualizer.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'crop.lua')
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'encode.lua')
 }
 
 function Install-Findutils {
-    $findutilsDownloadLocation = Join-Path $env:TEMP 'findutils.pkg.tar.zst'
-    $findutilsInstallDirectory = Join-Path $env:ProgramFiles 'GnuFindutils'
-    $findutilsBinariesDirectory = Join-Path $findutilsInstallDirectory 'usr' 'bin'
+    $findutilsDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'findutils.pkg.tar.zst'
+    $findutilsInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'GnuFindutils'
+    $findutilsBinariesDirectory = Join-Path -Path $findutilsInstallDirectory -ChildPath 'usr' -AdditionalChildPath 'bin'
 
     New-Item -Force -Path $findutilsInstallDirectory -ItemType directory
     Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile $findutilsDownloadLocation
@@ -790,7 +796,7 @@ function Set-Git {
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Setting up correct origin for the dotfiles git repository.')) {
         Push-Location
-        Set-Location (Join-Path $env:USERPROFILE "dotfiles")
+        Set-Location (Join-Path -Path $env:USERPROFILE -ChildPath "dotfiles")
 
         if (git rev-parse --is-inside-work-tree) {
             git remote set-url origin git@github.com:grolongo/dotfiles.git
