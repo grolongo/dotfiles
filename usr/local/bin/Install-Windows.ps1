@@ -2,11 +2,30 @@
 
 #Requires -RunAsAdministrator
 
-if ($PSVersionTable.PSVersion.Major -lt 7) {
-    Write-Output ''
-    Write-Output 'This script is only compatible with PowerShell 7+'
-    Write-Output ''
-    exit 1 }
+function Get-Version {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    if ($PSVersionTable.PSVersion.Major -lt 7) {
+        if ($PSCmdlet.ShouldContinue('Launch PowerShell 7?', 'This script requires PowerShell 7+.')) {
+            $powershellLocation = Join-Path (Join-Path (Join-Path "$env:ProgramFiles" "PowerShell") "7") "pwsh.exe"
+            $startPowershell = { Start-Process -FilePath $powershellLocation -WorkingDirectory $PSScriptRoot -ArgumentList "-NoExit", "-File", "$PSCommandPath" }
+            if (-Not (Test-Path -Path $powershellLocation)) {
+                Write-Output 'PowerShell 7 not found, trying to install using WinGet...'
+                winget source update
+                winget install -e --id 'Microsoft.PowerShell'
+                Start-Sleep -Seconds 5
+                Invoke-Command -ScriptBlock $startPowershell
+                exit
+            } else {
+                Invoke-Command -ScriptBlock $startPowershell
+                exit
+            }
+        } else {
+            exit 1
+        }
+    }
+}
 
 function Set-GPO {
     [CmdletBinding(SupportsShouldProcess)]
@@ -812,7 +831,7 @@ function Set-Git {
     }
 }
 
-function usage {
+function Show-Menu {
     Write-Output ''
     Write-Output 'Usage:'
     Write-Output '  gpo             - apply machine and user group policies'
@@ -828,11 +847,11 @@ function usage {
     Write-Output ''
 }
 
-function main {
+function Get-Choice {
     $cmd = $args[0]
 
     # return error if nothing is specified
-    if (!$cmd) { usage; exit 1 }
+    if (!$cmd) { Show-Menu; exit 1 }
 
     if ($cmd -eq 'gpo')                 { Set-GPO }
     elseif ($cmd -eq 'uisetting')       { Set-UIPreference }
@@ -844,7 +863,8 @@ function main {
     elseif ($cmd -eq 'findutils')       { Install-Findutils }
     elseif ($cmd -eq 'activate')        { Use-Massgrave }
     elseif ($cmd -eq 'git')             { Set-Git }
-    else { usage }
+    else { Show-Menu }
 }
 
-main $args[0]
+Get-Version
+Get-Choice $args[0]
