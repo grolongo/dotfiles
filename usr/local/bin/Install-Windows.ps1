@@ -13,7 +13,7 @@ function Get-Version {
             if (-Not (Test-Path -Path $powershellLocation)) {
                 Write-Output 'PowerShell 7 not found, trying to install using WinGet...'
                 winget source update
-                winget install -e --id 'Microsoft.PowerShell'
+                winget install --exact --id 'Microsoft.PowerShell'
                 Start-Sleep -Seconds 5
                 Invoke-Command -ScriptBlock $startPowershell
                 exit
@@ -419,6 +419,12 @@ function Set-UIPreference {
     [CmdletBinding(SupportsShouldProcess)]
     param()
 
+    # install and symlink scripts to the path
+    Write-Output 'Adding install scripts to the PATH...'
+    if (-Not ($env:PATH -split ';' -contains $PSScriptRoot)) {
+        [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$PSScriptRoot", [EnvironmentVariableTarget]::User)
+    }
+
     $explorer = Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Explorer'
     $explorerAdvanced = Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Explorer', 'Advanced'
     $personalize = Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Themes', 'Personalize'
@@ -656,18 +662,18 @@ function Install-WinGet {
     winget source update
 
     foreach ($p in $packages) {
-        if ($PSCmdlet.ShouldContinue('Continue?', "Installing ${p}")) { winget install -e --id "$p" }
+        if ($PSCmdlet.ShouldContinue('Continue?', "Installing ${p}")) { winget install --exact --id "$p" }
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing Emacs')) {
-        winget install -e --id 'GNU.Emacs'
+        winget install --exact --id 'GNU.Emacs'
         $emacsInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'Emacs'
         $emacsConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath '.emacs.d'
         Add-MpPreference -ExclusionPath $emacsInstallDirectory, $emacsConfigDirectory
         Add-MpPreference -ExclusionProcess (Join-Path -Path $emacsInstallDirectory "*"), 'runemacs.exe', 'emacs.exe', 'emacsclientw.exe', 'emacsclient.exe'
         Add-MpPreference -ExclusionExtension ".el", ".elc", ".eln"
 
-        winget install -e --id 'FSFhu.Hunspell'
+        winget install --exact --id 'FSFhu.Hunspell'
         $hunspellDirectory = Join-Path -Path $env:APPDATA -ChildPath '.emacs.d' -AdditionalChildPath 'hunspell'
         New-Item -Force -Path $hunspellDirectory -ItemType directory
         Invoke-WebRequest -Uri 'https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff' -OutFile (Join-Path -Path $hunspellDirectory -ChildPath 'en_US.aff')
@@ -677,17 +683,20 @@ function Install-WinGet {
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing Git')) {
-        winget install -e --id Git.Git --custom '/o:EditorOption=Notepad /o:Components=icons,gitlfs,windowsterminal /o:PathOption=Cmd /o:SSHOption=ExternalOpenSSH /o:CRLFOption=CRLFCommitAsIs /o:CURLOption=WinSSL'
+        winget install --exact --id Git.Git --custom '/o:EditorOption=Notepad /o:Components=icons,gitlfs,windowsterminal /o:PathOption=Cmd /o:SSHOption=ExternalOpenSSH /o:CRLFOption=CRLFCommitAsIs /o:CURLOption=WinSSL'
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing MKVToolNix')) {
-        winget install -e --id 'MoritzBunkus.MKVToolNix'
+        winget install --exact --id 'MoritzBunkus.MKVToolNix'
         $mkvtoolnixInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'MKVToolNixx'
-        [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mkvtoolnixInstallDirectory", [EnvironmentVariableTarget]::User)
+
+        if (-Not ($env:PATH -split ';' -contains $mkvtoolnixInstallDirectory)) {
+            [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mkvtoolnixInstallDirectory", [EnvironmentVariableTarget]::User)
+        }
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing qBittorrent')) {
-        winget install -e --id 'qBittorrent.qBittorrent'
+        winget install --exact --id 'qBittorrent.qBittorrent'
         $pluginDirectory = Join-Path -Path $env:USERPROFILE -ChildPath 'AppData' -AdditionalChildPath 'Local', 'qBittorrent', 'nova3', 'engines'
         New-Item -Force -Path $pluginDirectory -ItemType directory
 
@@ -730,14 +739,14 @@ function Install-WinGet {
 
         # Loop through each URL and download the file
         foreach ($url in $pluginUrl) {
-            $plugineFilename = [System.IO.Path]::GetFileName($url)
-            $pluginFileLocation = Join-Path -Path $pluginDirectory -ChildPath $plugineFilename
+            $pluginFilename = [System.IO.Path]::GetFileName($url)
+            $pluginFileLocation = Join-Path -Path $pluginDirectory -ChildPath $pluginFilename
             Invoke-WebRequest -Uri $url -OutFile $pluginFileLocation
         }
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing Tor Browser')) {
-        winget install -e --id 'TorProject.TorBrowser'
+        winget install --exact --id 'TorProject.TorBrowser'
         Start-Sleep -Seconds 5
         Move-Item -Path (Join-Path -Path $env:USERPROFILE -ChildPath 'Desktop' -AdditionalChildPath 'Tor Browser') -Destination $env:ProgramFiles
 
@@ -753,6 +762,13 @@ function Install-WinGet {
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing iCloud')) {
         winget install --source msstore 9PKTQ5699M62
     }
+
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Installing PowerShell')) {
+        winget install --exact --id 'Microsoft.PowerShell'
+        Install-Module -Name PSScriptAnalyzer -Force
+    } else {
+        Install-Module -Name PSScriptAnalyzer -Force
+    }
 }
 
 function Install-MPV {
@@ -767,7 +783,10 @@ function Install-MPV {
     Install-Module -Name 7Zip4Powershell
     Expand-7zip -ArchiveFileName $mpvDownloadLocation -TargetPath $mpvInstallDirectory
     Remove-Item $mpvDownloadLocation
-    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallDirectory", [EnvironmentVariableTarget]::User)
+
+    if (-Not ($env:PATH -split ';' -contains $mpvInstallDirectory)) {
+        [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallDirectory", [EnvironmentVariableTarget]::User)
+    }
 
     Write-Output 'Running mpv script(s)...'
     Start-Process -FilePath (Join-Path -Path $mpvInstallDirectory -ChildPath 'installer' -AdditionalChildPath 'mpv-install.bat') -NoNewWindow -Wait
@@ -776,16 +795,16 @@ function Install-MPV {
 
     $mpvConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath 'mpv'
     $mpvScriptDirectory = Join-Path -Path $mpvConfigDirectory -ChildPath 'scripts'
-    $uoscDirectory = Join-Path -Path $env:TEMP -ChildPath 'uosc.zip'
+    $uoscDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'uosc.zip'
 
     New-Item -Force -Path $mpvConfigDirectory -ItemType directory
     New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'fonts') -ItemType directory
     New-Item -Force -Path $mpvScriptDirectory -ItemType directory
     New-Item -Force -Path (Join-Path -Path $mpvScriptDirectory -ChildPath 'uosc') -ItemType directory
 
-    Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile $uoscDirectory
-    Expand-Archive -Path $uoscDirectory -DestinationPath $mpvConfigDirectory
-    Remove-Item $uoscDirectory
+    Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile $uoscDownloadLocation
+    Expand-Archive -Path $uoscDownloadLocation -DestinationPath $mpvConfigDirectory
+    Remove-Item $uoscDownloadLocation
 
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'thumbfast.lua')
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'visualizer.lua')
@@ -802,7 +821,21 @@ function Install-Findutils {
     Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile $findutilsDownloadLocation
     tar --extract --file=$findutilsDownloadLocation --directory=$findutilsInstallDirectory
     Remove-Item $findutilsDownloadLocation
-    [Environment]::SetEnvironmentVariable("Path", "$findutilsBinariesDirectory;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
+
+    if (-Not ($env:PATH -split ';' -contains $findutilsBinariesDirectory)) {
+        [Environment]::SetEnvironmentVariable("Path", "$findutilsBinariesDirectory;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
+    }
+}
+
+function Install-VBCable {
+    $vbcableDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'vbcable.zip'
+    $vbcableUnzipLocation = Join-Path -Path $env:TEMP -ChildPath 'vbcable'
+
+    Invoke-WebRequest -Uri 'https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip' -OutFile $vbcableDownloadLocation
+    Expand-Archive -Path $vbcableDownloadLocation -DestinationPath $vbcableUnzipLocation
+    Start-Process -FilePath (Join-Path -Path $vbcableUnzipLocation -ChildPath 'VBCABLE_Setup_x64.exe') -Wait
+    Remove-Item $vbcableDownloadLocation
+    Remove-Item -Recurse $vbcableUnzipLocation
 }
 
 function Use-Massgrave {
@@ -842,6 +875,7 @@ function Show-Menu {
     Write-Output '  winget          - download and install some packages with winget'
     Write-Output '  mpv             - install mpv'
     Write-Output '  findutils       - install GNU Findutils'
+    Write-Output '  vbcable         - install VB-CABLE Virtual Audio Device'
     Write-Output '  activate        - run massgrave activation script'
     Write-Output '  git             - set correct SSH origin for this repository'
     Write-Output ''
@@ -861,6 +895,7 @@ function Get-Choice {
     elseif ($cmd -eq 'winget')          { Install-WinGet }
     elseif ($cmd -eq 'mpv')             { Install-MPV }
     elseif ($cmd -eq 'findutils')       { Install-Findutils }
+    elseif ($cmd -eq 'vbcable')         { Install-VBCable }
     elseif ($cmd -eq 'activate')        { Use-Massgrave }
     elseif ($cmd -eq 'git')             { Set-Git }
     else { Show-Menu }
