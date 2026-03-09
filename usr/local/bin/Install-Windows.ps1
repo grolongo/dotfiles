@@ -2,14 +2,18 @@
 
 #Requires -RunAsAdministrator
 
+param(
+    [string]$commandChoice
+)
+
 function Get-Version {
     [CmdletBinding(SupportsShouldProcess)]
-    param()
+    param($commandChoice)
 
     if ($PSVersionTable.PSVersion.Major -lt 7) {
         if ($PSCmdlet.ShouldContinue('Launch PowerShell 7?', 'This script requires PowerShell 7+.')) {
             $powershellLocation = Join-Path (Join-Path (Join-Path "$env:ProgramFiles" "PowerShell") "7") "pwsh.exe"
-            $startPowershell = { Start-Process -FilePath $powershellLocation -WorkingDirectory $PSScriptRoot -ArgumentList "-NoExit", "-File", "$PSCommandPath" }
+            $startPowershell = { Start-Process -FilePath $powershellLocation -WorkingDirectory $PSScriptRoot -ArgumentList "-NoExit", "-File", "$PSCommandPath $commandChoice" }
             if (-Not (Test-Path -Path $powershellLocation)) {
                 Write-Output 'PowerShell 7 not found, trying to install using WinGet...'
                 winget source update
@@ -33,14 +37,14 @@ function Set-GPO {
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Applying Group Policies.')) {
 
-        if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
+        if (-Not (Get-Module PolicyFileEditor -ListAvailable)) {
             Install-Module -Name PolicyFileEditor -Force
         }
 
         $machineDirectory = Join-Path -Path $env:windir -ChildPath 'System32' -AdditionalChildPath 'GroupPolicy', 'Machine', 'Registry.pol'
-        $registryPath01 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows',  'Personalization'
+        $registryPath01 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'Personalization'
         $registryPath02 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'InputPersonalization'
-        $registryPath03 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MUI',  'Settings'
+        $registryPath03 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'MUI', 'Settings'
         $registryPath04 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Control Panel', 'International'
         $registryPath06 = Join-Path -Path 'Software' -ChildPath 'Microsoft' -AdditionalChildPath 'Windows', 'CurrentVersion', 'Policies', 'Explorer'
         $registryPath07 = Join-Path -Path 'Software' -ChildPath 'Policies' -AdditionalChildPath 'Microsoft', 'Windows', 'System'
@@ -522,7 +526,7 @@ function Set-UIPreference {
     # keyboard settings
     $languageList = Get-WinUserLanguageList
 
-    if (-not $languageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
+    if (-Not $languageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
         if ($PSCmdlet.ShouldContinue('Continue?', 'Installing fr-FR layout [keyboard].')) {
             $languageList[0].InputMethodTips.Add('0409:0000040C')
             Set-WinUserLanguageList $languageList -Force
@@ -882,24 +886,24 @@ function Show-Menu {
 }
 
 function Get-Choice {
-    $cmd = $args[0]
+    param($commandChoice)
 
     # return error if nothing is specified
-    if (!$cmd) { Show-Menu; exit 1 }
+    if (-Not $commandChoice) { Show-Menu; exit 1 }
 
-    if ($cmd -eq 'gpo')                 { Set-GPO }
-    elseif ($cmd -eq 'uisetting')       { Set-UIPreference }
-    elseif ($cmd -eq 'bitlocker')       { Set-BitLocker }
-    elseif ($cmd -eq 'firewall')        { Set-FireWall }
-    elseif ($cmd -eq 'powersetting')    { Set-PowerSetting }
-    elseif ($cmd -eq 'winget')          { Install-WinGet }
-    elseif ($cmd -eq 'mpv')             { Install-MPV }
-    elseif ($cmd -eq 'findutils')       { Install-Findutils }
-    elseif ($cmd -eq 'vbcable')         { Install-VBCable }
-    elseif ($cmd -eq 'activate')        { Use-Massgrave }
-    elseif ($cmd -eq 'git')             { Set-Git }
+    if ($commandChoice -eq 'gpo')                 { Set-GPO }
+    elseif ($commandChoice -eq 'uisetting')       { Set-UIPreference }
+    elseif ($commandChoice -eq 'bitlocker')       { Set-BitLocker }
+    elseif ($commandChoice -eq 'firewall')        { Set-FireWall }
+    elseif ($commandChoice -eq 'powersetting')    { Set-PowerSetting }
+    elseif ($commandChoice -eq 'winget')          { Install-WinGet }
+    elseif ($commandChoice -eq 'mpv')             { Install-MPV }
+    elseif ($commandChoice -eq 'findutils')       { Install-Findutils }
+    elseif ($commandChoice -eq 'vbcable')         { Install-VBCable }
+    elseif ($commandChoice -eq 'activate')        { Use-Massgrave }
+    elseif ($commandChoice -eq 'git')             { Set-Git }
     else { Show-Menu }
 }
 
-Get-Version
-Get-Choice $args[0]
+Get-Version $commandChoice
+Get-Choice $commandChoice

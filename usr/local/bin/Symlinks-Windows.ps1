@@ -1,85 +1,152 @@
-﻿# ------
-# README
-# ------
-# needs PowerShell v4+ (update Windows Management Framework if needed)
-# "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass" to allow running the script
-
+﻿# "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass" to allow running the script
 #Requires -RunAsAdministrator
-if ((Get-Location).path -ne $PSScriptRoot) { Write-Output "Exiting. Please cd to the path where the script is located."; exit }
 
-### Common functions
+function Get-Version {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
 
-function Ask-Question {
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$question
-    )
-    do {
-        $response = Read-Host "$question [y/n]"
-        $response = $response.ToLower()
-        switch ($response) {
-            'y' { return $true }
-            'n' { return $false }
-            default {
-                Write-Host "Please enter 'y' or 'n'"
+    if ($PSVersionTable.PSVersion.Major -lt 7) {
+        if ($PSCmdlet.ShouldContinue('Launch PowerShell 7?', 'This script requires PowerShell 7+.')) {
+            $powershellLocation = Join-Path (Join-Path (Join-Path "$env:ProgramFiles" "PowerShell") "7") "pwsh.exe"
+            if (-Not (Test-Path -Path $powershellLocation)) {
+                Write-Output 'PowerShell 7 not found, install PowerShell 7 first.'
+                exit 1
+            } else {
+                Start-Process -FilePath $powershellLocation -WorkingDirectory $PSScriptRoot -ArgumentList "-NoExit", $PSCommandPath
+                exit
             }
+        } else {
+            exit 1
         }
-    } while ($response -ne 'y' -and $response -ne 'n')
+    }
 }
 
-# root dotfiles folder : "Split-Path" considers parent folder as default
-New-Variable -Name "base" -Value ((Get-Location).Path -replace "(\\[^\\]+){3}$", "")
+$dotfilesRoot = Split-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -Parent
 
-# emacs
-# if (Ask-Question 'Symlink Emacs?') {
-#     New-Item -Force -Path "$env:APPDATA\.emacs.d" -ItemType directory
-#     New-Item -Force -Path "$env:APPDATA\.emacs.d\init.el" -ItemType SymbolicLink -Value "$base\.config\emacs\init.el"
-#     New-Item -Force -Path "$env:APPDATA\.emacs.d\early-init.el" -ItemType SymbolicLink -Value "$base\.config\emacs\early-init.el"
-# }
+function Set-Emacs {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
 
-# mpv
-if (Ask-Question 'Symlink mpv?') {
-    New-Item -Force -Path "$env:APPDATA\mpv" -ItemType directory
-    New-Item -Force -Path "$env:APPDATA\mpv\mpv.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\mpv.conf"
-    New-Item -Force -Path "$env:APPDATA\mpv\input.conf" -ItemType SymbolicLink -Value "$base\.config\mpv\input.conf"
-    New-Item -Force -Path "$env:APPDATA\mpv\scripts\osctoggle.lua" -ItemType SymbolicLink -Value "$base\.config\mpv\scripts\osctoggle.lua"
-    New-Item -Force -Path "$env:APPDATA\mpv\script-opts" -ItemType SymbolicLink -Value "$base\.config\mpv\script-opts"
-    takeown /f "$env:APPDATA\mpv" /r
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Symlinking Emacs config.')) {
+        $emacsConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath '.emacs.d'
+
+        New-Item -Force -Path $emacsConfigDirectory -ItemType directory
+
+        New-Item -Force -Path (Join-Path -Path $emacsConfigDirectory -ChildPath 'init.el') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'emacs', 'init.el')
+
+        New-Item -Force -Path (Join-Path -Path $emacsConfigDirectory -ChildPath 'early-init.el') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'emacs', 'early-init.el')
+
+        takeown /f $emacsConfigDirectory /r
+    }
 }
 
-# streamlink
-if (Ask-Question 'Symlink streamlink?') {
-    New-Item -Force -Path "$env:APPDATA\streamlink" -ItemType directory
-    New-Item -Force -Path "$env:APPDATA\streamlink\config" -ItemType SymbolicLink -Value "$base\.config\streamlink\config"
-    takeown /f "$env:APPDATA\streamlink" /r
+function Set-MPV {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Symlinking mpv config files.')) {
+        $mpvConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath 'mpv'
+
+        New-Item -Force -Path $mpvConfigDirectory -ItemType directory
+
+        New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'mpv.conf') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'mpv', 'mpv.conf')
+
+        New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'input.conf') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'mpv', 'input.conf')
+
+        New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'scripts' -AdditionalChildPath 'osctoggle.lua') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'mpv', 'scripts', 'osctoggle.lua')
+
+        New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'script-opts') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'mpv', 'script-opts')
+        takeown /f $mpvConfigDirectory /r
+    }
 }
 
-# git
-if (Ask-Question 'Symlink gitconfig?') {
-    New-Item -Force -Path "$HOME\.gitconfig" -ItemType SymbolicLink -Value "$base\.config\git\config"
-    New-Item -Force -Path "$HOME\.gitconfig-windows" -ItemType SymbolicLink -Value "$base\.config\git\config-windows"
-    takeown /f "$HOME\.gitconfig"
-    takeown /f "$HOME\.gitconfig-windows"
+function Set-Streamlink {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Symlinking Streamlink config file.')) {
+        $streamlinkConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath 'streamlink'
+
+        New-Item -Force -Path $streamlinkConfigDirectory -ItemType directory
+
+        New-Item -Force -Path (Join-Path -Path $streamlinkConfigDirectory -ChildPath 'config') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'streamlink', 'config')
+
+        takeown /f $streamlinkConfigDirectory /r
+    }
 }
 
-# aria2
-if (Ask-Question 'Symlink aria2?') {
-    New-Item -Force -Path "$HOME\.aria2" -ItemType directory
-    New-Item -Force -Path "$HOME\.aria2\aria2.conf" -ItemType SymbolicLink -Value "$base\.config\aria2\aria2.conf"
-    takeown /f "$HOME\.aria2" /r
+function Set-Git {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Symlinking Git config files.')) {
+        New-Item -Force -Path (Join-Path -Path $env:USERPROFILE -ChildPath '.gitconfig') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'git', 'config')
+
+        New-Item -Force -Path (Join-Path -Path $env:USERPROFILE -ChildPath '.gitconfig-windows') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'git', 'config-windows')
+
+        takeown /f (Join-Path -Path $env:USERPROFILE -ChildPath '.gitconfig')
+        takeown /f (Join-Path -Path $env:USERPROFILE -ChildPath '.gitconfig-windows')
+    }
 }
 
-# autohotkey
-if (Ask-Question 'Symlink AutoHotKey scripts?') {
-    New-Item -Force -Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\keybinds-shortcuts.ahk" -ItemType SymbolicLink -Value "$base\usr\local\bin\keybinds-shortcuts.ahk"
-    takeown /f "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\keybinds-shortcuts.ahk"
+function Set-Aria2 {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Symlinking aria2 config file.')) {
+        $ariaConfigDirectory = Join-Path -Path $env:USERPROFILE -ChildPath '.aria2'
+
+        New-Item -Force -Path $ariaConfigDirectory -ItemType directory
+
+        New-Item -Force -Path (Join-Path -Path $ariaConfigDirectory -ChildPath 'aria2.conf') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'aria2', 'aria2.conf')
+
+        takeown /f $ariaConfigDirectory /r
+    }
 }
 
-# powershell profile
-if (Ask-Question 'Symlink PowerShell profile?') {
-    # powershell v4
-    New-Item -Force -Path "$PROFILE" -ItemType SymbolicLink -Value "$base\Microsoft.PowerShell_profile.ps1"
-    # powershell v7
-    New-Item -Force -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" -ItemType SymbolicLink -Value "$base\Microsoft.PowerShell_profile.ps1"
-    takeown /f "$HOME\Documents\WindowsPowershell" /r
+function Set-Autohotkey {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Symlinking AutoHotKey script.')) {
+        New-Item -Force -Path (Join-Path -Path $env:APPDATA -ChildPath Microsoft -AdditionalChildPath 'Windows', 'Start Menu', 'Programs', 'Startup', 'keybinds-shortcuts.ahk') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath 'usr' -AdditionalChildPath 'local', 'bin', 'keybinds-shortcuts.ahk')
+
+        takeown /f (Join-Path -Path $env:APPDATA -ChildPath Microsoft -AdditionalChildPath 'Windows', 'Start Menu', 'Programs', 'Startup', 'keybinds-shortcuts.ahk')
+    }
 }
+
+function Set-PowerShell {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Symlinking PowerShell profile.')) {
+        # powershell v4
+        New-Item -Force -Path (Join-Path -Path $env:USERPROFILE -ChildPath 'Documents' -AdditionalChildPath 'WindowsPowerShell', 'Microsoft.PowerShell_profile.ps1') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath 'Microsoft.PowerShell_profile.ps1')
+
+        # powershell v7
+        New-Item -Force -Path $PROFILE -ItemType SymbolicLink -Value (Join-Path -Path $dotfilesRoot -ChildPath 'Microsoft.PowerShell_profile.ps1')
+
+        takeown /f (Join-Path -Path $env:USERPROFILE -ChildPath 'Documents' -AdditionalChildPath 'WindowsPowershell') /r
+    }
+}
+
+Get-Version
+# Set-Emacs
+Set-MPV
+Set-Streamlink
+Set-Git
+Set-Aria2
+Set-Autohotkey
+Set-PowerShell
