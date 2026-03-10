@@ -21,7 +21,7 @@ function Get-Version {
     }
 }
 
-$dotfilesRoot = Split-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -Parent
+$dotfilesRoot = Split-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -Parent
 
 function Set-Emacs {
     [CmdletBinding(SupportsShouldProcess)]
