@@ -418,15 +418,22 @@ function Set-GPO {
     }
 }
 
-function Set-UIPreference {
+function Set-Path {
     [CmdletBinding(SupportsShouldProcess)]
     param()
 
-    # install and symlink scripts to the path
-    Write-Output 'Adding install scripts to the PATH...'
-    if (-Not ($env:PATH -split ';' -contains $PSScriptRoot)) {
-        [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$PSScriptRoot", [EnvironmentVariableTarget]::User)
+    if ($PSCmdlet.ShouldContinue('Continue?', "Adding $PSScriptRoot to the PATH.")) {
+        if (-Not ($env:PATH -split ';' -contains $PSScriptRoot)) {
+            [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$PSScriptRoot", [EnvironmentVariableTarget]::User)
+        } else {
+            Write-Output 'Already in PATH.'
+        }
     }
+}
+
+function Set-UIPreference {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
 
     $explorer = Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Explorer'
     $explorerAdvanced = Join-Path -Path 'HKCU:' -ChildPath 'Software' -AdditionalChildPath 'Microsoft', 'Windows', 'CurrentVersion', 'Explorer', 'Advanced'
@@ -870,6 +877,7 @@ function Set-Git {
 function Show-Menu {
     Write-Output ''
     Write-Output 'Usage:'
+    Write-Output '  path            - add the root folder of this script to the PATH variable'
     Write-Output '  gpo             - apply machine and user group policies'
     Write-Output '  uisetting       - explorer, taskbar, keyboard and other preferences'
     Write-Output '  bitlocker       - change Group Policy settings for BitLocker and encrypts C:'
@@ -891,6 +899,7 @@ function Get-Choice {
     if (-Not $commandChoice) { Show-Menu; exit 1 }
 
     if ($commandChoice -eq 'gpo')                 { Set-GPO }
+    elseif ($commandChoice -eq 'path')            { Set-Path }
     elseif ($commandChoice -eq 'uisetting')       { Set-UIPreference }
     elseif ($commandChoice -eq 'bitlocker')       { Set-BitLocker }
     elseif ($commandChoice -eq 'firewall')        { Set-FireWall }
