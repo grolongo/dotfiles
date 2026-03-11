@@ -189,7 +189,7 @@ confirm "Install symlinks for ${USER}?" && {
     confirm "link binary files?" && {
         symlink_root "usr/local/bin/extract"
         symlink_root "usr/local/bin/url"
-        sudo ln -snfv "${base}/usr/local/bin/symlinks-unix" "/usr/local/bin/symlinks"
+        sudo ln -snfv "${base}/usr/local/bin/symlink-unix" "/usr/local/bin/symlink"
         if [ "$(uname)" = Darwin ]; then
             symlink_root "usr/local/bin/install-darwin"
             sudo ln -snfv "${base}/usr/local/bin/backup-darwin"      "/usr/local/bin/backup"
