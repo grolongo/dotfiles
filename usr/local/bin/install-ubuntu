@@ -826,7 +826,6 @@ usage() {
 main() {
     local cmd="${1-}"
 
-    # return error if nothing is specified
     if [ -z "$cmd" ]; then
         usage
         exit 1
