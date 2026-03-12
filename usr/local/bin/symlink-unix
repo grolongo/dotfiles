@@ -14,18 +14,24 @@ DIR=$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)
 base="${DIR%/*/*/*}"
 
 confirm() {
+    local prompt="$1"
+    local default="$2"
+    local response
+
+    case "$default" in
+        Y) prompt="$prompt [Y/n]";;
+        N) prompt="$prompt [y/N]";;
+        *) prompt="$prompt [y/n]";;
+    esac
+
     while true; do
-        read -r -p "$1 [y/n] " choice
-        case "$choice" in
-            [yY]es|[yY])
-                return 0
-                ;;
-            [nN]o|[nN])
-                return 1
-                ;;
-            *)
-                printf "Please enter yes or no.\n"
-                ;;
+        read -r -p "$prompt: " response
+        response=${response:-$default}
+
+        case "$response" in
+            [Yy]|[Yy][Ee][Ss]) return 0;;
+            [Nn]|[Nn][Oo]) return 1;;
+            *) printf "Please answer yes or no.\n";;
         esac
     done
 }
@@ -52,86 +58,116 @@ symlink_root() {
     fi
 }
 
-echo
-confirm "Install symlinks for ${USER}?" && {
+user_check() {
+    if confirm "Install symlinks for ${USER}?" "Y"; then
+        return 0
+    else
+        exit
+    fi
+}
 
-    confirm "link zsh files?" && {
+symlink_zsh() {
+    if confirm "link Zsh files?" "Y"; then
         mkdir -vp "${HOME}/.cache/zsh"
         symlink ".zshrc"
         symlink ".zshenv"
         symlink ".aliases"
         symlink ".exports"
         #symlink ".zlogin" # for i3
-    }
+    fi
+}
 
-    confirm "link bash files?" && {
+symlink_bash() {
+    if confirm "link Bash files?" "Y"; then
         mkdir -vp "${HOME}/.cache/bash"
         symlink ".bashrc"
         symlink ".inputrc"
         symlink ".aliases"
         symlink ".exports"
-    }
+    fi
+}
 
-    # confirm "link emacs config?" && {
-    #     mkdir -vp "${HOME}"/.config/emacs
-    #     symlink ".config/emacs/init.el"
-    #     symlink ".config/emacs/early-init.el"
-    # }
+symlink_emacs() {
+    if  confirm "link Emacs config?" "Y"; then
+        mkdir -vp "${HOME}"/.config/emacs
+        symlink ".config/emacs/init.el"
+        symlink ".config/emacs/early-init.el"
+    fi
+}
 
-    confirm "link chatty files?" && {
+symlink_chatty() {
+    if confirm "link Chatty files?" "Y"; then
         mkdir -vp "${HOME}/.chatty"
         symlink ".chatty/settings"
-    }
+    fi
+}
 
-    confirm "link mpv files?" && {
+symlink_mpv() {
+    if confirm "link mpv files?" "Y"; then
         mkdir -vp "${HOME}/.config/mpv"
         mkdir -vp "${HOME}/.config/mpv/scripts"
         symlink ".config/mpv/input.conf"
         symlink ".config/mpv/mpv.conf"
         symlink ".config/mpv/scripts/osctoggle.lua"
         symlink ".config/mpv/script-opts"
-    }
+    fi
+}
 
-    confirm "link tmux config file?" && {
+symlink_tmux() {
+    if confirm "link tmux config file?" "Y"; then
         mkdir -vp "${HOME}/.config/tmux"
         symlink ".config/tmux/tmux.conf"
-    }
+    fi
+}
 
-    confirm "link rtorrent config file?" && {
+symlink_rtorrent() {
+    if confirm "link rtorrent config file?" "Y"; then
         mkdir -vp "${HOME}/Downloads"
         mkdir -vp "${HOME}/.cache/rtorrent"
         symlink ".config/rtorrent/rtorrent.rc"
-    }
+    fi
+}
 
-    confirm "link aria2 config file?" && {
+symlink_aria() {
+    if confirm "link aria2 config file?" "Y"; then
         mkdir -vp "${HOME}/.config/aria2"
         symlink ".config/aria2/aria2.conf"
-    }
+    fi
+}
 
-    confirm "link vim file?" && {
+symlink_vim() {
+    if confirm "link vim file?" "Y"; then
         mkdir -vp "${HOME}/.vim"
         symlink ".vimrc"
-    }
+    fi
+}
 
-    confirm "link mg file?" && {
+symlink_mg() {
+    if confirm "link mg file?" "Y"; then
         symlink ".mg"
-    }
+    fi
+}
 
-    confirm "link gitconfig file?" && {
+symlink_git() {
+    if confirm "link gitconfig file?" "Y"; then
         mkdir -vp "${HOME}/.config/git"
         symlink ".config/git/config"
-    }
+    fi
+}
 
-    confirm "link streamlink config file?" && {
+symlink_streamlink() {
+    if confirm "link Streamlink config file?" "Y"; then
         if [ "$(uname)" = Darwin ]; then
             ln -snfv "${base}/.config/streamlink/config" "${HOME}/Library/Application Support/streamlink/config"
         else
             mkdir -vp "${HOME}/.config/streamlink"
             symlink ".config/streamlink/config"
         fi
-    }
+    fi
+}
 
-    confirm "link i3 files?" && {
+symlink_i3() {
+    if confirm "link i3wm files?" "Y"; then
         mkdir -vp "${HOME}/.config/i3"
         symlink ".config/i3/config"
         mkdir -vp "${HOME}/.config/i3status"
@@ -145,9 +181,11 @@ confirm "Install symlinks for ${USER}?" && {
         symlink_root "etc/X11/xorg.conf.d/30-touchpad.conf"
         symlink_root "etc/X11/xorg.conf.d/30-trackpoint.conf"
         symlink ".config/mimeapps.list"
-    }
+    fi
+}
 
-    confirm "link sway files?" && {
+symlink_sway() {
+    if confirm "link SwayWM files?" "Y"; then
         mkdir -vp "${HOME}/.config/sway"
         symlink ".config/sway/config"
         mkdir -vp "${HOME}/.config/swaylock"
@@ -168,25 +206,33 @@ confirm "Install symlinks for ${USER}?" && {
         symlink ".config/waybar/config.jsonc"
         symlink ".config/waybar/style.css"
         symlink ".config/mimeapps.list"
-    }
+    fi
+}
 
-    confirm "link Xresources config file?" && {
+symlink_x11() {
+    if confirm "link Xresources config file?" "Y"; then
         symlink ".Xresources"
-    }
+    fi
+}
 
-    confirm "link TLP config file?" && {
+symlink_tlp() {
+    if confirm "link TLP config file?" "Y"; then
         sudo mkdir -vp /etc/tlp.d
         symlink_root "etc/tlp.d/01-t480s-i5-8250u.conf"
-    }
+    fi
+}
 
-    confirm "link systemd unit files?" && {
+symlink_systemd() {
+    if confirm "link systemd unit files?" "Y"; then
         mkdir -vp "${HOME}/.config/systemd/user"
         symlink ".config/systemd/user/battery.timer"
         symlink ".config/systemd/user/battery.service"
         systemctl --user enable battery.timer
-    }
+    fi
+}
 
-    confirm "link binary files?" && {
+symlink_binary() {
+    if confirm "link binary files?" "Y"; then
         symlink_root "usr/local/bin/extract"
         symlink_root "usr/local/bin/url"
         sudo ln -snfv "${base}/usr/local/bin/symlink-unix" "/usr/local/bin/symlink"
@@ -207,6 +253,25 @@ confirm "Install symlinks for ${USER}?" && {
             symlink_root "usr/local/sbin/password-store-cryptsetup"
             symlink_root "usr/local/sbin/wifi-scan"
         fi
-    }
-
+    fi
 }
+
+user_check
+symlink_zsh
+symlink_bash
+# symlink_emacs
+symlink_chatty
+symlink_mpv
+symlink_tmux
+symlink_rtorrent
+symlink_aria
+symlink_vim
+symlink_mg
+symlink_git
+symlink_streamlink
+symlink_i3
+symlink_sway
+symlink_x11
+symlink_tlp
+symlink_systemd
+symlink_binary
