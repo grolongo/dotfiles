@@ -4,7 +4,9 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-# Recurring functions & variables
+arch=$(dpkg --print-architecture)
+distrib=$(lsb_release -sc 2> /dev/null)
+tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
 
 msg_info() {
     echo
@@ -24,18 +26,24 @@ check_is_not_sudo() {
 }
 
 confirm() {
+    local prompt="$1"
+    local default="$2"
+    local response
+
+    case "$default" in
+        Y) prompt="$prompt [Y/n]";;
+        N) prompt="$prompt [y/N]";;
+        *) prompt="$prompt [y/n]";;
+    esac
+
     while true; do
-        read -r -p "$1 [y/n] " choice
-        case "$choice" in
-            [yY]es|[yY])
-                return 0
-                ;;
-            [nN]o|[nN])
-                return 1
-                ;;
-            *)
-                msg_error "Please enter yes or no."
-                ;;
+        read -r -p "$prompt: " response
+        response=${response:-$default}
+
+        case "$response" in
+            [Yy]|[Yy][Ee][Ss]) return 0;;
+            [Nn]|[Nn][Oo]) return 1;;
+            *) printf "Please answer yes or no.\n";;
         esac
     done
 }
@@ -46,13 +54,9 @@ apt_install() {
 }
 
 apt_clean() {
-    msg_info "Autoremoving..."
+    msg_info "Cleaning up..."
     apt autoremove
-
-    msg_info "Autocleaning..."
     apt autoclean
-
-    msg_info "Cleaning..."
     apt clean
 }
 
@@ -65,41 +69,34 @@ spin() {
     done
 }
 
-arch=$(dpkg --print-architecture)
-distrib=$(lsb_release -sc 2> /dev/null)
-tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
+os_check() {
+    # sourcing /etc/os-release file which contains $ID variable
+    if [ -f /etc/os-release ]; then
+        source /etc/os-release
+    else
+        msg_error "Not running Ubuntu, exiting."
+        exit 1
+    fi
 
-# Ubuntu OS check
-# sourcing /etc/os-release file which contains $ID variable
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-else
-    msg_error "Not running Ubuntu, exiting."
-    exit 1
-fi
-
-[ "$ID" = ubuntu ] || { msg_error "Not running Ubuntu, exiting."; exit 1; }
+    [ "$ID" = ubuntu ] || { msg_error "Not running Ubuntu, exiting."; exit 1; }
+}
 
 initial_setup() {
     check_is_sudo
 
-    confirm "Enable passwordless sudo for ${SUDO_USER}?" && {
-        msg_info "Adding passwordless sudo for ${SUDO_USER}"
+    if confirm "Enable passwordless sudo for ${SUDO_USER}?" "Y"; then
         printf '%s\n' "${SUDO_USER} ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${SUDO_USER}"
         echo
-    }
+    fi
 
-    confirm "Disable ROOT account for security?" && {
+    if confirm "Disable ROOT account for security?" "Y"; then
         passwd --delete root
         passwd --lock root
-    }
+    fi
 
-    confirm "Enable architecture variant for apt packages?" && {
-        msg_info "Updating dpkg..."
+    if confirm "Enable architecture variant for apt packages?" "Y"; then
         apt update
         apt install -y dpkg
-
-        msg_info "Checking available versions..."
         mapfile -t results < <(ld.so --help | grep 'supported' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
 
         if [ ${#results[@]} -eq 0 ]; then
@@ -135,7 +132,7 @@ initial_setup() {
 
         apt update
         apt upgrade
-    }
+    fi
 
     msg_info "Creating Downloads folder in home..."
     mkdir -vp "/home/${SUDO_USER}/Downloads"
@@ -177,7 +174,9 @@ apt_common() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install ${p}?" && apt install -y "${p}"
+        if confirm "Install ${p}?" "Y"; then
+            apt install -y "${p}"
+        fi
     done
 
     local packagesnore=(
@@ -185,18 +184,19 @@ apt_common() {
     )
 
     for p in "${packagesnore[@]}"; do
-        confirm "Install ${p}?" && apt install -y "${p}" --no-install-recommends
+        if confirm "Install ${p}?" "Y"; then
+            apt install -y "${p}" --no-install-recommends
+        fi
     done
 
-    confirm "Install mg (editor)?" && {
+    if confirm "Install mg (editor)?" "Y"; then
         apt install -y mg
         update-alternatives --set editor /usr/bin/mg
-    }
+    fi
 
-    confirm "Install qbittorrent?" && {
+    if confirm "Install qbittorrent?" "Y"; then
         apt install -y qbittorrent
 
-        msg_info "Downloading search plugins..."
         sudo -u "${SUDO_USER}" bash -c '
         local plugin_folder
         plugin_folder="${HOME}/.local/share/qBittorrent/nova3/engines"
@@ -245,12 +245,11 @@ apt_common() {
             wget -O "${plugin_folder}/${filename}" "${url}"
         done
         '
-    }
+    fi
 
-    confirm "Install mpv?" && {
+    if confirm "Install mpv?" "Y"; then
         apt install -y mpv mpv-mpris
 
-        msg_info "Downloading plugins..."
         sudo -u "${SUDO_USER}" bash -c '
         local mpv_config_path
         mpv_config_path="${HOME}/.config/mpv"
@@ -271,7 +270,7 @@ apt_common() {
         wget -O "${mpv_config_path}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
         wget -O "${mpv_config_path}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
         '
-    }
+    fi
 
     apt_clean
 }
@@ -279,7 +278,7 @@ apt_common() {
 apt_extra() {
     check_is_sudo
 
-    confirm "Install veracrypt?" && {
+    if confirm "Install veracrypt?" "Y"; then
         command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
         local vc_latest
@@ -295,22 +294,17 @@ apt_extra() {
         release="VeraCrypt_${vc_latest}/veracrypt-${vc_latest}-${vc_uname}-${arch}.deb"
 
         (
-            msg_info "Creating temporary folder..."
             cd "${tmpdir}" || exit 1
-
-            msg_info "Downloading and installing VeraCrypt..."
             wget "${repo}${release}"
             apt install ./veracrypt-"${vc_latest}"-"${vc_uname}"-"${arch}".deb
         )
-    }
+    fi
 
-    confirm "Install mullvad vpn?" && {
-        msg_info "Downloading Mullvad signing key..."
+    if confirm "Install mullvad vpn?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
         wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc > /etc/apt/keyrings/mullvad-keyring.asc
         chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
 
-        msg_info "Adding Mullvad repository..."
         cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
 		Types: deb
 		URIs: https://repository.mullvad.net/deb/stable
@@ -320,20 +314,17 @@ apt_extra() {
 		Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
 		EOF
 
-        msg_info "Updating package database and installing Mullvad..."
         apt update
         apt install -y mullvad-vpn
 
         ln -s "/opt/Mullvad VPN/mullvad-gui" "/usr/local/bin/mullvad-gui"
-    }
+    fi
 
-    confirm "Install signal?" && {
-        msg_info  "Downloading Signal signing key..."
+    if confirm "Install signal?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
         wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /etc/apt/keyrings/signal-desktop-keyring.gpg
         chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
-        msg_info "Adding Signal repository..."
         cat <<-EOF > /etc/apt/sources.list.d/signal-desktop.sources
 		Types: deb
 		URIs: https://updates.signal.org/desktop/apt
@@ -343,18 +334,15 @@ apt_extra() {
 		Signed-By: /etc/apt/keyrings/signal-desktop-keyring.gpg
 		EOF
 
-        msg_info "Updating package database and installing Signal..."
         apt update
         apt install -y signal-desktop
-    }
+    fi
 
-    confirm "Install tor?" && {
-        msg_info "Adding the gpg key used to sign the packages..."
+    if "Install tor?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
         wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor > /etc/apt/keyrings/tor-archive-keyring.gpg
         chmod a+r /etc/apt/keyrings/tor-archive-keyring.gpg
 
-        msg_info "Adding Tor Project repository..."
         cat <<-EOF > /etc/apt/sources.list.d/tor.sources
 		Types: deb deb-src
 		URIs: https://deb.torproject.org/torproject.org
@@ -364,25 +352,22 @@ apt_extra() {
 		Signed-By: /etc/apt/keyrings/tor-archive-keyring.gpg
 		EOF
 
-        msg_info "Updating package database and installing Tor..."
         apt update
         apt install -y deb.torproject.org-keyring
         apt install -y tor torbrowser-launcher
-    }
+    fi
 
-    confirm "Install docker?" && {
+    if confirm "Install docker?" "Y"; then
         local version
         version="4.30.0"
 
         apt update
         apt install ca-certificates
 
-        msg_info "Add the gpg key used to sign the packages"
         install -m 0755 -d /etc/apt/keyrings
         wget -qO- https://download.docker.com/linux/ubuntu/gpg > /etc/apt/keyrings/docker.asc
         chmod a+r /etc/apt/keyrings/docker.asc
 
-        msg_info "Adding Docker repository..."
         cat <<-EOF > /etc/apt/sources.list.d/docker.sources
 		Types: deb
 		URIs: https://download.docker.com/linux/ubuntu
@@ -393,8 +378,6 @@ apt_extra() {
 		EOF
 
         apt update
-
-        msg_info "Choose if you want to install Docker for your server or desktop"
 
         PS3="Select: "
 
@@ -417,14 +400,14 @@ apt_extra() {
                     msg_error "Wrong input";;
             esac
         done
-    }
+    fi
 
-    confirm "Install TLP?" && {
+    if confirm "Install TLP?" "Y"; then
         add-apt-repository ppa:linrunner/tlp
         apt update
         apt install -y tlp --no-install-recommends
         apt install -y tlp-pd
-    }
+    fi
 
     apt_clean
 }
@@ -432,13 +415,34 @@ apt_extra() {
 snaps_common() {
     check_is_sudo
 
-    confirm "Install Chromium (includes ffmpeg)?" && { snap install chromium; snap install chromium-ffmpeg; }
-    confirm "Install Emacs (non-pgtk)?" && { snap install emacs --classic; }
-    confirm "Install Emacs (pgtk)?" && { snap install emacs --channel=pgtk/stable --classic; }
-    confirm "Install Mu4e?" && { snap install maildir-utils; }
-    confirm "Install Spotify?" && { snap install spotify; }
-    confirm "Install Steam?" && { snap install steam --beta; }
-    confirm "Install PowerShell?" && { snap install powershell --classic; }
+    if confirm "Install Chromium (includes ffmpeg)?" "Y"; then
+        snap install chromium
+        snap install chromium-ffmpeg
+    fi
+
+    if confirm "Install Emacs (non-pgtk)?" "N"; then
+        snap install emacs --classic
+    fi
+
+    if confirm "Install Emacs (pgtk)?" "Y"; then
+        snap install emacs --channel=pgtk/stable --classic
+    fi
+
+    if confirm "Install Mu4e?" "Y"; then
+        snap install maildir-utils
+    fi
+
+    if confirm "Install Spotify?" "Y"; then
+        snap install spotify
+    fi
+
+    if confirm "Install Steam?" "Y"; then
+        snap install steam --beta
+    fi
+
+    if confirm "Install PowerShell?" "Y"; then
+        snap install powershell --classic
+    fi
 
     snap refresh
 }
@@ -468,25 +472,19 @@ build_emacs() {
             ;;
     esac
 
-    msg_info "Checking for source packages repository..."
     if ! grep -q "Types: deb deb-src" /etc/apt/sources.list.d/ubuntu.sources; then
         sed -i 's/Types: deb/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
         apt update
     fi
 
-    msg_info "Installing all dependencies..."
     apt build-dep -y emacs
 
     (
-        msg_info "Creating temporary folder..."
         cd "${tmpdir}" || exit 1
-
-        msg_info "Downloading Emacs from official website..."
         mkdir -v /home/"${SUDO_USER}"/git
         wget -O emacs.tar.gz "$source"
         tar -xzvf emacs.tar.gz --directory /home/"${SUDO_USER}"/git
         mv /home/"${SUDO_USER}"/git/emacs* /home/"${SUDO_USER}"/git/emacs
-
         cd /home/"${SUDO_USER}"/git/emacs
         export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
 
@@ -502,7 +500,6 @@ build_emacs() {
             "$pgtk"
         make -j"$(nproc)"
 
-        msg_info "Changing ownership..."
         chown -R "${SUDO_USER}":"${SUDO_USER}" /home/"${SUDO_USER}"/git
         make install
     )
@@ -517,10 +514,7 @@ install_driveclient() {
     source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.2-17889/Ubuntu/Installer/synology-drive-client-17889.x86_64.deb"
 
     (
-        msg_info "Creating temporary folder..."
         cd "${tmpdir}" || exit 1
-
-        msg_info "Downloading and installing Synology Drive Client"
         wget -O sdc.deb "$source"
         apt install ./sdc.deb
     )
@@ -530,8 +524,6 @@ install_chatty() {
     check_is_sudo
 
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
-
-    msg_info "Installing java runtime environment..."
     apt install default-jre
 
     local chatty_latest
@@ -544,13 +536,8 @@ install_chatty() {
     release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
 
     (
-        msg_info "Creating temporary folder..."
         cd "${tmpdir}" || exit 1
-
-        msg_info "Creating Chatty dir in home folder..."
         mkdir -vp /opt/Chatty
-
-        msg_info "Downloading and extracting Chatty..."
         wget "${repo}${release}"
         unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
     )
@@ -558,8 +545,6 @@ install_chatty() {
 
 set_gsettings() {
     check_is_not_sudo
-
-    msg_info "Applying custom settings..."
 
     # Files (Nautilus)
     dconf write /org/gtk/settings/file-chooser/show-hidden true
@@ -598,8 +583,6 @@ set_gsettings() {
     # Dock
     gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
 
-    msg_info "Installing extra extensions..."
-
     sudo apt install gnome-shell-extension-manager
 
     # find the uuid by visiting the gnome extension page and lookup uuid in the source
@@ -610,7 +593,6 @@ set_gsettings() {
         busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
     done
 
-    msg_info "Applying settings..."
     spin & spinpid=$!
     sleep 5
     kill "${spinpid}"
@@ -661,29 +643,28 @@ set_i3wm() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install ${p}?" && apt install -y "${p}"
+        if confirm "Install ${p}?" "Y"; then
+            apt install -y "${p}"
+        fi
     done
 
     apt_clean
 
-    confirm "Install Firefox (SNAP)?" && {
+    if confirm "Install Firefox (SNAP)?" "Y"; then
         snap install firefox
         mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
         ln -s "${HOME}"/.config/fontconfig/fonts.conf ~/snap/firefox/current/.config/fontconfig/fonts.conf
-    }
+    fi
 
     snap refresh
 
-    confirm "Install autotiling script for i3wm?" && {
+    if confirm "Install autotiling script for i3wm?" "Y"; then
         apt install python3-i3ipc
         wget -O /usr/local/bin/autotiling https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
         chmod +x /usr/local/bin/autotiling
-    }
+    fi
 
-    msg_info "Adding ourselves to video group in order to use brightnessctl without sudo..."
     usermod -aG video "${SUDO_USER}"
-
-    msg_info "Setting up timezone..."
     timedatectl set-timezone Europe/Paris
 }
 
@@ -728,28 +709,28 @@ set_sway() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install ${p}?" && apt install -y "${p}"
+        if confirm "Install ${p}?" "Y"; then
+            apt install -y "${p}"
+        fi
     done
 
     apt_clean
 
-    confirm "Install Firefox (SNAP)?" && { snap install firefox; }
+    if confirm "Install Firefox (SNAP)?" "Y"; then
+        snap install firefox
+    fi
 
     snap refresh
 
-    confirm "Install autotiling script for sway?" && {
+    if confirm "Install autotiling script for sway?" "Y"; then
         apt install python3-i3ipc
         wget -O /usr/local/bin/autotiling https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
         chmod +x /usr/local/bin/autotiling
-    }
+    fi
 
-    msg_info "Adding ourselves to video group in order to use brightnessctl without sudo..."
     usermod -aG video "${SUDO_USER}"
-
-    msg_info "Setting up timezone..."
     timedatectl set-timezone Europe/Paris
 
-    msg_info "Setting up Nerd fonts..."
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
     local nerdfonts_latest
@@ -762,28 +743,19 @@ set_sway() {
     release="v${nerdfonts_latest}/NerdFontsSymbolsOnly.zip"
 
     (
-        msg_info "Creating temporary folder..."
         cd "${tmpdir}" || exit 1
-
-        msg_info "Downloading and extracting nerd fonts..."
         wget "${repo}${release}"
         unzip NerdFontsSymbolsOnly.zip -d /usr/share/fonts/opentype/nerdfonts
     )
 
-    msg_info "Setting up Font Awesome..."
-
     (
-        msg_info "Creating temporary folder..."
         cd "${tmpdir}" || exit 1
-
-        msg_info "Downloading and extracting Font Awesome..."
         wget https://use.fontawesome.com/releases/v7.1.0/fontawesome-free-7.1.0-desktop.zip
         unzip fontawesome-free-7.1.0-desktop.zip
         mkdir -vp /usr/share/fonts/opentype/font-awesome-7
         mv ./fontawesome-free-7.1.0-desktop/otfs/*.otf /usr/share/fonts/opentype/font-awesome-7
     )
 
-    msg_info "Updating font cache..."
     fc-cache -f -v
 }
 
@@ -804,8 +776,6 @@ set_git() {
     )
 }
 
-# Menu
-
 usage() {
     echo
     printf "Usage:\n"
@@ -824,38 +794,37 @@ usage() {
 }
 
 main() {
-    local cmd="${1-}"
-
-    if [ -z "$cmd" ]; then
+    if [ -z "${1}" ]; then
         usage
         exit 1
     fi
 
-    if [ "$cmd" = "isetup" ]; then
+    if [ "${1}" = "isetup" ]; then
         initial_setup
-    elif [ "$cmd" = "aptcommon" ]; then
+    elif [ "${1}" = "aptcommon" ]; then
         apt_common
-    elif [ "$cmd" = "aptextra" ]; then
+    elif [ "${1}" = "aptextra" ]; then
         apt_extra
-    elif [ "$cmd" = "snaps" ]; then
+    elif [ "${1}" = "snaps" ]; then
         snaps_common
-    elif [ "$cmd" = "emacs" ]; then
+    elif [ "${1}" = "emacs" ]; then
         build_emacs
-    elif [ "$cmd" = "driveclient" ]; then
+    elif [ "${1}" = "driveclient" ]; then
         install_driveclient
-    elif [ "$cmd" = "chatty" ]; then
+    elif [ "${1}" = "chatty" ]; then
         install_chatty
-    elif [ "$cmd" = "gsettings" ]; then
+    elif [ "${1}" = "gsettings" ]; then
         set_gsettings
-    elif [ "$cmd" = "i3" ]; then
+    elif [ "${1}" = "i3" ]; then
         set_i3wm
-    elif [ "$cmd" = "sway" ]; then
+    elif [ "${1}" = "sway" ]; then
         set_sway
-    elif [ "$cmd" = "git" ]; then
+    elif [ "${1}" = "git" ]; then
         set_git
     else
         usage
     fi
 }
 
-main "$@"
+os_check
+main "${1-}"
