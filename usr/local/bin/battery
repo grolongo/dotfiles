@@ -5,11 +5,9 @@ set -o pipefail
 IFS=$'\n\t'
 
 bat_path="/sys/class/power_supply/BAT0"
-
 status=$(cat "${bat_path}"/status)
 energy_full=$(cat "${bat_path}"/energy_full_design)
 energy_now=$(cat "${bat_path}"/energy_now)
-
 bat_percent=$(printf "%.0f" "$(echo "scale=2; $energy_now / $energy_full * 100" | bc)")
 
 if [[ "${status}" == "Discharging" && "${bat_percent}" -lt 10 ]]; then
