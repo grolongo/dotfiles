@@ -13,9 +13,7 @@ msg_error() {
 }
 
 initial_check() {
-    # check root privileges
     [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
-    # check if running macOS
     [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
 }
 
@@ -121,12 +119,13 @@ final_warning() {
     msg_info "  Name: ${label}"
 
     while true; do
-        read -r -p "Are you sure you want to continue? [y/n] " choice
-        case "$choice" in
-            [yY]es|[yY])
+        read -r -p "Are you sure you want to continue? [Y/n] " response
+        response=${response:-Y}
+        case "$response" in
+            [Yy]|[Yy][Ee][Ss])
                 return 0
                 ;;
-            [nN]o|[nN])
+            [Nn]|[Nn][Oo])
                 return 1
                 ;;
             *)

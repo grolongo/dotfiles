@@ -12,6 +12,29 @@ msg_error() {
     printf '\033[91m%s\033[0m\n' "$1" >&2
 }
 
+confirm() {
+    local prompt="$1"
+    local default="$2"
+    local response
+
+    case "$default" in
+        Y) prompt="$prompt [Y/n]";;
+        N) prompt="$prompt [y/N]";;
+        *) prompt="$prompt [y/n]";;
+    esac
+
+    while true; do
+        read -r -p "$prompt: " response
+        response=${response:-$default}
+
+        case "$response" in
+            [Yy]|[Yy][Ee][Ss]) return 0;;
+            [Nn]|[Nn][Oo]) return 1;;
+            *) printf "Please answer yes or no.\n";;
+        esac
+    done
+}
+
 initial_check() {
     # check root privileges
     [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
@@ -81,22 +104,11 @@ filetype_selection() {
 }
 
 encryption_selection() {
-    while true; do
-        read -r -p "Enable encryption? [y/n] " choice
-        case "$choice" in
-            [yY]es|[yY])
-                encryption=enabled
-                break
-                ;;
-            [nN]o|[nN])
-                encryption=disabled
-                break
-                ;;
-            *)
-                echo "Invalid option $REPLY"
-                ;;
-        esac
-    done
+    if confirm "Enable encryption?" "N"; then
+        encryption=enabled
+    else
+        encryption=disabled
+    fi
 }
 
 name_selection() {
@@ -134,21 +146,10 @@ final_warning() {
     msg_info "  Encryption: ${encryption}"
     msg_info "  Name: ${label}"
 
-    while true; do
-        read -r -p "Are you sure you want to continue? [y/n] " choice
-        case "$choice" in
-            [yY]es|[yY])
-                return 0
-                ;;
-            [nN]o|[nN])
-                msg_info "Operation cancelled."
-                return 1
-                ;;
-            *)
-                msg_error "Please enter yes or no."
-                ;;
-        esac
-    done
+    if ! confirm "Are you sure you want to continue?" "Y"; then
+        msg_info "Operation cancelled."
+        return 1
+    fi
 }
 
 sanitize() {
