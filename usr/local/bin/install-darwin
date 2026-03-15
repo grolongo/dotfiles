@@ -4,7 +4,7 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-### Recurring functions & variables
+tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
 
 msg_info() {
     echo
@@ -24,20 +24,26 @@ check_is_not_sudo() {
 }
 
 confirm() {
+    local prompt="$1"
+    local default="$2"
+    local response
+
+    case "$default" in
+        Y) prompt="$prompt [Y/n]";;
+        N) prompt="$prompt [y/N]";;
+        *) prompt="$prompt [y/n]";;
+    esac
+
     while true; do
-        read -r -p "$1 [y/n] " choice
-        case "$choice" in
-            [yY]es|[yY])
-                return 0
-                ;;
-            [nN]o|[nN])
-                return 1
-                ;;
-            *)
-                msg_error "Please enter yes or no."
-                ;;
+        read -r -p "$prompt: " response
+        response=${response:-$default}
+
+        case "$response" in
+            [Yy]|[Yy][Ee][Ss]) return 0;;
+            [Nn]|[Nn][Oo]) return 1;;
+            *) printf "Please answer yes or no.\n";;
         esac
-  done
+    done
 }
 
 brew_install() {
@@ -59,10 +65,9 @@ spin() {
     done
 }
 
-tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
-
-# check if running macOS
-[ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+os_check() {
+    [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+}
 
 setup_prefsettings() {
     check_is_not_sudo
@@ -104,26 +109,21 @@ setup_prefsettings() {
     msg_info "Setting Terminal prefs..."
     defaults write com.apple.Terminal SecureKeyboardEntry -bool true
 
-    confirm "Some options require reboot to take effect. Reboot now?" && sudo shutdown -r now
+    if confirm "Some options require reboot to take effect. Reboot now?" "N"; then
+        sudo shutdown -r now
+    fi
 }
 
 setup_firewall() {
     check_is_sudo
-
-    msg_info "Blocking all incoming connections..."
+    msg_info "Blocking all incoming connections and enableing stealth mode..."
     defaults write /Library/Preferences/com.apple.alf globalstate -int 2
-
-    msg_info "Enabling stealth mode..."
     /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 }
 
 setup_dns() {
     check_is_not_sudo
-
-    msg_info "Setting DNS to Cloudflare..."
     networksetup -setdnsservers Wi-Fi 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
-
-    msg_info "Flushing DNS cache..."
     sudo dscacheutil -flushcache
     sudo killall -HUP mDNSResponder
 }
@@ -148,17 +148,13 @@ install_homebrew() {
         msg_error "Homebrew is already installed, exiting."
     fi
 
-    msg_info "Turning analytics off..."
     brew analytics off
 }
 
 install_formulae() {
     check_is_not_sudo
 
-    msg_info "Initial update..."
     brew update
-
-    msg_info "Initial ugrade..."
     brew upgrade
 
     local packages=(
@@ -185,10 +181,12 @@ install_formulae() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install ${p}?" && brew install "${p}"
+        if confirm "Install ${p}?" "Y"; then
+            brew install "${p}"
+        fi
     done
 
-    confirm "Install emacs?" && {
+    if confirm "Install emacs?" "Y"; then
         while true; do
             echo
             printf "Select which Emacs version you want: \n"
@@ -224,7 +222,7 @@ install_formulae() {
                     ;;
             esac
         done
-    }
+    fi
 
     brew_clean
 }
@@ -253,10 +251,12 @@ install_casks() {
 
     msg_info "Installing cask packages..."
     for p in "${packages[@]}"; do
-        confirm "Install ${p}?" && brew install --cask "${p}"
+        if confirm "Install ${p}?" "Y"; then
+            brew install --cask "${p}"
+        fi
     done
 
-    confirm "Install qbittorrent?" && {
+    if confirm "Install qbittorrent?" "Y"; then
         brew install --cask qbittorrent
 
         msg_info "Waiting a few secs for folders to be created..."
@@ -310,12 +310,10 @@ install_casks() {
             filename=$(basename "$url")
             curl -L#o "${plugin_folder}/${filename}" "${url}"
         done
-    }
+    fi
 
-    confirm "Install mpv?" && {
+    if confirm "Install mpv?" "Y"; then
         local mpv_config_path="${HOME}/.config/mpv"
-
-        msg_info "Installing mpv..."
         brew install --cask mpv
 
         msg_info "Installing plugins..."
@@ -330,10 +328,9 @@ install_casks() {
         curl -L#o "${mpv_config_path}/scripts/visualizer.lua" https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua
         curl -L#o "${mpv_config_path}/scripts/crop.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua
         curl -L#o "${mpv_config_path}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
-    }
+    fi
 
     echo
-    msg_info "Cleaning up install files..."
     brew cleanup
 }
 
@@ -369,15 +366,14 @@ install_macports() {
     tmpdir_mp=$(mktemp -d)
 
     (
-        msg_info "Creating temporary folder..."
         cd "${tmpdir_mp}" || exit 1
-
-        msg_info "Downloading MacPorts..."
         curl -#OL "${repo}${release}"
         open ./"MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
     )
 
-    confirm "Confirm to delete install file. Please wait for install to finish before deleting." && rm -rf "${tmpdir_mp}"
+    if confirm "Confirm to delete install file. Please wait for install to finish before deleting." "Y"; then
+        rm -rf "${tmpdir_mp}"
+    fi
 }
 
 install_ports() {
@@ -409,10 +405,12 @@ install_ports() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install ${p}?" && sudo port install "${p}"
+        if confirm "Install ${p}?" "Y"; then
+            sudo port install "${p}"
+        fi
     done
 
-    confirm "Install emacs?" && {
+    if confirm "Install Emacs?" "Y"; then
         while true; do
             echo
             printf "Select which Emacs version you want: \n"
@@ -435,7 +433,7 @@ install_ports() {
                     ;;
             esac
         done
-    }
+    fi
 }
 
 set_git() {
@@ -472,37 +470,35 @@ usage() {
 }
 
 main() {
-    local cmd="${1-}"
-
-    # return error if nothing is specified
-    if [ -z "$cmd" ]; then
+    if [ -z "${1}" ]; then
         usage
         exit 1
     fi
 
-    if [ "$cmd" = "prefsettings" ]; then
+    if [ "${1}" = "prefsettings" ]; then
         setup_prefsettings
-    elif [ "$cmd" = "firewall" ]; then
+    elif [ "${1}" = "firewall" ]; then
         setup_firewall
-    elif [ "$cmd" = "dns" ]; then
+    elif [ "${1}" = "dns" ]; then
         setup_dns
-    elif [ "$cmd" = "hostname" ]; then
+    elif [ "${1}" = "hostname" ]; then
         change_hostname
-    elif [ "$cmd" = "homebrew" ]; then
+    elif [ "${1}" = "homebrew" ]; then
         install_homebrew
-    elif [ "$cmd" = "formulae" ]; then
+    elif [ "${1}" = "formulae" ]; then
         install_formulae
-    elif [ "$cmd" = "casks" ]; then
+    elif [ "${1}" = "casks" ]; then
         install_casks
-    elif [ "$cmd" = "macports" ]; then
+    elif [ "${1}" = "macports" ]; then
         install_macports
-    elif [ "$cmd" = "ports" ]; then
+    elif [ "${1}" = "ports" ]; then
         install_ports
-    elif [ "$cmd" = "git" ]; then
+    elif [ "${1}" = "git" ]; then
         set_git
     else
         usage
     fi
 }
 
-main "$@"
+os_check
+main "${1-}"
