@@ -15,13 +15,17 @@ show_brightness_notif() {
     notify-send -u low -i /usr/share/icons/Adwaita/symbolic/status/display-brightness-symbolic.svg -h string:x-dunst-stack-tag:brightness_notif -h int:value:"${brightness}" "Brightness: ${brightness}%"
 }
 
-case $1 in
-    up)
-        brightnessctl -q set +10%
-        show_brightness_notif
-        ;;
-    down)
-        brightnessctl -q set 10%-
-        show_brightness_notif
-        ;;
-esac
+main() {
+    case "${1}" in
+        up)
+            brightnessctl -q set +10%
+            show_brightness_notif
+            ;;
+        down)
+            brightnessctl -q set 10%-
+            show_brightness_notif
+            ;;
+    esac
+}
+
+main "${1}"
