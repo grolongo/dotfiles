@@ -30,7 +30,7 @@ confirm() {
         case "$response" in
             [Yy]|[Yy][Ee][Ss]) return 0;;
             [Nn]|[Nn][Oo]) return 1;;
-            *) printf "Please answer yes or no.\n";;
+            *) printf 'Please answer yes or no.\n';;
         esac
     done
 }
@@ -44,12 +44,14 @@ initial_check() {
 
 device_selection() {
     devices=$(fdisk -l | grep -E '/dev/sd[a-z][^0-9]|nvme[0-9]n[0-9][^a-z]')
+    printf '\n'
     msg_info "List of available devices:"
-    echo "${devices}"
+    printf '%s\n' "${devices}"
     read -r -p "Type in the device to modify (example: sda / sdb / nvme0n1 / etc.): " device
 }
 
 scheme_selection() {
+    printf '\n'
     PS3="Choose your partition scheme: "
     select opt in MBR GPT; do
         case $opt in
@@ -62,13 +64,14 @@ scheme_selection() {
                 break
                 ;;
             *)
-                echo "Invalid option $REPLY"
+                printf 'Invalid option %s\n' "${REPLY}"
                 ;;
         esac
     done
 }
 
 filetype_selection() {
+    printf '\n'
     PS3="Choose your file system type: "
     select opt in FAT32 exFAT NTFS ext4 Btrfs XFS; do
         case $opt in
@@ -97,13 +100,14 @@ filetype_selection() {
                 break
                 ;;
             *)
-                echo "Invalid option $REPLY"
+                printf 'Invalid option %s\n' "${REPLY}"
                 ;;
         esac
     done
 }
 
 encryption_selection() {
+    printf '\n'
     if confirm "Enable encryption?" "N"; then
         encryption=enabled
     else
@@ -118,33 +122,35 @@ name_selection() {
         label="${label%"${label##*[![:space:]]}"}"
         label="${label^^}"
 
-        if [ -z "$label" ]; then
-            echo "Name cannot be empty."
+        if [ -z "${label}" ]; then
+            printf 'Name cannot be empty.\n'
             continue
         fi
 
-        if ! [[ "$label" =~ ^[A-Za-z0-9-]+$ ]]; then
-            echo "Invalid characters. Use only letters, numbers, or -."
+        if ! [[ "${label}" =~ ^[A-Za-z0-9-]+$ ]]; then
+            printf 'Invalid characters. Use only letters, numbers, or -.\n'
             continue
         fi
 
         if  [ "${#label}" -le 11 ]; then
             break
         else
-            echo "Too long (${#label} chars). Try again."
+            printf 'Too long (%s chars). Try again.\n' "${#label}"
         fi
     done
 }
 
 final_warning() {
-    msg_info "  ============="
-    msg_info "  LAST REMINDER"
-    msg_info "  ============="
+    printf '\n'
+    msg_info "  ============= "
+    msg_info "  LAST REMINDER "
+    msg_info "  ============= "
     msg_info "  Selected drive: /dev/${device}"
     msg_info "  Partition scheme: ${scheme}"
     msg_info "  File system: ${filesystem}"
     msg_info "  Encryption: ${encryption}"
     msg_info "  Name: ${label}"
+    printf '\n'
 
     if ! confirm "Are you sure you want to continue?" "Y"; then
         msg_info "Operation cancelled."

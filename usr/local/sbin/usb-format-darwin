@@ -20,11 +20,12 @@ initial_check() {
 device_selection() {
     devices=$(diskutil list)
     msg_info "List of available devices:"
-    echo "${devices}"
+    printf '%s\n' "${devices}"
     read -r -p "Type in the TOP disk identifier to modify (example: disk1 / disk2 / etc.): " device
 }
 
 scheme_selection() {
+    printf '\n'
     PS3="Choose your partition scheme: "
     select opt in MBR GPT; do
         case $opt in
@@ -37,13 +38,14 @@ scheme_selection() {
                 break
                 ;;
             *)
-                echo "Invalid option $REPLY"
+                printf 'Invalid option %s\n' "${REPLY}"
                 ;;
         esac
     done
 }
 
 filetype_selection() {
+    printf '\n'
     PS3="Choose your file system type: "
     select opt in FAT32 exFAT APFS APFS-Encrypted JHFS+ HFS+; do
         case $opt in
@@ -73,7 +75,7 @@ filetype_selection() {
                 break
                 ;;
             *)
-                echo "Invalid option $REPLY"
+                printf 'Invalid option %s\n' "${REPLY}"
                 ;;
         esac
     done
@@ -84,31 +86,33 @@ filetype_selection() {
 }
 
 name_selection() {
+    printf '\n'
     while true; do
         read -r -p "Enter device new name (max 11 chars): " label
         label="${label#"${label%%[![:space:]]*}"}"
         label="${label%"${label##*[![:space:]]}"}"
         label="${label^^}"
 
-        if [ -z "$label" ]; then
-            echo "Name cannot be empty."
+        if [ -z "${label}" ]; then
+            printf 'Name cannot be empty.\n'
             continue
         fi
 
-        if ! [[ "$label" =~ ^[A-Za-z0-9-]+$ ]]; then
-            echo "Invalid characters. Use only letters, numbers, or -."
+        if ! [[ "${label}" =~ ^[A-Za-z0-9-]+$ ]]; then
+            printf 'Invalid characters. Use only letters, numbers, or -.\n'
             continue
         fi
 
         if  [ "${#label}" -le 11 ]; then
             break
         else
-            echo "Too long (${#label} chars). Try again."
+            printf 'Too long (%s chars). Try again.' "${#label}"
         fi
     done
 }
 
 final_warning() {
+    printf '\n'
     msg_info "  ============="
     msg_info "  LAST REMINDER"
     msg_info "  ============="
@@ -117,6 +121,7 @@ final_warning() {
     msg_info "  File system: ${filesystem}"
     msg_info "  Encryption: ${encryption}"
     msg_info "  Name: ${label}"
+    printf '\n'
 
     while true; do
         read -r -p "Are you sure you want to continue? [Y/n] " response

@@ -6,7 +6,7 @@ IFS=$'\n\t'
 
 root_check() {
     if [ $UID -ne 0 ]; then
-        printf "Please run this program as superuser.\n" >&2
+        printf 'Please run this program as superuser.\n' >&2
         exit 1
     fi
 }
@@ -22,21 +22,20 @@ spin() {
 
 main() {
     while true; do
-        echo
         printf "Choose which method to use:\n"
         printf "  [1] wpa_supplicant\n"
         printf "  [2] Aircrack-ng\n"
         read -r -p "Selected method => " choice
-        echo
+        printf '\n'
 
         case "$choice" in
             1)
                 wpa_cli scan
-                printf "Waiting 20 seconds before showing results...\n"
+                printf 'Waiting 20 seconds before showing results...\n'
                 spin & spinpid=$!
                 sleep 20
                 kill "${spinpid}"
-                echo
+                printf '\n'
                 wpa_cli scan_results
                 break
                 ;;
@@ -48,8 +47,7 @@ main() {
                 break
                 ;;
             *)
-                printf "Wront input, please choose either 1 or 2."
-                echo
+                printf 'Wront input, please choose either 1 or 2.\n\n'
                 ;;
         esac
     done
