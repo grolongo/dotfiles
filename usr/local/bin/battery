@@ -11,6 +11,10 @@ energy_now=$(<"${battery_path}/energy_now")
 result=$(printf 'scale=2; %s / %s * 100\n' "${energy_now}" "${energy_full}" | bc)
 battery_percentage=$(printf '%.0f' "${result}")
 
-if [[ ("${battery_status}" == "Not charging" || "${battery_status}" == "Discharging") && "${battery_percentage}" -lt 10 ]]; then
-    notify-send -u critical -i battery-caution -h string:x-dunst-stack-tag:battery_notif "LOW BATTERY" "${battery_percentage}% remaining"
+if [[ ("${battery_status}" == "Not charging" ||
+           "${battery_status}" == "Discharging") &&
+          "${battery_percentage}" -lt 10 ]]; then
+    notify-send -u critical -i battery-caution \
+                -h string:x-dunst-stack-tag:battery_notif \
+                "LOW BATTERY" "${battery_percentage}% remaining"
 fi

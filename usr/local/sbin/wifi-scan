@@ -7,7 +7,7 @@ IFS=$'\n\t'
 root_check() {
     if [ $UID -ne 0 ]; then
         printf 'Please run this program as superuser.\n' >&2
-        exit 1
+        return 1
     fi
 }
 
@@ -21,6 +21,8 @@ spin() {
 }
 
 main() {
+    root_check || exit 1
+
     while true; do
         printf "Choose which method to use:\n"
         printf "  [1] wpa_supplicant\n"
@@ -53,5 +55,4 @@ main() {
     done
 }
 
-root_check
 main

@@ -13,8 +13,8 @@ msg_error() {
 }
 
 initial_check() {
-    [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; exit 1; }
-    [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+    [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; return 1; }
+    [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; return 1; }
 }
 
 device_selection() {
@@ -169,7 +169,7 @@ formatting() {
 }
 
 main() {
-    initial_check
+    initial_check || exit 1
     device_selection
     scheme_selection
     filetype_selection

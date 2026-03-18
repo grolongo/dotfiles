@@ -12,7 +12,8 @@ esac
 
 # enable color support
 if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" ||
+            eval "$(dircolors -b)"
 fi
 
 ### History
@@ -50,53 +51,54 @@ fi
                                          grep -v "[?*]" | cut -d " " -f2 | \
                                          tr ' ' '\n')" scp sftp ssh
 
-### Prompt
-
-function git_branch_name()
-{
-    # Check if the current directory is in a Git repository.
-    if [ "$(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}")" == '0' ]; then
-        branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
-			git rev-parse --short HEAD 2> /dev/null || \
-			echo '(unknown)')";
-
-        [ -n "${s}" ] && s=" [${s}]";
-
-        echo -e " ${1}${branchName}${s}";
-    else
-	    return;
-    fi;
+git_branch() {
+    if git rev-parse --is-inside-work-tree &>/dev/null; then
+        local branchName
+        branchName="$(git branch --show-current 2>/dev/null ||
+                      git rev-parse --short HEAD 2>/dev/null)"
+        printf ' %s' "${branchName}"
+    fi
 }
 
-# Highlight the user name when logged in as root.
-if [[ "${USER}" == "root" ]]; then
-    userStyle="\[\e[1;31m\]"; # red
-else
-    userStyle="\[\e[1;32m\]"; # green
-fi;
+set_prompt() {
+    # last_exit must be one line
+    local last_exit=$?
+    local branch
+    branch=$(git_branch)
 
-# Highlight the hostname when connected via SSH.
-if [ -n "${SSH_TTY}" ] || \
-       [ -n "${SSH_CONNECTION}" ] || \
-       [ -n "${SSH_CLIENT}" ]; then
-    hostStyle="\[\e[1;33m\]";       # yellow
-else
-    hostStyle="\[\e[1;32m\]";       # green
-fi;
+    # highlight the user name when logged in as root
+    if [[ "${USER}" == "root" ]]; then
+        userStyle="\[\e[1;31m\]" # red
+    else
+        userStyle="\[\e[1;32m\]" # green
+    fi
 
-if [ "${TERM}" = "dumb" ]; then # for Tramp
-    PS1='$ ';
-else
-    PS1="${userStyle}\u";                   # username
-    PS1+="\[\e[1;37m\]@";                   # @
-    PS1+="${hostStyle}\h ";                 # hostname
-    PS1+="\[\e[1;34m\]\w";                  # working dir
-    PS1+="\[\e[1;36m\]\$(git_branch_name)"; # git repository details
-    PS1+="\[\e[1;37m\] \$";                 # $
-    PS1+="\[\e[0m\] ";                      # reset colors
-fi;
+    # highlight the hostname when connected via SSH
+    if [ -n "${SSH_TTY}" ] ||
+           [ -n "${SSH_CONNECTION}" ] ||
+           [ -n "${SSH_CLIENT}" ]; then
+        hostStyle="\[\e[1;33m\]" # yellow
+    else
+        hostStyle="\[\e[1;32m\]" # green
+    fi
 
-### External
+    # highlight return code error
+    if [[ "$last_exit" == 0 ]]; then
+        returnCode="\[\e[1;37m\]" # grey
+    else
+        returnCode="\[\e[1;31m\]" # red
+    fi
+
+    PS1="${userStyle}\u"         # username
+    PS1+="\[\e[1;37m\]@"         # @
+    PS1+="${hostStyle}\h "       # hostname
+    PS1+="\[\e[1;34m\]\w"        # working directory
+    PS1+="\[\e[1;36m\]${branch}" # git details
+    PS1+="${returnCode} \$"      # $ with return code color
+    PS1+="\[\e[0m\] "            # reset colors
+}
+
+PROMPT_COMMAND=set_prompt
 
 for file in ~/.{aliases,exports}; do
     if [[ -r "$file" ]] && [[ -f "$file" ]]; then

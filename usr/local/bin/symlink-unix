@@ -62,7 +62,7 @@ user_check() {
     if confirm "Install symlinks for ${USER}?" "Y"; then
         return 0
     else
-        exit
+        return 1
     fi
 }
 
@@ -256,22 +256,26 @@ symlink_binary() {
     fi
 }
 
-user_check
-symlink_zsh
-symlink_bash
-# symlink_emacs
-symlink_chatty
-symlink_mpv
-symlink_tmux
-symlink_rtorrent
-symlink_aria
-symlink_vim
-symlink_mg
-symlink_git
-symlink_streamlink
-symlink_i3
-symlink_sway
-symlink_x11
-symlink_tlp
-symlink_systemd
-symlink_binary
+main() {
+    user_check || exit 1
+    symlink_zsh
+    symlink_bash
+    # symlink_emacs
+    symlink_chatty
+    symlink_mpv
+    symlink_tmux
+    symlink_rtorrent
+    symlink_aria
+    symlink_vim
+    symlink_mg
+    symlink_git
+    symlink_streamlink
+    symlink_i3
+    symlink_sway
+    symlink_x11
+    symlink_tlp
+    symlink_systemd
+    symlink_binary
+}
+
+main

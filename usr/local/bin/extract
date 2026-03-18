@@ -5,23 +5,25 @@ set -o pipefail
 IFS=$'\n\t'
 
 usage() {
-    printf "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|7z|xz|exe|tar.bz2|tar.gz|tar.xz|tar.zst|lzma|pax.Z|Z|dmg|pax|deb|rpm>\n"
+    printf "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|7z|xz|\
+exe|tar.bz2|tar.gz|tar.xz|tar.zst|lzma|pax.Z|Z|dmg|pax|deb|rpm>\n"
 }
 
 filecheck() {
     if [ -z "${1}" ]; then
         usage
-        exit 1
+        return 1
     fi
 
     if [ ! -f "${1}" ]; then
         printf "%s - file does not exist\n" "${1}"
-        exit 1
+        return 1
     fi
 }
 
 main() {
-    filenameToLowerCase="${1,,}"
+    filecheck "${1-}" || exit 1
+    local filenameToLowerCase="${1,,}"
     case "${filenameToLowerCase}" in
         *.tar)            tar xvf "${1}"                                        ;;
         *.tar.bz2|*.tbz2) tar xvjf "${1}"                                       ;;
@@ -42,9 +44,11 @@ main() {
         *.pax)            cat "${1}" | pax-r                                    ;;
         *.deb)            ar x "${1}"                                           ;;
         *.rpm)            rpm2cpio "${1}" | cpio -idmv                          ;;
-        *)                printf "extract: %s - unknown archive method\n" "${1}";;
+        *)
+           printf "extract: %s - unknown archive method\n" "${1}"
+           exit 1
+           ;;
     esac
 }
 
-filecheck "${1-}"
-main "${1}"
+main "$@"

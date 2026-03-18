@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+# set -e
 set -u
 set -o pipefail
 IFS=$'\n\t'
@@ -75,10 +75,10 @@ os_check() {
         source /etc/os-release
     else
         msg_error "Not running Ubuntu, exiting."
-        exit 1
+        return 1
     fi
 
-    [ "$ID" = ubuntu ] || { msg_error "Not running Ubuntu, exiting."; exit 1; }
+    [ "$ID" = ubuntu ] || { msg_error "Not running Ubuntu, exiting."; return 1; }
 }
 
 initial_setup() {
@@ -794,7 +794,9 @@ usage() {
 }
 
 main() {
-    if [ -z "${1}" ]; then
+    os_check || exit 1
+
+    if [ -z "${1-}" ]; then
         usage
         exit 1
     fi
@@ -826,5 +828,4 @@ main() {
     fi
 }
 
-os_check
-main "${1-}"
+main "$@"

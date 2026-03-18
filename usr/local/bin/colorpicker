@@ -10,5 +10,6 @@ IFS=$'\n\t'
 
 tmpfile=$(mktemp --suffix=.ppm); trap 'rm -f "$tmpfile"' EXIT
 grim -g "$(slurp -p)" -t ppm "$tmpfile"
-hex=$(magick "$tmpfile" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2>/dev/null || echo "#??????")
+hex=$(magick "$tmpfile" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2>/dev/null ||
+          echo "#??????")
 echo "$hex" | wl-copy && notify-send -i "$tmpfile" "$hex"
