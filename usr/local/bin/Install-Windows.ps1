@@ -895,7 +895,6 @@ function Show-Menu {
 function Get-Choice {
     param($commandChoice)
 
-    # return error if nothing is specified
     if (-Not $commandChoice) { Show-Menu; exit 1 }
 
     if ($commandChoice -eq 'gpo')                 { Set-GPO }

@@ -7,12 +7,12 @@ IFS=$'\n\t'
 tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
 
 msg_info() {
-    echo
-    printf '\033[33m%s\033[0m\n' "$1"
+    printf '\n'
+    printf '\033[34m%s\033[0m\n' "$1"
 }
 
 msg_error() {
-    printf '\033[91m%s\033[0m\n' "$1" >&2
+    printf '\033[31m%s\033[0m\n' "$1" >&2
 }
 
 check_is_sudo() {
@@ -46,16 +46,6 @@ confirm() {
     done
 }
 
-brew_install() {
-    msg_info "Installing packages..."
-    brew install "${packages[@]}"
-}
-
-brew_clean() {
-    msg_info "Cleaning up install files..."
-    brew cleanup
-}
-
 spin() {
     sp='/-\|'
     printf ' '
@@ -70,8 +60,6 @@ os_check() {
 }
 
 setup_prefsettings() {
-    check_is_not_sudo
-
     msg_info "Closing System Preferences to avoid conflicts..."
     osascript -e 'tell application "System Preferences" to quit'
 
@@ -115,22 +103,18 @@ setup_prefsettings() {
 }
 
 setup_firewall() {
-    check_is_sudo
     msg_info "Blocking all incoming connections and enableing stealth mode..."
     defaults write /Library/Preferences/com.apple.alf globalstate -int 2
     /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 }
 
 setup_dns() {
-    check_is_not_sudo
     networksetup -setdnsservers Wi-Fi 1.1.1.1 1.0.0.1 2606:4700:4700::1111 2606:4700:4700::1001
     sudo dscacheutil -flushcache
     sudo killall -HUP mDNSResponder
 }
 
 change_hostname() {
-    check_is_sudo
-
     read -r -p "Enter a new name: " newname
     scutil --set ComputerName "${newname}"
     scutil --set LocalHostName "${newname}"
@@ -138,8 +122,6 @@ change_hostname() {
 }
 
 install_homebrew() {
-    check_is_not_sudo
-
     if test ! "$(command -v brew >/dev/null 2>&1)"
     then
         msg_info "Downloading and installing Homebrew..."
@@ -152,8 +134,6 @@ install_homebrew() {
 }
 
 install_formulae() {
-    check_is_not_sudo
-
     brew update
     brew upgrade
 
@@ -188,14 +168,14 @@ install_formulae() {
 
     if confirm "Install emacs?" "Y"; then
         while true; do
-            echo
-            printf "Select which Emacs version you want: \n"
+            printf '\n'
+            printf 'Select which Emacs version you want: \n'
             printf "  [1] Mitsuharu's Emacs Mac port\n"
             printf "  [2] d12frosted's Emacs Plus\n"
-            echo
+            printf '\n'
             read -r choice
 
-            case "$choice" in
+            case "${choice}" in
                 1)
                     msg_info "Tapping railwaycat/emacsmacport"
                     brew tap railwaycat/emacsmacport
@@ -224,12 +204,10 @@ install_formulae() {
         done
     fi
 
-    brew_clean
+    brew cleanup
 }
 
 install_casks() {
-    check_is_not_sudo
-
     local packages=(
         adobe-creative-cloud
         caffeine
@@ -263,7 +241,7 @@ install_casks() {
         spin & spinpid=$!
         sleep 10
         kill "${spinpid}"
-        echo
+        printf '\n'
 
         local plugin_folder="${HOME}/Library/Application Support/qBittorrent/nova3/engines"
         msg_info "Downloading search plugins..."
@@ -330,13 +308,11 @@ install_casks() {
         curl -L#o "${mpv_config_path}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
     fi
 
-    echo
+    printf '\n'
     brew cleanup
 }
 
 install_macports() {
-    check_is_not_sudo
-
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
     get_macos_version() {
@@ -377,8 +353,6 @@ install_macports() {
 }
 
 install_ports() {
-    check_is_sudo
-
     local packages=(
         aria2
         exiftool
@@ -412,11 +386,11 @@ install_ports() {
 
     if confirm "Install Emacs?" "Y"; then
         while true; do
-            echo
-            printf "Select which Emacs version you want: \n"
+            printf '\n'
+            printf 'Select which Emacs version you want: \n'
             printf "  [1] Mitsuharu's Emacs Mac port\n"
-            printf "  [2] Vanilla Emacs for macOS\n"
-            echo
+            printf '  [2] Vanilla Emacs for macOS\n'
+            printf '\n'
             read -r choice
 
             case "$choice" in
@@ -437,8 +411,6 @@ install_ports() {
 }
 
 set_git() {
-    check_is_not_sudo
-
     (
         cd "${HOME}/dotfiles"
         if [ "$(git rev-parse --is-inside-work-tree)" ]; then
@@ -454,19 +426,19 @@ set_git() {
 }
 
 usage() {
-    echo
-    printf "Usage:\n"
-    printf "  prefsettings - setup finder, trackpad, keyboard and dock settings\n"
-    printf "  firewall (s) - block incoming connection, stealth mode\n"
-    printf "  dns          - set WiFi IPv4 & IPv6 DNS to Cloudflare\n"
-    printf "  hostname (s) - change computer hostname\n"
-    printf "  homebrew     - setup homebrew if not installed\n"
-    printf "  formulae     - install base formulae\n"
-    printf "  casks        - setup caskroom & install softwares\n"
-    printf "  macports     - setup MacPorts\n"
-    printf "  ports    (s) - install ports\n"
-    printf "  git          - set correct SSH origin for this repository\n"
-    echo
+    printf '\n'
+    printf 'Usage:\n'
+    printf '  prefsettings - setup finder, trackpad, keyboard and dock settings\n'
+    printf '  firewall (s) - block incoming connection, stealth mode\n'
+    printf '  dns          - set WiFi IPv4 & IPv6 DNS to Cloudflare\n'
+    printf '  hostname (s) - change computer hostname\n'
+    printf '  homebrew     - setup homebrew if not installed\n'
+    printf '  formulae     - install base formulae\n'
+    printf '  casks        - setup caskroom & install softwares\n'
+    printf '  macports     - setup MacPorts\n'
+    printf '  ports    (s) - install ports\n'
+    printf '  git          - set correct SSH origin for this repository\n'
+    printf '\n'
 }
 
 main() {
@@ -478,24 +450,34 @@ main() {
     fi
 
     if [ "${1}" = "prefsettings" ]; then
+        check_is_not_sudo
         setup_prefsettings
     elif [ "${1}" = "firewall" ]; then
+        check_is_sudo
         setup_firewall
     elif [ "${1}" = "dns" ]; then
+        check_is_not_sudo
         setup_dns
     elif [ "${1}" = "hostname" ]; then
+        check_is_sudo
         change_hostname
     elif [ "${1}" = "homebrew" ]; then
+        check_is_not_sudo
         install_homebrew
     elif [ "${1}" = "formulae" ]; then
+        check_is_not_sudo
         install_formulae
     elif [ "${1}" = "casks" ]; then
+        check_is_not_sudo
         install_casks
     elif [ "${1}" = "macports" ]; then
+        check_is_not_sudo
         install_macports
     elif [ "${1}" = "ports" ]; then
+        check_is_sudo
         install_ports
     elif [ "${1}" = "git" ]; then
+        check_is_not_sudo
         set_git
     else
         usage
