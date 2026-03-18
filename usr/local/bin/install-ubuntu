@@ -75,10 +75,15 @@ os_check() {
         source /etc/os-release
     else
         msg_error "Not running Ubuntu, exiting."
-        return 1
+        exit 1
     fi
 
-    [ "$ID" = ubuntu ] || { msg_error "Not running Ubuntu, exiting."; return 1; }
+    [ "$ID" = ubuntu ] || { msg_error "Not running Ubuntu, exiting."; exit 1; }
+}
+
+jq_check() {
+    command -v jq >/dev/null 2>&1 ||
+        { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 }
 
 initial_setup() {
@@ -126,7 +131,9 @@ initial_setup() {
             esac
         done
 
-        [ -z "${version_number+x}" ] && printf '%s\n' "APT::Architecture-Variants \"amd64${version_number}\";" > /etc/apt/apt.conf.d/99enable-amd64"${version_number}"
+        [ -z "${version_number+x}" ] &&
+            printf '%s\n' "APT::Architecture-Variants \"amd64${version_number}\";" \
+                   > /etc/apt/apt.conf.d/99enable-amd64"${version_number}"
 
         apt update
         apt upgrade
@@ -271,7 +278,7 @@ apt_common() {
 
 apt_extra() {
     if confirm "Install veracrypt?" "Y"; then
-        command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+        jq_check
 
         local vc_latest
         vc_latest=$(wget -qO- "https://api.github.com/repos/veracrypt/veracrypt/releases/latest" | jq --raw-output .tag_name)
@@ -294,7 +301,8 @@ apt_extra() {
 
     if confirm "Install mullvad vpn?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc > /etc/apt/keyrings/mullvad-keyring.asc
+        wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc \
+             > /etc/apt/keyrings/mullvad-keyring.asc
         chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
 
         cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
@@ -314,7 +322,8 @@ apt_extra() {
 
     if confirm "Install signal?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > /etc/apt/keyrings/signal-desktop-keyring.gpg
+        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | \
+            gpg --dearmor > /etc/apt/keyrings/signal-desktop-keyring.gpg
         chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
         cat <<-EOF > /etc/apt/sources.list.d/signal-desktop.sources
@@ -332,7 +341,8 @@ apt_extra() {
 
     if "Install tor?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor > /etc/apt/keyrings/tor-archive-keyring.gpg
+        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | \
+            gpg --dearmor > /etc/apt/keyrings/tor-archive-keyring.gpg
         chmod a+r /etc/apt/keyrings/tor-archive-keyring.gpg
 
         cat <<-EOF > /etc/apt/sources.list.d/tor.sources
@@ -505,7 +515,6 @@ install_driveclient() {
 }
 
 install_chatty() {
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
     apt install default-jre
 
     local chatty_latest
@@ -546,7 +555,8 @@ set_gsettings() {
     gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
     gsettings set org.freedesktop.ibus.panel.emoji hotkey  "@as []" # make C-; available in Emacs
-    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ bold-is-bright true
+    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ \
+              bold-is-bright true
 
     # Night shift mode
     gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
@@ -570,7 +580,8 @@ set_gsettings() {
 
     for i in "${array[@]}"
     do
-        busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
+        busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions \
+               org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
     done
 
     spin & spinpid=$!
@@ -579,16 +590,32 @@ set_gsettings() {
     printf '\n'
 
     # caffeine settings
-    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-indicator always
-    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-notifications false
-    gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-timer true
+    gsettings --schemadir \
+              ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ \
+              set org.gnome.shell.extensions.caffeine show-indicator always
+    gsettings --schemadir \
+              ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ \
+              set org.gnome.shell.extensions.caffeine show-notifications false
+    gsettings --schemadir \
+              ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ \
+              set org.gnome.shell.extensions.caffeine show-timer true
 
     # system monitor settings
-    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-cpu true
-    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-memory true
-    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-swap false
-    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-download false
-    gsettings --schemadir ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-upload false
+    gsettings --schemadir \
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
+              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-cpu true
+    gsettings --schemadir \
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
+              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-memory true
+    gsettings --schemadir \
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
+              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-swap false
+    gsettings --schemadir \
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
+              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-download false
+    gsettings --schemadir \
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
+              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-upload false
 
     msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
@@ -628,15 +655,18 @@ set_i3wm() {
 
     if confirm "Install Firefox (SNAP)?" "Y"; then
         snap install firefox
-        mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
-        ln -s "${HOME}"/.config/fontconfig/fonts.conf ~/snap/firefox/current/.config/fontconfig/fonts.conf
+        mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf \
+           "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
+        ln -s "${HOME}"/.config/fontconfig/fonts.conf \
+           "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf
     fi
 
     snap refresh
 
     if confirm "Install autotiling script for i3wm?" "Y"; then
         apt install python3-i3ipc
-        wget -O /usr/local/bin/autotiling https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
+        wget -O /usr/local/bin/autotiling \
+             https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
         chmod +x /usr/local/bin/autotiling
     fi
 
@@ -696,14 +726,15 @@ set_sway() {
 
     if confirm "Install autotiling script for sway?" "Y"; then
         apt install python3-i3ipc
-        wget -O /usr/local/bin/autotiling https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
+        wget -O /usr/local/bin/autotiling \
+             https://raw.githubusercontent.com/nwg-piotr/autotiling/refs/heads/master/autotiling/main.py
         chmod +x /usr/local/bin/autotiling
     fi
 
     usermod -aG video "${SUDO_USER}"
     timedatectl set-timezone Europe/Paris
 
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+    jq_check
 
     local nerdfonts_latest
     nerdfonts_latest=$(wget -qO- "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest" | jq --raw-output .tag_name)
@@ -764,7 +795,7 @@ usage() {
 }
 
 main() {
-    os_check || exit 1
+    os_check
 
     if [ -z "${1-}" ]; then
         usage
@@ -795,6 +826,7 @@ main() {
         check_is_sudo
         install_chatty
     elif [ "${1}" = "gsettings" ]; then
+        jq_check
         check_is_not_sudo
         set_gsettings
     elif [ "${1}" = "i3" ]; then

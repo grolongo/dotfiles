@@ -4,14 +4,15 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-root_check() {
+check_is_sudo() {
     if [ $UID -ne 0 ]; then
         printf 'Please run this program as superuser.\n' >&2
-        return 1
+        exit 1
     fi
 }
 
 spin() {
+    local sp
     sp='/-\|'
     printf ' '
     while sleep 0.1; do
@@ -20,8 +21,27 @@ spin() {
     done
 }
 
+wpasupplicant_method() {
+    local spinpid
+    wpa_cli scan
+    printf 'Waiting 20 seconds before showing results...\n'
+    spin & spinpid=$!
+    sleep 20
+    kill "${spinpid}"
+    printf '\n'
+    wpa_cli scan_results
+}
+
+aircrackng_method() {
+    local interface
+    interface=$(ip route get 1.1.1.1 | grep -oP 'dev\s+\K[^ ]+')
+    airmon-ng start "${interface}"
+    airodump-ng "${interface}mon"
+    airmon-ng stop "${interface}mon"
+}
+
 main() {
-    root_check || exit 1
+    check_is_sudo
 
     while true; do
         printf "Choose which method to use:\n"
@@ -32,20 +52,11 @@ main() {
 
         case "$choice" in
             1)
-                wpa_cli scan
-                printf 'Waiting 20 seconds before showing results...\n'
-                spin & spinpid=$!
-                sleep 20
-                kill "${spinpid}"
-                printf '\n'
-                wpa_cli scan_results
+                wpasupplicant_method
                 break
                 ;;
             2)
-                interface=$(ip route get 1.1.1.1 | grep -oP 'dev\s+\K[^ ]+')
-                airmon-ng start "${interface}"
-                airodump-ng "${interface}mon"
-                airmon-ng stop "${interface}mon"
+                aircrackng_method
                 break
                 ;;
             *)
