@@ -9,7 +9,7 @@ distrib=$(lsb_release -sc 2> /dev/null)
 tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
 
 msg_info() {
-    echo
+    printf '\n'
     printf '\033[33m%s\033[0m\n' "$1"
 }
 
@@ -82,11 +82,9 @@ os_check() {
 }
 
 initial_setup() {
-    check_is_sudo
-
     if confirm "Enable passwordless sudo for ${SUDO_USER}?" "Y"; then
         printf '%s\n' "${SUDO_USER} ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/"${SUDO_USER}"
-        echo
+        printf '\n'
     fi
 
     if confirm "Disable ROOT account for security?" "Y"; then
@@ -140,8 +138,6 @@ initial_setup() {
 }
 
 apt_common() {
-    check_is_sudo
-
     local packages=(
         aria2
         bash-completion
@@ -271,13 +267,9 @@ apt_common() {
         wget -O "${mpv_config_path}/scripts/encode.lua" https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua
         '
     fi
-
-    apt_clean
 }
 
 apt_extra() {
-    check_is_sudo
-
     if confirm "Install veracrypt?" "Y"; then
         command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
@@ -408,13 +400,9 @@ apt_extra() {
         apt install -y tlp --no-install-recommends
         apt install -y tlp-pd
     fi
-
-    apt_clean
 }
 
 snaps_common() {
-    check_is_sudo
-
     if confirm "Install Chromium (includes ffmpeg)?" "Y"; then
         snap install chromium
         snap install chromium-ffmpeg
@@ -448,8 +436,6 @@ snaps_common() {
 }
 
 build_emacs() {
-    check_is_sudo
-
     local install_path
     install_path="/opt/emacs"
 
@@ -508,8 +494,6 @@ build_emacs() {
 }
 
 install_driveclient() {
-    check_is_sudo
-
     local source
     source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.2-17889/Ubuntu/Installer/synology-drive-client-17889.x86_64.deb"
 
@@ -521,8 +505,6 @@ install_driveclient() {
 }
 
 install_chatty() {
-    check_is_sudo
-
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
     apt install default-jre
 
@@ -544,8 +526,6 @@ install_chatty() {
 }
 
 set_gsettings() {
-    check_is_not_sudo
-
     # Files (Nautilus)
     dconf write /org/gtk/settings/file-chooser/show-hidden true
     dconf write /org/gtk/settings/file-chooser/sort-directories-first true
@@ -596,7 +576,7 @@ set_gsettings() {
     spin & spinpid=$!
     sleep 5
     kill "${spinpid}"
-    echo
+    printf '\n'
 
     # caffeine settings
     gsettings --schemadir ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ set org.gnome.shell.extensions.caffeine show-indicator always
@@ -614,8 +594,6 @@ set_gsettings() {
 }
 
 set_i3wm() {
-    check_is_sudo
-
     local packages=(
         aircrack-ng
         brightnessctl
@@ -648,8 +626,6 @@ set_i3wm() {
         fi
     done
 
-    apt_clean
-
     if confirm "Install Firefox (SNAP)?" "Y"; then
         snap install firefox
         mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
@@ -669,8 +645,6 @@ set_i3wm() {
 }
 
 set_sway() {
-    check_is_sudo
-
     local packages=(
         aircrack-ng
         bluez
@@ -713,8 +687,6 @@ set_sway() {
             apt install -y "${p}"
         fi
     done
-
-    apt_clean
 
     if confirm "Install Firefox (SNAP)?" "Y"; then
         snap install firefox
@@ -760,8 +732,6 @@ set_sway() {
 }
 
 set_git() {
-    check_is_not_sudo
-
     (
         cd "${HOME}/dotfiles"
         if [ "$(git rev-parse --is-inside-work-tree)" ]; then
@@ -777,20 +747,20 @@ set_git() {
 }
 
 usage() {
-    echo
-    printf "Usage:\n"
-    printf "  isetup      (s) - passwordless sudo and lock root\n"
-    printf "  aptcommon   (s) - install packages from main repository\n"
-    printf "  aptextra    (s) - install packages from third party repositories\n"
-    printf "  snaps       (s) - install a few snaps\n"
-    printf "  emacs       (s) - build Emacs from latest stable\n"
-    printf "  driveclient (s) - install Synology Drive Client\n"
-    printf "  chatty      (s) - install Chatty with JRE\n"
-    printf "  gsettings       - configures Gnome settings\n"
-    printf "  i3          (s) - install and set up i3wm related packages & configs\n"
-    printf "  sway        (s) - install and set up sway related packages & configs\n"
-    printf "  git             - set correct SSH origin for this repository\n"
-    echo
+    printf '\n'
+    printf 'Usage:\n'
+    printf 'isetup      (s) - passwordless sudo and lock root\n'
+    printf 'aptcommon   (s) - install packages from main repository\n'
+    printf 'aptextra    (s) - install packages from third party repositories\n'
+    printf 'snaps       (s) - install a few snaps\n'
+    printf 'emacs       (s) - build Emacs from latest stable\n'
+    printf 'driveclient (s) - install Synology Drive Client\n'
+    printf 'chatty      (s) - install Chatty with JRE\n'
+    printf 'gsettings       - configures Gnome settings\n'
+    printf 'i3          (s) - install and set up i3wm related packages & configs\n'
+    printf 'sway        (s) - install and set up sway related packages & configs\n'
+    printf 'git             - set correct SSH origin for this repository\n'
+    printf '\n'
 }
 
 main() {
@@ -802,26 +772,41 @@ main() {
     fi
 
     if [ "${1}" = "isetup" ]; then
+        check_is_sudo
         initial_setup
     elif [ "${1}" = "aptcommon" ]; then
+        check_is_sudo
         apt_common
+        apt_clean
     elif [ "${1}" = "aptextra" ]; then
+        check_is_sudo
         apt_extra
+        apt_clean
     elif [ "${1}" = "snaps" ]; then
+        check_is_sudo
         snaps_common
     elif [ "${1}" = "emacs" ]; then
+        check_is_sudo
         build_emacs
     elif [ "${1}" = "driveclient" ]; then
+        check_is_sudo
         install_driveclient
     elif [ "${1}" = "chatty" ]; then
+        check_is_sudo
         install_chatty
     elif [ "${1}" = "gsettings" ]; then
+        check_is_not_sudo
         set_gsettings
     elif [ "${1}" = "i3" ]; then
+        check_is_sudo
         set_i3wm
+        apt_clean
     elif [ "${1}" = "sway" ]; then
+        check_is_sudo
         set_sway
+        apt_clean
     elif [ "${1}" = "git" ]; then
+        check_is_not_sudo
         set_git
     else
         usage
