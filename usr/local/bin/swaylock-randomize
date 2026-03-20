@@ -4,7 +4,7 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-IMG_DIR="${HOME}/SynologyDrive/memes/intelligence_logos"
-IMG=$(find "${IMG_DIR}" -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' \) \
-           -print0 | shuf -z -n1 | xargs -0 -r echo)
-swaylock --image "${IMG}"
+image_directory="${HOME}/SynologyDrive/memes/intelligence_logos"
+image=$(find "${image_directory}" -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' \) \
+             -print0 | shuf -z -n1 | xargs -0 -r printf '%s\n')
+swaylock --image "${image}"
