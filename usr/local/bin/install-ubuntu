@@ -26,9 +26,9 @@ check_is_not_sudo() {
 }
 
 confirm() {
-    local prompt="$1"
-    local default="$2"
-    local response
+    local prompt default response
+    prompt="$1"
+    default="$2"
 
     case "$default" in
         Y) prompt="$prompt [Y/n]";;
@@ -46,11 +46,6 @@ confirm() {
             *) printf "Please answer yes or no.\n";;
         esac
     done
-}
-
-apt_install() {
-    msg_info "Installing packages..."
-    apt install -y "${packages[@]}"
 }
 
 apt_clean() {
@@ -82,8 +77,7 @@ os_check() {
 }
 
 jq_check() {
-    command -v jq >/dev/null 2>&1 ||
-        { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+    command -v jq >/dev/null 2>&1 || { apt install jq; sleep 5; }
 }
 
 initial_setup() {
@@ -254,10 +248,9 @@ apt_common() {
         apt install -y mpv mpv-mpris
 
         sudo -u "${SUDO_USER}" bash -c '
-        local mpv_config_path
+        local mpv_config_path tmpdir
         mpv_config_path="${HOME}/.config/mpv"
         mkdir -vp "${mpv_config_path}/scripts"
-        local tmpdir
         tmpdir=$(mktemp -d)
 
         (
@@ -277,19 +270,43 @@ apt_common() {
 }
 
 apt_extra() {
-    if confirm "Install veracrypt?" "Y"; then
+    if confirm "Install Chatty?" "Y"; then
+        jq_check
+        apt install default-jre
+
+        local chatty_latest repo release
+        chatty_latest=$(wget -qO- "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
+        chatty_latest=${chatty_latest#v}
+        repo="https://github.com/chatty/chatty/releases/download/"
+        release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
+
+        (
+            cd "${tmpdir}" || exit 1
+            mkdir -vp /opt/Chatty
+            wget "${repo}${release}"
+            unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
+        )
+    fi
+
+    if confirm "Install Synology Drive Client?" "Y"; then
+        local sdc_source
+        sdc_source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.2-17889/Ubuntu/Installer/synology-drive-client-17889.x86_64.deb"
+
+        (
+            cd "${tmpdir}" || exit 1
+            wget -O sdc.deb "$sdc_source"
+            apt install ./sdc.deb
+        )
+    fi
+
+    if confirm "Install VeraCrypt?" "Y"; then
         jq_check
 
-        local vc_latest
+        local vc_latest vc_uname repo release
         vc_latest=$(wget -qO- "https://api.github.com/repos/veracrypt/veracrypt/releases/latest" | jq --raw-output .tag_name)
         vc_latest=${vc_latest#VeraCrypt_}
-
-        local vc_uname
         vc_uname="Ubuntu-25.04"
-
-        local repo
         repo="https://github.com/veracrypt/VeraCrypt/releases/download/"
-        local release
         release="VeraCrypt_${vc_latest}/veracrypt-${vc_latest}-${vc_uname}-${arch}.deb"
 
         (
@@ -299,7 +316,7 @@ apt_extra() {
         )
     fi
 
-    if confirm "Install mullvad vpn?" "Y"; then
+    if confirm "Install Mullvad VPN?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
         wget -qO- https://repository.mullvad.net/deb/mullvad-keyring.asc \
              > /etc/apt/keyrings/mullvad-keyring.asc
@@ -320,7 +337,7 @@ apt_extra() {
         ln -s "/opt/Mullvad VPN/mullvad-gui" "/usr/local/bin/mullvad-gui"
     fi
 
-    if confirm "Install signal?" "Y"; then
+    if confirm "Install Signal?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
         wget -qO- https://updates.signal.org/desktop/apt/keys.asc | \
             gpg --dearmor > /etc/apt/keyrings/signal-desktop-keyring.gpg
@@ -339,7 +356,7 @@ apt_extra() {
         apt install -y signal-desktop
     fi
 
-    if "Install tor?" "Y"; then
+    if confirm "Install Tor?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
         wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | \
             gpg --dearmor > /etc/apt/keyrings/tor-archive-keyring.gpg
@@ -359,7 +376,7 @@ apt_extra() {
         apt install -y tor torbrowser-launcher
     fi
 
-    if confirm "Install docker?" "Y"; then
+    if confirm "Install Docker?" "Y"; then
         local version
         version="4.30.0"
 
@@ -446,13 +463,9 @@ snaps_common() {
 }
 
 build_emacs() {
-    local install_path
+    local install_path emacs_version source
     install_path="/opt/emacs"
-
-    local emacs_version
     emacs_version="30.1"
-
-    local source
     source="https://git.savannah.gnu.org/cgit/emacs.git/snapshot/emacs-${emacs_version}.tar.gz"
 
     read -r -p "Compile with PureGTK (Wayland only)? [y/n] " choice
@@ -501,37 +514,6 @@ build_emacs() {
     )
 
     ln -s "${install_path}"/bin/emacs-"${emacs_version}" /usr/local/bin/emacs
-}
-
-install_driveclient() {
-    local source
-    source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.2-17889/Ubuntu/Installer/synology-drive-client-17889.x86_64.deb"
-
-    (
-        cd "${tmpdir}" || exit 1
-        wget -O sdc.deb "$source"
-        apt install ./sdc.deb
-    )
-}
-
-install_chatty() {
-    apt install default-jre
-
-    local chatty_latest
-    chatty_latest=$(wget -qO- "https://api.github.com/repos/chatty/chatty/releases/latest" | jq --raw-output .tag_name)
-    chatty_latest=${chatty_latest#v}
-
-    local repo
-    repo="https://github.com/chatty/chatty/releases/download/"
-    local release
-    release="v${chatty_latest}/Chatty_${chatty_latest}.zip"
-
-    (
-        cd "${tmpdir}" || exit 1
-        mkdir -vp /opt/Chatty
-        wget "${repo}${release}"
-        unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
-    )
 }
 
 set_gsettings() {
@@ -734,15 +716,10 @@ set_sway() {
     usermod -aG video "${SUDO_USER}"
     timedatectl set-timezone Europe/Paris
 
-    jq_check
-
-    local nerdfonts_latest
+    local nerdfonts_latest repo release
     nerdfonts_latest=$(wget -qO- "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest" | jq --raw-output .tag_name)
     nerdfonts_latest=${nerdfonts_latest#v}
-
-    local repo
     repo="https://github.com/ryanoasis/nerd-fonts/releases/download/"
-    local release
     release="v${nerdfonts_latest}/NerdFontsSymbolsOnly.zip"
 
     (
@@ -781,12 +758,10 @@ usage() {
     printf '\n'
     printf 'Usage:\n'
     printf 'isetup      (s) - passwordless sudo and lock root\n'
-    printf 'aptcommon   (s) - install packages from main repository\n'
-    printf 'aptextra    (s) - install packages from third party repositories\n'
+    printf 'aptcommon   (s) - install packages from official Ubuntu repositories\n'
+    printf 'aptextra    (s) - install packages from third party sources and repositories\n'
     printf 'snaps       (s) - install a few snaps\n'
     printf 'emacs       (s) - build Emacs from latest stable\n'
-    printf 'driveclient (s) - install Synology Drive Client\n'
-    printf 'chatty      (s) - install Chatty with JRE\n'
     printf 'gsettings       - configures Gnome settings\n'
     printf 'i3          (s) - install and set up i3wm related packages & configs\n'
     printf 'sway        (s) - install and set up sway related packages & configs\n'
@@ -819,14 +794,7 @@ main() {
     elif [ "${1}" = "emacs" ]; then
         check_is_sudo
         build_emacs
-    elif [ "${1}" = "driveclient" ]; then
-        check_is_sudo
-        install_driveclient
-    elif [ "${1}" = "chatty" ]; then
-        check_is_sudo
-        install_chatty
     elif [ "${1}" = "gsettings" ]; then
-        jq_check
         check_is_not_sudo
         set_gsettings
     elif [ "${1}" = "i3" ]; then
@@ -835,6 +803,7 @@ main() {
         apt_clean
     elif [ "${1}" = "sway" ]; then
         check_is_sudo
+        jq_check
         set_sway
         apt_clean
     elif [ "${1}" = "git" ]; then
