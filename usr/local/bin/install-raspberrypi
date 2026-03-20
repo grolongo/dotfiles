@@ -4,10 +4,8 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-### Recurring functions
-
 msg_info() {
-    echo
+    printf '\n'
     printf '\033[33m%s\033[0m\n' "$1"
 }
 
@@ -24,18 +22,24 @@ check_is_not_sudo() {
 }
 
 confirm() {
+    local prompt default response
+    prompt="$1"
+    default="$2"
+
+    case "$default" in
+        Y) prompt="$prompt [Y/n]";;
+        N) prompt="$prompt [y/N]";;
+        *) prompt="$prompt [y/n]";;
+    esac
+
     while true; do
-        read -r -p "$1 [y/n] " choice
-        case "$choice" in
-            [yY]es|[yY])
-                return 0
-                ;;
-            [nN]o|[nN])
-                return 1
-                ;;
-            *)
-                msg_error "Please enter yes or no."
-                ;;
+        read -r -p "$prompt: " response
+        response=${response:-$default}
+
+        case "$response" in
+            [Yy]|[Yy][Ee][Ss]) return 0;;
+            [Nn]|[Nn][Oo]) return 1;;
+            *) printf "Please answer yes or no.\n";;
         esac
     done
 }
@@ -66,26 +70,23 @@ else
     exit 1
 fi
 
-# check if running on raspberrypi
-[ ! "$ID" = raspbian ] && { msg_error "You're not running Raspberry Pi OS, exiting."; exit 1; }
-
-### Initial setup
+os_check() {
+    [ ! "$ID" = raspbian ] && { msg_error "You're not running Raspberry Pi OS, exiting."; exit 1; }
+}
 
 initial_setup() {
-    check_is_sudo
-
     read -r -p "What hostname for the machine?: " hostname
-    echo "$hostname" > /etc/hostname
+    printf '%s\n' "$hostname" > /etc/hostname
     sed -i "s/raspberrypi/${hostname}/g" /etc/hosts
 
     if [ "$SUDO_USER" != "pi" ]; then
-        confirm "You're under user '$SUDO_USER'. Do you wish to delete pi?" && {
+        if confirm "You're under user '$SUDO_USER'. Do you wish to delete pi?" "Y"; then
             deluser --remove-home pi
             groupdel pi
-        }
+        fi
         msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers"
-        echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-        echo
+        printf '%s ALL=(ALL) NOPASSWD: ALL' "$SUDO_USER">> /etc/sudoers
+        printf '\n'
     fi
 
     msg_info "Disabling root account for security..."
@@ -99,12 +100,12 @@ initial_setup() {
     dpkg-reconfigure locales
 
     msg_info "Changing memory split to 16 for GPU..."
-    echo 'gpu_mem=16' >> /boot/config.txt
+    printf 'gpu_mem=16\n' >> /boot/config.txt
 
     msg_info "Expanding filesystem"
     raspi-config --expand-rootfs
 
-    confirm "Disable Bluetooth and WiFi?" && {
+    if confirm "Disable Bluetooth and WiFi?" "Y"; then
         cat <<-EOF > /etc/modprobe.d/raspi-blacklist.conf
 	# disable WLAN
 	blacklist brcmfmac
@@ -117,19 +118,15 @@ initial_setup() {
 	EOF
 
         systemctl disable hciuart
-    }
+    fi
 
     msg_info "Reboot now."
 }
 
-### Apt base
-
 apt_base() {
-    check_is_sudo
-
     msg_info "Disabling translations to speed-up updates..."
     mkdir -vp /etc/apt/apt.conf.d
-    echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/99disable-translations
+    printf 'Acquire::Languages "none";\n' > /etc/apt/apt.conf.d/99disable-translations
 
     msg_info "First update of the machine..."
     apt update
@@ -152,23 +149,21 @@ apt_base() {
     )
 
     for p in "${packages[@]}"; do
-        confirm "Install ${p}?" && apt install -y "${p}"
+        if confirm "Install ${p}?" "Y"; then
+            apt install -y "${p}"
+        fi
     done
 
     apt_clean
 }
 
-### Docker
-
 install_docker() {
-    check_is_not_sudo
-
     curl -sSL https://get.docker.com | sh
 
     msg_info "Adding $USER to docker group..."
     sudo usermod -aG docker "$USER"
 
-    confirm "Enable IPv6?" && {
+    if confirm "Enable IPv6?" "Y"; then
         sudo bash -c 'cat <<-EOF > /etc/docker/daemon.json
 		{
 		"ipv6": true,
@@ -178,26 +173,23 @@ install_docker() {
 
         msg_info "Restarting Docker..."
         sudo systemctl restart docker
-    }
+    fi
 
-    confirm "You need to restart to finish. Reboot now?" && {
+    if confirm "You need to restart to finish. Reboot now?" "Y"; then
         sudo reboot
-    }
+    fi
 }
 
-### Nextcloud local only (docker)
-
 install_nextcloud_local() {
-    check_is_not_sudo
     command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
     local IP
     IP="$(hostname -I | cut -f1 -d ' ')"
 
-    echo
+    printf '\n'
     read -r -p "Enter username for admin account: " ncadmin
     read -r -s -p "Enter password for admin account: " ncpass
-    echo
+    printf '\n'
 
     docker run -d \
            -p 8080:80 \
@@ -239,10 +231,7 @@ install_nextcloud_local() {
     docker exec -it --user www-data ncvanilla php occ encryption:encrypt-all
 }
 
-### NextcloudPi internet (docker)
-
 install_nextcloudpi_internet() {
-    check_is_not_sudo
     command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
     local IP
@@ -256,19 +245,16 @@ install_nextcloudpi_internet() {
            ownyourbits/nextcloudpi-armhf \
            "$IP"
 
-    echo
+    printf '\n'
     printf "Wait until you see 'init done' with 'docker logs -f nextcloudpi'\n"
     printf "Then go to (example) https://192.168.1.17 and activate.\n"
     printf "Verify the modem has DynDNS enabled for Let's Encrypt to work in case of dynamic IP.\n"
 }
 
-### Seafile
-
 install_seafile() {
-    check_is_not_sudo
-
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
+    local sf_latest repo release
     sf_latest=$(curl -sSL "https://api.github.com/repos/haiwen/seafile-rpi/releases/latest" | jq --raw-output .tag_name)
     sf_latest=${sf_latest#v}
     repo="https://github.com/haiwen/seafile-rpi/releases/download/"
@@ -308,11 +294,11 @@ install_seafile() {
     )
 
     msg_info "Setting Paris timezone in the config file..."
-    echo "TIME_ZONE = 'Europe/Paris'" >> "${HOME}"/Seafile/conf/seahub_settings.py
+    printf "TIME_ZONE = 'Europe/Paris'\n" >> "${HOME}"/Seafile/conf/seahub_settings.py
 
     msg_info "Adding to crontab for autostart on boot..."
-    (crontab -l ; echo "@reboot sleep 30 && ${HOME}/Seafile/seafile-server-latest/seafile.sh start") | crontab -
-    (crontab -l ; echo "@reboot sleep 60 && ${HOME}/Seafile/seafile-server-latest/seahub.sh start") | crontab -
+    (crontab -l ; printf '@reboot sleep 30 && %s/Seafile/seafile-server-latest/seafile.sh start' "${HOME}") | crontab -
+    (crontab -l ; printf '@reboot sleep 60 && %s/Seafile/seafile-server-latest/seahub.sh start' "${HOME}") | crontab -
     msg_info "Confirm with 'crontab -l'"
 
     msg_info "Autoremoving..."
@@ -325,135 +311,10 @@ install_seafile() {
     sudo apt clean
 }
 
-### Pihole
-
-install_pihole() {
-    check_is_sudo
-
-    msg_info "Installing Pihole..."
-    curl -sSL https://install.pi-hole.net | bash
-
-    msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
-    {
-        curl -sSL https://v.firebog.net/hosts/lists.php?type=all
-        echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt
-        echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt
-        echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt
-    } >> /etc/pihole/adlists.list
-
-    msg_info "Adding some urls to whitelist..."
-
-    # android app store
-    pihole -w android.clients.google.com
-
-    msg_info "Updating gravity..."
-    pihole -g
-
-    echo
-    printf "Change DNS addresses on all devices:\n"
-    printf "Either enter twice the same IP of the Pi for DNS1 and DNS2\n"
-    printf "or when you can't, leave DNS2 BLANK! (no 8.8.8.8 or anything else)\n"
-    printf "also don't forget IPv6.\n"
-}
-
-### Pihole (docker)
-
-install_pihole_docker() {
-    check_is_not_sudo
-    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
-
-    local IP
-    IP="$(ip route get 8.8.8.8 | awk '{ print $NF; exit }')"
-
-    local IPv6
-    IPv6="$(ip -6 route get 2001:4860:4860::8888 | awk '{for(i=1;i<=NF;i++) if ($i=="src") print $(i+1)}')"
-
-    echo
-    printf "Make sure your IPs are correct, hard code ServerIP ENV VARs if necessary.\n"
-    echo
-    printf 'IPv4: %s\n' "${IP}"
-    printf 'IPv6: %s\n' "${IPv6}"
-    echo
-
-    echo
-    read -r -p "Do you want to use Pihole as your DHCP server? [y/n] " dockerchoice
-    case "$dockerchoice" in
-        [yY]es|[yY])
-            docker run -d \
-                   --name pihole \
-                   -p 53:53/tcp -p 53:53/udp \
-                   -p 67:67/udp \
-                   --cap-add=NET_ADMIN \
-                   -p 80:80 \
-                   -p 443:443 \
-                   -v pihole:/etc/pihole \
-                   -v dnsmasq:/etc/dnsmasq.d \
-                   -e ServerIP="${IP}" \
-                   -e ServerIPv6="${IPv6}" \
-                   -e DNS1="1.1.1.1" \
-                   -e DNS2="1.0.0.1" \
-                   --restart=always \
-                   --dns=127.0.0.1 --dns=1.1.1.1 \
-                   pihole/pihole:latest
-            ;;
-        [nN]o|[nN])
-            docker run -d \
-                   --name pihole \
-                   -p 53:53/tcp -p 53:53/udp \
-                   -p 80:80 \
-                   -p 443:443 \
-                   -v pihole:/etc/pihole \
-                   -v dnsmasq:/etc/dnsmasq.d \
-                   -e ServerIP="${IP}" \
-                   -e ServerIPv6="${IPv6}" \
-                   -e DNS1="1.1.1.1" \
-                   -e DNS2="1.0.0.1" \
-                   --restart=always \
-                   --dns=127.0.0.1 --dns=1.1.1.1 \
-                   pihole/pihole:latest
-            ;;
-        *)
-            printf "You didn't choose yes or no, exiting.\n"
-            exit 1
-            ;;
-    esac
-
-    echo
-    until [ "$(docker inspect -f '{{json .State.Health.Status}}' pihole)" = '"healthy"' ]; do
-        msg_info "First init not finished yet, waiting 10 seconds more..." && sleep 10;
-    done;
-
-    msg_info "Adding additional blocking lists to /etc/pihole/adlists.list"
-    docker exec pihole bash -c "{
-    curl -sSL https://v.firebog.net/hosts/lists.php?type=all
-    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/EuropeanUnion.txt
-    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/CountryCodesLists/France.txt
-    echo https://raw.githubusercontent.com/deathbybandaid/piholeparser/master/Subscribable-Lists/ParsedBlacklists/EasyList-Liste-FR.txt
-    } >> /etc/pihole/adlists.list"
-
-    msg_info "Adding some urls to whitelist..."
-    # android app store
-    docker exec pihole pihole -w android.clients.google.com
-
-    msg_info "Updating gravity..."
-    docker exec pihole pihole -g
-
-     echo
-     printf "Change DNS addresses on all devices:\n"
-     printf 'IPv4: %s\n' "${IP}"
-     printf 'IPv6: %s\n' "${IPv6}"
-     echo
-     printf 'Your password for https://%s/admin/ is \n' "${IP}"
-     docker logs pihole 2> /dev/null | grep 'password:'
-}
-
-### Fail2ban
-
 install_fail2ban() {
-    check_is_sudo
-
     command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
 
+    local f2b_latest repo release
     f2b_latest=$(curl -sSL "https://api.github.com/repos/fail2ban/fail2ban/releases/latest" | jq --raw-output .tag_name)
     repo="https://github.com/fail2ban/fail2ban/archive/"
     release="${f2b_latest}.tar.gz"
@@ -480,15 +341,11 @@ install_fail2ban() {
     msg_info "Starting the service..."
     service fail2ban start
 
-    echo
-    echo "You can now add your own jail.local and filters to /etc/fail2ban"
+    printf '\n'
+    printf 'You can now add your own jail.local and filters to /etc/fail2ban\n'
 }
 
-### Msmtp
-
 install_msmtp() {
-    check_is_sudo
-
     local packages=(
         msmtp
         msmtp-mta
@@ -499,28 +356,25 @@ install_msmtp() {
     apt_clean
 
     msg_info "Now add custom /etc/msmtprc"
-    msg_info "Then try with: 'echo test | msmtp <email recipient>'"
+    msg_info "Then try with: 'printf 'test' | msmtp <email recipient>'"
 }
 
-### Menu
-
 usage() {
-    echo
-    printf "Usage:\n"
-    printf "  isetup                        (s) - delete pi user, passwordless sudo, lock root and run raspi-config\n"
-    printf "  aptbase                       (s) - disable translations, update, upgrade and installs few packages\n"
-    printf "  docker                            - installs docker\n"
-    printf "  nextcloud_docker_local            - downloads and deploys nextcloudpi with Docker\n"
-    printf "  nextcloudpi_docker_internet       - downloads and deploys nextcloudpi with Docker\n"
-    printf "  seafile                           - downloads and deploys Seafile server\n"
-    printf "  pihole                        (s) - runs Pihole bash script installer\n"
-    printf "  pihole_docker                     - downloads and deploys Pihole with Docker\n"
-    printf "  fail2ban                      (s) - downloads and installs Fail2ban\n"
-    printf "  msmtp                         (s) - installs msmtp and msmtp-mta\n"
-    echo
+    printf '\n'
+    printf 'Usage:\n'
+    printf '  isetup                        (s) - delete pi user, passwordless sudo, lock root and run raspi-config\n'
+    printf '  aptbase                       (s) - disable translations, update, upgrade and installs few packages\n'
+    printf '  docker                            - installs docker\n'
+    printf '  nextcloud_docker_local            - downloads and deploys nextcloudpi with Docker\n'
+    printf '  nextcloudpi_docker_internet       - downloads and deploys nextcloudpi with Docker\n'
+    printf '  seafile                           - downloads and deploys Seafile server\n'
+    printf '  fail2ban                      (s) - downloads and installs Fail2ban\n'
+    printf '  msmtp                         (s) - installs msmtp and msmtp-mta\n'
+    printf '\n'
 }
 
 main() {
+    os_check
     local cmd="${1-}"
 
     # return error if nothing is specified
@@ -530,24 +384,28 @@ main() {
 	fi
 
     if [ "$cmd" = "aptbase" ]; then
+        check_is_sudo
         apt_base
     elif [ "$cmd" = "isetup" ]; then
+        check_is_sudo
         initial_setup
     elif [ "$cmd" = "docker" ]; then
+        check_is_not_sudo
         install_docker
     elif [ "$cmd" = "nextcloud_docker_local" ]; then
+        check_is_not_sudo
         install_nextcloud_local
     elif [ "$cmd" = "nextcloudpi_docker_internet" ]; then
+        check_is_not_sudo
         install_nextcloudpi_internet
     elif [ "$cmd" = "seafile" ]; then
+        check_is_not_sudo
         install_seafile
-    elif [ "$cmd" = "pihole" ]; then
-        install_pihole
-    elif [ "$cmd" = "pihole_docker" ]; then
-        install_pihole_docker
     elif [ "$cmd" = "fail2ban" ]; then
+        check_is_sudo
         install_fail2ban
     elif [ "$cmd" = "msmtp" ]; then
+        check_is_sudo
         install_msmtp
     else
         usage
