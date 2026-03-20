@@ -24,9 +24,9 @@ check_is_not_sudo() {
 }
 
 confirm() {
-    local prompt="$1"
-    local default="$2"
-    local response
+    local prompt default response
+    prompt="$1"
+    default="$2"
 
     case "$default" in
         Y) prompt="$prompt [Y/n]";;
@@ -313,7 +313,7 @@ install_casks() {
 }
 
 install_macports() {
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+    command -v jq >/dev/null 2>&1 || { brew install jq; sleep 5; }
 
     get_macos_version() {
         sw_vers | awk '/ProductVersion/ {
@@ -326,18 +326,13 @@ install_macports() {
         }'
     }
 
-    local os_version
+    local os_version os_marketing macports_latest repo release
     os_version=$(get_macos_version)
-
-    local os_marketing
     os_marketing=$(awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}')
-
-    local macports_latest
     macports_latest=$(curl -sSL "https://api.github.com/repos/macports/macports-base/releases/latest" | jq --raw-output .tag_name)
     macports_latest=${macports_latest#v}
-
-    local repo="https://github.com/macports/macports-base/releases/download/"
-    local release="v${macports_latest}/MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
+    repo="https://github.com/macports/macports-base/releases/download/"
+    release="v${macports_latest}/MacPorts-${macports_latest}-${os_version}-${os_marketing}.pkg"
 
     tmpdir_mp=$(mktemp -d)
 
@@ -442,7 +437,7 @@ usage() {
 }
 
 main() {
-    os_check || exit 1
+    os_check
 
     if [ -z "${1-}" ]; then
         usage
