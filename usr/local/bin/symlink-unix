@@ -14,9 +14,9 @@ DIR=$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)
 base="${DIR%/*/*/*}"
 
 confirm() {
-    local prompt="$1"
-    local default="$2"
-    local response
+    local prompt default response
+    prompt="$1"
+    default="$2"
 
     case "$default" in
         Y) prompt="$prompt [Y/n]";;

@@ -5,8 +5,8 @@ set -o pipefail
 IFS=$'\n\t'
 
 check_is_sudo() {
-    if [ $UID -ne 0 ]; then
-        printf 'Please run this program as superuser.\n' >&2
+    if [[ $EUID -ne 0 ]]; then
+        printf '\033[31mRequires root privileges. Use sudo.\033[0m\n' >&2
         exit 1
     fi
 }

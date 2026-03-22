@@ -18,11 +18,17 @@ msg_error() {
 }
 
 check_is_sudo() {
-    [ "$(id -u)" -eq 0 ] || { msg_error "Requires root privileges. Use sudo."; exit 1; }
+    if [ "$EUID" -ne 0 ]; then
+        msg_error "Requires root privileges. Use sudo."
+        exit 1
+    fi
 }
 
 check_is_not_sudo() {
-    [ "$(id -u)" -ne 0 ] || { msg_error "Don't run this as sudo."; exit 1; }
+    if [ "$EUID" -eq 0 ]; then
+        msg_error "Don't run this as sudo."
+        exit 1
+    fi
 }
 
 confirm() {

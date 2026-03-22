@@ -44,6 +44,10 @@ confirm() {
     done
 }
 
+jq_check() {
+    command -v jq >/dev/null 2>&1 || { apt install jq; sleep 5; }
+}
+
 apt_install() {
     msg_info "Installing packages..."
     apt install -y "${packages[@]}"
@@ -181,7 +185,8 @@ install_docker() {
 }
 
 install_nextcloud_local() {
-    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
+    command -v docker >/dev/null 2>&1 ||
+        { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
     local IP
     IP="$(hostname -I | cut -f1 -d ' ')"
@@ -232,7 +237,8 @@ install_nextcloud_local() {
 }
 
 install_nextcloudpi_internet() {
-    command -v docker >/dev/null 2>&1 || { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
+    command -v docker >/dev/null 2>&1 ||
+        { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
     local IP
     IP="$(hostname -I | cut -f1 -d ' ')"
@@ -252,7 +258,7 @@ install_nextcloudpi_internet() {
 }
 
 install_seafile() {
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+    jq_check
 
     local sf_latest repo release
     sf_latest=$(curl -sSL "https://api.github.com/repos/haiwen/seafile-rpi/releases/latest" | jq --raw-output .tag_name)
@@ -312,7 +318,7 @@ install_seafile() {
 }
 
 install_fail2ban() {
-    command -v jq >/dev/null 2>&1 || { msg_error "You need jq to continue. Make sure it is installed and in your path."; exit 1; }
+    jq_check
 
     local f2b_latest repo release
     f2b_latest=$(curl -sSL "https://api.github.com/repos/fail2ban/fail2ban/releases/latest" | jq --raw-output .tag_name)
@@ -377,7 +383,6 @@ main() {
     os_check
     local cmd="${1-}"
 
-    # return error if nothing is specified
 	if [ -z "$cmd" ]; then
         usage
         exit 1

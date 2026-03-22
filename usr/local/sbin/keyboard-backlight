@@ -25,53 +25,60 @@
 # You can customize the amount of backlight by step by changing the INCREMENT
 # variable as you want it.
 
-BACKLIGHT=$(cat /sys/class/leds/smc::kbd_backlight/brightness)
-INCREMENT=15
+backlight=$(cat /sys/class/leds/smc::kbd_backlight/brightness)
+increment=15
+set_value=0
 
-if [ $UID -ne 0 ]; then
-    echo "Please run this program as superuser"
-    exit 1
-fi
+check_is_sudo() {
+    if [ $EUID -ne 0 ]; then
+        printf '\033[31mRequires root privileges. Use sudo.\033[0m\n' >&2
+        exit 1
+    fi
+}
 
-SET_VALUE=0
+main() {
+    check_is_sudo
 
-case $1 in
+    case $1 in
 
-    up)
-        TOTAL=`expr $BACKLIGHT + $INCREMENT`
-        if [ $TOTAL -gt "255" ]; then
-            exit 1
-        fi
-        SET_VALUE=1
-        ;;
-    down)
-        TOTAL=`expr $BACKLIGHT - $INCREMENT`
-        if [ $TOTAL -lt "0" ]; then
-            exit 1
-        fi
-        SET_VALUE=1
-        ;;
-    total)
-	TEMP_VALUE=$BACKLIGHT
-	while [ $TEMP_VALUE -lt "255" ]; do
-		TEMP_VALUE=`expr $TEMP_VALUE + 1`
-		if [ $TEMP_VALUE -gt "255" ]; then TEMP_VALUE=255; fi
-		echo $TEMP_VALUE > /sys/class/leds/smc::kbd_backlight/brightness
-	done
-        ;;
-    off)
-	TEMP_VALUE=$BACKLIGHT
-	while [ $TEMP_VALUE -gt "0" ]; do
-		TEMP_VALUE=`expr $TEMP_VALUE - 1`
-		if [ $TEMP_VALUE -lt "0" ]; then TEMP_VALUE=0; fi
-		echo $TEMP_VALUE > /sys/class/leds/smc::kbd_backlight/brightness
-	done
-        ;;
-    *)
-        echo "Use: keyboard-backlight up|down|total|off"
-        ;;
-esac
+        up)
+            total=`expr "${backlight}" + "${increment}"`
+            if [ "${total}" -gt "255" ]; then
+                exit 1
+            fi
+            set_value=1
+            ;;
+        down)
+            total=`expr ${backlight} - "${increment}"`
+            if [ "${total}" -lt "0" ]; then
+                exit 1
+            fi
+            set_value=1
+            ;;
+        total)
+	        temp_value=${backlight}
+	        while [ "${temp_value}" -lt "255" ]; do
+		        temp_value=`expr "${temp_value}" + 1`
+		        if [ "${temp_value}" -gt "255" ]; then temp_value=255; fi
+		        printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
+	        done
+            ;;
+        off)
+	        temp_value=${backlight}
+	        while [ "${temp_value}" -gt "0" ]; do
+		        temp_value=`expr "${temp_value}" - 1`
+		        if [ "${temp_value}" -lt "0" ]; then temp_value=0; fi
+		        printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
+	        done
+            ;;
+        *)
+            printf 'Use: keyboard-backlight up|down|total|off\n'
+            ;;
+    esac
 
-if [ $SET_VALUE -eq "1" ]; then
-    echo $TOTAL > /sys/class/leds/smc::kbd_backlight/brightness
-fi
+    if [ "${set_value}" -eq "1" ]; then
+        printf '%s' "${total}" > /sys/class/leds/smc::kbd_backlight/brightness
+    fi
+}
+
+main "$@"
