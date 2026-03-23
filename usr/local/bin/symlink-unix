@@ -39,6 +39,7 @@ confirm() {
 }
 
 symlink() {
+    local sourcefile targetlink
     sourcefile="${base}"/"$1"
     targetlink="${HOME}"/"$1"
 
@@ -50,6 +51,7 @@ symlink() {
 }
 
 symlink_root() {
+    local sourcefile targetlink
     sourcefile="${base}"/"$1"
     targetlink=/"$1"
 
