@@ -13,9 +13,9 @@ msg_error() {
 }
 
 confirm() {
-    local prompt="$1"
-    local default="$2"
-    local response
+    local prompt default response
+    prompt="$1"
+    default="$2"
 
     case "$default" in
         Y) prompt="$prompt [Y/n]";;
@@ -36,11 +36,19 @@ confirm() {
 }
 
 initial_check() {
-    [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; return 1; }
-    [ "$(uname)" = Linux ] || { msg_error "You are not running macOS, exiting."; return 1; }
+    if [[ ! "$(id -u)" -eq 0 ]]; then
+        msg_error "This program requires root privileges. Use sudo."
+        exit 1
+    fi
+
+    if [[ ! "$(uname)" = Linux ]]; then
+        msg_error "You are not running Linux, exiting."
+        exit 1
+    fi
 }
 
 device_selection() {
+    local devices
     devices=$(fdisk -l | grep -E '/dev/sd[a-z][^0-9]|nvme[0-9]n[0-9][^a-z]')
     printf '\n'
     msg_info "List of available devices:"
@@ -120,17 +128,17 @@ name_selection() {
         label="${label%"${label##*[![:space:]]}"}"
         label="${label^^}"
 
-        if [ -z "${label}" ]; then
+        if [[ -z "${label}" ]]; then
             printf 'Name cannot be empty.\n'
             continue
         fi
 
-        if ! [[ "${label}" =~ ^[A-Za-z0-9-]+$ ]]; then
+        if [[ ! "${label}" =~ ^[A-Za-z0-9-]+$ ]]; then
             printf 'Invalid characters. Use only letters, numbers, or -.\n'
             continue
         fi
 
-        if  [ "${#label}" -le 11 ]; then
+        if  [[ "${#label}" -le 11 ]]; then
             break
         else
             printf 'Too long (%s chars). Try again.\n' "${#label}"
@@ -152,7 +160,7 @@ final_warning() {
 
     if ! confirm "Are you sure you want to continue?" "Y"; then
         msg_info "Operation cancelled."
-        return 1
+        exit 1
     fi
 }
 
@@ -206,7 +214,7 @@ partitioning() {
     parted --script --align optimal /dev/"${device}" mkpart primary 0% 100%
     sleep 5
 
-    if [ "${scheme}" == gpt ] && [ "${filesystem}" != ext4 ]; then
+    if [[ "${scheme}" == gpt ]] && [[ "${filesystem}" != ext4 ]]; then
         msg_info "Enabling Microsoft compatibility for GPT..."
         parted --script /dev/"${device}" set 1 msftdata on
         sleep 5
@@ -218,30 +226,33 @@ partitioning() {
 }
 
 formatting() {
-    if [ "${filesystem}" == vfat ]; then
+    if [[ "${filesystem}" == vfat ]]; then
         mkfs."${filesystem}" -F32 -n "${label}" "${target}"
-    elif [ "${filesystem}" == exfat ]; then
+    elif [[ "${filesystem}" == exfat ]]; then
         mkfs."${filesystem}" --volume-label="${label}" "${target}"
-    elif [ "${filesystem}" == ntfs ]; then
+    elif [[ "${filesystem}" == ntfs ]]; then
         mkfs."${filesystem}" --fast --label "${label}" "${target}"
-    elif [ "${filesystem}" == ext4 ]; then
+    elif [[ "${filesystem}" == ext4 ]]; then
         mkfs."${filesystem}" -L "${label}" "${target}"
-    elif [ "${filesystem}" == btrfs ]; then
+    elif [[ "${filesystem}" == btrfs ]]; then
         mkfs."${filesystem}" --label "${label}" "${target}"
-    elif [ "${filesystem}" == xfs ]; then
+    elif [[ "${filesystem}" == xfs ]]; then
         mkfs."${filesystem}" -L "${label}" "${target}"
     fi
 }
 
 encryption_check() {
-    if [ "${encryption}" = disabled ]; then
+    if [[ "${encryption}" = disabled ]]; then
         msg_info "Formatting the new partition..."
         target=/dev/"${device}"1
         formatting
     else
         msg_info "Formatting & encrypting the new partition..."
         target=/dev/mapper/disk
-        cryptsetup luksFormat --batch-mode --verify-passphrase --label "${label}CRYPT" /dev/"${device}"1
+        cryptsetup luksFormat --batch-mode \
+                   --verify-passphrase \
+                   --label "${label}CRYPT" \
+                   /dev/"${device}"1
         sleep 5
         sync
         cryptsetup luksOpen /dev/"${device}"1 disk
@@ -255,7 +266,7 @@ encryption_check() {
 }
 
 main() {
-    initial_check || exit 1
+    initial_check
     device_selection
     scheme_selection
     filetype_selection

@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
+set -u
+set -o pipefail
+IFS=$'\n\t'
 
 # Francisco Diéguez Souto (frandieguez@ubuntu.com)
 # This script is licensed under MIT License.
@@ -30,7 +34,7 @@ increment=15
 set_value=0
 
 check_is_sudo() {
-    if [ $EUID -ne 0 ]; then
+    if [[ $EUID -ne 0 ]]; then
         printf '\033[31mRequires root privileges. Use sudo.\033[0m\n' >&2
         exit 1
     fi
@@ -43,29 +47,29 @@ main() {
 
         up)
             total=`expr "${backlight}" + "${increment}"`
-            if [ "${total}" -gt "255" ]; then
+            if [[ "${total}" -gt "255" ]]; then
                 exit 1
             fi
             set_value=1
             ;;
         down)
             total=`expr ${backlight} - "${increment}"`
-            if [ "${total}" -lt "0" ]; then
+            if [[ "${total}" -lt "0" ]]; then
                 exit 1
             fi
             set_value=1
             ;;
         total)
-	        temp_value=${backlight}
-	        while [ "${temp_value}" -lt "255" ]; do
+	        temp_value="${backlight}"
+	        while [[ "${temp_value}" -lt "255" ]]; do
 		        temp_value=`expr "${temp_value}" + 1`
-		        if [ "${temp_value}" -gt "255" ]; then temp_value=255; fi
+		        if [[ "${temp_value}" -gt "255" ]]; then temp_value=255; fi
 		        printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
 	        done
             ;;
         off)
-	        temp_value=${backlight}
-	        while [ "${temp_value}" -gt "0" ]; do
+	        temp_value="${backlight}"
+	        while [[ "${temp_value}" -gt "0" ]]; do
 		        temp_value=`expr "${temp_value}" - 1`
 		        if [ "${temp_value}" -lt "0" ]; then temp_value=0; fi
 		        printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
@@ -76,7 +80,7 @@ main() {
             ;;
     esac
 
-    if [ "${set_value}" -eq "1" ]; then
+    if [[ "${set_value}" -eq "1" ]]; then
         printf '%s' "${total}" > /sys/class/leds/smc::kbd_backlight/brightness
     fi
 }

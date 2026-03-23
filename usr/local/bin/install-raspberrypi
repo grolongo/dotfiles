@@ -14,11 +14,17 @@ msg_error() {
 }
 
 check_is_sudo() {
-    [ "$(id -u)" -eq 0 ] || { msg_error "Requires root privileges. Use sudo."; exit 1; }
+    if [[ "$EUID" -ne 0 ]]; then
+        msg_error "Requires root privileges. Use sudo."
+        exit 1
+    fi
 }
 
 check_is_not_sudo() {
-    [ "$(id -u)" -ne 0 ] || { msg_error "Don't run this as sudo."; exit 1; }
+    if [[ "$EUID" -eq 0 ]]; then
+        msg_error "Don't run this as sudo."
+        exit 1
+    fi
 }
 
 confirm() {
@@ -75,7 +81,10 @@ else
 fi
 
 os_check() {
-    [ ! "$ID" = raspbian ] && { msg_error "You're not running Raspberry Pi OS, exiting."; exit 1; }
+    if [[ ! "$ID" = raspbian ]]; then
+        msg_error "You're not running Raspberry Pi OS, exiting."
+        exit 1
+    fi
 }
 
 initial_setup() {
@@ -83,7 +92,7 @@ initial_setup() {
     printf '%s\n' "$hostname" > /etc/hostname
     sed -i "s/raspberrypi/${hostname}/g" /etc/hosts
 
-    if [ "$SUDO_USER" != "pi" ]; then
+    if [[ "$SUDO_USER" != "pi" ]]; then
         if confirm "You're under user '$SUDO_USER'. Do you wish to delete pi?" "Y"; then
             deluser --remove-home pi
             groupdel pi
@@ -188,8 +197,8 @@ install_nextcloud_local() {
     command -v docker >/dev/null 2>&1 ||
         { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
-    local IP
-    IP="$(hostname -I | cut -f1 -d ' ')"
+    local ip
+    ip="$(hostname -I | cut -f1 -d ' ')"
 
     printf '\n'
     read -r -p "Enter username for admin account: " ncadmin
@@ -202,7 +211,7 @@ install_nextcloud_local() {
            -e SQLITE_DATABASE="ncvanilla" \
            -e NEXTCLOUD_ADMIN_USER="${ncadmin}" \
            -e NEXTCLOUD_ADMIN_PASSWORD="${ncpass}" \
-           -e NEXTCLOUD_TRUSTED_DOMAINS="${IP}" \
+           -e NEXTCLOUD_TRUSTED_DOMAINS="${ip}" \
            --restart always \
            --name ncvanilla \
            nextcloud
@@ -240,8 +249,8 @@ install_nextcloudpi_internet() {
     command -v docker >/dev/null 2>&1 ||
         { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
 
-    local IP
-    IP="$(hostname -I | cut -f1 -d ' ')"
+    local ip
+    ip="$(hostname -I | cut -f1 -d ' ')"
 
     docker run -d \
            -p 4443:4443 -p 443:443 -p 80:80 \
@@ -249,7 +258,7 @@ install_nextcloudpi_internet() {
            --restart always \
            --name nextcloudpi \
            ownyourbits/nextcloudpi-armhf \
-           "$IP"
+           "${ip}"
 
     printf '\n'
     printf "Wait until you see 'init done' with 'docker logs -f nextcloudpi'\n"
@@ -381,35 +390,34 @@ usage() {
 
 main() {
     os_check
-    local cmd="${1-}"
 
-	if [ -z "$cmd" ]; then
+	if [[ -z "${1-}" ]]; then
         usage
         exit 1
 	fi
 
-    if [ "$cmd" = "aptbase" ]; then
+    if [[ "${1}" = "aptbase" ]]; then
         check_is_sudo
         apt_base
-    elif [ "$cmd" = "isetup" ]; then
+    elif [[ "${1}" = "isetup" ]]; then
         check_is_sudo
         initial_setup
-    elif [ "$cmd" = "docker" ]; then
+    elif [[ "${1}" = "docker" ]]; then
         check_is_not_sudo
         install_docker
-    elif [ "$cmd" = "nextcloud_docker_local" ]; then
+    elif [[ "${1}" = "nextcloud_docker_local" ]]; then
         check_is_not_sudo
         install_nextcloud_local
-    elif [ "$cmd" = "nextcloudpi_docker_internet" ]; then
+    elif [[ "${1}" = "nextcloudpi_docker_internet" ]]; then
         check_is_not_sudo
         install_nextcloudpi_internet
-    elif [ "$cmd" = "seafile" ]; then
+    elif [[ "${1}" = "seafile" ]]; then
         check_is_not_sudo
         install_seafile
-    elif [ "$cmd" = "fail2ban" ]; then
+    elif [[ "${1}" = "fail2ban" ]]; then
         check_is_sudo
         install_fail2ban
-    elif [ "$cmd" = "msmtp" ]; then
+    elif [[ "${1}" = "msmtp" ]]; then
         check_is_sudo
         install_msmtp
     else

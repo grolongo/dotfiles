@@ -5,32 +5,36 @@ set -o pipefail
 IFS=$'\n\t'
 
 volume_check() {
-    if [ "${1}" == "low" ]
-    then
+    local text
+
+    if [[ "${1}" == "low" ]]; then
         amixer -q set Master 5%- unmute
-        TEXT=$(amixer sget Master | tail -1 | cut -d' ' -f6 | sed 's/\(\[\|\]\)//g')
-    elif [ "${1}" == "high" ]
-    then
+        text=$(amixer sget Master | tail -1 | cut -d' ' -f6 | sed 's/\(\[\|\]\)//g')
+    elif [[ "${1}" == "high" ]]; then
         amixer -q set Master 5%+ unmute
-        TEXT=$(amixer sget Master | tail -1 | cut -d' ' -f6 | sed 's/\(\[\|\]\)//g')
-    elif [ "${1}" == "mute" ]
-    then
+        text=$(amixer sget Master | tail -1 | cut -d' ' -f6 | sed 's/\(\[\|\]\)//g')
+    elif [[ "${1}" == "mute" ]]; then
         amixer -q set Master toggle
-        TEXT=$(amixer sget Master | tail -1 | cut -d' ' -f8 | sed 's/\(\[\|\]\)//g')
+        text=$(amixer sget Master | tail -1 | cut -d' ' -f8 | sed 's/\(\[\|\]\)//g')
     else
         printf "Usage volume [low | high | mute]\n"
     fi
 }
 
 notification() {
-    ID=$(cat "${HOME}"/.config/dunst/.dunst_volume)
-    if [ "${ID}" -gt "0" ]
+    local id
+    id=$(cat "${HOME}"/.config/dunst/.dunst_volume)
+    if [[ "${id}" -gt "0" ]]
     then
-        notify-send -p -r "${ID}" "Volume: ${TEXT}" >"${HOME}"/.config/dunst/.dunst_volume
+        notify-send -p -r "${id}" "Volume: ${text}" >"${HOME}"/.config/dunst/.dunst_volume
     else
-        notify-send -p "Volume: ${TEXT}" >"${HOME}"/.config/dunst/.dunst_volume
+        notify-send -p "Volume: ${text}" >"${HOME}"/.config/dunst/.dunst_volume
     fi
 }
 
-volume_check "${1}"
-notification
+main() {
+    volume_check "${1}"
+    notification
+}
+
+main "$@"

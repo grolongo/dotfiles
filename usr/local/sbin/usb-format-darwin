@@ -13,11 +13,19 @@ msg_error() {
 }
 
 initial_check() {
-    [ "$(id -u)" -eq 0 ] || { msg_error "This program requires root privileges. Use sudo."; return 1; }
-    [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; return 1; }
+    if [[ ! "$(id -u)" -eq 0 ]]; then
+        msg_error "This program requires root privileges. Use sudo."
+        exit 1
+    fi
+
+    if [[ ! "$(uname)" = Darwin ]]; then
+        msg_error "You are not running macOS, exiting."
+        exit 1
+    fi
 }
 
 device_selection() {
+    local devices
     devices=$(diskutil list)
     msg_info "List of available devices:"
     printf '%s\n' "${devices}"
@@ -98,7 +106,7 @@ name_selection() {
             continue
         fi
 
-        if ! [[ "${label}" =~ ^[A-Za-z0-9-]+$ ]]; then
+        if [[ ! "${label}" =~ ^[A-Za-z0-9-]+$ ]]; then
             printf 'Invalid characters. Use only letters, numbers, or -.\n'
             continue
         fi
@@ -169,7 +177,7 @@ formatting() {
 }
 
 main() {
-    initial_check || exit 1
+    initial_check
     device_selection
     scheme_selection
     filetype_selection

@@ -4,14 +4,16 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-SOURCE=${BASH_SOURCE[0]}
-while [ -L "$SOURCE" ]; do
-    DIR=$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)
-    SOURCE=$(readlink "$SOURCE")
-    [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE
+source=${BASH_SOURCE[0]}
+
+while [[ -L "${source}" ]]; do
+    dir=$(cd -P "$(dirname "${source}")" && pwd)
+    source=$(readlink "${source}")
+    [[ "${source}" != /* ]] && source="$dir/$source"
 done
-DIR=$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)
-base="${DIR%/*/*/*}"
+
+dir=$(cd -P "$(dirname "$source")" && pwd)
+base="${dir%/*/*/*}"
 
 confirm() {
     local prompt default response
@@ -40,7 +42,7 @@ symlink() {
     sourcefile="${base}"/"$1"
     targetlink="${HOME}"/"$1"
 
-    if [ -e "$sourcefile" ]; then
+    if [[ -e "$sourcefile" ]]; then
         ln -snfv "$sourcefile" "$targetlink"
     else
         printf '%s does not exist.\n' "$sourcefile" >&2
@@ -51,7 +53,7 @@ symlink_root() {
     sourcefile="${base}"/"$1"
     targetlink=/"$1"
 
-    if [ -e "$sourcefile" ]; then
+    if [[ -e "$sourcefile" ]]; then
         sudo ln -snfv "$sourcefile" "$targetlink"
     else
         printf '%s does not exist.\n' "$sourcefile" >&2
@@ -62,7 +64,7 @@ user_check() {
     if confirm "Install symlinks for ${USER}?" "Y"; then
         return 0
     else
-        return 1
+        exit 1
     fi
 }
 
@@ -89,7 +91,7 @@ symlink_bash() {
 
 symlink_emacs() {
     if  confirm "link Emacs config?" "Y"; then
-        mkdir -vp "${HOME}"/.config/emacs
+        mkdir -vp "${HOME}/.config/emacs"
         symlink ".config/emacs/init.el"
         symlink ".config/emacs/early-init.el"
     fi
@@ -157,8 +159,9 @@ symlink_git() {
 
 symlink_streamlink() {
     if confirm "link Streamlink config file?" "Y"; then
-        if [ "$(uname)" = Darwin ]; then
-            ln -snfv "${base}/.config/streamlink/config" "${HOME}/Library/Application Support/streamlink/config"
+        if [[ "$(uname)" = Darwin ]]; then
+            ln -snfv "${base}/.config/streamlink/config" \
+               "${HOME}/Library/Application Support/streamlink/config"
         else
             mkdir -vp "${HOME}/.config/streamlink"
             symlink ".config/streamlink/config"
@@ -236,14 +239,18 @@ symlink_binary() {
         symlink_root "usr/local/bin/extract"
         symlink_root "usr/local/bin/url"
         sudo ln -snfv "${base}/usr/local/bin/symlink-unix" "/usr/local/bin/symlink"
-        if [ "$(uname)" = Darwin ]; then
+        if [[ "$(uname)" = Darwin ]]; then
             symlink_root "usr/local/bin/install-darwin"
-            sudo ln -snfv "${base}/usr/local/bin/backup-darwin"      "/usr/local/bin/backup"
-            sudo ln -snfv "${base}/usr/local/sbin/usb-format-darwin" "/usr/local/sbin/usb-format"
+            sudo ln -snfv "${base}/usr/local/bin/backup-darwin" \
+                 "/usr/local/bin/backup"
+            sudo ln -snfv "${base}/usr/local/sbin/usb-format-darwin" \
+                 "/usr/local/sbin/usb-format"
         else
             symlink_root "usr/local/bin/install-ubuntu"
-            sudo ln -snfv "${base}/usr/local/bin/backup-linux"      "/usr/local/bin/backup"
-            sudo ln -snfv "${base}/usr/local/sbin/usb-format-linux" "/usr/local/sbin/usb-format"
+            sudo ln -snfv "${base}/usr/local/bin/backup-linux" \
+                 "/usr/local/bin/backup"
+            sudo ln -snfv "${base}/usr/local/sbin/usb-format-linux" \
+                 "/usr/local/sbin/usb-format"
             symlink_root "usr/local/bin/battery"
             symlink_root "usr/local/bin/brightness"
             symlink_root "usr/local/bin/colorpicker"
@@ -257,7 +264,7 @@ symlink_binary() {
 }
 
 main() {
-    user_check || exit 1
+    user_check
     symlink_zsh
     symlink_bash
     # symlink_emacs

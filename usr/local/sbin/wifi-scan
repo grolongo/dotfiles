@@ -44,9 +44,9 @@ main() {
     check_is_sudo
 
     while true; do
-        printf "Choose which method to use:\n"
-        printf "  [1] wpa_supplicant\n"
-        printf "  [2] Aircrack-ng\n"
+        printf 'Choose which method to use:\n'
+        printf '  [1] wpa_supplicant\n'
+        printf '  [2] Aircrack-ng\n'
         read -r -p "Selected method => " choice
         printf '\n'
 

@@ -4,7 +4,7 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
+tmpdir=$(mktemp -d); trap 'rm -rf "${tmpdir}"' EXIT
 
 msg_info() {
     printf '\n'
@@ -16,14 +16,14 @@ msg_error() {
 }
 
 check_is_sudo() {
-    if [ "$EUID" -ne 0 ]; then
+    if [[ "$EUID" -ne 0 ]]; then
         msg_error "Requires root privileges. Use sudo."
         exit 1
     fi
 }
 
 check_is_not_sudo() {
-    if [ "$EUID" -eq 0 ]; then
+    if [[ "$EUID" -eq 0 ]]; then
         msg_error "Don't run this as sudo."
         exit 1
     fi
@@ -62,7 +62,10 @@ spin() {
 }
 
 os_check() {
-    [ "$(uname)" = Darwin ] || { msg_error "You are not running macOS, exiting."; exit 1; }
+    if [[ ! "$(uname)" = Darwin ]]; then
+        msg_error "Not running macOS, exiting."
+        exit 1
+    fi
 }
 
 setup_prefsettings() {
@@ -187,7 +190,11 @@ install_formulae() {
                     brew tap railwaycat/emacsmacport
 
                     msg_info "Building our Emacs with custom flags..."
-                    brew install emacs-mac --with-emacs-big-sur-icon --with-native-compilation --with-mac-metal --with-librsvg
+                    brew install emacs-mac \
+                         --with-emacs-big-sur-icon \
+                         --with-native-compilation \
+                         --with-mac-metal \
+                         --with-librsvg
 
                     msg_info "Making GUI helper to Applications..."
                     cp -a "$(brew --prefix)"/opt/emacs-mac/Emacs.app /Applications
@@ -319,7 +326,10 @@ install_casks() {
 }
 
 install_macports() {
-    command -v jq >/dev/null 2>&1 || { brew install jq; sleep 5; }
+    if ! command -v jq >/dev/null 2>&1; then
+        brew install jq
+        sleep 5
+    fi
 
     get_macos_version() {
         sw_vers | awk '/ProductVersion/ {
@@ -414,7 +424,7 @@ install_ports() {
 set_git() {
     (
         cd "${HOME}/dotfiles"
-        if [ "$(git rev-parse --is-inside-work-tree)" ]; then
+        if [[ "$(git rev-parse --is-inside-work-tree)" ]]; then
             git remote set-url origin git@github.com:grolongo/dotfiles.git
         else
             git init
@@ -445,39 +455,39 @@ usage() {
 main() {
     os_check
 
-    if [ -z "${1-}" ]; then
+    if [[ -z "${1-}" ]]; then
         usage
         exit 1
     fi
 
-    if [ "${1}" = "prefsettings" ]; then
+    if [[ "${1}" = "prefsettings" ]]; then
         check_is_not_sudo
         setup_prefsettings
-    elif [ "${1}" = "firewall" ]; then
+    elif [[ "${1}" = "firewall" ]]; then
         check_is_sudo
         setup_firewall
-    elif [ "${1}" = "dns" ]; then
+    elif [[ "${1}" = "dns" ]]; then
         check_is_not_sudo
         setup_dns
-    elif [ "${1}" = "hostname" ]; then
+    elif [[ "${1}" = "hostname" ]]; then
         check_is_sudo
         change_hostname
-    elif [ "${1}" = "homebrew" ]; then
+    elif [[ "${1}" = "homebrew" ]]; then
         check_is_not_sudo
         install_homebrew
-    elif [ "${1}" = "formulae" ]; then
+    elif [[ "${1}" = "formulae" ]]; then
         check_is_not_sudo
         install_formulae
-    elif [ "${1}" = "casks" ]; then
+    elif [[ "${1}" = "casks" ]]; then
         check_is_not_sudo
         install_casks
-    elif [ "${1}" = "macports" ]; then
+    elif [[ "${1}" = "macports" ]]; then
         check_is_not_sudo
         install_macports
-    elif [ "${1}" = "ports" ]; then
+    elif [[ "${1}" = "ports" ]]; then
         check_is_sudo
         install_ports
-    elif [ "${1}" = "git" ]; then
+    elif [[ "${1}" = "git" ]]; then
         check_is_not_sudo
         set_git
     else

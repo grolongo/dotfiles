@@ -10,21 +10,22 @@ exe|tar.bz2|tar.gz|tar.xz|tar.zst|lzma|pax.Z|Z|dmg|pax|deb|rpm>\n"
 }
 
 filecheck() {
-    if [ -z "${1}" ]; then
+    if [[ -z "${1}" ]]; then
         usage
-        return 1
+        exit 1
     fi
 
-    if [ ! -f "${1}" ]; then
+    if [[ ! -f "${1}" ]]; then
         printf "%s - file does not exist\n" "${1}"
-        return 1
+        exit 1
     fi
 }
 
 main() {
-    filecheck "${1-}" || exit 1
-    local filenameToLowerCase="${1,,}"
-    case "${filenameToLowerCase}" in
+    filecheck "${1-}"
+    local filename_lowercase
+    filename_lowercase="${1,,}"
+    case "${filename_lowercase}" in
         *.tar)            tar xvf "${1}"                                        ;;
         *.tar.bz2|*.tbz2) tar xvjf "${1}"                                       ;;
         *.tar.gz|*.tgz)   tar xvzf "${1}"                                       ;;
@@ -45,9 +46,9 @@ main() {
         *.deb)            ar x "${1}"                                           ;;
         *.rpm)            rpm2cpio "${1}" | cpio -idmv                          ;;
         *)
-           printf "extract: %s - unknown archive method\n" "${1}"
-           exit 1
-           ;;
+            printf "extract: %s - unknown archive method\n" "${1}"
+            exit 1
+            ;;
     esac
 }
 
