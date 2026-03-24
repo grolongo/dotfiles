@@ -36,12 +36,12 @@ confirm() {
 }
 
 initial_check() {
-    if [[ ! "$(id -u)" -eq 0 ]]; then
+    if (( EUID != 0 )); then
         msg_error "This program requires root privileges. Use sudo."
         exit 1
     fi
 
-    if [[ ! "$(uname)" = Linux ]]; then
+    if [[ "$(uname)" != "Linux" ]]; then
         msg_error "You are not running Linux, exiting."
         exit 1
     fi
@@ -214,7 +214,7 @@ partitioning() {
     parted --script --align optimal /dev/"${device}" mkpart primary 0% 100%
     sleep 5
 
-    if [[ "${scheme}" == gpt ]] && [[ "${filesystem}" != ext4 ]]; then
+    if [[ "${scheme}" == "gpt" && "${filesystem}" != "ext4" ]]; then
         msg_info "Enabling Microsoft compatibility for GPT..."
         parted --script /dev/"${device}" set 1 msftdata on
         sleep 5
@@ -226,25 +226,25 @@ partitioning() {
 }
 
 formatting() {
-    if [[ "${filesystem}" == vfat ]]; then
+    if [[ "${filesystem}" == "vfat" ]]; then
         mkfs."${filesystem}" -F32 -n "${label}" "${target}"
-    elif [[ "${filesystem}" == exfat ]]; then
+    elif [[ "${filesystem}" == "exfat" ]]; then
         mkfs."${filesystem}" --volume-label="${label}" "${target}"
-    elif [[ "${filesystem}" == ntfs ]]; then
+    elif [[ "${filesystem}" == "ntfs" ]]; then
         mkfs."${filesystem}" --fast --label "${label}" "${target}"
-    elif [[ "${filesystem}" == ext4 ]]; then
+    elif [[ "${filesystem}" == "ext4" ]]; then
         mkfs."${filesystem}" -L "${label}" "${target}"
-    elif [[ "${filesystem}" == btrfs ]]; then
+    elif [[ "${filesystem}" == "btrfs" ]]; then
         mkfs."${filesystem}" --label "${label}" "${target}"
-    elif [[ "${filesystem}" == xfs ]]; then
+    elif [[ "${filesystem}" == "xfs" ]]; then
         mkfs."${filesystem}" -L "${label}" "${target}"
     fi
 }
 
 encryption_check() {
-    if [[ "${encryption}" = disabled ]]; then
+    if [[ "${encryption}" == "disabled" ]]; then
         msg_info "Formatting the new partition..."
-        target=/dev/"${device}"1
+        target="/dev/${device}1"
         formatting
     else
         msg_info "Formatting & encrypting the new partition..."
@@ -252,10 +252,10 @@ encryption_check() {
         cryptsetup luksFormat --batch-mode \
                    --verify-passphrase \
                    --label "${label}CRYPT" \
-                   /dev/"${device}"1
+                   "/dev/${device}1"
         sleep 5
         sync
-        cryptsetup luksOpen /dev/"${device}"1 disk
+        cryptsetup luksOpen "/dev/${device}1" disk
         sleep 5
         formatting
         sleep 5

@@ -18,14 +18,14 @@ msg_error() {
 }
 
 check_is_sudo() {
-    if [[ "$EUID" -ne 0 ]]; then
+    if (( EUID != 0 )); then
         msg_error "Requires root privileges. Use sudo."
         exit 1
     fi
 }
 
 check_is_not_sudo() {
-    if [[ "$EUID" -eq 0 ]]; then
+    if (( EUID == 0 )); then
         msg_error "Don't run this as sudo."
         exit 1
     fi
@@ -79,7 +79,7 @@ os_check() {
         exit 1
     fi
 
-    if [[ ! "$ID" = ubuntu ]]; then
+    if [[ "$ID" != "ubuntu" ]]; then
         msg_error "Not running Ubuntu, exiting."
         exit 1
     fi
@@ -755,7 +755,7 @@ set_sway() {
 set_git() {
     (
         cd "${HOME}/dotfiles"
-        if [ "$(git rev-parse --is-inside-work-tree)" ]; then
+        if [[ "$(git rev-parse --is-inside-work-tree)" ]]; then
             git remote set-url origin git@github.com:grolongo/dotfiles.git
         else
             git init
@@ -790,36 +790,36 @@ main() {
         exit 1
     fi
 
-    if [[ "${1}" = "isetup" ]]; then
+    if [[ "${1}" == "isetup" ]]; then
         check_is_sudo
         initial_setup
-    elif [[ "${1}" = "aptcommon" ]]; then
+    elif [[ "${1}" == "aptcommon" ]]; then
         check_is_sudo
         apt_common
         apt_clean
-    elif [[ "${1}" = "aptextra" ]]; then
+    elif [[ "${1}" == "aptextra" ]]; then
         check_is_sudo
         apt_extra
         apt_clean
-    elif [[ "${1}" = "snaps" ]]; then
+    elif [[ "${1}" == "snaps" ]]; then
         check_is_sudo
         snaps_common
-    elif [[ "${1}" = "emacs" ]]; then
+    elif [[ "${1}" == "emacs" ]]; then
         check_is_sudo
         build_emacs
-    elif [[ "${1}" = "gsettings" ]]; then
+    elif [[ "${1}" == "gsettings" ]]; then
         check_is_not_sudo
         set_gsettings
-    elif [[ "${1}" = "i3" ]]; then
+    elif [[ "${1}" == "i3" ]]; then
         check_is_sudo
         set_i3wm
         apt_clean
-    elif [[ "${1}" = "sway" ]]; then
+    elif [[ "${1}" == "sway" ]]; then
         check_is_sudo
         jq_check
         set_sway
         apt_clean
-    elif [[ "${1}" = "git" ]]; then
+    elif [[ "${1}" == "git" ]]; then
         check_is_not_sudo
         set_git
     else

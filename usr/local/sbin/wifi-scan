@@ -5,7 +5,7 @@ set -o pipefail
 IFS=$'\n\t'
 
 check_is_sudo() {
-    if [[ $EUID -ne 0 ]]; then
+    if (( EUID != 0 )); then
         printf '\033[31mRequires root privileges. Use sudo.\033[0m\n' >&2
         exit 1
     fi

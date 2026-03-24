@@ -13,12 +13,12 @@ msg_error() {
 }
 
 initial_check() {
-    if [[ ! "$(id -u)" -eq 0 ]]; then
+    if (( EUID != 0 )); then
         msg_error "This program requires root privileges. Use sudo."
         exit 1
     fi
 
-    if [[ ! "$(uname)" = Darwin ]]; then
+    if [[ "$(uname)" == "Darwin" ]]; then
         msg_error "You are not running macOS, exiting."
         exit 1
     fi

@@ -8,7 +8,7 @@ tmpdir=$(mktemp -d); trap 'rm -rf "${tmpdir}"' EXIT
 tarfile="${tmpdir}/backup.tar.gz"
 
 os_check() {
-    if [[ ! "$(uname)" = Darwin ]]; then
+    if [[ "$(uname)" != Darwin ]]; then
         printf '\033[31mNot running macOS, exiting.\033[0m\n' >&2
         exit 1
     fi

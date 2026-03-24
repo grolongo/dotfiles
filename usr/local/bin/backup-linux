@@ -5,7 +5,7 @@ set -o pipefail
 IFS=$'\n\t'
 
 os_check() {
-    if [[ ! "$OSTYPE" = linux* ]]; then
+    if [[ "$OSTYPE" != linux* ]]; then
         printf '\033[31mYou are not running Linux. Exiting.\033[0m\n' >&2
         exit 1
     fi

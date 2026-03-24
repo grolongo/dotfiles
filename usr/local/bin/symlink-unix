@@ -161,7 +161,7 @@ symlink_git() {
 
 symlink_streamlink() {
     if confirm "link Streamlink config file?" "Y"; then
-        if [[ "$(uname)" = Darwin ]]; then
+        if [[ "$(uname)" == "Darwin" ]]; then
             ln -snfv "${base}/.config/streamlink/config" \
                "${HOME}/Library/Application Support/streamlink/config"
         else
@@ -241,7 +241,7 @@ symlink_binary() {
         symlink_root "usr/local/bin/extract"
         symlink_root "usr/local/bin/url"
         sudo ln -snfv "${base}/usr/local/bin/symlink-unix" "/usr/local/bin/symlink"
-        if [[ "$(uname)" = Darwin ]]; then
+        if [[ "$(uname)" == "Darwin" ]]; then
             symlink_root "usr/local/bin/install-darwin"
             sudo ln -snfv "${base}/usr/local/bin/backup-darwin" \
                  "/usr/local/bin/backup"
