@@ -46,33 +46,29 @@ main() {
     case $1 in
 
         up)
-            total=`expr "${backlight}" + "${increment}"`
-            if [[ "${total}" -gt "255" ]]; then
-                exit 1
-            fi
+            total=$(( backlight + increment ))
+            (( total > 255 )) && exit 1
             set_value=1
             ;;
         down)
-            total=`expr ${backlight} - "${increment}"`
-            if [[ "${total}" -lt "0" ]]; then
-                exit 1
-            fi
+            total=$(( backlight - increment ))
+            (( total < 0 )) && exit 1
             set_value=1
             ;;
         total)
 	        temp_value="${backlight}"
-	        while [[ "${temp_value}" -lt "255" ]]; do
-		        temp_value=`expr "${temp_value}" + 1`
-		        if [[ "${temp_value}" -gt "255" ]]; then temp_value=255; fi
-		        printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
+	        while (( temp_value < 255 )); do
+                temp_value=$(( temp_value + 1 ))
+		        if (( temp_value > 255 )); then temp_value=255; fi
+                printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
 	        done
             ;;
         off)
 	        temp_value="${backlight}"
-	        while [[ "${temp_value}" -gt "0" ]]; do
-		        temp_value=`expr "${temp_value}" - 1`
-		        if [ "${temp_value}" -lt "0" ]; then temp_value=0; fi
-		        printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
+	        while (( temp_value > 0 )); do
+                temp_value=$(( temp_value - 1 ))
+	            if (( temp_value < 0 )); then temp_value=0; fi
+	            printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
 	        done
             ;;
         *)
@@ -80,7 +76,7 @@ main() {
             ;;
     esac
 
-    if [[ "${set_value}" -eq "1" ]]; then
+    if (( set_value == 1 )); then
         printf '%s' "${total}" > /sys/class/leds/smc::kbd_backlight/brightness
     fi
 }

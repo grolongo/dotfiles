@@ -138,7 +138,7 @@ name_selection() {
             continue
         fi
 
-        if  [[ "${#label}" -le 11 ]]; then
+        if  (( ${#label} <= 11 )); then
             break
         else
             printf 'Too long (%s chars). Try again.\n' "${#label}"

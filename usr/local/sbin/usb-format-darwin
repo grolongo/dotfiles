@@ -101,7 +101,7 @@ name_selection() {
         label="${label%"${label##*[![:space:]]}"}"
         label="${label^^}"
 
-        if [ -z "${label}" ]; then
+        if [[ -z "${label}" ]]; then
             printf 'Name cannot be empty.\n'
             continue
         fi
@@ -111,19 +111,19 @@ name_selection() {
             continue
         fi
 
-        if  [ "${#label}" -le 11 ]; then
+        if  (( ${#label} <= 11 )); then
             break
         else
-            printf 'Too long (%s chars). Try again.' "${#label}"
+            printf 'Too long (%s chars). Try again.\n' "${#label}"
         fi
     done
 }
 
 final_warning() {
     printf '\n'
-    msg_info "  ============="
-    msg_info "  LAST REMINDER"
-    msg_info "  ============="
+    msg_info "  ============= "
+    msg_info "  LAST REMINDER "
+    msg_info "  ============= "
     msg_info "  Selected drive: /dev/${device}"
     msg_info "  Partition scheme: ${scheme^^}"
     msg_info "  File system: ${filesystem}"

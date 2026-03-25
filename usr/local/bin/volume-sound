@@ -24,8 +24,7 @@ volume_check() {
 notification() {
     local id
     id=$(cat "${HOME}"/.config/dunst/.dunst_volume)
-    if [[ "${id}" -gt "0" ]]
-    then
+    if (( id > 0 )); then
         notify-send -p -r "${id}" "Volume: ${text}" >"${HOME}"/.config/dunst/.dunst_volume
     else
         notify-send -p "Volume: ${text}" >"${HOME}"/.config/dunst/.dunst_volume

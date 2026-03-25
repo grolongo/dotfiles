@@ -108,7 +108,7 @@ initial_setup() {
         apt install -y dpkg
         mapfile -t results < <(ld.so --help | grep 'supported' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
 
-        if [[ ${#results[@]} -eq 0 ]]; then
+        if (( ${#results[@]} == 0 )); then
             msg_error "No supported versions available."
             exit 1
         fi
