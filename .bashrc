@@ -81,9 +81,10 @@ set_prompt() {
     fi
 
     # highlight the hostname when connected via SSH
-    if [[ -n "${SSH_TTY}" ]] ||
-           [[ -n "${SSH_CONNECTION}" ]] ||
-           [[ -n "${SSH_CLIENT}" ]]; then
+    if [[ -n "${SSH_TTY}" \
+              || -n "${SSH_CONNECTION}" \
+              || -n "${SSH_CLIENT}" ]]
+    then
         hoststyle="\[\e[1;33m\]" # yellow
     else
         hoststyle="\[\e[1;32m\]" # green

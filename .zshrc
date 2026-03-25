@@ -1,14 +1,17 @@
-# Bail out of rest of the setup if we're coming in from Tramp
-[[ "${TERM}" == "dumb" ]] && unsetopt zle && PS1='$ ' && return
+# bail out of rest of the setup if we're coming in from Tramp
+if [[ "${TERM}" == "dumb" ]]; then
+    unsetopt zle
+    PS1='$ '
+    return
+fi
 
-if [ -r "$HOME/.aliases" ] && [ -f "$HOME/.aliases" ]; then
-    . "$HOME/.aliases"
+if [[ -r "$HOME/.aliases" && -f "$HOME/.aliases" ]]; then
+    source "$HOME/.aliases"
 fi
 
 setopt CHASE_LINKS # cd into the exact symlink path
 unsetopt BEEP
 
-### History
 HISTSIZE=9999999
 HISTFILE=~/.cache/zsh/history
 SAVEHIST=9999999
@@ -31,8 +34,6 @@ zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 bindkey "^[[A" up-line-or-beginning-search
 bindkey "^[[B" down-line-or-beginning-search
-
-### Completion
 
 # Use compaudit to see insecure folders and fix them.
 # Usually just need to fix group writing permissions
@@ -69,23 +70,19 @@ zstyle ':completion:*:descriptions' format '%B-- %d%b'
 zstyle ':completion:*:warnings' format 'no match found'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,user,%cpu,comm,cmd'
 
-## SSH command
-
 # hide login names because we dont need them
 zstyle ':completion:*:ssh:argument-1:*' tag-order hosts
 
 # only pick hostnames from our ssh config file
+hostnames=()
 
-h=()
-if [ -r ~/.ssh/config ]; then
-    h=($h ${${${(@M)${(f)"$(< ~/.ssh/config)"}:#Host *}#Host }:#*[*?]*})
+if [[ -r ~/.ssh/config ]]; then
+    hostnames=($h ${${${(@M)${(f)"$(< ~/.ssh/config)"}:#Host *}#Host }:#*[*?]*})
 fi
 
-if [ $#h -gt 0 ]; then
-    zstyle ':completion:*:(ssh|scp|sftp|slogin):*' hosts $h
+if (( $#hostnames > 0 )); then
+    zstyle ':completion:*:(ssh|scp|sftp|slogin|rsync|mosh):*' hosts $hostnames
 fi
-
-### Prompt
 
 setopt PROMPT_SUBST
 autoload -Uz vcs_info
@@ -95,22 +92,21 @@ zstyle ':vcs_info:git*' check-for-changes false
 zstyle ':vcs_info:git*' check-for-staged-changes false
 zstyle ':vcs_info:git*' formats ' %b'
 
-function precmd() {
-    vcs_info
-}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd vcs_info
 
-# Hostname coloring local/remote
-if [ -n "${SSH_TTY}" ] || \
-       [ -n "${SSH_CONNECTION}" ] || \
-       [ -n "${SSH_CLIENT}" ]; then
-    hostStyle="%F{yellow}%m" # yellow
+if [[ -n "${SSH_TTY}" \
+          || -n "${SSH_CONNECTION}" \
+          || -n "${SSH_CLIENT}" ]]
+then
+   hoststyle="%F{yellow}%m" # yellow
 else
-    hostStyle="%F{green}%m" # green
+    hoststyle="%F{green}%m" # green
 fi
 
 PROMPT='%B%(!.%F{red}.%F{green})%n%f'
 PROMPT+='@'
-PROMPT+='$hostStyle '
+PROMPT+='$hoststyle '
 PROMPT+='%F{blue}%~%f'
 PROMPT+='%F{cyan}${vcs_info_msg_0_}%f'
 PROMPT+=' %# '
