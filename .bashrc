@@ -68,10 +68,17 @@ git_branch() {
 }
 
 set_prompt() {
-    # last_exit must be one line
+    # last_exit must be a single line, and first
     local last_exit=$?
     local branch
     branch=$(git_branch)
+
+    # highlight return code error
+    if (( last_exit )); then
+        returncode="\[\e[1;31m\]" # red
+    else
+        returncode="\[\e[1;37m\]" # grey
+    fi
 
     # highlight the user name when logged in as root
     if [[ "${USER}" == "root" ]]; then
@@ -88,13 +95,6 @@ set_prompt() {
         hoststyle="\[\e[1;33m\]" # yellow
     else
         hoststyle="\[\e[1;32m\]" # green
-    fi
-
-    # highlight return code error
-    if [[ "$last_exit" == "0" ]]; then
-        returncode="\[\e[1;37m\]" # grey
-    else
-        returncode="\[\e[1;31m\]" # red
     fi
 
     PS1="${userstyle}\u"         # username
