@@ -240,19 +240,15 @@ symlink_binary() {
     if confirm "link binary files?" "Y"; then
         symlink_root "usr/local/bin/extract"
         symlink_root "usr/local/bin/url"
-        sudo ln -snfv "${base}/usr/local/bin/symlink-unix" "/usr/local/bin/symlink"
+        symlink_root "usr/local/bin/symlink-unix"
         if [[ "$(uname)" == "Darwin" ]]; then
             symlink_root "usr/local/bin/install-darwin"
-            sudo ln -snfv "${base}/usr/local/bin/backup-darwin" \
-                 "/usr/local/bin/backup"
-            sudo ln -snfv "${base}/usr/local/sbin/usb-format-darwin" \
-                 "/usr/local/sbin/usb-format"
+            symlink_root "usr/local/bin/backup-darwin"
+            symlink_root "usr/local/sbin/usb-format-darwin"
         else
             symlink_root "usr/local/bin/install-ubuntu"
-            sudo ln -snfv "${base}/usr/local/bin/backup-linux" \
-                 "/usr/local/bin/backup"
-            sudo ln -snfv "${base}/usr/local/sbin/usb-format-linux" \
-                 "/usr/local/sbin/usb-format"
+            symlink_root "usr/local/bin/backup-linux"
+            symlink_root "usr/local/sbin/usb-format-linux"
             symlink_root "usr/local/bin/battery"
             symlink_root "usr/local/bin/brightness"
             symlink_root "usr/local/bin/colorpicker"
