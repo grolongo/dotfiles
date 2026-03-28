@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# key: unless
+# name: (unless (_) (_))
+# --
+(unless (${1:CONDITION})
+  (${2:THEN}))$0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-frame
+# name: extract frame from video file
+# --
+ffmpeg -ss ${1:HH:MM:SS} -i ${2:INPUT_FILE} -frames:v 1 frame.png$0

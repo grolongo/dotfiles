@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: yt-dlp
+# name: download mp3 from youtube
+# --
+yt-dlp --audio-format mp3 --audio-quality 0 --extract-audio ${1:URL}$0

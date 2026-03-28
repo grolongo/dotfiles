@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: magick-flipH
+# name: flip image(s) horizontally
+# --
+magick mogrify -flop ${1:FILENAME}$0

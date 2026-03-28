@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# key: cond
+# name: cond with system-type
+# --
+(cond (${1:$$(yas-choose-value '"(eq system-type 'gnu/linux)" "(eq system-type 'darwin)" "(eq system-type 'windows-nt)")}
+       (${2:STATEMENT}))
+      (${3:$$(yas-choose-value '"(eq system-type 'gnu/linux)" "(eq system-type 'darwin)" "(eq system-type 'windows-nt)")}
+       (${4:STATEMENT}))
+      (t
+       (${5:STATEMENT})))$0

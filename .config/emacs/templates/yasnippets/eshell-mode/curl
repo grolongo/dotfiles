@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: curl-dl
+# name: curl dl to disk
+# --
+curl --location --progress-bar --remote-name ${1:URL}$0

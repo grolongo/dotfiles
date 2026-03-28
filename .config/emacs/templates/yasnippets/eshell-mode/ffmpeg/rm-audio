@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-rmaudio
+# name: remove audio from video file
+# --
+ffmpeg -i ${1:INPUT_FILE} -vcodec copy -an noaudio-$1$0

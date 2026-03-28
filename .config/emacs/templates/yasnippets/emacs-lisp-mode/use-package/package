@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: use-package
+# name: (use-package _ :ensure t :demand t)
+# --
+(use-package ${1:PACKAGE_NAME}
+  :ensure t
+  :demand t$0)

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: until
+# name: until _; do _ done
+# --
+until ${1:CONDITION}; do
+    ${2:STATEMENT}
+done$0

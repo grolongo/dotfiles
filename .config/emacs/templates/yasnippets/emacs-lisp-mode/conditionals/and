@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# key: and
+# name: (and (_) (_))
+# --
+(and (${1:CONDITION})
+     (${2:CONDITION}))$0

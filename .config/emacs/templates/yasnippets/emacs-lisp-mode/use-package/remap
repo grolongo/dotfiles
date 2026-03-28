@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: :bind-remap
+# name: ([remap _] . _)
+# --
+:bind ([remap ${1:CMD_TO_REMAP}] . ${2:NEW_CMD})$0

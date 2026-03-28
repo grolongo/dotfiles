@@ -1,0 +1,25 @@
+# -*- mode: snippet -*-
+# key: select
+# name: selection menu
+# --
+PS3="${1:INPUT_MESSAGE}"
+
+select ${2:VARIABLE} in ${3:OPTION} ${4:OPTION} ${5:OPTION} exit; do
+    case $$2 in
+        $3)
+            ${6:ARGUMENTS}
+            ;;
+        $4)
+            ${7:ARGUMENTS}
+            ;;
+        $5)
+            ${8:ARGUMENTS}
+            ;;
+        exit)
+            break
+            ;;
+        *)
+            echo "Invalid option $REPLY"
+            ;;
+    esac
+done$0

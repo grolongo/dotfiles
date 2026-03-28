@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: defalias
+# name: (defalias '_ '_)
+# --
+(defalias '${1:SYMBOL} '${2:ALIAS})$0

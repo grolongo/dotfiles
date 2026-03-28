@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: mktemp
+# name: tmpdir="$(mktemp -d)"
+# --
+tmpdir="$(mktemp -d)"$0

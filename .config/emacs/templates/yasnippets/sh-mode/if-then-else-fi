@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# key: if-else
+# name: if [ _ ]; then _ else _ fi
+# --
+if [ ${1:CONDITION} ]; then
+    ${2:STATEMENT}
+else
+    ${3:STATEMENT}
+fi$0

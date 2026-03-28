@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: magick-convwebp
+# name: webp to jpg
+# --
+magick mogrify -format jpg ${1:INPUT_FILE}.webp$0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-flip
+# name: flip the video horizontally
+# --
+ffmpeg -i ${1:INPUT_FILE} -vf hflip -c:a copy -map 0 -map_metadata -1 flipped-$1$0

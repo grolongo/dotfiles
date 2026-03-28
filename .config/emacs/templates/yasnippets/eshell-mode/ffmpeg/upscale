@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-upscale
+# name: upscale to 60fps
+# --
+ffmpeg -i ${1:INPUT_FILE} -vf "minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1" $1-upscaled-60fps.mp4$0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: mkvmerge-sub
+# name: remove ALL subtitles
+# --
+mkvmerge -o $1-nosub.mkv --no-subtitles ${1:FILENAME}.mkv$0

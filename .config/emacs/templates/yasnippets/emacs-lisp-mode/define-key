@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: define-key
+# name: (define-key _-map (kbd "_") '_)
+# --
+(define-key ${1:KEYMAP}-map (kbd "${2:KEY}") '${3:COMMAND})$0

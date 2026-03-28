@@ -1,0 +1,9 @@
+alias clear clear 1
+alias claer clear 1
+alias ls eshell/ls -ArX $*
+alias l eshell/ls -AHlrX $*
+alias cp my/cp $*
+alias mv my/mv $*
+alias rm eshell/rm --recursive --verbose $*
+alias ff find-file $1
+alias open find-file $1

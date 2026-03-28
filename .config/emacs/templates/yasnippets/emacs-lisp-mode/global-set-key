@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: global-set-key
+# name: (global-set-key (kbd "_") '_)
+# --
+(global-set-key (kbd "${1:KEY}") '${2:COMMAND})$0

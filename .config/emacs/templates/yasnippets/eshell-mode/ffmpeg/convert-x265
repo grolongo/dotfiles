@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-x265-convert
+# name: convert file to x265 format
+# --
+ffmpeg -i ${1:INPUT_FILE} -vcodec libx265 -crf 28 ${2:OUTPUT_NAME}.mp4$0

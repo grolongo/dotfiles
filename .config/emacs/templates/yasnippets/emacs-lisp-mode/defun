@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: defun
+# name: (defun _ (_) "_" (interactive))
+# --
+(defun ${1:FUNCTION_NAME} (${2:ARGS})
+  "${3:DOCSTRING}"
+  (interactive)
+  $0)

@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# key: case
+# name: case "_" in _) _ ;; _) _ ;; *) _ ;; esac
+# --
+case "${1:$OSTYPE}" in
+    ${2:$$(yas-choose-value '"linux-gnu*" "darwin*")})
+        ${3:STATEMENT}
+        ;;
+    ${4:$$(yas-choose-value '"linux-gnu*" "darwin*")})
+        ${5:STATEMENT}
+        ;;
+    ${6:*})
+        ${7:STATEMENT}
+        ;;
+esac$0

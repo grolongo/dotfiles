@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: if-else
+# name: (if (_) (_) (_))
+# --
+(if (${1:CONDITION})
+    (${2:THEN})
+  (${3:ELSE}))$0

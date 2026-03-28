@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-changeres
+# name: changes resolution
+# --
+ffmpeg -i ${1:INPUT_FILE}.mp4 -vf scale=${2:WIDTH}:720 -preset slow -crf 18 $1-modified-res.mp4$0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ipv4
+# name: ipv4.icanhazip.com
+# --
+curl --silent --ipv4 ipv4.icanhazip.com$0

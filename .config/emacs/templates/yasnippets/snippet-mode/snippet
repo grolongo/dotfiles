@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# key: snippet
+# name: insert snippet skeleton
+# --
+# -*- mode: snippet -*-
+# uuid: `(replace-regexp-in-string "\n\\'" "" (shell-command-to-string "uuidgen"))`
+# key: $1
+# name: $2
+# --
+$0

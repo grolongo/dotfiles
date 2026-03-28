@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: let
+# name: (let_ (_))
+# --
+(let${1:*} (${2:ARGS}))$0

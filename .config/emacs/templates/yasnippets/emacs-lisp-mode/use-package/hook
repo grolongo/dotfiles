@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: :hook
+# name: :hook (_-mode . _)
+# --
+:hook (${1:NAME}-mode . ${2:MODE/FUNCTION})$0

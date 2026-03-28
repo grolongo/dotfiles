@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-concataudio
+# name: concatenate audio and video file together
+# --
+ffmpeg -i ${1:VIDEO_FILE} -stream_loop -1 -i ${2:AUDIO_FILE}.mp3 -c:v copy -shortest -fflags +shortest -max_interleave_delta 100M ${3:OUTPUT}$0

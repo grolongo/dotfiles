@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: :vc
+# name: :vc (:url "_" :rev :newest :lisp-dir "git/")
+# --
+:vc (:url "https://github.com/${1:USER}/${2:REPO}"
+     :rev :newest
+     :lisp-dir "git/")$0

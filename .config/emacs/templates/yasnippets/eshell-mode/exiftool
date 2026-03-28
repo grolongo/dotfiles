@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: exiftool
+# name: delete metadata
+# --
+exiftool -overwrite_original -all= ${1:FILENAME}$0

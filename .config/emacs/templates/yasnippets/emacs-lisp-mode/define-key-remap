@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: define-key-remap
+# name: (define-key _-map [remap _] '_)
+# --
+(define-key ${1:KEYMAP}-map [remap ${2:ORIGINAL_COMMAND}] '${3:OTHER_COMMAND})$0

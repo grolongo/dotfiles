@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: mkvmerge-sub-2
+# name: remove subtitles
+# --
+mkvmerge -o $1-resub.mkv --subtitle-tracks ${2:SUBS_ID_LIST} ${1:FILENAME}.mkv$0

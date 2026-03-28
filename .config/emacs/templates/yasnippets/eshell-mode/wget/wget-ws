@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: wget-ws
+# name: save whole website
+# --
+wget --mirror --page-requisites --adjust-extension --convert-links --wait=${1:seconds} ${2:URL}$0

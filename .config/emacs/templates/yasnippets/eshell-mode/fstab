@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: fstab
+# name: display fstab with columns
+# --
+column -t /etc/fstab$0

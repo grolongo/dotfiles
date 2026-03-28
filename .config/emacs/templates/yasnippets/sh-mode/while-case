@@ -1,0 +1,26 @@
+# -*- mode: snippet -*-
+# key: while-case
+# name: while true + case "_" in _) _ ;; _) _ ;; *) _ ;; esac done
+# --
+while true; do
+    echo
+    printf "${1:PROMPT_MESSAGE}\n"
+    printf "  [1] Option 1\n"
+    printf "  [2] Option 2\n"
+    read -r -p "Selected method => " choice
+
+    case "$choice" in
+        1)
+            ${2:STATEMENT}
+            break
+            ;;
+        2)
+            ${3:STATEMENT}
+            break
+            ;;
+        *)
+            printf "Wront input, please choose either 1 or 2."
+            echo
+            ;;
+    esac
+done$0

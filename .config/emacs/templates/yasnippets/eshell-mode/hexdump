@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: hexdump
+# name: generate random hex of 10
+# --
+hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom$0

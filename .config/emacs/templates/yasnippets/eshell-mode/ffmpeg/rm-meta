@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-rmmeta
+# name: remove metadata from video file
+# --
+ffmpeg -i ${1:INPUT_FILE} -vcodec copy -acodec copy -map 0 -map_metadata -1 nometa-$1$0

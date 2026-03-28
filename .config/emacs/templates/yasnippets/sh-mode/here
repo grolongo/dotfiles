@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: heredoc
+# name: cat <<-EOF > _ _ EOF
+# --
+cat <<-EOF > ${1:FILEPATH}
+${2:CONTENT}
+EOF$0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-changeaudio
+# name: changes codec, rate & channels
+# --
+ffmpeg -i ${1:INPUT_FILE}.mp4 -c:v copy -c:a ${2:AUDIO_CODEC} -ar ${3:SAMPLE_RATE} -ac ${4:CHANNELS} $1-modified.mp4$0

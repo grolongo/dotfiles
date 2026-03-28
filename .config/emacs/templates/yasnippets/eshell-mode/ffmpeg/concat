@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-concat
+# name: concatenate video files in one
+# --
+ffmpeg -f concat -safe 0 -i ${1:fileslist}.txt -c copy ${2:output}.mp4$0

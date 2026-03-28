@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-dl-m3u8
+# name: download m3u8 playlist to mp4
+# --
+ffmpeg -i "${1:URL}" -c copy m3u8_vid.mp4$0

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: for
+# name: for _ in _; do _ done
+# --
+for ${1:VARIABLE} in ${3:ELEMENT(S)}; do
+    ${4:STATEMENT}
+done$0

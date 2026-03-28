@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# key: or
+# name: (or (_) (_))
+# --
+(or (${1:CONDITION})
+    (${2:CONDITION}))$0

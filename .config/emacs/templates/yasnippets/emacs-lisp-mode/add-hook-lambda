@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: add-hook-lambda
+# name: (add-hook '_-hook (lambda () (_)))
+# --
+(add-hook '${1:NAME}-hook (lambda () (${2:SEXP})))$0

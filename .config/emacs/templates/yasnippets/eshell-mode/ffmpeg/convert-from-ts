@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-ts-convert
+# name: convert ts format to mp4 mapping
+# --
+ffmpeg -i ${1:INPUT_NAME}.ts -map 0 -map -0:d -c copy $1.mp4$0

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# key: if-elif-else
+# name: if [ _ ]; then _ elif [ _ ]; then _ else _ fi
+# --
+if [ ${1:CONDITION} ]; then
+    ${2:STATEMENT}
+elif [ ${3:CONDITION} ]; then
+    ${4:STATEMENT}
+else
+    ${5:STATEMENT}
+fi$0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: screenoff
+# name: setterm -blank 1
+# --
+setterm -blank 1$0

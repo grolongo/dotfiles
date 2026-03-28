@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: mkvmerge-audio
+# name: remove audio track(s)
+# --
+mkvmerge -o $1-newaudio.mkv --audio-tracks ${2:TRACKS_NUM} ${1:FILENAME}.mkv$0

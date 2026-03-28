@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: source
+# name: +BEGIN_SRC _ +END_SRC
+# --
+#+BEGIN_SRC ${1:$$(yas-choose-value '"conf" "shell" "powershell" "emacs-lisp" "python" "js" "yaml" "systemd")}
+$0
+#+END_SRC

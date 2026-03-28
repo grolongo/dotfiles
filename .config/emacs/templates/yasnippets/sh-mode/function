@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: function
+# name: _() { _ }
+# --
+${1:FUNCTION}() {
+    ${2:CONTENT}
+}$0

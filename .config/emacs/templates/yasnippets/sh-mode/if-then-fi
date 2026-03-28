@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: if
+# name: if [ _ ]; then _ fi
+# --
+if [ ${1:CONDITION} ]; then
+    ${2:STATEMENT}
+fi$0

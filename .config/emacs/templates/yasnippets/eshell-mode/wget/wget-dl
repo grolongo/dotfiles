@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: wget-dl
+# name: wget dl to disk
+# --
+wget --quiet --show-progress ${1:URL}$0

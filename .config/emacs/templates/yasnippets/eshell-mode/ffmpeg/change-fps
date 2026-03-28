@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: ffmpeg-changefps
+# name: changes fps & sync audio
+# --
+ffmpeg -i ${1:INPUT_FILE}.mp4 -filter:v fps=${2:FPS_DESIRED} $1-modified-fps.mp4$0
