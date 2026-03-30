@@ -18,7 +18,7 @@ initial_check() {
         exit 1
     fi
 
-    if [[ "$(uname)" == "Darwin" ]]; then
+    if [[ "$(uname)" != "Darwin" ]]; then
         msg_error "You are not running macOS, exiting."
         exit 1
     fi
