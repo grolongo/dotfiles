@@ -34,6 +34,26 @@ New-Alias -Name lrg -Value Get-LocalRipgrep
 function Get-Ripgrep {rg --follow --hidden --search-zip --smart-case $args[0]}
 New-Alias -Name rrg -Value Get-Ripgrep
 
+# history
+# =======
+
+$MaximumHistoryCount = 30000
+Set-PSReadLineOption -MaximumHistoryCount 1000000000
+Set-PSReadLineOption -HistorySaveStyle SaveIncrementally
+Set-PSReadLineOption -HistoryNoDuplicates
+
+function Search-History {
+    param(
+        [Parameter(Position = 0, Mandatory = $true)]
+        [string]$patternChoice
+    )
+
+    $historyPath = (Get-PSReadlineOption).HistorySavePath
+    Get-Content -Path $historyPath | Select-String -Pattern $patternChoice -SimpleMatch
+}
+
+New-Alias -Name hist -Value Search-History
+
 # prompt stuff
 # ============
 
