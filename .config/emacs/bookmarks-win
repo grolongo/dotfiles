@@ -1,0 +1,34 @@
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("x230"
+  (filename . "/sshx:x230:"))
+ ("x230s"
+  (filename . "/sshx:x230|sudo::"))
+ ("emacs"
+  (filename . "~/.emacs.d"))
+ ("init.el"
+  (filename . "~/.emacs.d/init.el"))
+ ("early-init.el"
+  (filename . "~/.emacs.d/early-init.el"))
+ ("bookmarks"
+  (filename . "~/.emacs.d/bookmarks"))
+ ("abbrevs.el"
+  (filename . "~/.emacs.d/templates/abbrevs.el"))
+ ("feeds.el"
+  (filename . "~/.emacs.d/feeds.el"))
+ (".newsrc.eld"
+  (filename . "~/.emacs.d/gnus/.newsrc.eld"))
+ ("authinfo.gpg"
+  (filename . "~/.emacs.d/authinfo.gpg"))
+ ("yasnippets"
+  (filename . "~/.emacs.d/templates/yasnippets"))
+ ("alias"
+  (filename . "~/.emacs.d/eshell/alias"))
+ ("autoinsert"
+  (filename . "~/.emacs.d/templates/autoinsert"))
+ ("master.org"
+  (filename . "d:/SynologyDrive/notes/master.org"))
+ ("notes"
+  (filename . "d:/SynologyDrive/notes/")))
