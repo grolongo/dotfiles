@@ -1,39 +1,3 @@
-# linux find functions like
-# =========================
-
-function Get-Filename {
-    $query = $args[0]
-    forfiles /S /M *$query* /C "cmd /c echo @RELPATH"
-}
-New-Alias -Name My-Find -Value Get-Filename
-
-function Get-Filename2 {
-    $query = $args[0]
-    Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue -Filter *$query* | ForEach-Object { $_.FullName }
-}
-New-Alias -Name My-Find2 -Value Get-Filename2
-
-# linux grep functions like (local and recursive)
-# ===============================================
-
-function Get-LocalString {findstr /i /p /n $args[0] *}
-New-Alias -Name lfindstr -Value Get-LocalString
-
-function Get-String {findstr /s /i /p /n $args[0] *}
-New-Alias -Name rfindstr -Value Get-String
-
-function Get-LocalString2 {Get-ChildItem | Select-String -Pattern $args[0]}
-New-Alias -Name lgetchilditem -Value Get-LocalString2
-
-function Get-String2 {Get-ChildItem -Recurse | Select-String -Pattern $args[0]}
-New-Alias -Name rgetchilditem -Value Get-String2
-
-function Get-LocalRipgrep {rg --follow --hidden --max-depth 1 --search-zip --smart-case -e $args[0]}
-New-Alias -Name lrg -Value Get-LocalRipgrep
-
-function Get-Ripgrep {rg --follow --hidden --search-zip --smart-case $args[0]}
-New-Alias -Name rrg -Value Get-Ripgrep
-
 # history
 # =======
 
@@ -45,11 +9,11 @@ Set-PSReadLineOption -HistoryNoDuplicates
 function Search-History {
     param(
         [Parameter(Position = 0, Mandatory = $true)]
-        [string]$patternChoice
+        [string]$searchPattern
     )
 
     $historyPath = (Get-PSReadlineOption).HistorySavePath
-    Get-Content -Path $historyPath | Select-String -Pattern $patternChoice -SimpleMatch
+    Get-Content -Path $historyPath | Select-String -Pattern $searchPattern -SimpleMatch
 }
 
 New-Alias -Name hist -Value Search-History
@@ -83,3 +47,94 @@ function prompt {
     $gitBranch = Get-GitBranch
     "${currentDirectory}${gitBranch}${lastStatus} "
 }
+
+# extra
+# =====
+
+function Search-File {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [string]$searchPattern
+    )
+
+    process {
+        Get-ChildItem -Path '.' -Recurse -FollowSymlink -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue -Filter "*$searchPattern*" | Select-Object -ExpandProperty FullName
+    }
+}
+
+function Search-File2 {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$searchPattern
+    )
+
+    fd.exe --follow --hidden $searchPattern
+}
+
+function Search-FileContent {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$searchPattern,
+        [switch]$Recurse
+    )
+
+    Get-ChildItem -Path '.' -FollowSymlink -Force -File -Recurse:$Recurse |
+      Where-Object {
+          try {
+              $stream = [System.IO.File]::OpenRead($_.FullName)
+              $buffer = New-Object byte[] 1024
+              $read = $stream.Read($buffer, 0, 1024)
+              $stream.Close()
+              $slice = $buffer[0..($read - 1)]
+              -not ($slice | Where-Object { $_ -lt 9 -or ($_ -gt 13 -and $_ -lt 32) })
+          } catch {
+              $false
+          }
+          finally {
+              if ($stream) { $stream.Dispose() }
+          }
+      } | Select-String -Pattern $searchPattern -SimpleMatch
+}
+
+function Search-FileContent2 {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$searchPattern,
+        [switch]$Recurse
+    )
+
+    $flags = @('/i', '/p', '/n')
+    if ($Recurse) { $flags += '/s' }
+    findstr.exe @flags $searchPattern *
+}
+
+function Search-FileContent3 {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$searchPattern,
+        [switch]$Recurse
+    )
+
+    $flags = @('--follow', '--hidden', '--search-zip', '--smart-case')
+    if (-not $Recurse) { $flags += '--max-depth', '1' }
+    $flags += '-e'
+    rg.exe @flags $searchPattern
+}
+
+function Send-Stuff {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [ValidateScript({ Test-Path $_ })]
+        [string]$filePath
+    )
+
+    scp $filePath x230:/home/grolongo/Downloads/
+}
+
+New-Alias -Name scpp -Value Send-Stuff
