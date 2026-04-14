@@ -37,8 +37,6 @@ function Set-Emacs {
 
         New-Item -Force -Path (Join-Path -Path $emacsConfigDirectory -ChildPath 'early-init.el') -ItemType SymbolicLink `
           -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'emacs', 'early-init.el')
-
-        takeown /f $emacsConfigDirectory /r
     }
 }
 
@@ -62,7 +60,6 @@ function Set-MPV {
 
         New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'script-opts') -ItemType SymbolicLink `
           -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'mpv', 'script-opts')
-        takeown /f $mpvConfigDirectory /r
     }
 }
 
@@ -77,8 +74,6 @@ function Set-Streamlink {
 
         New-Item -Force -Path (Join-Path -Path $streamlinkConfigDirectory -ChildPath 'config') -ItemType SymbolicLink `
           -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'streamlink', 'config')
-
-        takeown /f $streamlinkConfigDirectory /r
     }
 }
 
@@ -92,9 +87,6 @@ function Set-Git {
 
         New-Item -Force -Path (Join-Path -Path $env:USERPROFILE -ChildPath '.gitconfig-windows') -ItemType SymbolicLink `
           -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'git', 'config-windows')
-
-        takeown /f (Join-Path -Path $env:USERPROFILE -ChildPath '.gitconfig')
-        takeown /f (Join-Path -Path $env:USERPROFILE -ChildPath '.gitconfig-windows')
     }
 }
 
@@ -109,8 +101,6 @@ function Set-Aria2 {
 
         New-Item -Force -Path (Join-Path -Path $ariaConfigDirectory -ChildPath 'aria2.conf') -ItemType SymbolicLink `
           -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'aria2', 'aria2.conf')
-
-        takeown /f $ariaConfigDirectory /r
     }
 }
 
@@ -121,8 +111,6 @@ function Set-Autohotkey {
     if ($PSCmdlet.ShouldContinue('Continue?', 'Symlinking AutoHotKey script.')) {
         New-Item -Force -Path (Join-Path -Path $env:APPDATA -ChildPath Microsoft -AdditionalChildPath 'Windows', 'Start Menu', 'Programs', 'Startup', 'keybinds-shortcuts.ahk') -ItemType SymbolicLink `
           -Value (Join-Path -Path $dotfilesRoot -ChildPath 'usr' -AdditionalChildPath 'local', 'bin', 'keybinds-shortcuts.ahk')
-
-        takeown /f (Join-Path -Path $env:APPDATA -ChildPath Microsoft -AdditionalChildPath 'Windows', 'Start Menu', 'Programs', 'Startup', 'keybinds-shortcuts.ahk')
     }
 }
 
@@ -137,8 +125,6 @@ function Set-PowerShell {
 
         # powershell v7
         New-Item -Force -Path $PROFILE -ItemType SymbolicLink -Value (Join-Path -Path $dotfilesRoot -ChildPath 'Microsoft.PowerShell_profile.ps1')
-
-        takeown /f (Join-Path -Path $env:USERPROFILE -ChildPath 'Documents' -AdditionalChildPath 'WindowsPowershell') /r
     }
 }
 

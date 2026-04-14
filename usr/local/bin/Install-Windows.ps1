@@ -694,6 +694,9 @@ function Install-WinGet {
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing Git')) {
         winget install --exact --id Git.Git --custom '/o:EditorOption=Notepad /o:Components=icons,gitlfs,windowsterminal /o:PathOption=Cmd /o:SSHOption=ExternalOpenSSH /o:CRLFOption=CRLFCommitAsIs /o:CURLOption=WinSSL'
+
+        $gitDirectory = Join-Path -Path $env:USERPROFILE -ChildPath 'git'
+        New-Item -Force -Path $gitDirectory -ItemType directory
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing MKVToolNix')) {
