@@ -146,9 +146,11 @@ initial_setup() {
         apt upgrade
     fi
 
-    msg_info "Creating Downloads folder in home..."
+    msg_info "Creating Downloads and git folder in home..."
     mkdir -vp "/home/${SUDO_USER}/Downloads"
+    mkdir -vp "/home/${SUDO_USER}/git"
     chown "${SUDO_USER}":"${SUDO_USER}" "/home/${SUDO_USER}/Downloads"
+    chown "${SUDO_USER}":"${SUDO_USER}" "/home/${SUDO_USER}/git"
 }
 
 apt_common() {
@@ -503,7 +505,7 @@ build_emacs() {
 
     (
         cd "${tmpdir}" || exit 1
-        mkdir -v /home/"${SUDO_USER}"/git
+        mkdir -vp /home/"${SUDO_USER}"/git
         wget -O emacs.tar.gz "$source"
         tar -xzvf emacs.tar.gz --directory /home/"${SUDO_USER}"/git
         mv /home/"${SUDO_USER}"/git/emacs* /home/"${SUDO_USER}"/git/emacs
