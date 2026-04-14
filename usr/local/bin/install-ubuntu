@@ -147,10 +147,9 @@ initial_setup() {
     fi
 
     msg_info "Creating Downloads and git folder in home..."
-    mkdir -vp "/home/${SUDO_USER}/Downloads"
-    mkdir -vp "/home/${SUDO_USER}/git"
-    chown "${SUDO_USER}":"${SUDO_USER}" "/home/${SUDO_USER}/Downloads"
-    chown "${SUDO_USER}":"${SUDO_USER}" "/home/${SUDO_USER}/git"
+    install -d -o "${SUDO_USER}" -g "${SUDO_USER}" \
+            "/home/${SUDO_USER}/Downloads" \
+            "/home/${SUDO_USER}/git"
 }
 
 apt_common() {
