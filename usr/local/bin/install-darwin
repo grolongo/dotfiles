@@ -106,6 +106,9 @@ setup_prefsettings() {
     msg_info "Setting Terminal prefs..."
     defaults write com.apple.Terminal SecureKeyboardEntry -bool true
 
+    msg_info "Creating git folder in home..."
+    install -d -o "${SUDO_USER}" -g "${SUDO_USER}" "/home/${SUDO_USER}/git"
+
     if confirm "Some options require reboot to take effect. Reboot now?" "N"; then
         sudo shutdown -r now
     fi
