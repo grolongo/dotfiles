@@ -2,14 +2,12 @@
 
 ## Linux/macOS
 
-#### Git
-
-##### HTTPS
+#### Git (HTTPS)
 ```bash
 git clone https://github.com/grolongo/dotfiles.git "${HOME}/git/dotfiles"
 ```
 
-##### SSH
+#### Git (SSH)
 ```bash
 git clone git@github.com:grolongo/dotfiles.git "${HOME}/git/dotfiles"
 ```
@@ -34,15 +32,13 @@ mv "${HOME}/git/dotfiles-master" "${HOME}/git/dotfiles"
 
 ## Windows
 
-#### Git
-
-##### HTTPS
+#### Git (HTTPS)
 ```powershell
 $cloneLocation = Join-Path -Path $env:USERPROFILE -ChildPath 'git' -AdditionalChildPath 'dotfiles'; `
 git clone https://github.com/grolongo/dotfiles.git $cloneLocation
 ```
 
-##### SSH
+#### Git (SSH)
 ```powershell
 $cloneLocation = Join-Path -Path $env:USERPROFILE -ChildPath 'git' -AdditionalChildPath 'dotfiles'; `
 git clone git@github.com:grolongo/dotfiles.git $cloneLocation
