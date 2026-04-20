@@ -164,6 +164,7 @@ install_formulae() {
         pandoc
         pinentry-mac
         shellcheck
+        shfmt
         speedtest-cli
         streamlink
         tmux
@@ -383,6 +384,7 @@ install_ports() {
         pandoc
         pinentry-mac
         shellcheck
+        shfmt
         silentknight
         speedtest-cli
         streamlink

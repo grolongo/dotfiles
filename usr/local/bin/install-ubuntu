@@ -177,6 +177,7 @@ apt_common() {
         pandoc
         ripgrep
         shellcheck
+        shfmt
         streamlink
         tmux
         virt-manager
@@ -471,6 +472,10 @@ snaps_common() {
 
     if confirm "Install PowerShell?" "Y"; then
         snap install powershell --classic
+    fi
+
+    if confirm "Install shfmt?" "Y"; then
+        snap install shfmt
     fi
 
     snap refresh

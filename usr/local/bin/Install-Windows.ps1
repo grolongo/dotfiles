@@ -645,6 +645,7 @@ function Install-WinGet {
         'Python.Python.3.12',
         'BurntSushi.ripgrep.MSVC',
         'koalaman.shellcheck',
+        'mvdan.shfmt',
         'OpenWhisperSystems.Signal',
         'Henry++.simplewall',
         'AntoineAflalo.SoundSwitch',
