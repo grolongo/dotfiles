@@ -96,6 +96,7 @@ symlink_emacs() {
         mkdir -vp "${HOME}/.config/emacs"
         symlink ".config/emacs/init.el"
         symlink ".config/emacs/early-init.el"
+        symlink ".config/emacs/PSScriptAnalyzerSettings.psd1"
     fi
 }
 

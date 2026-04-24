@@ -37,6 +37,9 @@ function Set-Emacs {
 
         New-Item -Force -Path (Join-Path -Path $emacsConfigDirectory -ChildPath 'early-init.el') -ItemType SymbolicLink `
           -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'emacs', 'early-init.el')
+
+        New-Item -Force -Path (Join-Path -Path $emacsConfigDirectory -ChildPath 'PSScriptAnalyzerSettings.psd1') -ItemType SymbolicLink `
+          -Value (Join-Path -Path $dotfilesRoot -ChildPath '.config' -AdditionalChildPath 'emacs', 'PSScriptAnalyzerSettings.psd1')
     }
 }
 
