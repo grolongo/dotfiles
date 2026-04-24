@@ -39,7 +39,7 @@ function Invoke-Veracrypt {
 
         Compress-Data
 
-        $zip_size_raw = Get-ChildItem -file $zip_file | ForEach-Object {[math]::ceiling($_.length / 1mb)}
+        $zip_size_raw = Get-ChildItem -File $zip_file | ForEach-Object { [math]::ceiling($_.length / 1mb) }
         $zip_size = [int]$zip_size_raw + 5
 
         Write-Output "Creating container..."

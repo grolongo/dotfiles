@@ -8,14 +8,16 @@ function Get-Version {
     if ($PSVersionTable.PSVersion.Major -lt 7) {
         if ($PSCmdlet.ShouldContinue('Launch PowerShell 7?', 'This script requires PowerShell 7+.')) {
             $powershellLocation = Join-Path (Join-Path (Join-Path "$env:ProgramFiles" "PowerShell") "7") "pwsh.exe"
-            if (-Not (Test-Path -Path $powershellLocation)) {
+            if (-not (Test-Path -Path $powershellLocation)) {
                 Write-Output 'PowerShell 7 not found, install PowerShell 7 first.'
                 exit 1
-            } else {
+            }
+            else {
                 Start-Process -FilePath $powershellLocation -WorkingDirectory $PSScriptRoot -ArgumentList "-NoExit", $PSCommandPath
                 exit
             }
-        } else {
+        }
+        else {
             exit 1
         }
     }

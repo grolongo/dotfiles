@@ -12,7 +12,7 @@ function Search-History {
         [string]$searchPattern
     )
 
-    $historyPath = (Get-PSReadlineOption).HistorySavePath
+    $historyPath = (Get-PSReadLineOption).HistorySavePath
     Get-Content -Path $historyPath | Select-String -Pattern $searchPattern -SimpleMatch
 }
 
@@ -29,7 +29,8 @@ if ($PSVersionTable.PSVersion.Major -ge 7) {
 function Get-LastStatus() {
     if ($?) {
         return '>'
-    } else {
+    }
+    else {
         return "$($PSStyle.Foreground.BrightRed)>$($PSStyle.Reset)"
     }
 }
@@ -90,7 +91,8 @@ function Search-FileContent {
               $stream.Close()
               $slice = $buffer[0..($read - 1)]
               -not ($slice | Where-Object { $_ -lt 9 -or ($_ -gt 13 -and $_ -lt 32) })
-          } catch {
+          }
+          catch {
               $false
           }
           finally {
