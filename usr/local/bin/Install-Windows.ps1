@@ -13,18 +13,20 @@ function Get-Version {
         if ($PSCmdlet.ShouldContinue('Launch PowerShell 7?', 'This script requires PowerShell 7+.')) {
             $powershellLocation = Join-Path (Join-Path (Join-Path "$env:ProgramFiles" "PowerShell") "7") "pwsh.exe"
             $startPowershell = { Start-Process -FilePath $powershellLocation -WorkingDirectory $PSScriptRoot -ArgumentList "-NoExit", "-File", "$PSCommandPath $commandChoice" }
-            if (-Not (Test-Path -Path $powershellLocation)) {
+            if (-not (Test-Path -Path $powershellLocation)) {
                 Write-Output 'PowerShell 7 not found, trying to install using WinGet...'
                 winget source update
                 winget install --exact --id 'Microsoft.PowerShell'
                 Start-Sleep -Seconds 5
                 Invoke-Command -ScriptBlock $startPowershell
                 exit
-            } else {
+            }
+            else {
                 Invoke-Command -ScriptBlock $startPowershell
                 exit
             }
-        } else {
+        }
+        else {
             exit 1
         }
     }
@@ -36,7 +38,7 @@ function Set-GPO {
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Applying Group Policies.')) {
 
-        if (-Not (Get-Module PolicyFileEditor -ListAvailable)) {
+        if (-not (Get-Module PolicyFileEditor -ListAvailable)) {
             Install-Module -Name PolicyFileEditor -Force
         }
 
@@ -423,9 +425,10 @@ function Set-Path {
     param()
 
     if ($PSCmdlet.ShouldContinue('Continue?', "Adding $PSScriptRoot to the PATH.")) {
-        if (-Not ($env:PATH -split ';' -contains $PSScriptRoot)) {
+        if (-not ($env:PATH -split ';' -contains $PSScriptRoot)) {
             [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$PSScriptRoot", [EnvironmentVariableTarget]::User)
-        } else {
+        }
+        else {
             Write-Output 'Already in PATH.'
         }
     }
@@ -532,7 +535,7 @@ function Set-UIPreference {
     # keyboard settings
     $languageList = Get-WinUserLanguageList
 
-    if (-Not $languageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
+    if (-not $languageList | Where-Object { $_.InputMethodTips -contains "0409:0000040C" }) {
         if ($PSCmdlet.ShouldContinue('Continue?', 'Installing fr-FR layout [keyboard].')) {
             $languageList[0].InputMethodTips.Add('0409:0000040C')
             Set-WinUserLanguageList $languageList -Force
@@ -541,7 +544,7 @@ function Set-UIPreference {
     }
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Remapping CTRL to CAPSLOCK.')) {
-        $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | ForEach-Object { "0x$_"}
+        $hexified = "00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00".Split(',') | ForEach-Object { "0x$_" }
         $keyboardLayout = Join-Path -Path 'HKLM:' -ChildPath 'System' -AdditionalChildPath 'CurrentControlSet', 'Control', 'Keyboard Layout'
         New-ItemProperty -Path $keyboardLayout -Name 'Scancode Map' -PropertyType Binary -Value ([byte[]]$hexified)
     }
@@ -567,7 +570,7 @@ function Set-BitLocker {
         manage-bde -on c: -RecoveryPassword
     }
 
-    $drives = (Get-BitlockerVolume | Where-Object {$_.AutoUnlockEnabled -eq $false}).MountPoint
+    $drives = (Get-BitLockerVolume | Where-Object { $_.AutoUnlockEnabled -eq $false }).MountPoint
 
     if ($drives) {
         foreach ($drive in $drives) {
@@ -587,9 +590,9 @@ function Set-FireWall {
     if ($PSCmdlet.ShouldContinue('Continue?', 'Blocking incoming and allowing outgoing connections.')) {
         Set-NetConnectionProfile -NetworkCategory Private
         netsh advfirewall set allprofiles state on
-        netsh advfirewall set domainprofile firewallpolicy blockinboundalways,allowoutbound
-        netsh advfirewall set publicprofile firewallpolicy blockinboundalways,allowoutbound
-        netsh advfirewall set privateprofile firewallpolicy blockinboundalways,allowoutbound
+        netsh advfirewall set domainprofile firewallpolicy blockinboundalways, allowoutbound
+        netsh advfirewall set publicprofile firewallpolicy blockinboundalways, allowoutbound
+        netsh advfirewall set privateprofile firewallpolicy blockinboundalways, allowoutbound
     }
 }
 
@@ -607,7 +610,8 @@ function Set-PowerSetting {
 
         if ($computerSystem.PCSystemType -eq 2) {
             Write-Output 'Running on a laptop, keeping hibernate on...'
-        } else {
+        }
+        else {
             powercfg.exe /HIBERNATE off
         }
     }
@@ -662,7 +666,7 @@ function Install-WinGet {
 
     if ($PSCmdlet.ShouldContinue('Do you want?', 'Installing WinGet from GitHub (instead of Microsoft Store).')) {
         $apiUrl = 'https://api.github.com/repos/microsoft/winget-cli/releases/latest'
-        $wingetDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object {$_.EndsWith('.msixbundle')}
+        $wingetDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.EndsWith('.msixbundle') }
         $wingetDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'winget.msixbundle'
 
         Invoke-WebRequest -Uri $wingetDownloadUrl -OutFile $wingetDownloadLocation
@@ -704,7 +708,7 @@ function Install-WinGet {
         winget install --exact --id 'MoritzBunkus.MKVToolNix'
         $mkvtoolnixInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'MKVToolNixx'
 
-        if (-Not ($env:PATH -split ';' -contains $mkvtoolnixInstallDirectory)) {
+        if (-not ($env:PATH -split ';' -contains $mkvtoolnixInstallDirectory)) {
             [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mkvtoolnixInstallDirectory", [EnvironmentVariableTarget]::User)
         }
     }
@@ -780,7 +784,8 @@ function Install-WinGet {
     if ($PSCmdlet.ShouldContinue('Continue?', 'Installing PowerShell')) {
         winget install --exact --id 'Microsoft.PowerShell'
         Install-Module -Name PSScriptAnalyzer -Force
-    } else {
+    }
+    else {
         Install-Module -Name PSScriptAnalyzer -Force
     }
 }
@@ -789,16 +794,16 @@ function Install-MPV {
     Write-Output 'Installing latest mpv...'
 
     $apiUrl = "https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest"
-    $mpvDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.Contains('mpv-x86_64-v3')}
+    $mpvDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.Contains('mpv-x86_64-v3') }
     $mpvDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'mpv.7z'
     $mpvInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'mpv'
 
     Invoke-WebRequest -Uri $mpvDownloadUrl -OutFile $mpvDownloadLocation
     Install-Module -Name 7Zip4Powershell
-    Expand-7zip -ArchiveFileName $mpvDownloadLocation -TargetPath $mpvInstallDirectory
+    Expand-7Zip -ArchiveFileName $mpvDownloadLocation -TargetPath $mpvInstallDirectory
     Remove-Item $mpvDownloadLocation
 
-    if (-Not ($env:PATH -split ';' -contains $mpvInstallDirectory)) {
+    if (-not ($env:PATH -split ';' -contains $mpvInstallDirectory)) {
         [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallDirectory", [EnvironmentVariableTarget]::User)
     }
 
@@ -836,7 +841,7 @@ function Install-Findutils {
     tar --extract --file=$findutilsDownloadLocation --directory=$findutilsInstallDirectory
     Remove-Item $findutilsDownloadLocation
 
-    if (-Not ($env:PATH -split ';' -contains $findutilsBinariesDirectory)) {
+    if (-not ($env:PATH -split ';' -contains $findutilsBinariesDirectory)) {
         [Environment]::SetEnvironmentVariable("Path", "$findutilsBinariesDirectory;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
     }
 }
@@ -866,7 +871,8 @@ function Set-Git {
 
         if (git rev-parse --is-inside-work-tree) {
             git remote set-url origin git@github.com:grolongo/dotfiles.git
-        } else {
+        }
+        else {
             git init
             git remote add origin git@github.com:grolongo/dotfiles.git
             git fetch
@@ -899,7 +905,7 @@ function Show-Menu {
 function Get-Choice {
     param($commandChoice)
 
-    if (-Not $commandChoice) { Show-Menu; exit 1 }
+    if (-not $commandChoice) { Show-Menu; exit 1 }
 
     if ($commandChoice -eq 'gpo')                 { Set-GPO }
     elseif ($commandChoice -eq 'path')            { Set-Path }
