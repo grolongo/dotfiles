@@ -574,7 +574,7 @@ set_gsettings() {
     gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-to 0
 
     # Desktop Icon NG
-    gsettings set org.gnome.shell.extensions.ding icon-size 'small'
+    gsettings set org.gnome.shell.extensions.ding icon-size 'standard'
     gsettings set org.gnome.shell.extensions.ding show-home false
 
     # Ubuntu AppIndicator
