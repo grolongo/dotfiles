@@ -21,9 +21,9 @@ confirm() {
     default="$2"
 
     case "$default" in
-        Y) prompt="$prompt [Y/n]";;
-        N) prompt="$prompt [y/N]";;
-        *) prompt="$prompt [y/n]";;
+        Y) prompt="$prompt [Y/n]" ;;
+        N) prompt="$prompt [y/N]" ;;
+        *) prompt="$prompt [y/n]" ;;
     esac
 
     while true; do
@@ -31,9 +31,9 @@ confirm() {
         response=${response:-$default}
 
         case "$response" in
-            [Yy]|[Yy][Ee][Ss]) return 0;;
-            [Nn]|[Nn][Oo]) return 1;;
-            *) printf "Please answer yes or no.\n";;
+            [Yy] | [Yy][Ee][Ss]) return 0 ;;
+            [Nn] | [Nn][Oo]) return 1 ;;
+            *) printf "Please answer yes or no.\n" ;;
         esac
     done
 }
@@ -92,7 +92,7 @@ symlink_bash() {
 }
 
 symlink_emacs() {
-    if  confirm "link Emacs config?" "Y"; then
+    if confirm "link Emacs config?" "Y"; then
         mkdir -vp "${HOME}/.config/emacs"
         symlink ".config/emacs/init.el"
         symlink ".config/emacs/early-init.el"

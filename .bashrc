@@ -7,7 +7,7 @@ fi
 # if not running interactively, don't do anything
 case $- in
     *i*) ;;
-    *) return;;
+    *) return ;;
 esac
 
 # make less more friendly for non-text input files, see lesspipe(1)
@@ -59,10 +59,10 @@ if [[ -e "$HOME/.ssh/config" ]]; then
 fi
 
 git_branch() {
-    if git rev-parse --is-inside-work-tree &>/dev/null; then
+    if git rev-parse --is-inside-work-tree &> /dev/null; then
         local branchname
-        branchname="$(git branch --show-current 2>/dev/null ||
-                      git rev-parse --short HEAD 2>/dev/null)"
+        branchname="$(git branch --show-current 2> /dev/null \
+        || git rev-parse --short HEAD 2> /dev/null)"
         printf ' %s' "${branchname}"
     fi
 }

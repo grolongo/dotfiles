@@ -6,7 +6,8 @@ IFS=$'\n\t'
 
 arch=$(dpkg --print-architecture)
 distrib=$(lsb_release -sc 2> /dev/null)
-tmpdir=$(mktemp -d); trap 'rm -rf "${tmpdir}"' EXIT
+tmpdir=$(mktemp -d)
+trap 'rm -rf "${tmpdir}"' EXIT
 
 msg_info() {
     printf '\n'
@@ -37,9 +38,9 @@ confirm() {
     default="$2"
 
     case "$default" in
-        Y) prompt="$prompt [Y/n]";;
-        N) prompt="$prompt [y/N]";;
-        *) prompt="$prompt [y/n]";;
+        Y) prompt="$prompt [Y/n]" ;;
+        N) prompt="$prompt [y/N]" ;;
+        *) prompt="$prompt [y/n]" ;;
     esac
 
     while true; do
@@ -47,9 +48,9 @@ confirm() {
         response=${response:-$default}
 
         case "$response" in
-            [Yy]|[Yy][Ee][Ss]) return 0;;
-            [Nn]|[Nn][Oo]) return 1;;
-            *) printf "Please answer yes or no.\n";;
+            [Yy] | [Yy][Ee][Ss]) return 0 ;;
+            [Nn] | [Nn][Oo]) return 1 ;;
+            *) printf "Please answer yes or no.\n" ;;
         esac
     done
 }
@@ -86,7 +87,7 @@ os_check() {
 }
 
 jq_check() {
-    if ! command -v jq >/dev/null 2>&1; then
+    if ! command -v jq > /dev/null 2>&1; then
         apt install -y jq
         sleep 5
     fi
@@ -108,7 +109,7 @@ initial_setup() {
         apt install -y dpkg
         mapfile -t results < <(ld.so --help | grep 'supported' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
 
-        if (( ${#results[@]} == 0 )); then
+        if ((${#results[@]} == 0)); then
             msg_error "No supported versions available."
             exit 1
         fi
@@ -124,17 +125,22 @@ initial_setup() {
             case "${choice}" in
                 *v2*)
                     version_number=v2
-                    break;;
+                    break
+                    ;;
                 *v3*)
                     version_number=v3
-                    break;;
+                    break
+                    ;;
                 *v4*)
                     version_number=v4
-                    break;;
+                    break
+                    ;;
                 *)
                     msg_error "Couldn't find a matching version. Aborting."
-                    break;;
+                    break
+                    ;;
             esac
+
         done
 
         if [[ -z "${version_number+x}" ]]; then
@@ -300,6 +306,7 @@ apt_extra() {
             mkdir -vp /opt/Chatty
             wget "${repo}${release}"
             unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
+
         )
     fi
 
@@ -337,7 +344,7 @@ apt_extra() {
              > /etc/apt/keyrings/mullvad-keyring.asc
         chmod a+r /etc/apt/keyrings/mullvad-keyring.asc
 
-        cat <<-EOF > /etc/apt/sources.list.d/mullvad.sources
+        cat <<- EOF > /etc/apt/sources.list.d/mullvad.sources
 		Types: deb
 		URIs: https://repository.mullvad.net/deb/stable
 		Architectures: ${arch}
@@ -354,11 +361,11 @@ apt_extra() {
 
     if confirm "Install Signal?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://updates.signal.org/desktop/apt/keys.asc | \
-            gpg --dearmor > /etc/apt/keyrings/signal-desktop-keyring.gpg
+        wget -qO- https://updates.signal.org/desktop/apt/keys.asc \
+            | gpg --dearmor > /etc/apt/keyrings/signal-desktop-keyring.gpg
         chmod a+r /etc/apt/keyrings/signal-desktop-keyring.gpg
 
-        cat <<-EOF > /etc/apt/sources.list.d/signal-desktop.sources
+        cat <<- EOF > /etc/apt/sources.list.d/signal-desktop.sources
 		Types: deb
 		URIs: https://updates.signal.org/desktop/apt
 		Architectures: amd64
@@ -373,11 +380,11 @@ apt_extra() {
 
     if confirm "Install Tor?" "Y"; then
         install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | \
-            gpg --dearmor > /etc/apt/keyrings/tor-archive-keyring.gpg
+        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc \
+            | gpg --dearmor > /etc/apt/keyrings/tor-archive-keyring.gpg
         chmod a+r /etc/apt/keyrings/tor-archive-keyring.gpg
 
-        cat <<-EOF > /etc/apt/sources.list.d/tor.sources
+        cat <<- EOF > /etc/apt/sources.list.d/tor.sources
 		Types: deb deb-src
 		URIs: https://deb.torproject.org/torproject.org
 		Architectures: ${arch}
@@ -402,7 +409,7 @@ apt_extra() {
         wget -qO- https://download.docker.com/linux/ubuntu/gpg > /etc/apt/keyrings/docker.asc
         chmod a+r /etc/apt/keyrings/docker.asc
 
-        cat <<-EOF > /etc/apt/sources.list.d/docker.sources
+        cat <<- EOF > /etc/apt/sources.list.d/docker.sources
 		Types: deb
 		URIs: https://download.docker.com/linux/ubuntu
 		Architectures: ${arch}
@@ -415,12 +422,12 @@ apt_extra() {
 
         PS3="Select: "
 
-        select lng in Server Desktop
-        do
+        select lng in Server Desktop; do
             case "$lng" in
                 "Server")
                     apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-                    break;;
+                    break
+                    ;;
                 "Desktop")
                     (
                         msg_info "Creating temporary folder..."
@@ -428,10 +435,11 @@ apt_extra() {
                         wget https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-"${version}"-amd64.deb
                         apt install ./docker-desktop-"${version}"-amd64.deb
                     )
-
-                    break;;
+                    break
+                    ;;
                 *)
-                    msg_error "Wrong input";;
+                    msg_error "Wrong input"
+                    ;;
             esac
         done
     fi
@@ -489,10 +497,10 @@ build_emacs() {
 
     read -r -p "Compile with PureGTK (Wayland only)? [y/n] " choice
     case "$choice" in
-        [yY]es|[yY])
+        [yY]es | [yY])
             local pgtk="--with-pgtk"
             ;;
-        [nN]o|[nN])
+        [nN]o | [nN])
             local pgtk="--with-x-toolkit=lucid"
             ;;
         *)
@@ -579,13 +587,13 @@ set_gsettings() {
     # find the uuid by visiting the gnome extension page and lookup uuid in the source
     array=( system-monitor@gnome-shell-extensions.gcampax.github.com caffeine@patapon.info )
 
-    for i in "${array[@]}"
-    do
+    for i in "${array[@]}"; do
         busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions \
                org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
     done
 
-    spin & spinpid=$!
+    spin &
+    spinpid=$!
     sleep 5
     kill "${spinpid}"
     printf '\n'

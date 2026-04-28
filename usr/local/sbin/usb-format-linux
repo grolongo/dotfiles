@@ -18,9 +18,9 @@ confirm() {
     default="$2"
 
     case "$default" in
-        Y) prompt="$prompt [Y/n]";;
-        N) prompt="$prompt [y/N]";;
-        *) prompt="$prompt [y/n]";;
+        Y) prompt="$prompt [Y/n]" ;;
+        N) prompt="$prompt [y/N]" ;;
+        *) prompt="$prompt [y/n]" ;;
     esac
 
     while true; do
@@ -28,9 +28,9 @@ confirm() {
         response=${response:-$default}
 
         case "$response" in
-            [Yy]|[Yy][Ee][Ss]) return 0;;
-            [Nn]|[Nn][Oo]) return 1;;
-            *) printf 'Please answer yes or no.\n';;
+            [Yy] | [Yy][Ee][Ss]) return 0 ;;
+            [Nn] | [Nn][Oo]) return 1 ;;
+            *) printf 'Please answer yes or no.\n' ;;
         esac
     done
 }
@@ -138,7 +138,7 @@ name_selection() {
             continue
         fi
 
-        if  (( ${#label} <= 11 )); then
+        if (( ${#label} <= 11 )); then
             break
         else
             printf 'Too long (%s chars). Try again.\n' "${#label}"

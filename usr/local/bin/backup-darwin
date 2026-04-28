@@ -4,7 +4,8 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-tmpdir=$(mktemp -d); trap 'rm -rf "${tmpdir}"' EXIT
+tmpdir=$(mktemp -d)
+trap 'rm -rf "${tmpdir}"' EXIT
 tarfile="${tmpdir}/backup.tar.gz"
 
 os_check() {
@@ -14,7 +15,7 @@ os_check() {
     fi
 }
 
-compress_backup () {
+compress_backup() {
     read -r -e -p "Enter sync folder path: " syncpath
 
     printf 'Creating tar file...\n'

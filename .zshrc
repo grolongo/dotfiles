@@ -5,7 +5,7 @@ if [[ "${TERM}" == "dumb" ]]; then
     return
 fi
 
-if [[ -r "$HOME/.aliases" && -f "$HOME/.aliases" ]]; then
+if [[ -r "$HOME/.aliases" ]]; then
     source "$HOME/.aliases"
 fi
 
@@ -51,7 +51,7 @@ _comp_options+=(globdots) # include hidden files on <tab>
 # the default color syntax used by dircolors because zsh
 # isn't compatible with $LSCOLORS (which is what BSD uses).
 
-if whence dircolors >/dev/null; then
+if whence dircolors > /dev/null; then
     eval "$(dircolors -b)"
 else
     export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"

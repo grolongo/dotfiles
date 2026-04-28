@@ -1,5 +1,4 @@
-if [[ -r "$HOME/.exports" ]] && [[ -f "$HOME/.exports" ]]; then
-    # shellcheck source=/dev/null
+if [[ -r "$HOME/.exports" ]]; then
     source "$HOME/.exports"
 fi
 

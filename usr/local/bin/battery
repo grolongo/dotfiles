@@ -5,15 +5,15 @@ set -o pipefail
 IFS=$'\n\t'
 
 battery_path="/sys/class/power_supply/BAT0"
-battery_status=$(<"${battery_path}/status")
-energy_full=$(<"${battery_path}/energy_full_design")
-energy_now=$(<"${battery_path}/energy_now")
+battery_status=$(< "${battery_path}/status")
+energy_full=$(< "${battery_path}/energy_full_design")
+energy_now=$(< "${battery_path}/energy_now")
 result=$(printf 'scale=2; %s / %s * 100\n' "${energy_now}" "${energy_full}" | bc)
 battery_percentage=$(printf '%.0f' "${result}")
 
-if [[ "${battery_status}" == "Not charging" \
-          || "${battery_status}" == "Discharging" ]] \
-       && (( battery_percentage < 10 )); then
+if [[ "${battery_status}" == "Not charging" ||
+          "${battery_status}" == "Discharging" ]] \
+              && ((battery_percentage < 10)); then
     notify-send -u critical -i battery-caution \
                 -h string:x-dunst-stack-tag:battery_notif \
                 "LOW BATTERY" "${battery_percentage}% remaining"

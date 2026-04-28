@@ -44,7 +44,6 @@ main() {
     check_is_sudo
 
     case $1 in
-
         up)
             total=$(( backlight + increment ))
             (( total > 255 )) && exit 1
@@ -56,20 +55,20 @@ main() {
             set_value=1
             ;;
         total)
-	        temp_value="${backlight}"
-	        while (( temp_value < 255 )); do
-                temp_value=$(( temp_value + 1 ))
-		        if (( temp_value > 255 )); then temp_value=255; fi
-                printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
-	        done
+            temp_value="${backlight}"
+            while ((temp_value < 255)); do
+                temp_value=$((temp_value + 1))
+                if ((temp_value > 255)); then temp_value=255; fi
+                printf '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
+            done
             ;;
         off)
-	        temp_value="${backlight}"
-	        while (( temp_value > 0 )); do
+            temp_value="${backlight}"
+            while (( temp_value > 0 )); do
                 temp_value=$(( temp_value - 1 ))
-	            if (( temp_value < 0 )); then temp_value=0; fi
-	            printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
-	        done
+                if (( temp_value < 0 )); then temp_value=0; fi
+                printf  '%s\n' "${temp_value}" > /sys/class/leds/smc::kbd_backlight/brightness
+            done
             ;;
         *)
             printf 'Use: keyboard-backlight up|down|total|off\n'

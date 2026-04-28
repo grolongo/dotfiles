@@ -135,10 +135,10 @@ final_warning() {
         read -r -p "Are you sure you want to continue? [Y/n] " response
         response=${response:-Y}
         case "$response" in
-            [Yy]|[Yy][Ee][Ss])
+            [Yy] | [Yy][Ee][Ss])
                 return 0
                 ;;
-            [Nn]|[Nn][Oo])
+            [Nn] | [Nn][Oo])
                 return 1
                 ;;
             *)

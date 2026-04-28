@@ -7,4 +7,5 @@ IFS=$'\n\t'
 image_directory="${HOME}/SynologyDrive/memes/intelligence_logos"
 image=$(find "${image_directory}" -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' \) \
              -print0 | shuf -z -n1 | xargs -0 -r printf '%s\n')
+
 swaylock --image "${image}"

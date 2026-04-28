@@ -11,10 +11,11 @@ os_check() {
     fi
 }
 
-compress_backup () {
+compress_backup() {
     read -r -e -p "Enter sync folder path: " syncpath
 
-    tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
+    tmpdir=$(mktemp -d)
+    trap 'rm -rf "$tmpdir"' EXIT
     tarfile="$tmpdir/backup.tar.gz"
 
     printf 'Creating tar file...\n'

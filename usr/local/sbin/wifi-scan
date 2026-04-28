@@ -25,7 +25,8 @@ wpasupplicant_method() {
     local spinpid
     wpa_cli scan
     printf 'Waiting 20 seconds before showing results...\n'
-    spin & spinpid=$!
+    spin &
+    spinpid=$!
     sleep 20
     kill "${spinpid}"
     printf '\n'

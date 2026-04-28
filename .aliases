@@ -63,28 +63,27 @@ fi
 ### functions ###
 #################
 
-metavideoremove () { ffmpeg -i "$1" -vcodec copy -acodec copy -map 0 -map_metadata -1 cleaned-"$1"; }
-
-hex10 () { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
-fnd () { find . -iname "*$1*" 2>/dev/null | grep --color=auto --ignore-case -e "$1"; }
+metavideoremove() { ffmpeg -i "$1" -vcodec copy -acodec copy -map 0 -map_metadata -1 cleaned-"$1"; }
+hex10() { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
+fnd() { find . -iname "*$1*" 2> /dev/null | grep --color=auto --ignore-case -e "$1"; }
 
 # grep
-lgrep () { find . -maxdepth 1 -type f -exec grep \
-                --binary-file=without-match \
-                --color=auto \
-                --ignore-case \
-                --line-number \
-                --null "$1" {} +; }
+lgrep() { find . -maxdepth 1 -type f -exec grep \
+               --binary-file=without-match \
+               --color=auto \
+               --ignore-case \
+               --line-number \
+               --null "$1" {} +; }
 
-rgrep () { find . -type f -exec grep \
-                --binary-file=without-match \
-                --color=auto \
-                --ignore-case \
-                --line-number \
-                --null "$1" {} +; }
+rgrep() { find . -type f -exec grep \
+               --binary-file=without-match \
+               --color=auto \
+               --ignore-case \
+               --line-number \
+               --null "$1" {} +; }
 
-rgrep2 () { grep --binary-file=without-match --color=auto --ignore-case --line-number --no-messages --null --recursive "$1" .; }
+rgrep2() { grep --binary-file=without-match --color=auto --ignore-case --line-number --no-messages --null --recursive "$1" .; }
 
 # ripgrep
-lrg () { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
-rrg () { rg --follow --hidden --search-zip --smart-case "$1" .; }
+lrg() { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
+rrg() { rg --follow --hidden --search-zip --smart-case "$1" .; }

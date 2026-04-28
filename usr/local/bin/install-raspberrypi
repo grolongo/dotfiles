@@ -33,9 +33,9 @@ confirm() {
     default="$2"
 
     case "$default" in
-        Y) prompt="$prompt [Y/n]";;
-        N) prompt="$prompt [y/N]";;
-        *) prompt="$prompt [y/n]";;
+        Y) prompt="$prompt [Y/n]" ;;
+        N) prompt="$prompt [y/N]" ;;
+        *) prompt="$prompt [y/n]" ;;
     esac
 
     while true; do
@@ -43,15 +43,18 @@ confirm() {
         response=${response:-$default}
 
         case "$response" in
-            [Yy]|[Yy][Ee][Ss]) return 0;;
-            [Nn]|[Nn][Oo]) return 1;;
-            *) printf "Please answer yes or no.\n";;
+            [Yy] | [Yy][Ee][Ss]) return 0 ;;
+            [Nn] | [Nn][Oo]) return 1 ;;
+            *) printf "Please answer yes or no.\n" ;;
         esac
     done
 }
 
 jq_check() {
-    command -v jq >/dev/null 2>&1 || { apt install jq; sleep 5; }
+    command -v jq > /dev/null 2>&1 || {
+        apt install jq
+        sleep 5
+    }
 }
 
 apt_install() {
@@ -70,7 +73,8 @@ apt_clean() {
     apt clean
 }
 
-tmpdir=$(mktemp -d); trap 'rm -rf "$tmpdir"' EXIT
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
 
 # sourcing /etc/os-release file which contains $ID variable
 if [ -f /etc/os-release ]; then
@@ -98,7 +102,7 @@ initial_setup() {
             groupdel pi
         fi
         msg_info "Adding passwordless sudo for $SUDO_USER to /etc/sudoers"
-        printf '%s ALL=(ALL) NOPASSWD: ALL' "$SUDO_USER">> /etc/sudoers
+        printf '%s ALL=(ALL) NOPASSWD: ALL' "$SUDO_USER" >> /etc/sudoers
         printf '\n'
     fi
 
@@ -119,16 +123,16 @@ initial_setup() {
     raspi-config --expand-rootfs
 
     if confirm "Disable Bluetooth and WiFi?" "Y"; then
-        cat <<-EOF > /etc/modprobe.d/raspi-blacklist.conf
-	# disable WLAN
-	blacklist brcmfmac
-	blacklist brcmutil
-	blacklist cfg80211
-	blacklist rfkill
-	# disable bluetooth
-	blacklist btbcm
-	blacklist hci_uart
-	EOF
+        cat <<- EOF > /etc/modprobe.d/raspi-blacklist.conf
+		# disable WLAN
+		blacklist brcmfmac
+		blacklist brcmutil
+		blacklist cfg80211
+		blacklist rfkill
+		# disable bluetooth
+		blacklist btbcm
+		blacklist hci_uart
+		EOF
 
         systemctl disable hciuart
     fi
@@ -178,11 +182,11 @@ install_docker() {
 
     if confirm "Enable IPv6?" "Y"; then
         sudo bash -c 'cat <<-EOF > /etc/docker/daemon.json
-		{
-		"ipv6": true,
-		"fixed-cidr-v6": "2001:db8:1::/64"
-		}
-		EOF'
+        {
+        "ipv6": true,
+        "fixed-cidr-v6": "2001:db8:1::/64"
+        }
+        EOF'
 
         msg_info "Restarting Docker..."
         sudo systemctl restart docker
@@ -194,8 +198,11 @@ install_docker() {
 }
 
 install_nextcloud_local() {
-    command -v docker >/dev/null 2>&1 ||
-        { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
+    command -v docker > /dev/null 2>&1 \
+        || {
+        msg_error "You need Docker to continue. Make sure it is installed and in your path."
+        exit 1
+    }
 
     local ip
     ip="$(hostname -I | cut -f1 -d ' ')"
@@ -246,8 +253,11 @@ install_nextcloud_local() {
 }
 
 install_nextcloudpi_internet() {
-    command -v docker >/dev/null 2>&1 ||
-        { msg_error "You need Docker to continue. Make sure it is installed and in your path."; exit 1; }
+    command -v docker > /dev/null 2>&1 \
+        || {
+        msg_error "You need Docker to continue. Make sure it is installed and in your path."
+        exit 1
+    }
 
     local ip
     ip="$(hostname -I | cut -f1 -d ' ')"
@@ -303,17 +313,27 @@ install_seafile() {
     (
         cd "${HOME}"/Seafile/seafile-server-"${sf_latest}" || exit 1
         msg_info "Launching setup script..."
-        ./setup-seafile.sh && \
-            ./seafile.sh start && \
-            ./seahub.sh start
+        ./setup-seafile.sh \
+            && ./seafile.sh start \
+            && ./seahub.sh start
+
     )
 
     msg_info "Setting Paris timezone in the config file..."
     printf "TIME_ZONE = 'Europe/Paris'\n" >> "${HOME}"/Seafile/conf/seahub_settings.py
 
+
     msg_info "Adding to crontab for autostart on boot..."
-    (crontab -l ; printf '@reboot sleep 30 && %s/Seafile/seafile-server-latest/seafile.sh start' "${HOME}") | crontab -
-    (crontab -l ; printf '@reboot sleep 60 && %s/Seafile/seafile-server-latest/seahub.sh start' "${HOME}") | crontab -
+    (
+        crontab -l
+        printf '@reboot sleep 30 && %s/Seafile/seafile-server-latest/seafile.sh start' "${HOME}"
+    ) | crontab -
+
+    (
+        crontab -l
+        printf '@reboot sleep 60 && %s/Seafile/seafile-server-latest/seahub.sh start' "${HOME}"
+    ) | crontab -
+
     msg_info "Confirm with 'crontab -l'"
 
     msg_info "Autoremoving..."
@@ -391,10 +411,10 @@ usage() {
 main() {
     os_check
 
-	if [[ -z "${1-}" ]]; then
+    if [[ -z "${1-}" ]]; then
         usage
         exit 1
-	fi
+    fi
 
     if [[ "${1}" == "aptbase" ]]; then
         check_is_sudo
