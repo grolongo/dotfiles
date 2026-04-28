@@ -585,7 +585,7 @@ set_gsettings() {
     sudo apt install gnome-shell-extension-manager
 
     # find the uuid by visiting the gnome extension page and lookup uuid in the source
-    array=( system-monitor@gnome-shell-extensions.gcampax.github.com caffeine@patapon.info )
+    array=(system-monitor@gnome-shell-extensions.gcampax.github.com caffeine@patapon.info)
 
     for i in "${array[@]}"; do
         busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions \
