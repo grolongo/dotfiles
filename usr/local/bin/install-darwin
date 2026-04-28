@@ -428,7 +428,7 @@ install_ports() {
 
 set_git() {
     (
-        cd "${HOME}/dotfiles"
+        cd "${HOME}/git/dotfiles"
         if [[ "$(git rev-parse --is-inside-work-tree)" ]]; then
             git remote set-url origin git@github.com:grolongo/dotfiles.git
         else

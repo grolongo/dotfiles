@@ -867,7 +867,7 @@ function Set-Git {
 
     if ($PSCmdlet.ShouldContinue('Continue?', 'Setting up correct origin for the dotfiles git repository.')) {
         Push-Location
-        Set-Location (Join-Path -Path $env:USERPROFILE -ChildPath "dotfiles")
+        Set-Location (Join-Path -Path $env:USERPROFILE -ChildPath "git" -AdditionalChildPath "dotfiles")
 
         if (git rev-parse --is-inside-work-tree) {
             git remote set-url origin git@github.com:grolongo/dotfiles.git
