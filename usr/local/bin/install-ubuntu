@@ -62,15 +62,6 @@ apt_clean() {
     apt clean
 }
 
-spin() {
-    sp='/-\|'
-    printf ' '
-    while sleep 0.1; do
-        printf '\b%.1s' "$sp"
-        sp=${sp#?}${sp%???}
-    done
-}
-
 os_check() {
     # sourcing /etc/os-release file which contains $ID variable
     if [[ -f /etc/os-release ]]; then
@@ -590,11 +581,7 @@ set_gsettings() {
                org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
     done
 
-    spin &
-    spinpid=$!
     sleep 5
-    kill "${spinpid}"
-    printf '\n'
 
     # caffeine settings
     gsettings --schemadir \

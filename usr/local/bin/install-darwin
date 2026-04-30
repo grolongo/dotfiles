@@ -52,15 +52,6 @@ confirm() {
     done
 }
 
-spin() {
-    sp='/-\|'
-    printf ' '
-    while sleep 0.1; do
-        printf '\b%.1s' "$sp"
-        sp=${sp#?}${sp%???}
-    done
-}
-
 os_check() {
     if [[ "$(uname)" != "Darwin" ]]; then
         msg_error "Not running macOS, exiting."
@@ -255,10 +246,7 @@ install_casks() {
         brew install --cask qbittorrent
 
         msg_info "Waiting a few secs for folders to be created..."
-        spin & spinpid=$!
         sleep 10
-        kill "${spinpid}"
-        printf '\n'
 
         local plugin_folder="${HOME}/Library/Application Support/qBittorrent/nova3/engines"
         msg_info "Downloading search plugins..."
