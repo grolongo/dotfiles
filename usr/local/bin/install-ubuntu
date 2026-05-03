@@ -614,12 +614,12 @@ set_gsettings() {
 
     # misc
     gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-    gsettings set org.gnome.nautilus.preferences show-image-thumbnails 'always'
     gsettings set org.gnome.desktop.interface enable-animations false
     gsettings set org.gnome.desktop.interface clock-show-date false
-    gsettings set org.gnome.desktop.screen-time-limits history-enabled false
     gsettings set org.gnome.desktop.interface gtk-key-theme 'Emacs'
-    gsettings set org.freedesktop.ibus.panel.emoji hotkey  "@as []" # make C-; available in Emacs
+    gsettings set org.gnome.nautilus.preferences show-image-thumbnails 'always'
+    gsettings set org.gnome.desktop.screen-time-limits history-enabled false
+    gsettings set org.freedesktop.ibus.panel.emoji hotkey "@as []" # make C-; available in Emacs
     gsettings set org.gnome.Ptyxis cursor-blinking-mode 'off'
 
     # built-in extensions
@@ -637,8 +637,9 @@ set_gsettings() {
 
     # find the uuid by visiting the gnome extension page and lookup uuid in the source
     array=(
-        system-monitor@gnome-shell-extensions.gcampax.github.com
         caffeine@patapon.info
+        system-monitor@gnome-shell-extensions.gcampax.github.com
+        # dash-to-panel@jderose9.github.com
     )
 
     for extensions in "${array[@]}"; do
@@ -653,30 +654,38 @@ set_gsettings() {
     # caffeine settings
     gsettings --schemadir \
               ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ \
-              set org.gnome.shell.extensions.caffeine show-indicator always
+              set org.gnome.shell.extensions.caffeine \
+              show-indicator always
     gsettings --schemadir \
               ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ \
-              set org.gnome.shell.extensions.caffeine show-notifications false
+              set org.gnome.shell.extensions.caffeine \
+              show-notifications false
     gsettings --schemadir \
               ~/.local/share/gnome-shell/extensions/caffeine@patapon.info/schemas/ \
-              set org.gnome.shell.extensions.caffeine show-timer true
+              set org.gnome.shell.extensions.caffeine \
+              show-timer true
 
-    # system monitor settings
+    # system-monitor settings
     gsettings --schemadir \
-              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
-              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-cpu true
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com/schemas/ \
+              set org.gnome.shell.extensions.system-monitor \
+              show-cpu true
     gsettings --schemadir \
-              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
-              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-memory true
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com/schemas/ \
+              set org.gnome.shell.extensions.system-monitor \
+              show-memory true
     gsettings --schemadir \
-              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
-              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-swap false
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com/schemas/ \
+              set org.gnome.shell.extensions.system-monitor \
+              show-swap false
     gsettings --schemadir \
-              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
-              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-download false
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com/schemas/ \
+              set org.gnome.shell.extensions.system-monitor \
+              show-download false
     gsettings --schemadir \
-              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
-              set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-upload false
+              ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com/schemas/ \
+              set org.gnome.shell.extensions.system-monitor \
+              show-upload false
 }
 
 set_i3wm() {
