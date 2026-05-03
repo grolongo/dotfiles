@@ -535,50 +535,117 @@ build_emacs() {
 }
 
 set_gsettings() {
-    # Files (Nautilus)
-    dconf write /org/gtk/settings/file-chooser/show-hidden true
-    dconf write /org/gtk/settings/file-chooser/sort-directories-first true
-    gsettings set org.gnome.nautilus.preferences show-image-thumbnails always
+    # ===========================================================
+    # find available settings:
+    # gsettings list-recursively | grep hidden-files
 
-    # Settings
-    gsettings set org.gnome.desktop.notifications show-in-lock-screen false
-    gsettings set org.gnome.desktop.session idle-delay 0
-    gsettings set org.gnome.desktop.screensaver lock-enabled false
-    gsettings set org.gnome.desktop.interface enable-animations false
-    gsettings set org.gnome.desktop.interface gtk-key-theme Emacs
-    gsettings set org.gnome.desktop.interface show-battery-percentage true
-    gsettings set org.gnome.desktop.interface clock-show-date false
-    gsettings set org.gnome.desktop.peripherals.mouse accel-profile flat
-    gsettings set org.gnome.desktop.input-sources xkb-options [\'caps:ctrl_modifier\']
-    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type nothing
-    gsettings set org.gnome.mutter dynamic-workspaces false
+    # available keys for a program:
+    # gsettings list-keys org.gtk.Settings.FileChooser
+
+    # available values for a key:
+    # gsettings range org.gtk.Settings.FileChooser show-hidden
+
+    # get current value:
+    # gsettings get org.gtk.Settings.FileChooser show-hidden
+
+    # reset to default:
+    # gsettings reset org.gtk.Settings.FileChooser show-hidden
+
+    # set to a new value:
+    # gsettings set org.gtk.Settings.FileChooser show-hidden true
+    # ===========================================================
+
+    # file manager
+    gsettings set org.gtk.Settings.FileChooser sort-directories-first true
+    gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
+    gsettings set org.gnome.nautilus.preferences show-hidden-files true
+    gsettings set org.gtk.Settings.FileChooser show-hidden true
+    gsettings set org.gtk.gtk4.Settings.FileChooser show-hidden true
+
+    # search
+    gsettings set org.gnome.desktop.search-providers disabled \
+              "[
+                'org.gnome.Settings.desktop',
+                'org.gnome.Characters.desktop',
+                'org.gnome.clocks.desktop',
+                'org.gnome.Calculator.desktop',
+                'org.gnome.seahorse.Application.desktop'
+              ]"
+
+    # mouse / trackpad / trackpoint
+    gsettings set org.gnome.desktop.peripherals.mouse accel-profile 'flat'
+    gsettings set org.gnome.desktop.peripherals.mouse natural-scroll true
+    gsettings set org.gnome.desktop.peripherals.mouse middle-click-emulation true
+    gsettings set org.gnome.desktop.peripherals.touchpad accel-profile 'flat'
+    gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
+    gsettings set org.gnome.desktop.peripherals.touchpad disable-while-typing true
+    gsettings set org.gnome.desktop.peripherals.touchpad middle-click-emulation true
+    gsettings set org.gnome.desktop.peripherals.trackball accel-profile 'flat'
+    gsettings set org.gnome.desktop.peripherals.pointingstick accel-profile 'flat'
+
+    # keyboard
+    gsettings set org.gnome.desktop.peripherals.keyboard repeat true
+    gsettings set org.gnome.desktop.peripherals.keyboard delay 150
+    gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 20
+    gsettings set org.gnome.desktop.input-sources xkb-options "['ctrl:nocaps']"
+
+    # workspaces
     gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
+    gsettings set org.gnome.mutter dynamic-workspaces false
     gsettings set org.gnome.shell.app-switcher current-workspace-only true
+
+    # lock-screen / screensaver / hibernate / battery / ac
+    gsettings set org.gnome.desktop.notifications show-in-lock-screen false
+    gsettings set org.gnome.settings-daemon.plugins.power idle-dim false
+    gsettings set org.gnome.desktop.interface show-battery-percentage true
+    gsettings set org.gnome.desktop.session idle-delay 300
+    gsettings set org.gnome.desktop.screensaver lock-enabled true
+    gsettings set org.gnome.desktop.screensaver lock-delay 0
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 1200
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'suspend'
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 1200
+    gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 'suspend'
+
+    # night shift
+    # gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+    # gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3500
+    # gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-from 0
+    # gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-to 0
+
+    # misc
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+    gsettings set org.gnome.nautilus.preferences show-image-thumbnails 'always'
+    gsettings set org.gnome.desktop.interface enable-animations false
+    gsettings set org.gnome.desktop.interface clock-show-date false
+    gsettings set org.gnome.desktop.screen-time-limits history-enabled false
+    gsettings set org.gnome.desktop.interface gtk-key-theme 'Emacs'
     gsettings set org.freedesktop.ibus.panel.emoji hotkey  "@as []" # make C-; available in Emacs
+    gsettings set org.gnome.Ptyxis cursor-blinking-mode 'off'
 
-    # Night shift mode
-    gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
-    gsettings set org.gnome.settings-daemon.plugins.color night-light-temperature 3500
-    gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-from 0
-    gsettings set org.gnome.settings-daemon.plugins.color night-light-schedule-to 0
-
-    # Desktop Icon NG
+    # built-in extensions
     gsettings set org.gnome.shell.extensions.ding icon-size 'standard'
     gsettings set org.gnome.shell.extensions.ding show-home false
-
-    # Ubuntu AppIndicator
+    gsettings set org.gnome.shell.extensions.ding start-corner 'top-left'
     gsettings set org.gnome.shell.extensions.appindicator icon-opacity 255
-    # Dock
     gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
+
+    #=======================
+    # Third party extensions
+    #=======================
 
     sudo apt install gnome-shell-extension-manager
 
     # find the uuid by visiting the gnome extension page and lookup uuid in the source
-    array=(system-monitor@gnome-shell-extensions.gcampax.github.com caffeine@patapon.info)
+    array=(
+        system-monitor@gnome-shell-extensions.gcampax.github.com
+        caffeine@patapon.info
+    )
 
-    for i in "${array[@]}"; do
-        busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions \
-               org.gnome.Shell.Extensions InstallRemoteExtension s "${i}" &> /dev/null || true
+    for extensions in "${array[@]}"; do
+        busctl --user call org.gnome.Shell.Extensions \
+               /org/gnome/Shell/Extensions \
+               org.gnome.Shell.Extensions \
+               InstallRemoteExtension s "${extensions}" &> /dev/null || true
     done
 
     sleep 5
@@ -610,8 +677,6 @@ set_gsettings() {
     gsettings --schemadir \
               ~/.local/share/gnome-shell/extensions/system-monitor@gnome-shell-extensions.gcampax.github.com \
               set org.gnome.shell.extensions/schemas/ set org.gnome.shell.extensions.system-monitor show-upload false
-
-    msg_info "DON'T FORGET TO SET POWER MODE TO 'PERFORMANCE' IN THE SETTINGS!"
 }
 
 set_i3wm() {
