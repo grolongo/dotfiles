@@ -339,7 +339,7 @@ apt_extra() {
 		Types: deb
 		URIs: https://repository.mullvad.net/deb/stable
 		Architectures: ${arch}
-		Suites: ${distrib}
+		Suites: stable
 		Components: main
 		Signed-By: /etc/apt/keyrings/mullvad-keyring.asc
 		EOF
