@@ -174,50 +174,83 @@ symlink_streamlink() {
 
 symlink_i3() {
     if confirm "link i3wm files?" "Y"; then
+        # wm
         mkdir -vp "${HOME}/.config/i3"
         symlink ".config/i3/config"
+
+        # statusbar
         mkdir -vp "${HOME}/.config/i3status"
         symlink ".config/i3status/config"
+
+        # notifications
         mkdir -vp "${HOME}/.config/dunst"
         symlink ".config/dunst/dunstrc"
-        symlink ".xsessionrc"
+
+        # fonts
         mkdir -vp "${HOME}/.config/fontconfig"
         symlink ".config/fontconfig/fonts.conf"
+
+        # default apps
+        symlink ".config/mimeapps.list"
+
+        # X11 specific
+        symlink ".xsessionrc"
+        symlink ".Xresources"
         sudo mkdir -vp /etc/X11/xorg.conf.d
         symlink_root "etc/X11/xorg.conf.d/30-touchpad.conf"
         symlink_root "etc/X11/xorg.conf.d/30-trackpoint.conf"
-        symlink ".config/mimeapps.list"
+
+        # systemd
+        mkdir -vp "${HOME}/.config/systemd/user"
+        symlink ".config/systemd/user/battery.timer"
+        symlink ".config/systemd/user/battery.service"
+        systemctl --user enable battery.timer
     fi
 }
 
 symlink_sway() {
     if confirm "link SwayWM files?" "Y"; then
+        # wm
         mkdir -vp "${HOME}/.config/sway"
         symlink ".config/sway/config"
-        mkdir -vp "${HOME}/.config/swaylock"
-        symlink ".config/swaylock/config"
-        mkdir -vp "${HOME}/.config/swayimg"
-        symlink ".config/swayimg/config"
-        mkdir -vp "${HOME}/.config/i3status"
-        symlink ".config/i3status/config"
-        mkdir -vp "${HOME}/.config/fontconfig"
-        symlink ".config/fontconfig/fonts.conf"
-        mkdir -vp "${HOME}/.config/foot"
-        symlink ".config/foot/foot.ini"
-        mkdir -vp "${HOME}/.config/tofi"
-        symlink ".config/tofi/config"
-        mkdir -vp "${HOME}/.config/mako"
-        symlink ".config/mako/config"
+
+        # statusbar
         mkdir -vp "${HOME}/.config/waybar"
         symlink ".config/waybar/config.jsonc"
         symlink ".config/waybar/style.css"
-        symlink ".config/mimeapps.list"
-    fi
-}
 
-symlink_x11() {
-    if confirm "link Xresources config file?" "Y"; then
-        symlink ".Xresources"
+        # lockscreen
+        mkdir -vp "${HOME}/.config/swaylock"
+        symlink ".config/swaylock/config"
+
+        # image viewer
+        mkdir -vp "${HOME}/.config/swayimg"
+        symlink ".config/swayimg/config"
+
+        # launcher
+        mkdir -vp "${HOME}/.config/tofi"
+        symlink ".config/tofi/config"
+
+        # terminal
+        mkdir -vp "${HOME}/.config/foot"
+        symlink ".config/foot/foot.ini"
+
+        # notifications
+        mkdir -vp "${HOME}/.config/mako"
+        symlink ".config/mako/config"
+
+        # default apps
+        symlink ".config/mimeapps.list"
+
+        # fonts
+        mkdir -vp "${HOME}/.config/fontconfig"
+        symlink ".config/fontconfig/fonts.conf"
+
+        # systemd
+        mkdir -vp "${HOME}/.config/systemd/user"
+        symlink ".config/systemd/user/battery.timer"
+        symlink ".config/systemd/user/battery.service"
+        systemctl --user enable battery.timer
     fi
 }
 
@@ -225,15 +258,6 @@ symlink_tlp() {
     if confirm "link TLP config file?" "Y"; then
         sudo mkdir -vp /etc/tlp.d
         symlink_root "etc/tlp.d/01-t480s-i5-8250u.conf"
-    fi
-}
-
-symlink_systemd() {
-    if confirm "link systemd unit files?" "Y"; then
-        mkdir -vp "${HOME}/.config/systemd/user"
-        symlink ".config/systemd/user/battery.timer"
-        symlink ".config/systemd/user/battery.service"
-        systemctl --user enable battery.timer
     fi
 }
 
