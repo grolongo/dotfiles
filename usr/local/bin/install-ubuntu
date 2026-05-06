@@ -168,6 +168,7 @@ apt_common() {
         imagemagick
         jq
         keepassxc
+        magic-wormhole
         mkvtoolnix
         ncat
         nmap
@@ -475,6 +476,10 @@ snaps_common() {
 
     if confirm "Install shfmt?" "Y"; then
         snap install shfmt
+    fi
+
+    if confirm "Install wormhole?" "Y"; then
+        snap install wormhole --edge
     fi
 
     snap refresh

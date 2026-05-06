@@ -150,6 +150,7 @@ install_formulae() {
         httrack
         imagemagick
         jq
+        magic-wormhole
         mkvtoolnix
         nmap
         pandoc
@@ -366,6 +367,7 @@ install_ports() {
         imagemagick
         jq
         keepassxc
+        magic-wormhole
         mkvtoolnix
         mpv
         nmap

@@ -638,6 +638,7 @@ function Install-WinGet {
         'GnuPG.GnuPG',
         'ImageMagick.ImageMagick',
         'DominikReichl.KeePass',
+        'magic-wormhole.magic-wormhole',
         'GnuWin32.Make',
         'Microsoft.MouseandKeyboardCenter',
         'MullvadVPN.MullvadVPN',
