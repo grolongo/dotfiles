@@ -478,10 +478,6 @@ snaps_common() {
         snap install shfmt
     fi
 
-    if confirm "Install wormhole?" "Y"; then
-        snap install wormhole --edge
-    fi
-
     snap refresh
 }
 
