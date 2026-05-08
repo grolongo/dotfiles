@@ -54,7 +54,7 @@
     },
 
     "network": {
-        "family": "ipv4_6",
+        // "family": "ipv4_6",
         "format-wifi": "{icon} <span color='#aeea94'>({essid} {frequency} GHz) {ipaddr}</span>",
         "format-ethernet": " <span color='#aeea94'>{ipaddr}</span>",
         "format-disconnected": "Disconnected",
@@ -62,14 +62,14 @@
         "tooltip": false
     },
 
-     "disk": {
+    "disk": {
         "states": {
             "critical": 80
         },
-	    "format": "{free}",
+        "format": "{free}",
         "format-alt": "{used}/{total} ({percentage_used}%)",
         "tooltip": false
-     },
+    },
 
     "memory": {
         "states": {
@@ -121,14 +121,14 @@
     },
 
     "power-profiles-daemon": {
-      "format": "{icon}",
-      "format-icons": {
-        "default": "󰡴",
-        "performance": "󰡴",
-        "balanced": "",
-        "power-saver": "󰡳"
-      },
-      "tooltip": false
+        "format": "{icon}",
+        "format-icons": {
+            "default": "󰡴",
+            "performance": "󰡴",
+            "balanced": "",
+            "power-saver": "󰡳"
+        },
+        "tooltip": false
     },
 
     "clock": {
