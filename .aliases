@@ -1,8 +1,8 @@
 # -*- mode: sh; -*-
 
-#############
-### Linux ###
-#############
+#======
+# Linux
+#======
 
 if [[ "$OSTYPE" = linux* ]]; then
     # GNU utils
@@ -15,9 +15,9 @@ if [[ "$OSTYPE" = linux* ]]; then
     alias img="swayimg"
 fi
 
-#############
-### macOS ###
-#############
+#======
+# macOS
+#======
 
 if [[ "$OSTYPE" = darwin* ]]; then
     # BSD utils
@@ -28,9 +28,9 @@ if [[ "$OSTYPE" = darwin* ]]; then
     alias rm="rm -Rv"
 fi
 
-###############
-### commons ###
-###############
+#========
+# Commons
+#========
 
 # utils (blank space so its not in history)
 alias clear=" clear"
@@ -43,47 +43,93 @@ alias hist="history | grep "
 alias se="sudoedit"
 alias sv="sudo visudo"
 alias screenoff="setterm -blank 1"
-alias logo="sudo pkill -u $USER"
 alias curldl="curl --location --progress-bar --remote-name"
 alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
 alias chatty="nohup java -jar /opt/Chatty/Chatty.jar </dev/null &>/dev/null & disown;"
 alias cdtbb="cd ~/.local/share/torbrowser/tbb/x86_64/tor-browser_en-US/Browser/Downloads/"
 alias wgetws="wget -mpEk" # add "--wait=seconds" if ban occurs
+alias logo="swaymsg exit"
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
 alias metaimgremove="exiftool -overwrite_original -all="
 
 # zsh specific
-if [ "${ZSH_NAME}" ]; then
+if [[ "${ZSH_NAME}" ]]; then
     alias history="history 1"
 fi
 
-#################
-### functions ###
-#################
+#==========
+# Functions
+#==========
 
-metavideoremove() { ffmpeg -i "$1" -vcodec copy -acodec copy -map 0 -map_metadata -1 cleaned-"$1"; }
-hex10() { hexdump -v -n 5 -e '4/4 "%x" 1 "\n"' /dev/urandom; }
-fnd() { find . -iname "*$1*" 2> /dev/null | grep --color=auto --ignore-case -e "$1"; }
+metavideoremove() {
+    ffmpeg -i "$1" \
+           -vcodec copy \
+           -acodec copy \
+           -map 0 \
+           -map_metadata -1 \
+           cleaned-"$1"
+}
 
-# grep
-lgrep() { find . -maxdepth 1 -type f -exec grep \
-               --binary-file=without-match \
-               --color=auto \
-               --ignore-case \
-               --line-number \
-               --null "$1" {} +; }
+hex10() {
+    hexdump -v -n 5 \
+            -e '4/4 "%x" 1 "\n"' \
+            /dev/urandom
+}
 
-rgrep() { find . -type f -exec grep \
-               --binary-file=without-match \
-               --color=auto \
-               --ignore-case \
-               --line-number \
-               --null "$1" {} +; }
+fnd() {
+    find . -iname "*$1*" 2> /dev/null \
+        | grep --color=auto --ignore-case -e "$1"
+}
 
-rgrep2() { grep --binary-file=without-match --color=auto --ignore-case --line-number --no-messages --null --recursive "$1" .; }
+lgrep() {
+    find . -maxdepth 1 -type f -exec grep \
+         --binary-file=without-match \
+         --color=auto \
+         --ignore-case \
+         --line-number \
+         --null "$1" {} +
+}
 
-# ripgrep
-lrg() { rg --follow --hidden --max-depth 1 --search-zip --smart-case -e "$1" .; }
-rrg() { rg --follow --hidden --search-zip --smart-case "$1" .; }
+rgrep() {
+    find . -type f -exec grep \
+         --binary-file=without-match \
+         --color=auto \
+         --ignore-case \
+         --line-number \
+         --null "$1" {} +
+}
+
+rgrep2() {
+    grep --binary-file=without-match \
+         --color=auto \
+         --ignore-case \
+         --line-number \
+         --no-messages \
+         --null \
+         --recursive "$1" .
+}
+
+lrg() {
+    rg --follow \
+       --hidden \
+       --max-depth 1 \
+       --search-zip \
+       --smart-case \
+       -e "$1" .
+}
+
+rrg() {
+    rg --follow \
+       --hidden \
+       --search-zip \
+       --smart-case "$1" .
+}
+
+sway() {
+    if [[ -z "$WAYLAND_DISPLAY" ]] && ((XDG_VTNR == 1)); then
+        export XDG_CURRENT_DESKTOP=sway
+        exec /usr/bin/sway
+    fi
+}
