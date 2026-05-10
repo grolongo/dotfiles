@@ -1,24 +1,32 @@
 # -*- mode: sh; sh-shell: bash;-*-
 
+# ====
 # LANG
+# ====
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
+# =======
 # EDITORS
+# =======
 export SUDO_EDITOR="/usr/bin/mg"
 export VISUAL="/usr/bin/mg"
 export EDITOR="/usr/bin/mg"
 export PAGER=less
 
+# =========
 # GPG / SSH
+# =========
 GPG_TTY=$(tty)
 export GPG_TTY
 if [[ -S "$XDG_RUNTIME_DIR/openssh_agent" ]]; then
     export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/openssh_agent"
 fi
 
+# ========
 # HOMEBREW
+# ========
 export HOMEBREW_NO_INSECURE_REDIRECT=1
 export HOMEBREW_CASK_OPTS=--require-sha
 export HOMEBREW_NO_ANALYTICS=1
@@ -30,7 +38,9 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 export WORMHOLE_ACCEPT_FILE
 export WORMHOLE_QR=0
 
-### Path
+# ====
+# Path
+# ====
 
 # add home bin if exists
 if [[ -d "${HOME}/.local/bin" ]]; then

@@ -1,8 +1,8 @@
 # -*- mode: sh; sh-shell: bash;-*-
 
-#======
+# =====
 # Linux
-#======
+# =====
 
 if [[ "$OSTYPE" = linux* ]]; then
     # GNU utils
@@ -15,9 +15,9 @@ if [[ "$OSTYPE" = linux* ]]; then
     alias img="swayimg"
 fi
 
-#======
+# =====
 # macOS
-#======
+# =====
 
 if [[ "$OSTYPE" = darwin* ]]; then
     # BSD utils
@@ -28,9 +28,9 @@ if [[ "$OSTYPE" = darwin* ]]; then
     alias rm="rm -Rv"
 fi
 
-#========
+# =======
 # Commons
-#========
+# =======
 
 # utils (blank space so its not in history)
 alias clear=" clear"
@@ -59,9 +59,9 @@ if [[ "${ZSH_NAME}" ]]; then
     alias history="history 1"
 fi
 
-#==========
+# =========
 # Functions
-#==========
+# =========
 
 metavideoremove() {
     ffmpeg -i "$1" \

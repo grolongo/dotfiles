@@ -1,7 +1,12 @@
+exec dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP \
+                                                  XDG_SESSION_DESKTOP \
+                                                  XDG_SESSION_TYPE \
+                                                  WAYLAND_DISPLAY \
+                                                  DISPLAY \
+                                                  SWAYSOCK
 # xwayland disable
 primary_selection disabled
 for_window [shell="xwayland"] title_format "[XWayland] %title"
-#exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec_always autotiling
 exec rfkill block bluetooth
 exec mako
@@ -16,19 +21,20 @@ set $down  n
 set $up    p
 set $right f
 
-# ------------------
+# ==================
 # Idle configuration
-# ------------------
+# ==================
 
 exec swayidle -w \
          timeout 300 swaylock-randomize \
-         timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+         timeout 600 'swaymsg "output * power off"' \
+                 resume 'swaymsg "output * power on"' \
          timeout 1200 'systemctl suspend' \
          before-sleep swaylock-randomize
 
-# ----------------------
+# ======================
 # Input(s) configuration
-# ----------------------
+# ======================
 
 input type:keyboard {
     xkb_layout "fr"
@@ -55,9 +61,9 @@ input type:pointer {
     # scroll_factor
 }
 
-# -----------------
+# =================
 # Window Management
-# -----------------
+# =================
 
 # Workspaces
 set $ws1 "1"
@@ -101,9 +107,9 @@ for_window [window_type="menu"]   floating enable
 
 for_window [app_id="firefox_firefox" title="Library"] floating enable
 
-# --------
+# ========
 # Bindings
-# --------
+# ========
 
 bindsym $mod+Tab     workspace next
 bindsym $mod+Return  exec $term
@@ -200,9 +206,9 @@ bindsym print      exec grim "${HOME}"/Downloads/$(date +'screenshot_%d-%b-%Y_%H
 bindsym ctrl+print exec grim -g "$(slurp)" "${HOME}"/Downloads/$(date +'screenshot_%d-%b-%Y_%Hh%M_%N.png')
 bindsym $mod+c     exec colorpicker
 
-# ---------
+# =========
 # GTK Theme
-# ---------
+# =========
 
 set $gnome-schema org.gnome.desktop.interface
 
@@ -214,17 +220,17 @@ exec_always {
     gsettings set $gnome-schema monospace-font-name 'Ubuntu Sans Mono'
 }
 
-# ------
+# ======
 # Design
-# ------
+# ======
 
 titlebar_padding 4 2
 # purple scheme
 client.focused #8066bb #6141ab #ffffff #8066bb #8066bb
 
-# ----------
+# ==========
 # Status Bar
-# ----------
+# ==========
 
 exec waybar
 
