@@ -78,7 +78,7 @@ hex10() {
             /dev/urandom
 }
 
-fnd() {
+my-find() {
     find . -iname "*$1*" 2> /dev/null \
         | grep --color=auto --ignore-case -e "$1"
 }
@@ -92,7 +92,7 @@ lgrep() {
          --null "$1" {} +
 }
 
-rgrep() {
+find-grep() {
     find . -type f -exec grep \
          --binary-file=without-match \
          --color=auto \
@@ -101,7 +101,7 @@ rgrep() {
          --null "$1" {} +
 }
 
-rgrep2() {
+rgrep() {
     grep --binary-file=without-match \
          --color=auto \
          --ignore-case \
