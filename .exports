@@ -1,4 +1,4 @@
-# -*- mode: sh; -*-
+# -*- mode: sh; sh-shell: bash;-*-
 
 # LANG
 export LC_ALL=en_US.UTF-8
