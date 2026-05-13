@@ -64,12 +64,12 @@ fi
 # =========
 
 metavideoremove() {
-    ffmpeg -i "$1" \
+    ffmpeg -i "${1}" \
            -vcodec copy \
            -acodec copy \
            -map 0 \
            -map_metadata -1 \
-           cleaned-"$1"
+           cleaned-"${1}"
 }
 
 hex10() {
@@ -78,53 +78,57 @@ hex10() {
             /dev/urandom
 }
 
-my-find() {
-    find . -iname "*$1*" 2> /dev/null \
-        | grep --color=auto --ignore-case -e "$1"
+ffind() {
+    find -L . -iname "*${1}*" 2> /dev/null \
+        | grep --color=auto \
+               --ignore-case \
+               --regexp="${1}"
+}
+
+ffd() {
+    fdfind --hidden --follow "${1}" \
+        | grep --color=auto \
+               --ignore-case \
+               --regexp="${1}"
 }
 
 lgrep() {
-    find . -maxdepth 1 -type f -exec grep \
+    find -L . -maxdepth 1 -type f -exec grep \
          --binary-file=without-match \
          --color=auto \
          --ignore-case \
          --line-number \
-         --null "$1" {} +
-}
-
-find-grep() {
-    find . -type f -exec grep \
-         --binary-file=without-match \
-         --color=auto \
-         --ignore-case \
-         --line-number \
-         --null "$1" {} +
+         --with-filename \
+         --null \
+         --regexp="${1}" {} +
 }
 
 rgrep() {
-    grep --binary-file=without-match \
+    find -L . -type f -exec grep \
+         --binary-file=without-match \
          --color=auto \
          --ignore-case \
          --line-number \
-         --no-messages \
+         --with-filename \
          --null \
-         --recursive "$1" .
+         --regexp="${1}" {} +
 }
 
 lrg() {
-    rg --follow \
+    rg --max-depth 1 \
+       --follow \
        --hidden \
-       --max-depth 1 \
        --search-zip \
        --smart-case \
-       -e "$1" .
+       --regexp="${1}" .
 }
 
 rrg() {
     rg --follow \
        --hidden \
        --search-zip \
-       --smart-case "$1" .
+       --smart-case \
+       --regexp="${1}" .
 }
 
 sway() {
