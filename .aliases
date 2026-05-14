@@ -116,19 +116,21 @@ rgrep() {
 
 lrg() {
     rg --max-depth 1 \
+       --no-heading \
+       --smart-case \
        --follow \
        --hidden \
        --search-zip \
-       --smart-case \
-       --regexp="${1}" .
+       --regexp="${1}"
 }
 
 rrg() {
-    rg --follow \
+    rg --no-heading \
+       --smart-case \
+       --follow \
        --hidden \
        --search-zip \
-       --smart-case \
-       --regexp="${1}" .
+       --regexp="${1}"
 }
 
 sway() {
