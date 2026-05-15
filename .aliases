@@ -79,7 +79,9 @@ hex10() {
 }
 
 ffind() {
-    find -L . -iname "*${1}*" 2> /dev/null \
+    find -L . \
+         -type d -name ".git" -prune -o \
+         -iname "*${1}*" 2> /dev/null \
         | grep --color=auto \
                --ignore-case \
                --regexp="${1}"
@@ -93,7 +95,10 @@ ffd() {
 }
 
 lgrep() {
-    find -L . -maxdepth 1 -type f -exec grep \
+    find -L . \
+         -maxdepth 1 \
+         -type f \
+         -exec grep \
          --binary-file=without-match \
          --color=auto \
          --ignore-case \
@@ -104,7 +109,10 @@ lgrep() {
 }
 
 rgrep() {
-    find -L . -type f -exec grep \
+    find -L . \
+         -type d -name ".git" -prune -o \
+         -type f \
+         -exec grep \
          --binary-file=without-match \
          --color=auto \
          --ignore-case \
