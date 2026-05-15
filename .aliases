@@ -79,7 +79,7 @@ hex10() {
 }
 
 ffind() {
-    find -L . \
+    find . \
          -type d -name ".git" -prune -o \
          -iname "*${1}*" 2> /dev/null \
         | grep --color=auto \
@@ -90,7 +90,6 @@ ffind() {
 ffd() {
     fdfind \
         --hidden \
-        --follow \
         --exclude=".git" \
         "${1}" \
         | grep --color=auto \
@@ -99,7 +98,7 @@ ffd() {
 }
 
 lgrep() {
-    find -L . \
+    find . \
          -maxdepth 1 \
          -type f \
          -exec grep \
@@ -113,7 +112,7 @@ lgrep() {
 }
 
 rgrep() {
-    find -L . \
+    find . \
          -type d -name ".git" -prune -o \
          -type f \
          -exec grep \
@@ -130,7 +129,6 @@ lrg() {
     rg --max-depth 1 \
        --no-heading \
        --smart-case \
-       --follow \
        --hidden \
        --search-zip \
        --null \
@@ -141,7 +139,6 @@ rrg() {
     rg --glob='!.git/' \
        --no-heading \
        --smart-case \
-       --follow \
        --hidden \
        --search-zip \
        --null \
