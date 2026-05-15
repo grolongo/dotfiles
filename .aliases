@@ -88,7 +88,11 @@ ffind() {
 }
 
 ffd() {
-    fdfind --hidden --follow "${1}" \
+    fdfind \
+        --hidden \
+        --follow \
+        --exclude=".git" \
+        "${1}" \
         | grep --color=auto \
                --ignore-case \
                --regexp="${1}"
@@ -134,7 +138,8 @@ lrg() {
 }
 
 rrg() {
-    rg --no-heading \
+    rg --glob='!.git/' \
+       --no-heading \
        --smart-case \
        --follow \
        --hidden \
