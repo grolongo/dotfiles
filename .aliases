@@ -121,6 +121,7 @@ lrg() {
        --follow \
        --hidden \
        --search-zip \
+       --null \
        --regexp="${1}"
 }
 
@@ -130,6 +131,7 @@ rrg() {
        --follow \
        --hidden \
        --search-zip \
+       --null \
        --regexp="${1}"
 }
 
