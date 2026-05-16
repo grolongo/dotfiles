@@ -37,7 +37,6 @@ alias clear=" clear"
 alias claer=" clear"
 alias cl=" clear"
 alias exit=" exit"
-alias fd="fd --hidden"
 alias root="sudo -i"
 alias hist="history | grep "
 alias se="sudoedit"
@@ -81,17 +80,18 @@ hex10() {
 ffind() {
     find . \
          -type d -name ".git" -prune -o \
-         -iname "*${1}*" 2> /dev/null \
+         -iname "*${1}*" \
         | grep --color=auto \
                --ignore-case \
                --regexp="${1}"
 }
 
 ffd() {
-    fdfind \
-        --hidden \
-        --exclude=".git" \
-        "${1}" \
+    local fdcommand
+    fdcommand=$(command -v fd || command -v fdfind)
+
+    "$fdcommand" --hidden \
+                 --exclude=".git" "${1}" \
         | grep --color=auto \
                --ignore-case \
                --regexp="${1}"
