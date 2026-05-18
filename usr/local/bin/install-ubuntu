@@ -514,7 +514,6 @@ build_emacs() {
         tar -xzvf emacs.tar.gz --directory /home/"${SUDO_USER}"/git
         mv /home/"${SUDO_USER}"/git/emacs* /home/"${SUDO_USER}"/git/emacs
         cd /home/"${SUDO_USER}"/git/emacs
-        export CC=/usr/bin/gcc-15 CXX=/usr/bin/gcc-15
 
         ./autogen.sh
         # you can check the available flags with: ./configure --help
