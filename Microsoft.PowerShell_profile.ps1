@@ -136,7 +136,7 @@ function Send-Stuff {
         [string]$filePath
     )
 
-    scp $filePath x230:/home/grolongo/Downloads/
+    scp $filePath x230:/home/glg/Downloads/
 }
 
 New-Alias -Name scpp -Value Send-Stuff
