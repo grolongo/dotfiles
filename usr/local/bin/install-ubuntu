@@ -842,6 +842,19 @@ set_git() {
     )
 }
 
+update_firmware() {
+    if ! command -v fwupdmgr > /dev/null 2>&1; then
+        apt install -y fwupd
+        sleep 5
+    fi
+
+    fwupdmgr refresh --force
+    sleep 5
+    fwupdmgr get-updates
+    sleep 5
+    fwupdmgr update
+}
+
 usage() {
     printf '\n'
     printf 'Usage:\n'
@@ -854,6 +867,7 @@ usage() {
     printf 'i3          (s) - install and set up i3wm related packages & configs\n'
     printf 'sway        (s) - install and set up sway related packages & configs\n'
     printf 'git             - set correct SSH origin for this repository\n'
+    printf 'firmware    (s) - update hardware components with vendor firmware\n'
     printf '\n'
 }
 
@@ -897,6 +911,9 @@ main() {
     elif [[ "${1}" == "git" ]]; then
         check_is_not_sudo
         set_git
+    elif [[ "${1}" == "firmware" ]]; then
+        check_is_sudo
+        update_firmware
     else
         usage
     fi
