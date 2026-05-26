@@ -20,6 +20,7 @@ fi
 # =====
 
 if [[ "$OSTYPE" = darwin* ]]; then
+    alias e="/usr/bin/sensible-editor"
     # BSD utils
     alias ls="ls -AFG"
     alias l="ls -AFGlhS"
