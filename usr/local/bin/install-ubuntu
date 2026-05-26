@@ -707,7 +707,6 @@ set_i3wm() {
         playerctl
         rxvt-unicode
         ttf-mscorefonts-installer
-        ubuntu-drivers-common
         ubuntu-restricted-extras
         ubuntu-restricted-addons
         unzip
@@ -768,7 +767,6 @@ set_sway() {
         swayimg
         tofi
         ttf-mscorefonts-installer
-        ubuntu-drivers-common
         ubuntu-restricted-extras
         ubuntu-restricted-addons
         unzip
@@ -842,6 +840,15 @@ set_git() {
     )
 }
 
+install_drivers() {
+    if ! command -v ubuntu-drivers > /dev/null 2>&1; then
+        apt install ubuntu-drivers-common
+        sleep 5
+    fi
+
+    ubuntu-drivers install
+}
+
 update_firmware() {
     if ! command -v fwupdmgr > /dev/null 2>&1; then
         apt install -y fwupd
@@ -867,6 +874,7 @@ usage() {
     printf 'i3          (s) - install and set up i3wm related packages & configs\n'
     printf 'sway        (s) - install and set up sway related packages & configs\n'
     printf 'git             - set correct SSH origin for this repository\n'
+    printf 'drivers     (s) - install third party drivers\n'
     printf 'firmware    (s) - update hardware components with vendor firmware\n'
     printf '\n'
 }
@@ -911,6 +919,9 @@ main() {
     elif [[ "${1}" == "git" ]]; then
         check_is_not_sudo
         set_git
+    elif [[ "${1}" == "drivers" ]]; then
+        check_is_sudo
+        install_drivers
     elif [[ "${1}" == "firmware" ]]; then
         check_is_sudo
         update_firmware
