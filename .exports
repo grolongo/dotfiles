@@ -10,9 +10,9 @@ export LANGUAGE=en_US.UTF-8
 # =======
 # EDITORS
 # =======
-export SUDO_EDITOR="/usr/bin/mg"
-export VISUAL="/usr/bin/mg"
-export EDITOR="/usr/bin/mg"
+export SUDO_EDITOR=mg
+export VISUAL=mg
+export EDITOR=mg
 export PAGER=less
 
 # =========

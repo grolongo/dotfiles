@@ -5,6 +5,7 @@
 # =====
 
 if [[ "$OSTYPE" = linux* ]]; then
+    alias edit="sensible-editor"
     # GNU utils
     alias ls="ls --almost-all --classify --color=auto --group-directories-first --literal --sort=extension"
     alias l="ls --almost-all --classify --color=auto --group-directories-first --human-readable -l --literal --sort=extension"
@@ -20,7 +21,8 @@ fi
 # =====
 
 if [[ "$OSTYPE" = darwin* ]]; then
-    alias e="/usr/bin/sensible-editor"
+    alias e='$EDITOR'
+    alias edit='$EDITOR'
     # BSD utils
     alias ls="ls -AFG"
     alias l="ls -AFGlhS"
@@ -41,7 +43,6 @@ alias exit=" exit"
 alias root="sudo -i"
 alias se="sudoedit"
 alias sv="sudo visudo"
-alias edit="/usr/bin/sensible-editor"
 alias hist="history | grep "
 alias screenoff="setterm -blank 1"
 alias curldl="curl --location --progress-bar --remote-name"
