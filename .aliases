@@ -6,6 +6,7 @@
 
 if [[ "$OSTYPE" = linux* ]]; then
     alias edit="sensible-editor"
+    # alias e="sensible-editor" # using package e-wrapper instead
     # GNU utils
     alias ls="ls --almost-all --classify --color=auto --group-directories-first --literal --sort=extension"
     alias l="ls --almost-all --classify --color=auto --group-directories-first --human-readable -l --literal --sort=extension"
