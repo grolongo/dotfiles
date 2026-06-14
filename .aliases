@@ -106,7 +106,7 @@ lgrep() {
          -maxdepth 1 \
          -type f \
          -exec grep \
-         --binary-file=without-match \
+         --binary-files=without-match \
          --color=auto \
          --ignore-case \
          --line-number \
@@ -120,7 +120,7 @@ rgrep() {
          -type d -name ".git" -prune -o \
          -type f \
          -exec grep \
-         --binary-file=without-match \
+         --binary-files=without-match \
          --color=auto \
          --ignore-case \
          --line-number \
