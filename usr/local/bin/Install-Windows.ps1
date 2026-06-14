@@ -626,6 +626,7 @@ function Install-WinGet {
         'aria2.aria2',
         'AutoHotkey.AutoHotkey',
         'Chatty.Chatty',
+        # 'Microsoft.Coreutils',
         'Synology.DriveClient',
         'Electrum.Electrum',
         'voidtools.Everything',
