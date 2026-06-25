@@ -7,5 +7,7 @@
 
 $0
 
-(provide '`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`)
+(provide '`(file-name-sans-extension
+            (file-name-nondirectory
+             (buffer-file-name)))`)
 ;;; `(file-name-nondirectory (buffer-file-name))` ends here

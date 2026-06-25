@@ -41,7 +41,10 @@
                                  (beginning-of-line))))))
 
 (setopt auto-save-no-message t
-        auto-save-list-file-prefix (expand-file-name "auto-saves/.saves-" user-emacs-directory)
+        auto-save-list-file-prefix (expand-file-name
+                                    "auto-saves/.saves-"
+                                    user-emacs-directory)
+        completion-ignored-extensions nil
         delete-by-moving-to-trash t
         fill-column 80
         indicate-buffer-boundaries 'left
@@ -83,12 +86,13 @@
       ;; (setq w32-lwindow-modifier 'super)
       ;; (w32-register-hot-key [s-]))
       ((eq system-type 'darwin)
+       (setopt mac-command-modifier 'meta)
        ;; left alt for super
-       (setq mac-option-modifier 'super)
+       (setopt mac-option-modifier 'super)
        ;; disable right alt for special chars
-       (setq mac-right-option-modifier 'nil)
+       (setopt mac-right-option-modifier 'nil)
        ;; right command for hyper
-       (setq mac-right-command-modifier 'hyper)))
+       (setopt mac-right-command-modifier 'hyper)))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;;; MODUS-THEMES ;;;
@@ -102,11 +106,16 @@
         ;;; org-related
         modus-themes-mixed-fonts t
         modus-themes-org-blocks 'gray-background
+        modus-operandi-palette-overrides '((bg-main "#f5f5f5")
+                                           (bg-dim "#e5e4e2"))
         modus-themes-common-palette-overrides '(;; borderless mode line
-                                                (border-mode-line-active bg-mode-line-active)
-                                                (border-mode-line-inactive bg-mode-line-inactive)
+                                                (border-mode-line-active
+                                                 bg-mode-line-active)
+                                                (border-mode-line-inactive
+                                                 bg-mode-line-inactive)
                                                 ;; purple parens
-                                                (bg-paren-match bg-magenta-intense)
+                                                (bg-paren-match
+                                                 bg-magenta-intense)
                                                 ;; org
                                                 (prose-todo "medium blue")
                                                 ;; (fg-heading-1 "blue1")
@@ -116,6 +125,10 @@
                                                 (fg-heading-5 "ForestGreen")
                                                 (fg-heading-6 "dark cyan")))
 
+
+;; (set-face-attribute 'org-block nil
+;;                     :background "#111111")
+
 ;; (bg-heading-1 "#E5E4E2")
 ;; (bg-heading-2 bg-yellow-nuanced)
 ;; (bg-heading-3 bg-blue-nuanced)
@@ -123,7 +136,7 @@
 ;; (bg-heading-5 bg-green-nuanced)
 ;; (bg-heading-6 bg-red-nuanced))
 
-(modus-themes-load-theme 'modus-operandi-tinted)
+(modus-themes-load-theme 'modus-operandi)
 
 ;;;;;;;;;;;;;;;;
 ;;; MODELINE ;;;
@@ -140,13 +153,15 @@
                       'mouse-face 'mode-line-highlight
                       'help-echo 'mode-line-read-only-help-echo
                       'local-map (purecopy (make-mode-line-mouse-map
-                                            'mouse-1 #'mode-line-toggle-read-only)))
+                                            'mouse-1
+                                            #'mode-line-toggle-read-only)))
                    (propertize
                     "-"
                     'mouse-face 'mode-line-highlight
                     'help-echo 'mode-line-read-only-help-echo
                     'local-map (purecopy (make-mode-line-mouse-map
-                                          'mouse-1 #'mode-line-toggle-read-only)))))
+                                          'mouse-1
+                                          #'mode-line-toggle-read-only)))))
                 (:eval
                  (if (buffer-modified-p)
                      (propertize
@@ -154,18 +169,21 @@
                       'mouse-face 'mode-line-highlight
                       'help-echo 'mode-line-modified-help-echo
                       'local-map (purecopy (make-mode-line-mouse-map
-                                            'mouse-1 #'mode-line-toggle-modified)))
+                                            'mouse-1
+                                            #'mode-line-toggle-modified)))
                    (propertize
                     "-"
                     'mouse-face 'mode-line-highlight
                     'help-echo 'mode-line-modified-help-echo
                     'local-map (purecopy (make-mode-line-mouse-map
-                                          'mouse-1 #'mode-line-toggle-modified)))))))
+                                          'mouse-1
+                                          #'mode-line-toggle-modified)))))))
 
 ;;; emacsclient @
 (setq-default mode-line-client
               `(""
-                (:propertize ("" (:eval (if (frame-parameter nil 'client) "😈" "")))
+                (:propertize ("" (:eval
+                                  (if (frame-parameter nil 'client) "😈" "")))
                              help-echo ,(purecopy "emacsclient frame"))))
 
 (defun tabbar-name-check ()
@@ -205,6 +223,7 @@
                            "  "
                            mode-line-modes
                            mode-line-misc-info
+                           dired-rsync-modeline-status
                            mode-line-end-spaces))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -216,10 +235,34 @@
   :delight
   :custom
   (save-abbrevs nil)
-  (abbrev-file-name (expand-file-name "templates/abbrevs.el" user-emacs-directory))
+  (abbrev-file-name (expand-file-name
+                     "templates/abbrevs.el"
+                     user-emacs-directory))
   :config
-  (read-abbrev-file (expand-file-name "templates/abbrevs.el" user-emacs-directory))
+  (read-abbrev-file (expand-file-name
+                     "templates/abbrevs.el"
+                     user-emacs-directory))
   (setq-default abbrev-mode t))
+
+(use-package apropos
+  :demand t
+  :config
+  (defvar-keymap help-apropos-map
+    :doc "Keymap for apropos subcommands."
+    "a"   #'apropos
+    "l"   #'apropos-library
+    "f"   #'apropos-function
+    "x"   #'apropos-command
+    "v"   #'apropos-variable
+    "V"   #'apropos-local-variable
+    "u"   #'apropos-user-option
+    "d"   #'apropos-documentation
+    "C-f" #'customize-apropos-faces
+    "g"   #'customize-apropos-groups
+    "o"   #'customize-apropos-options
+    "c"   #'customize-apropos
+    "i"   #'info-apropos)
+  (keymap-set help-map "a" help-apropos-map))
 
 (use-package auth-source
   :demand t
@@ -243,12 +286,18 @@
     (yas-expand-snippet (buffer-string) (point-min) (point-max)))
   :custom
   (auto-insert-query nil)
-  (auto-insert-directory (expand-file-name "templates/autoinsert" user-emacs-directory))
+  (auto-insert-directory (expand-file-name
+                          "templates/autoinsert"
+                          user-emacs-directory))
   :config
-  (define-auto-insert "\\.el$" ["elisp-template.el" autoinsert-yas-expand])
-  (define-auto-insert "\\.ps1$" ["powershell-template.ps1" autoinsert-yas-expand])
-  (define-auto-insert "\\.sh$" ["shell-template.sh" autoinsert-yas-expand])
-  (define-auto-insert "\\.py$" ["python-template.py" autoinsert-yas-expand])
+  (define-auto-insert "\\.el$"
+    ["elisp-template.el" autoinsert-yas-expand])
+  (define-auto-insert "\\.ps1$"
+    ["powershell-template.ps1" autoinsert-yas-expand])
+  (define-auto-insert "\\.sh$"
+    ["shell-template.sh" autoinsert-yas-expand])
+  (define-auto-insert "\\.py$"
+    ["python-template.py" autoinsert-yas-expand])
   (auto-insert-mode t))
 
 (use-package autorevert
@@ -266,6 +315,10 @@
 (use-package bookmark
   :demand t
   :custom (bookmark-fringe-mark 'bookmark-mark))
+
+(use-package comp-run
+  :demand t
+  :custom (native-comp-async-query-on-exit t))
 
 (use-package completion-preview
   :disabled t
@@ -305,7 +358,8 @@
   :preface
   (defun check-files-extension (&rest allowed-extensions)
     "Return the different extension(s) of marked files in Dired.
-Check if the marked files have extensions not included in the ALLOWED-EXTENSIONS list."
+Check if the marked files have extensions not included in the
+ALLOWED-EXTENSIONS list."
     (let ((extensions nil)
           (invalid-extensions nil)
           (marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
@@ -336,7 +390,13 @@ FFmpeg doesn't allow multiple files at once."
     (if (not (check-files-extension "mp4" "webm" "mkv" "ts"))
         (progn
           (ffmpeg-fileslist-gen)
-          (call-process "ffmpeg" nil nil nil "-f" "concat" "-safe" "0" "-i" "fileslist.txt" "-c" "copy" "output.mp4")
+          (call-process "ffmpeg"
+                        nil nil nil
+                        "-f" "concat"
+                        "-safe" "0"
+                        "-i" "fileslist.txt"
+                        "-c" "copy"
+                        "output.mp4")
           (delete-file "fileslist.txt"))
       (error "You have incompatible file(s) marked for this command")))
 
@@ -348,9 +408,17 @@ FFmpeg doesn't allow multiple files at once."
         (progn
           (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
             (dolist (file marked-files)
-              (let ((output-file (concat (file-name-sans-extension file) "-frame.png"))
-                    (timeframe (read-string (format "Timestamp for %s in HH:MM:SS: " file))))
-                (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-ss" timeframe "-i" file "-vframes:v" "1" output-file)))))
+              (let ((output-file
+                     (concat
+                      (file-name-sans-extension file) "-frame.png"))
+                    (timeframe
+                     (read-string
+                      (format "Timestamp for %s in HH:MM:SS: " file))))
+                (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                               "-ss" timeframe
+                               "-i" file
+                               "-vframes:v" "1"
+                               output-file)))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-remove-metadata ()
@@ -361,8 +429,18 @@ command multiple times."
     (if (not (check-files-extension "mp4" "webm" "mkv"))
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
           (dolist (file marked-files)
-            (let ((output-file (concat (file-name-sans-extension file) "-nometa." (file-name-extension file))))
-              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-i" file "-vcodec" "copy" "-acodec" "copy" "-map" "0" "-map_metadata" "-1" output-file))))
+            (let ((output-file
+                   (concat
+                    (file-name-sans-extension file)
+                    "-nometa."
+                    (file-name-extension file))))
+              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                             "-i" file
+                             "-vcodec" "copy"
+                             "-acodec" "copy"
+                             "-map" "0"
+                             "-map_metadata" "-1"
+                             output-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-remove-audio ()
@@ -373,20 +451,49 @@ command multiple times."
     (if (not (check-files-extension "mp4" "webm" "mkv"))
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
           (dolist (file marked-files)
-            (let ((output-file (concat (file-name-sans-extension file) "-noaudio." (file-name-extension file))))
-              (start-process "ffmeg" "*ffmpeg*" "ffmpeg" "-i" file "-vcodec" "copy" "-an" output-file))))
+            (let ((output-file (concat
+                                (file-name-sans-extension file)
+                                "-noaudio."
+                                (file-name-extension file))))
+              (start-process "ffmeg" "*ffmpeg*" "ffmpeg"
+                             "-i" file
+                             "-vcodec" "copy"
+                             "-an" output-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-trim-video ()
     "Trim video file according to START and END using `FFmpeg`."
     (interactive)
     (if (not (check-files-extension "mp4" "webm" "mkv"))
-        (let* ((marked-file (car (dired-get-marked-files 'verbatim nil nil nil t)))
-               (output-file (concat (file-name-sans-extension marked-file) "-trimmed." (file-name-extension marked-file)))
-               (starttime (read-string (format "Starttime for %s in HH:MM:SS: " marked-file)))
-               (stoptime (read-string (format "Stoptime for %s in HH:MM:SS: " marked-file))))
-          ;; (call-process "ffmpeg" nil nil nil "-ss" starttime "-to" stoptime "-i" marked-file "-vcodec" "copy" "-acodec" "copy" output-file)
-          (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-ss" starttime "-to" stoptime "-i" marked-file "-vcodec" "copy" "-acodec" "copy" output-file))
+        (let* ((marked-file (car
+                             (dired-get-marked-files 'verbatim nil nil nil t)))
+               (output-file (concat
+                             (file-name-sans-extension marked-file)
+                             "-trimmed."
+                             (file-name-extension marked-file)))
+               (starttime (read-string
+                           (format
+                            "Starttime for %s in HH:MM:SS: "
+                            marked-file)))
+               (stoptime (read-string
+                          (format
+                           "Stoptime for %s in HH:MM:SS: "
+                           marked-file))))
+          ;; (call-process "ffmpeg"
+          ;;               nil nil nil
+          ;;               "-ss" starttime
+          ;;               "-to" stoptime
+          ;;               "-i" marked-file
+          ;;               "-vcodec" "copy"
+          ;;               "-acodec" "copy"
+          ;;               output-file)
+          (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                         "-ss" starttime
+                         "-to" stoptime
+                         "-i" marked-file
+                         "-vcodec" "copy"
+                         "-acodec" "copy"
+                         output-file))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-flip-video ()
@@ -397,8 +504,14 @@ command multiple times."
     (if (not (check-files-extension "mp4" "webm" "mkv"))
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
           (dolist (file marked-files)
-            (let ((output-file (concat (file-name-sans-extension file) "-flipped." (file-name-extension file))))
-              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-i" file "-vf" "hflip" "-c:a" "copy" output-file))))
+            (let ((output-file (concat (file-name-sans-extension file)
+                                       "-flipped."
+                                       (file-name-extension file))))
+              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                             "-i" file
+                             "-vf" "hflip"
+                             "-c:a" "copy"
+                             output-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-merge-audiovideo ()
@@ -406,10 +519,26 @@ command multiple times."
     (interactive)
     (if (not (check-files-extension "mp4" "mp3"))
         (let* ((marked-files (dired-get-marked-files 'verbatim nil nil nil t))
-               (video-file (seq-find (lambda (file) (string-match-p "\\.mp4\\'" file)) marked-files))
-               (audio-file (seq-find (lambda (file) (string-match-p "\\.mp3\\'" file)) marked-files))
-               (output-file (concat (file-name-sans-extension video-file) "-merge." (file-name-extension video-file))))
-          (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-i" video-file "-stream_loop" "-1" "-i" audio-file "-c:v" "copy" "-shortest" "-fflags" "+shortest""-max_interleave_delta" "100M" output-file))
+               (video-file (seq-find (lambda
+                                       (file)
+                                       (string-match-p "\\.mp4\\'" file))
+                                     marked-files))
+               (audio-file (seq-find (lambda
+                                       (file)
+                                       (string-match-p "\\.mp3\\'" file))
+                                     marked-files))
+               (output-file (concat (file-name-sans-extension video-file)
+                                    "-merge."
+                                    (file-name-extension video-file))))
+          (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                         "-i" video-file
+                         "-stream_loop" "-1"
+                         "-i" audio-file
+                         "-c:v" "copy"
+                         "-shortest"
+                         "-fflags" "+shortest"
+                         "-max_interleave_delta" "100M"
+                         output-file))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-x265-convert ()
@@ -419,7 +548,11 @@ command multiple times."
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
           (dolist (file marked-files)
             (let ((output-file (concat (file-name-sans-extension file) ".mp4")))
-              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-i" file "-vcodec" "libx265" "-crf" "28" output-file))))
+              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                             "-i" file
+                             "-vcodec" "libx265"
+                             "-crf" "28"
+                             output-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-ts-convert ()
@@ -429,7 +562,12 @@ command multiple times."
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
           (dolist (file marked-files)
             (let ((output-file (concat (file-name-sans-extension file) ".mp4")))
-              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-i" file "-map" "0" "-map" "-0:d" "-c" "copy" output-file))))
+              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                             "-i" file
+                             "-map" "0"
+                             "-map" "-0:d"
+                             "-c" "copy"
+                             output-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-scale-half ()
@@ -438,8 +576,13 @@ command multiple times."
     (if (not (check-files-extension "ts" "avi" "flv" "mp4" "webm" "mkv" "gif"))
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
           (dolist (file marked-files)
-            (let ((output-file (concat (file-name-sans-extension file) "-halved." (file-name-extension file))))
-              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-i" file "-vf" "scale=trunc(iw/4)*2:trunc(ih/4)*2" output-file))))
+            (let ((output-file (concat (file-name-sans-extension file)
+                                       "-halved."
+                                       (file-name-extension file))))
+              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                             "-i" file
+                             "-vf" "scale=trunc(iw/4)*2:trunc(ih/4)*2"
+                             output-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-scale-third ()
@@ -448,8 +591,13 @@ command multiple times."
     (if (not (check-files-extension "ts" "avi" "flv" "mp4" "webm" "mkv" "gif"))
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
           (dolist (file marked-files)
-            (let ((output-file (concat (file-name-sans-extension file) "-thirded." (file-name-extension file))))
-              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-i" file "-vf" "scale=trunc(iw/6)*2:trunc(ih/6)*2" output-file))))
+            (let ((output-file (concat (file-name-sans-extension file)
+                                       "-thirded."
+                                       (file-name-extension file))))
+              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                             "-i" file
+                             "-vf" "scale=trunc(iw/6)*2:trunc(ih/6)*2"
+                             output-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun ffmpeg-upscale ()
@@ -458,30 +606,59 @@ command multiple times."
     (if (not (check-files-extension "ts" "avi" "flv" "mp4" "webm" "mkv" "gif"))
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
           (dolist (file marked-files)
-            (let ((output-file (concat (file-name-sans-extension file) "-upscaled." (file-name-extension file))))
-              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg" "-i" file "-vf" "minterpolate=fps=60:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1" output-file))))
+            (let ((output-file (concat (file-name-sans-extension file)
+                                       "-upscaled."
+                                       (file-name-extension file))))
+              (start-process "ffmpeg" "*ffmpeg*" "ffmpeg"
+                             "-i" file
+                             "-vf" (concat
+                                    "minterpolate=fps=60:"
+                                    "mi_mode=mci:"
+                                    "mc_mode=aobmc:"
+                                    "me_mode=bidir:"
+                                    "vsbmc=1")
+                             output-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun mkvmerge-rm-subtitles ()
     "Uses `MKVToolNix` to remove subtitles from mkv video file."
     (interactive)
     (if (not (check-files-extension "mkv"))
-        (let* ((marked-file (car (dired-get-marked-files 'verbatim nil nil nil t)))
-               (output-file (concat (file-name-sans-extension marked-file) "-resub.mkv")))
+        (let* ((marked-file (car
+                             (dired-get-marked-files 'verbatim nil nil nil t)))
+               (output-file (concat
+                             (file-name-sans-extension marked-file)
+                             "-resub.mkv")))
           (if (y-or-n-p "Remove ALL subtitles? ")
-              (start-process "mkvmerge" "*mkvmerge*" "mkvmerge" "-o" output-file "--no-subtitles" marked-file)
-            (let ((tracks (read-string (format "List of subs (separated by a comma): "))))
-              (start-process "mkvmerge" "*mkvmerge*" "mkvmerge" "-o" output-file "--subtitle-tracks" tracks marked-file))))
+              (start-process "mkvmerge" "*mkvmerge*" "mkvmerge"
+                             "-o" output-file
+                             "--no-subtitles"
+                             marked-file)
+            (let ((tracks (read-string
+                           (format "List of subs (separated by a comma): "))))
+              (start-process "mkvmerge" "*mkvmerge*" "mkvmerge"
+                             "-o" output-file
+                             "--subtitle-tracks" tracks
+                             marked-file))))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun mkvmerge-rm-audiotracks ()
-    "Uses `MKVToolNix` to select specific audio tracks to create a new mkv video file."
+    "Uses `MKVToolNix` to select specific audio tracks
+to create a new mkv video file."
     (interactive)
     (if (not (check-files-extension "mkv"))
-        (let* ((marked-file (car (dired-get-marked-files 'verbatim nil nil nil t)))
-               (output-file (concat (file-name-sans-extension marked-file) "-new-audio.mkv"))
-               (tracks (read-string (format "List of tracks to remove (separated by a comma): "))))
-          (start-process "mkvmerge" "*mkvmerge*" "mkvmerge" "-o" output-file "--audio-tracks" tracks marked-file))
+        (let* ((marked-file (car
+                             (dired-get-marked-files 'verbatim nil nil nil t)))
+               (output-file (concat
+                             (file-name-sans-extension marked-file)
+                             "-new-audio.mkv"))
+               (tracks (read-string
+                        (format
+                         "List of tracks to remove (separated by a comma): "))))
+          (start-process "mkvmerge" "*mkvmerge*" "mkvmerge"
+                         "-o" output-file
+                         "--audio-tracks" tracks
+                         marked-file))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun magick-flip-image ()
@@ -490,7 +667,10 @@ command multiple times."
     (interactive)
     (if (not (check-files-extension "jpg" "jpeg" "webp" "png"))
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
-          (apply #'start-process "magick" "*magick*" "mogrify" "-flop" marked-files))
+          (apply #'start-process
+                 "magick" "*magick*" "mogrify"
+                 "-flop"
+                 marked-files))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun magick-convert-to-jpg ()
@@ -499,7 +679,10 @@ command multiple times."
     (interactive)
     (if (not (check-files-extension "avif" "webp" "png" "jpeg"))
         (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
-          (apply #'start-process "magick" "*magick*" "magick" "mogrify" "-format" "jpg" marked-files))
+          (apply #'start-process
+                 "magick" "*magick*" "magick"
+                 "mogrify" "-format" "jpg"
+                 marked-files))
       (error "You have incompatible file(s) marked for this command")))
 
   (defun exiftool-remove-exif ()
@@ -508,7 +691,11 @@ command multiple times."
 ExifTool can remove metadata from both images, documents and video files."
     (interactive)
     (let ((marked-files (dired-get-marked-files 'verbatim nil nil nil t)))
-      (apply #'start-process "exiftool" "*exiftool*" "exiftool" "-overwrite_original" "-all=" marked-files)))
+      (apply #'start-process
+             "exiftool" "*exiftool*" "exiftool"
+             "-overwrite_original"
+             "-all="
+             marked-files)))
 
   (defun random-rename-files ()
     "Rename all marked files with a name of random numbers and letters."
@@ -526,9 +713,12 @@ ExifTool can remove metadata from both images, documents and video files."
                         (concat
                          (apply #'string
                                 (cl-loop repeat len
-                                         collect (elt chars (random (length chars)))))
+                                         collect (elt chars
+                                                      (random
+                                                       (length chars)))))
                          ext))
-                  (setq new-path (expand-file-name new-name (file-name-directory file)))
+                  (setq new-path (expand-file-name new-name
+                                                   (file-name-directory file)))
                   (file-exists-p new-path)))
             (rename-file file new-path))))))
 
@@ -559,7 +749,16 @@ ExifTool can remove metadata from both images, documents and video files."
 
 (use-package eglot
   :demand t
-  :hook (powershell-mode-hook . eglot-ensure))
+  :hook
+  (powershell-mode-hook . eglot-ensure)
+  ;; ((sh-mode-hook bash-ts-mode-hook) . eglot-ensure) ; bash-language-server
+  :config
+  (setq-default eglot-workspace-configuration
+                `(:powershell
+                  (:scriptAnalysis
+                   (:settingsPath ,(expand-file-name
+                                    "PSScriptAnalyzerSettings.psd1"
+                                    user-emacs-directory))))))
 
 (use-package eldoc
   :demand t
@@ -569,7 +768,8 @@ ExifTool can remove metadata from both images, documents and video files."
     "Show flymake diagnostics first."
     (setq eldoc-documentation-functions
           (cons #'flymake-eldoc-function
-                (remove #'flymake-eldoc-function eldoc-documentation-functions))))
+                (remove #'flymake-eldoc-function
+                        eldoc-documentation-functions))))
   :hook (eldoc-mode-hook . my/eldoc-list)
   :custom
   (eldoc-echo-area-display-truncation-message nil)
@@ -608,46 +808,79 @@ aggressive-indent-excluded-modes."
 (use-package eshell
   :defer 1 ;; necessary for prompt colors
   :preface
-  ;; using custom functions for mv and cp to add flags as it doesn't work in the alias file
-  ;; see https://old.reddit.com/r/emacs/comments/xs2ofo/eshell_aliases_for_mv_and_cp_using_their_elisp/
+  ;; using custom functions for mv and cp to add flags as it doesn't work
+  ;; in the alias file
   (defun my/mv (&rest args)
-    (let ((x (append (list "--interactive" "--verbose") (elt args 0))))
+    (let ((x (append (list "--interactive"
+                           "--verbose") (elt args 0))))
       (apply #'eshell/mv x)))
   (defun my/cp (&rest args)
-    (let ((x (append (list "--interactive" "--preserve" "--recursive" "--verbose") (elt args 0))))
+    (let ((x (append (list "--interactive"
+                           "--preserve"
+                           "--recursive"
+                           "--verbose") (elt args 0))))
       (apply #'eshell/cp x)))
+  (defun my/eshell-git-branch ()
+    (when-let ((root (locate-dominating-file default-directory ".git")))
+      (or (vc-git--symbolic-ref root)
+          (vc-short-revision root 'Git))))
   :custom
   (eshell-bad-command-tolerance 9999)
   (eshell-hist-ignoredups t)
-  ;; (eshell-prompt-regexp "^[^#$\n]*[#>] ")
   :config
   (cond ((memq 'modus-vivendi custom-enabled-themes)
          (setopt eshell-prompt-function
                  (lambda ()
-                   (concat
-                    ;; (propertize (user-login-name) 'face `(:foreground "green"))
-                    ;; (propertize "@" 'face `(:foreground "white"))
-                    ;; (propertize (system-name) 'face `(:foreground "green"))
-                    ;; " "
-                    (propertize (eshell/pwd) 'face `(:foreground "#CF9FFF"))
-                    (propertize (if (= (user-uid) 0) " # " " $ ") 'face `(:foreground "white"))))))
+                   (let ((branch (my/eshell-git-branch)))
+                     (concat
+                      ;; (propertize (user-login-name)
+                      ;;             'face `(:foreground "green"))
+                      ;; (propertize "@"
+                      ;;             'face `(:foreground "white"))
+                      ;; (propertize (system-name)
+                      ;;             'face `(:foreground "green"))
+                      ;; " "
+                      (propertize (eshell/pwd)
+                                  'face `(:foreground "#CF9FFF"))
+                      (when branch
+                        (propertize (concat " " branch)
+                                    'face '(:foreground "blue")))
+                      (propertize (if (= (user-uid) 0) " #" " $")
+                                  'face `(:foreground
+                                          ,(if (= eshell-last-command-status 0)
+                                               "black"
+                                             "red")))
+                      (propertize " " 'face 'default))))))
         ((memq 'modus-operandi custom-enabled-themes)
          (setopt eshell-prompt-function
                  (lambda ()
-                   (concat
-                    ;; (propertize (user-login-name) 'face `(:foreground "chartreuse4"))
-                    ;; (propertize "@" 'face `(:foreground "black"))
-                    ;; (propertize (system-name) 'face `(:foreground "chartreuse4"))
-                    ;; " "
-                    (propertize (eshell/pwd) 'face `(:foreground "#8000FF"))
-                    (propertize (if (= (user-uid) 0) " # " " $ ") 'face `(:foreground "black"))))))))
+                   (let ((branch (my/eshell-git-branch)))
+                     (concat
+                      ;; (propertize (user-login-name)
+                      ;;             'face `(:foreground "chartreuse4"))
+                      ;; (propertize "@"
+                      ;;             'face `(:foreground "black"))
+                      ;; (propertize (system-name)
+                      ;;             'face `(:foreground "chartreuse4"))
+                      ;; " "
+                      (propertize (eshell/pwd) 'face `(:foreground "#8000FF"))
+                      (when branch
+                        (propertize (concat " " branch)
+                                    'face '(:foreground "blue")))
+                      (propertize (if (= (user-uid) 0) " #" " $")
+                                  'face `(:foreground
+                                          ,(if (= eshell-last-command-status 0)
+                                               "black"
+                                             "red")))
+                      (propertize " " 'face 'default))))))))
 
 (use-package erc
   :demand t
   :preface
   ;; let query buffers tracked as if everything contains our current nick,
   ;; better reflecting the urgency of a private message.
-  (defadvice erc-track-find-face (around erc-track-find-face-promote-query activate)
+  (defadvice erc-track-find-face
+      (around erc-track-find-face-promote-query activate)
     (if (erc-query-buffer-p)
         (setq ad-return-value (intern "erc-current-nick-face"))
       ad-do-it))
@@ -742,7 +975,8 @@ aggressive-indent-excluded-modes."
   (erc-paranoid t)
   (erc-disable-ctcp-replies t)
   ;; logs
-  (erc-log-channels-directory (expand-file-name "erc_logs" user-emacs-directory))
+  (erc-log-channels-directory
+   (expand-file-name "erc_logs" user-emacs-directory))
   (erc-generate-log-file-name-function 'erc-generate-log-file-name-short)
   (erc-enable-logging 'erc-log-all-but-server-buffers)
   (erc-log-matches-flag t)
@@ -798,54 +1032,82 @@ aggressive-indent-excluded-modes."
   :delight (buffer-face-mode))
 
 (use-package faces ; linux
-  :when (string-equal system-type 'gnu/linux)
+  :when (memq window-system '(x pgtk))
   :demand t
   :preface
   (defun my/set-emoji-font ()
     (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji")))
   :config
   ;; The default face is the only one that must have an absolute :height value.
-  ;; Everything else uses a floating point, which is understood as a multiple of
-  ;; the default.
-  (let ((mono-spaced-font "Ubuntu Sans Mono") ; { Ubuntu Sans Mono, DejaVu Sans Mono }
-        (proportionately-spaced-font "Ubuntu Sans")) ; { Ubuntu, Ubuntu Sans, Ubuntu Sans Mono, Arial }
-    (set-face-attribute 'default nil :family mono-spaced-font :height 120)
-    (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
-    (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0))
+  ;; Everything else uses a floating point, which is understood as a multiple
+  ;; of the default.
+
+  ;; Ubuntu Sans Mono, DejaVu Sans Mono
+  (let ((mono-spaced-font "Ubuntu Sans Mono")
+        (proportionately-spaced-font "Ubuntu Sans"))
+    (set-face-attribute 'default
+                        nil
+                        :family mono-spaced-font
+                        :height 120)
+    (set-face-attribute 'fixed-pitch nil
+                        :family mono-spaced-font
+                        :height 1.0)
+    (set-face-attribute 'variable-pitch
+                        nil
+                        :family proportionately-spaced-font
+                        :height 1.0))
 
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook #'my/set-emoji-font)
     (my/set-emoji-font)))
 
 (use-package faces ; windows
-  :when (string-equal system-type 'windows-nt)
+  :when (eq window-system 'w32)
   :demand t
   :preface
   (defun my/set-emoji-font ()
     (set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji")))
   :config
   (let ((mono-spaced-font "Cascadia Mono") ; { Cascadia Mono, Consolas }
-        (proportionately-spaced-font "Verdana")) ; { Courier New, Verdana, Georgia, Lucida Sans Unicode }
-    (set-face-attribute 'default nil :family mono-spaced-font :height 100)
-    (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
-    (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0))
+        (proportionately-spaced-font "Verdana"))
+    (set-face-attribute 'default
+                        nil
+                        :family mono-spaced-font
+                        :height 100)
+    (set-face-attribute 'fixed-pitch
+                        nil
+                        :family mono-spaced-font
+                        :height 1.0)
+    (set-face-attribute 'variable-pitch
+                        nil
+                        :family proportionately-spaced-font
+                        :height 1.0))
 
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook #'my/set-emoji-font)
     (my/set-emoji-font)))
 
 (use-package faces ; macos
-  :when (string-equal system-type 'darwin)
+  :when (memq window-system '(ns mac))
   :demand t
   :preface
   (defun my/set-emoji-font ()
     (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji")))
   :config
   (let ((mono-spaced-font "Monaco") ; { Menlo, SF Mono, Monaco }
-        (proportionately-spaced-font "Lucida Grande")) ; { Times, Lucida Grande }
-    (set-face-attribute 'default nil :family mono-spaced-font :height 100)
-    (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
-    (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0))
+        (proportionately-spaced-font "Lucida Grande"))
+    (set-face-attribute 'default
+                        nil
+                        :family mono-spaced-font
+                        :height 100)
+    (set-face-attribute 'fixed-pitch
+                        nil
+                        :family mono-spaced-font
+                        :height 1.0)
+    (set-face-attribute 'variable-pitch
+                        nil
+                        :family proportionately-spaced-font
+                        :height 1.0))
 
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook #'my/set-emoji-font)
@@ -887,8 +1149,11 @@ aggressive-indent-excluded-modes."
 
 (use-package flymake
   :demand t
-  :hook ((emacs-lisp-mode-hook sh-mode-hook) . flymake-mode) ;; don't add language modes whose linter is managed by LSP
-  :config (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
+  :hook
+  ;; don't add language modes whose linter is managed by LSP
+  ((emacs-lisp-mode-hook sh-mode-hook bash-ts-mode-hook) . flymake-mode)
+  :config (remove-hook 'flymake-diagnostic-functions
+                       'flymake-proc-legacy-flymake))
 
 (use-package flyspell
   :demand t
@@ -988,7 +1253,8 @@ aggressive-indent-excluded-modes."
     (set (make-local-variable 'backup-inhibited) t))
   :hook
   (gnus-startup-hook . gnus-demon-load)
-  ((gnus-save-quick-newsrc-hook gnus-save-standard-newsrc-hook) . turn-off-backup)
+  ((gnus-save-quick-newsrc-hook
+    gnus-save-standard-newsrc-hook) . turn-off-backup)
   :custom
   (gnus-activate-level 1)
   (gnus-save-killed-list nil)
@@ -1017,7 +1283,8 @@ aggressive-indent-excluded-modes."
 
 (use-package gnus-topic
   :demand t
-  :bind (:map gnus-topic-mode-map ([remap gnus-topic-indent] . gnus-topic-read-group)))
+  :bind (:map gnus-topic-mode-map
+              ([remap gnus-topic-indent] . gnus-topic-read-group)))
 
 ;; (use-package gnus-win
 ;;   :demand t
@@ -1032,31 +1299,71 @@ aggressive-indent-excluded-modes."
   :custom
   (grep-save-buffers nil)
   (grep-use-headings t)
-  (grep-command-position 122)
+  (grep-command-position 142)
   :config
-  ;; (when (string-equal system-type 'windows-nt)
-  ;;   (setopt find-program "\"C:/Program Files/Git/usr/bin/find.exe\""))
-
   (grep-apply-setting 'grep-highlight-matches 'always)
   (grep-apply-setting 'grep-find-use-xargs 'exec-plus)
   (grep-apply-setting 'grep-use-null-filename-separator t)
   (grep-apply-setting 'grep-use-null-device nil)
 
   ;; grep (non-recursive)
-  (grep-apply-setting 'grep-command "grep --binary-file=without-match --directories=skip --color=always --ignore-case --line-number --with-filename --null -e  * .*")
+  (grep-apply-setting 'grep-command
+                      (concat "find ."
+                              " -maxdepth 1"
+                              " -type f"
+                              " -exec grep"
+                              " --binary-files=without-match"
+                              " --color=always"
+                              " --ignore-case"
+                              " --line-number"
+                              " --with-filename"
+                              " --null"
+                              " --regexp= {} +"))
 
   ;; lgrep (non-recursive)
-  (grep-apply-setting 'grep-template "grep <X> --binary-file=without-match --directories=skip --color=always --ignore-case --line-number --with-filename --null -e <R> <F>")
+  (grep-apply-setting 'grep-template
+                      (concat "grep <X>"
+                              " --binary-files=without-match"
+                              " --directories=skip"
+                              " --color=always"
+                              " --ignore-case"
+                              " --line-number"
+                              " --with-filename"
+                              " --no-messages"
+                              " --null"
+                              " --regexp=<R> <F>"))
 
   ;; grep-find (recursive)
-  (grep-apply-setting 'grep-find-command '("find . -type f -exec grep --binary-file=without-match --color=always --ignore-case --line-number --with-filename --null -e  {} +" . 124))
+  (grep-apply-setting 'grep-find-command
+                      (cons (concat "find ."
+                                    " -type d -name \".git\" -prune -o"
+                                    " -type f"
+                                    " -exec grep"
+                                    " --binary-files=without-match"
+                                    " --color=always"
+                                    " --ignore-case"
+                                    " --line-number"
+                                    " --with-filename"
+                                    " --null"
+                                    " --regexp= {} +") 161))
 
   ;; rgrep (recursive)
-  (grep-apply-setting 'grep-find-template "find -H <D> <X> -type f <F> -exec grep --binary-file=without-match --color=always --ignore-case --line-number --with-filename --null -e <R> {} +"))
+  (grep-apply-setting 'grep-find-template
+                      (concat "find -H <D> <X>"
+                              " -type f <F>"
+                              " -exec grep"
+                              " --binary-files=without-match"
+                              " --color=always"
+                              " --ignore-case"
+                              " --line-number"
+                              " --with-filename"
+                              " --null"
+                              " --regexp=<R> {} +")))
 
 (use-package help
   :demand t
-  :hook (help-fns-describe-function-functions . shortdoc-help-fns-examples-function)
+  :hook
+  (help-fns-describe-function-functions . shortdoc-help-fns-examples-function)
   :custom (help-window-select t))
 
 (use-package hexl
@@ -1086,12 +1393,12 @@ aggressive-indent-excluded-modes."
   (ibuffer-expert t)
   (ibuffer-formats
    '((mark modified read-only locked " "
-    	   (name 35 35 :left :elide)
-    	   " "
-    	   (size-h 9 -1 :right)
-    	   " "
-    	   (mode 16 16 :left :elide)
-    	   " " filename-and-process)
+           (name 35 35 :left :elide)
+           " "
+           (size-h 9 -1 :right)
+           " "
+           (mode 16 16 :left :elide)
+           " " filename-and-process)
      (mark " "
            (name 16 -1)
            " " filename)))
@@ -1145,7 +1452,9 @@ aggressive-indent-excluded-modes."
   ;; !! might be changed in Emacs 29 !!
   (defun use-orderless ()
     (setopt completion-styles '(orderless basic)
-            completion-category-overrides '((file (styles basic partial-completion)))))
+            completion-category-overrides '((file (styles
+                                                   basic
+                                                   partial-completion)))))
   :custom
   (icomplete-matches-format "%s/%s   ")
   (icomplete-show-matches-on-no-input t)
@@ -1169,24 +1478,74 @@ aggressive-indent-excluded-modes."
                (not mark-active)
                (not isearch-mode-end-hook-quit))
       (goto-char isearch-other-end)))
+
+  (defun isearch-refresh-state ()
+    "Refresh the last search state.
+    This might be necessary when e.g. the window was manually recentered
+    with ‘C-l C-l’, so new window-start should be updated in
+    push-state-function above before searching for the next hit."
+    ;; Pop and discard the previous state
+    (pop isearch-cmds)
+    ;; Push a new state
+    (isearch-push-state))
   :hook ('isearch-mode-end-hook . #'my/goto-match-beginning)
-  :bind (:map isearch-mode-map
-              ([remap isearch-delete-char] . isearch-del-char) ; <backspace>
-              ("C-s" . isearch-forward-thing-at-point) ; C-s C-s
-              ("C-p" . isearch-repeat-backward)
-              ("C-n" . isearch-repeat-forward))
+  :bind ((:map isearch-mode-map
+               ([remap isearch-delete-char] . isearch-del-char) ; <backspace>
+               ("TAB" . isearch-complete)
+               ("C-s" . isearch-forward-thing-at-point) ; C-s C-s
+               ("C-p" . isearch-repeat-backward)
+               ("C-n" . isearch-repeat-forward))
+         (:map minibuffer-local-isearch-map
+               ("TAB" . isearch-complete-edit)))
   :custom
-  (search-whitespace-regexp ".*?")       ; so we can use <space> as wildcard
+  (search-whitespace-regexp ".*?") ; so we can use <space> as wildcard
   (isearch-repeat-on-direction-change t)
   (isearch-allow-scroll 'unlimited)
   (isearch-lazy-count t)
   (isearch-allow-motion t)
-  (isearch-motion-changes-direction t)
+  (isearch-yank-on-move t)
   (lazy-highlight-buffer t)
   (lazy-highlight-cleanup t)
   (lazy-highlight-initial-delay 0)
   (lazy-count-prefix-format nil)
-  (lazy-count-suffix-format " (%s/%s)"))
+  (lazy-count-suffix-format " (%s/%s)")
+  :config
+  ;; smoother isearch navigation
+  (setq isearch-push-state-function
+        (lambda ()
+          ;; Recenter new search hits outside of window boundaries
+          (when (and isearch-success
+                     (not (pos-visible-in-window-p))
+                     ;; (not (and (bound-and-true-p isearch-allow-motion)
+                     ;;           (memq this-command '(scroll-up-command
+                     ;;                                scroll-down-command))))
+                     ;; ‘follow-mode’ doesn't need recentering
+                     (not (bound-and-true-p follow-mode)))
+            ;; reposition-window takes too much time in large buffers
+            (if (or (derived-mode-p '(fundamental-mode
+                                      dired-mode
+                                      Man-mode
+                                      org-mode
+                                      markdown-mode
+                                      conf-mode
+                                      sh-mode
+                                      bash-ts-mode
+                                      c-ts-mode))
+                    (> (buffer-size) 1000000))
+                (recenter-top)
+              (condition-case nil
+                  ;; Prevent errors from reposition-window
+                  (reposition-window)
+                (error nil))))
+          `(lambda (cmd)
+             (when isearch-success
+               (set-window-start nil ,(window-start))))))
+
+  (define-advice isearch-repeat-forward (:before (&rest _args) refresh-state)
+    (isearch-refresh-state))
+
+  (define-advice isearch-repeat-backward (:before (&rest _args) refresh-state)
+    (isearch-refresh-state)))
 
 (use-package ispell
   :demand t
@@ -1198,8 +1557,12 @@ aggressive-indent-excluded-modes."
 
   (when (string-equal system-type 'windows-nt)
     (setq ispell-hunspell-dict-paths-alist
-          (list (cons "en_US" (list (expand-file-name "hunspell/en_US.aff" user-emacs-directory)))
-                (cons "fr_FR" (list (expand-file-name "hunspell/fr_FR.aff" user-emacs-directory)))))
+          (list (cons "en_US" (list (expand-file-name
+                                     "hunspell/en_US.aff"
+                                     user-emacs-directory)))
+                (cons "fr_FR" (list (expand-file-name
+                                     "hunspell/fr_FR.aff"
+                                     user-emacs-directory)))))
     (setenv "DICPATH" (expand-file-name "hunspell/" user-emacs-directory))
     (setenv "LANG" "en_US.UTF-8"))
 
@@ -1222,7 +1585,7 @@ aggressive-indent-excluded-modes."
   (ls-lisp-dirs-first t))
 
 (use-package menu-bar
-  :when (memq window-system '(mac ns))
+  :when (memq window-system '(ns mac))
   :config (menu-bar-mode 1))
 
 (use-package message
@@ -1360,7 +1723,13 @@ aggressive-indent-excluded-modes."
                               (shell . t)
                               (python . t)
                               (js . t)))
-  (org-todo-keywords '((type "TODO" "EMACS" "WINDOWS" "MACOS" "LINUX" "BOOK" "MOVIE" "|" "DONE")))
+  (org-todo-keywords '((type "TODO"
+                             "EMACS"
+                             "WINDOWS"
+                             "MACOS"
+                             "LINUX"
+                             "BOOK"
+                             "MOVIE" "|" "DONE")))
   (org-todo-keyword-faces
    '(("EMACS"   . (:inherit fixed-pitch :foreground "#531ab6"))
      ("MACOS"   . (:inherit fixed-pitch :foreground "#595959"))
@@ -1378,14 +1747,17 @@ aggressive-indent-excluded-modes."
   (org-block    ((t (:inherit fixed-pitch))))
   (org-code     ((t (:inherit fixed-pitch))))
   :config
-  (global-set-key (kbd "<f1>") (lambda () (interactive) (find-file org-default-notes-file)))
+  (global-set-key (kbd "<f1>") (lambda () (interactive)
+                                 (find-file org-default-notes-file)))
   ;; Notes folder and inbox file
   (when (member "notes" (bookmark-all-names))
     ;; prepare to use project--list
     (setopt org-directory (bookmark-location "notes")
             org-default-notes-file (expand-file-name "master.org" org-directory)
             org-agenda-files `(,org-default-notes-file)
-            org-agenda-text-search-extra-files (directory-files-recursively org-directory org-agenda-file-regexp))))
+            org-agenda-text-search-extra-files (directory-files-recursively
+                                                org-directory
+                                                org-agenda-file-regexp))))
 
 
 (use-package org-agenda
@@ -1458,7 +1830,8 @@ aggressive-indent-excluded-modes."
 (use-package paren
   :demand t
   :custom (show-paren-style 'expression)
-  :custom-face (show-paren-match-expression ((t (:foreground "red2" :background unspecified))))
+  :custom-face (show-paren-match-expression
+                ((t (:foreground "red2" :background unspecified))))
   ;; :custom (show-paren-delay 0)
   :config (show-paren-mode 1))
 
@@ -1467,7 +1840,7 @@ aggressive-indent-excluded-modes."
   :custom (password-cache-expiry nil))
 
 (use-package pixel-scroll
-  :when (memq window-system '(mac ns x))
+  :when (memq window-system '(x pgtk ns mac))
   :demand t
   :config (pixel-scroll-precision-mode t))
 
@@ -1501,7 +1874,8 @@ aggressive-indent-excluded-modes."
      (magit-project-status "Magit" ?m)
      (project-eshell "Eshell")
      (project/fd-name-dired "fd-name-dired" ?n)))
-  :config (setq project-mode-line-format '(:eval (my/project-mode-line-format)))) ; fixed in Emacs 31
+  :config (setq project-mode-line-format
+                '(:eval (my/project-mode-line-format)))) ; fixed in Emacs 31
 
 (use-package re-builder
   :demand t
@@ -1513,7 +1887,10 @@ aggressive-indent-excluded-modes."
   ;; (recentf-keep '(file-remote-p file-readable-p)) ;; tramp-tramp-file-p
   (recentf-auto-cleanup 'never) ; mode, 60, never
   (recentf-max-saved-items 30)
-  (recentf-exclude '("/elpa/" ".persistent-scratch" "index" ".jpg" ".png" ".mp4" ".mkv"))
+  (recentf-exclude '("/elpa/"
+                     ".persistent-scratch"
+                     "index"
+                     ".jpg" ".png" ".mp4" ".mkv"))
   :config (recentf-mode 1))
 
 (use-package remember
@@ -1536,7 +1913,9 @@ aggressive-indent-excluded-modes."
           (user-error))
         (current-buffer))))
   :custom
-  (remember-data-file (expand-file-name ".persistent-scratch" user-emacs-directory))
+  (remember-data-file (expand-file-name
+                       ".persistent-scratch"
+                       user-emacs-directory))
   (remember-notes-buffer-name "*scratch*")
   (initial-buffer-choice #'remember-notes-initial-buffer))
 
@@ -1547,7 +1926,9 @@ aggressive-indent-excluded-modes."
 (use-package savehist
   :demand t
   :custom
-  (savehist-additional-variables '(search-ring regexp-search-ring register-alist))
+  (savehist-additional-variables '(search-ring
+                                   regexp-search-ring
+                                   register-alist))
   (history-delete-duplicates t)
   (history-length 999)
   :config (savehist-mode 1))
@@ -1596,8 +1977,8 @@ aggressive-indent-excluded-modes."
     (join-line -1))
 
   (defun push-mark-no-activate ()
-    "Pushes `point' to `mark-ring' and does not activate the region
-     Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+    "Pushes `point' to `mark-ring' and does not activate the region.
+Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled."
     (interactive)
     (push-mark (point) t nil)
     (message "Pushed mark to ring"))
@@ -1644,7 +2025,8 @@ The DWIM behaviour of this command is as follows:
          ("C-?" . jump-to-mark)
          ("C-'" . push-mark-no-activate)
          ([remap keyboard-quit] . my/keyboard-quit-dwim) ; "C-g"
-         ([remap exchange-point-and-mark] . exchange-point-and-mark-no-activate)) ; "C-x C-x"
+         ;; "C-x C-x"
+         ([remap exchange-point-and-mark] . exchange-point-and-mark-no-activate))
   :custom
   (indent-tabs-mode nil)
   (mark-ring-max 3)
@@ -1697,7 +2079,8 @@ The DWIM behaviour of this command is as follows:
   (tab-bar-close-last-tab-choice 'tab-bar-mode-disable)
   (tab-bar-new-tab-to 'rightmost)
   (tab-bar-close-button-show nil)
-  (tab-bar-format '(tab-bar-format-history tab-bar-format-tabs tab-bar-separator))
+  (tab-bar-format '(tab-bar-format-history
+                    tab-bar-format-tabs tab-bar-separator))
   :config (tab-bar-mode 1))
 
 (use-package tab-line
@@ -1737,13 +2120,15 @@ The DWIM behaviour of this command is as follows:
     (tramp-cleanup-all-connections)
     (tramp-cleanup-all-buffers))
   :custom
+  (tramp-default-method "scpx")
   (tramp-show-ad-hoc-proxies t)
   (tramp-auto-save-directory
    (expand-file-name "auto-saves" user-emacs-directory))
   (remote-file-name-inhibit-auto-save t)
   (remote-file-name-inhibit-auto-save-visited t)
   (tramp-completion-use-auth-sources nil)
-  ;; both settings below taken from: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
+  ;; both settings below taken from:
+  ;; https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
   (tramp-use-scp-direct-remote-copying t)
   (tramp-copy-size-limit (* 1024 1024)) ;; 1MB
   :config
@@ -1811,7 +2196,9 @@ The DWIM behaviour of this command is as follows:
   :demand t
   :custom
   ;; vc-git-grep (recursive)
-  (vc-git-grep-template "git --no-pager grep --color=always --ignore-case --line-number -I -e <R> -- <F>")
+  (vc-git-grep-template
+   "git --no-pager \
+grep --color=always --ignore-case --line-number -I -e <R> -- <F>")
   (vc-follow-symlinks t))
 
 (use-package vc-hooks
@@ -1831,13 +2218,27 @@ The DWIM behaviour of this command is as follows:
   :bind ("C-x /" . webjump)
   :custom
   (webjump-use-internal-browser nil)
-  (webjump-sites '(("Google" . [simple-query "www.google.com" "www.google.com/search?ie=utf-8&oe=utf-8&q=" ""])
-                   ("GitHub" . [simple-query "github.com" "github.com/search?ref=simplesearch&q=" ""])
-                   ("Stack Overflow" . [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" ""])
-                   ("YouTube" . [simple-query "www.youtube.com" "www.youtube.com/results?search_query=" ""])
-                   ("Wikipedia" . [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
-                   ("Amazon" . [simple-query "www.amazon.fr" "www.amazon.fr/s?k=" ""])))
-  :config (advice-add 'webjump-do-simple-query :override 'my/webjump-do-simple-query))
+  (webjump-sites
+   '(("Google" . [simple-query
+                  "www.google.com"
+                  "www.google.com/search?ie=utf-8&oe=utf-8&q=" ""])
+     ("GitHub" . [simple-query
+                  "github.com"
+                  "github.com/search?ref=simplesearch&q=" ""])
+     ("Stack Overflow" . [simple-query
+                          "stackoverflow.com"
+                          "stackoverflow.com/search?q=" ""])
+     ("YouTube" . [simple-query
+                   "www.youtube.com"
+                   "www.youtube.com/results?search_query=" ""])
+     ("Wikipedia" . [simple-query
+                     "wikipedia.org"
+                     "wikipedia.org/wiki/" ""])
+     ("Amazon" . [simple-query
+                  "www.amazon.fr"
+                  "www.amazon.fr/s?k=" ""])))
+  :config (advice-add 'webjump-do-simple-query
+                      :override 'my/webjump-do-simple-query))
 
 (use-package which-func
   :disabled t
@@ -1860,12 +2261,16 @@ The DWIM behaviour of this command is as follows:
          help-mode
          ibuffer-mode
          dired-mode
+         wdired-mode
          occur-mode
          magit-mode
          erc-mode))
-  (whitespace-style '(face trailing tabs)) ; lines-tail for long lines
+  (whitespace-style '(face trailing tabs tab-mark lines-tail))
+  (whitespace-line-column 80)
   (whitespace-action '(auto-cleanup warn-if-read-only))
-  :config (global-whitespace-mode 1))
+  :config
+  ;; (set-face-attribute 'whitespace-line nil :background "pink")
+  (global-whitespace-mode 1))
 
 (use-package windmove
   :demand t
@@ -1968,17 +2373,27 @@ The DWIM behaviour of this command is as follows:
       (apply capf-fn args)))
 
   (defun my/company-eshell ()
-    (setq-local company-backends '((company-yasnippet company-abbrev company-capf :separate))))
+    (setq-local company-backends '((company-yasnippet
+                                    company-abbrev
+                                    company-capf :separate))))
 
   (defun my/company-emacs-lisp ()
     (setq-local company-backends
                 '(company-files
-                  (company-yasnippet company-abbrev company-dabbrev-code company-keywords company-capf :separate))))
+                  (company-yasnippet
+                   company-abbrev
+                   company-dabbrev-code
+                   company-keywords
+                   company-capf :separate))))
 
   (defun my/company-shell-script ()
     (setq-local company-backends
                 '(company-files
-                  (company-yasnippet company-abbrev company-dabbrev-code company-keywords company-capf :separate))))
+                  (company-yasnippet
+                   company-abbrev
+                   company-dabbrev-code
+                   company-keywords
+                   company-capf :separate))))
 
   (defun my/company-erc ()
     (setq-local company-backends '(company-capf)
@@ -2014,7 +2429,12 @@ The DWIM behaviour of this command is as follows:
   (company-icon-margin 3)
   ;; (company-backends '(company-bbdb
   ;; company-files
-  ;; (company-yasnippet company-abbrev company-dabbrev company-dabbrev-code company-capf company-keywords :separate)))
+  ;; (company-yasnippet
+  ;;  company-abbrev
+  ;;  company-dabbrev
+  ;;  company-dabbrev-code
+  ;;  company-capf
+  ;;  company-keywords :separate)))
   :config (advice-add 'company-capf :around #'company-completion-styles))
 
 (use-package company-quickhelp
@@ -2145,11 +2565,52 @@ The DWIM behaviour of this command is as follows:
                ("C-c r" . consult-ripgrep)
                ("C-c f" . consult-fd)))
   :custom
-  (consult-find-args "find .")
-  (consult-fd-args '((if (executable-find "fdfind" 'remote) "fdfind" "fd") "--full-path --color=never --follow --hidden"))
-  (consult-grep-args "grep --null --line-buffered --color=never --ignore-case --with-filename --line-number --binary-file=without-match --recursive --exclude-dir=.git")
-  (consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --with-filename --line-number --search-zip  --follow --hidden")
-  (consult-git-grep-args "git --no-pager grep --null --color=never --ignore-case --extended-regexp --line-number -I")
+  (consult-find-args '("find ."
+                       "-not ( -path */.git -prune )"))
+
+  (consult-fd-args
+   '((if (executable-find "fdfind" 'remote) "fdfind" "fd")
+     '("--exclude=.git"
+       "--color=never"
+       "--hidden")))
+
+  (consult-grep-args
+   '("grep"
+     "--line-buffered"
+     "--exclude-dir=.git"
+     "--binary-files=without-match"
+     "--color=never"
+     "--ignore-case"
+     "--line-number"
+     "--with-filename"
+     "--recursive"
+     "--null"))
+
+  (consult-ripgrep-args
+   '("rg"
+     "--glob=!.git/"
+     "--line-buffered"
+     "--color=never"
+     "--max-columns=1000"
+     "--path-separator /"
+     "--no-heading"
+     "--with-filename"
+     "--line-number"
+     "--smart-case"
+     "--hidden"
+     "--search-zip"
+     "--null"))
+
+  (consult-git-grep-args
+   '("git"
+     "--no-pager"
+     "grep"
+     "--color=never"
+     "--ignore-case"
+     "--line-number -I"
+     "--null"
+     "--extended-regexp"))
+
   (consult-preview-key "C-<return>")
   (consult-buffer-sources '(consult-source-hidden-buffer
                             consult-source-modified-buffer
@@ -2159,10 +2620,13 @@ The DWIM behaviour of this command is as follows:
                             consult-source-erc
                             consult-source-gnus))
   :config
-  (consult-customize consult-line-symbol-at-point :preview-key 'any :prompt "Search: ")
+  (consult-customize consult-line-symbol-at-point
+                     :preview-key 'any
+                     :prompt "Search: ")
 
   ;; ? to show narrowing keys
-  (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+  (define-key consult-narrow-map
+              (vconcat consult-narrow-key "?") #'consult-narrow-help)
 
   ;; ERC filtering
   (autoload 'erc-buffer-list "erc")
@@ -2175,12 +2639,16 @@ The DWIM behaviour of this command is as follows:
           :state    #'consult--buffer-state
           ;; Either use erc-buffer-list or the :mode attribute
           ;; :items    '(lambda () (mapcar #'buffer-name (erc-buffer-list)))
-          :items '(lambda () (consult--buffer-query :mode 'erc-mode :as #'buffer-name))))
+          :items '(lambda ()
+                    (consult--buffer-query :mode 'erc-mode :as #'buffer-name))))
 
   ;; ERC automatic narrowing
   (defun consult-erc-narrow ()
     (when (and (eq this-command #'consult-buffer)
-               (string-equal "ERC" (alist-get 'name (alist-get 'current-tab (tab-bar-tabs)))))
+               (string-equal "ERC"
+                             (alist-get 'name
+                                        (alist-get 'current-tab
+                                                   (tab-bar-tabs)))))
       (setq unread-command-events (append unread-command-events (list ?e 32)))))
 
   (add-hook 'minibuffer-setup-hook #'consult-erc-narrow)
@@ -2192,12 +2660,22 @@ The DWIM behaviour of this command is as follows:
           :narrow   ?g
           :category 'buffer
           :state    #'consult--buffer-state
-          :items    '(lambda () (consult--buffer-query :mode '(gnus-server-mode gnus-browse-mode gnus-group-mode gnus-article-mode gnus-summary-mode message-mode) :as #'buffer-name))))
+          :items    '(lambda ()
+                       (consult--buffer-query :mode '(gnus-server-mode
+                                                      gnus-browse-mode
+                                                      gnus-group-mode
+                                                      gnus-article-mode
+                                                      gnus-summary-mode
+                                                      message-mode)
+                                              :as #'buffer-name))))
 
   ;; Gnus automatic narrowing
   (defun consult-gnus-narrow ()
     (when (and (eq this-command #'consult-buffer)
-               (string-equal "Gnus" (alist-get 'name (alist-get 'current-tab (tab-bar-tabs)))))
+               (string-equal "Gnus"
+                             (alist-get 'name
+                                        (alist-get 'current-tab
+                                                   (tab-bar-tabs)))))
       (setq unread-command-events (append unread-command-events (list ?g 32)))))
 
   (add-hook 'minibuffer-setup-hook #'consult-gnus-narrow))
@@ -2216,11 +2694,13 @@ The DWIM behaviour of this command is as follows:
   :hook ((dired-mode-hook . diff-hl-dired-mode)
          (magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
          (magit-post-refresh-hook . diff-hl-magit-post-refresh))
+  :custom
+  (diff-hl-disable-on-remote t)
+  (diff-hl-update-async 'thread) ; use "t" in Emacs 31
   :config
-  ;; to use in emacs terminal if fringe doesnt work
-  ;; (diff-hl-margin-mode)
-  ;; (diff-hl-flydiff-mode 1)
   (diff-hl-dired-mode 1)
+  (global-diff-hl-show-hunk-mouse-mode 1)
+  (diff-hl-flydiff-mode 1)
   (global-diff-hl-mode 1))
 
 (use-package dired-git-info
@@ -2243,16 +2723,12 @@ The DWIM behaviour of this command is as follows:
   :config (diredfl-global-mode 1))
 
 (use-package dired-rsync
+  :when (not (eq system-type 'windows-nt))
   :ensure t
-  :demand t
-  :config
-  ;; (setopt dired-rsync-options "-az --info=progress2")
-  ;; (setopt dired-rsync-command "rsync.exe")
-  (when (string-equal system-type 'windows-nt)
-    ;; (setopt dired-rsync-options "")
-    (setopt dired-rsync-command "rsync-win.exe")))
+  :demand t)
 
 (use-package dired-rsync-transient
+  :when (not (eq system-type 'windows-nt))
   :ensure t
   :demand t
   :bind (:map dired-mode-map
@@ -2293,7 +2769,8 @@ The DWIM behaviour of this command is as follows:
 (use-package dumb-jump
   :ensure t
   :demand t
-  :custom (xref-show-definitions-function #'xref-show-definitions-completing-read)
+  :custom
+  (xref-show-definitions-function #'xref-show-definitions-completing-read)
   :config (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 (use-package elfeed
@@ -2398,7 +2875,10 @@ The DWIM behaviour of this command is as follows:
   :init (setq prefix-help-command #'embark-prefix-help-command)
   :bind (("C-." . embark-act)         ;; pick some comfortable binding
          ("C-;" . embark-dwim))        ;; good alternative: M-.
-  :custom (embark-indicators '(embark--vertico-indicator embark-minimal-indicator embark-highlight-indicator embark-isearch-highlight-indicator))
+  :custom (embark-indicators '(embark--vertico-indicator
+                               embark-minimal-indicator
+                               embark-highlight-indicator
+                               embark-isearch-highlight-indicator))
   :config
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
@@ -2420,7 +2900,7 @@ The DWIM behaviour of this command is as follows:
   :config (add-to-list 'erc-hl-nicks-skip-faces "erc-current-nick-face" t))
 
 (use-package exec-path-from-shell
-  :when (memq window-system '(mac ns x))
+  :when (memq window-system '(x pgtk ns mac))
   :ensure t
   :init (setopt exec-path-from-shell-arguments '("-l"))
   :config (exec-path-from-shell-initialize))
@@ -2431,12 +2911,6 @@ The DWIM behaviour of this command is as follows:
   :bind (("C-:" . er/expand-region)
          ("C-M-=" . er/contract-region))
   :custom (expand-region-smart-cursor t))
-
-(use-package flymake-shellcheck
-  :ensure t
-  :after flymake
-  :commands flymake-shellcheck-load
-  :init (add-hook 'sh-mode-hook 'flymake-shellcheck-load))
 
 (use-package forge
   :ensure t
@@ -2492,42 +2966,148 @@ The DWIM behaviour of this command is as follows:
   (kind-icon-use-icons nil)
   (kind-icon-extra-space t)
   (kind-icon-mapping
-   '((array          "a"   :icon "symbol-array"       :face font-lock-type-face              :collection "vscode")
-     (boolean        "b"   :icon "symbol-boolean"     :face font-lock-builtin-face           :collection "vscode")
-     (color          "#"   :icon "symbol-color"       :face success                          :collection "vscode")
-     (command        "cm"  :icon "chevron-right"      :face default                          :collection "vscode")
-     (constant       "co"  :icon "symbol-constant"    :face font-lock-constant-face          :collection "vscode")
-     (class          "c"   :icon "symbol-class"       :face font-lock-type-face              :collection "vscode")
-     (constructor    "cn"  :icon "symbol-method"      :face font-lock-function-name-face     :collection "vscode")
-     (enum           "e"   :icon "symbol-enum"        :face font-lock-builtin-face           :collection "vscode")
-     (enummember     "em"  :icon "symbol-enum-member" :face font-lock-builtin-face           :collection "vscode")
-     (enum-member    "em"  :icon "symbol-enum-member" :face font-lock-builtin-face           :collection "vscode")
-     (event          "ev"  :icon "symbol-event"       :face font-lock-warning-face           :collection "vscode")
-     (field          "fd"  :icon "symbol-field"       :face font-lock-variable-name-face     :collection "vscode")
-     (file           "f"   :icon "symbol-file"        :face font-lock-string-face            :collection "vscode")
-     (folder         "d"   :icon "folder"             :face font-lock-doc-face               :collection "vscode")
-     (function       "f"   :icon "symbol-method"      :face font-lock-function-name-face     :collection "vscode")
-     (interface      "if"  :icon "symbol-interface"   :face font-lock-type-face              :collection "vscode")
-     (keyword        "kw"  :icon "symbol-keyword"     :face font-lock-keyword-face           :collection "vscode")
-     (macro          "mc"  :icon "lambda"             :face font-lock-keyword-face)
-     (magic          "ma"  :icon "lightbulb-autofix"  :face font-lock-builtin-face           :collection "vscode")
-     (method         "m"   :icon "symbol-method"      :face font-lock-function-name-face     :collection "vscode")
-     (module         "{"   :icon "file-code-outline"  :face font-lock-preprocessor-face)
-     (numeric        "nu"  :icon "symbol-numeric"     :face font-lock-builtin-face           :collection "vscode")
-     (operator       "op"  :icon "symbol-operator"    :face font-lock-comment-delimiter-face :collection "vscode")
-     (param          "pa"  :icon "gear"               :face default                          :collection "vscode")
-     (property       "pr"  :icon "symbol-property"    :face font-lock-variable-name-face     :collection "vscode")
-     (reference      "rf"  :icon "library"            :face font-lock-variable-name-face     :collection "vscode")
-     (snippet        "S"   :icon "symbol-snippet"     :face font-lock-string-face            :collection "vscode")
-     (string         "s"   :icon "symbol-string"      :face font-lock-string-face            :collection "vscode")
-     (struct         "%"   :icon "symbol-structure"   :face font-lock-variable-name-face     :collection "vscode")
-     (text           "tx"  :icon "symbol-key"         :face font-lock-doc-face               :collection "vscode")
-     (typeparameter  "tp"  :icon "symbol-parameter"   :face font-lock-type-face              :collection "vscode")
-     (type-parameter "tp"  :icon "symbol-parameter"   :face font-lock-type-face              :collection "vscode")
-     (unit           "u"   :icon "symbol-ruler"       :face font-lock-constant-face          :collection "vscode")
-     (value          "v"   :icon "symbol-enum"        :face font-lock-builtin-face           :collection "vscode")
-     (variable       "va"  :icon "symbol-variable"    :face font-lock-variable-name-face     :collection "vscode")
-     (t              "."   :icon "question"           :face font-lock-warning-face           :collection "vscode")))
+   '((array "a"
+            :icon "symbol-array"
+            :face font-lock-type-face
+            :collection "vscode")
+     (boolean "b"
+              :icon "symbol-boolean"
+              :face font-lock-builtin-face
+              :collection "vscode")
+     (color "#"
+            :icon "symbol-color"
+            :face success
+            :collection "vscode")
+     (command "cm"
+              :icon "chevron-right"
+              :face default
+              :collection "vscode")
+     (constant "co"
+               :icon "symbol-constant"
+               :face font-lock-constant-face
+               :collection "vscode")
+     (class "c"
+            :icon "symbol-class"
+            :face font-lock-type-face
+            :collection "vscode")
+     (constructor "cn"
+                  :icon "symbol-method"
+                  :face font-lock-function-name-face
+                  :collection "vscode")
+     (enum "e"
+           :icon "symbol-enum"
+           :face font-lock-builtin-face
+           :collection "vscode")
+     (enummember "em"
+                 :icon "symbol-enum-member"
+                 :face font-lock-builtin-face
+                 :collection "vscode")
+     (enum-member "em"
+                  :icon "symbol-enum-member"
+                  :face font-lock-builtin-face
+                  :collection "vscode")
+     (event "ev"
+            :icon "symbol-event"
+            :face font-lock-warning-face
+            :collection "vscode")
+     (field "fd"
+            :icon "symbol-field"
+            :face font-lock-variable-name-face
+            :collection "vscode")
+     (file "f"
+           :icon "symbol-file"
+           :face font-lock-string-face
+           :collection "vscode")
+     (folder "d"
+             :icon "folder"
+             :face font-lock-doc-face
+             :collection "vscode")
+     (function "f"
+               :icon "symbol-method"
+               :face font-lock-function-name-face
+               :collection "vscode")
+     (interface "if"
+                :icon "symbol-interface"
+                :face font-lock-type-face
+                :collection "vscode")
+     (keyword "kw"
+              :icon "symbol-keyword"
+              :face font-lock-keyword-face
+              :collection "vscode")
+     (macro "mc"
+            :icon "lambda"
+            :face font-lock-keyword-face)
+     (magic "ma"
+            :icon "lightbulb-autofix"
+            :face font-lock-builtin-face
+            :collection "vscode")
+     (method "m"
+             :icon "symbol-method"
+             :face font-lock-function-name-face
+             :collection "vscode")
+     (module "{"
+             :icon "file-code-outline"
+             :face font-lock-preprocessor-face)
+     (numeric "nu"
+              :icon "symbol-numeric"
+              :face font-lock-builtin-face
+              :collection "vscode")
+     (operator "op"
+               :icon "symbol-operator"
+               :face font-lock-comment-delimiter-face
+               :collection "vscode")
+     (param "pa"
+            :icon "gear"
+            :face default
+            :collection "vscode")
+     (property "pr"
+               :icon "symbol-property"
+               :face font-lock-variable-name-face
+               :collection "vscode")
+     (reference "rf"
+                :icon "library"
+                :face font-lock-variable-name-face
+                :collection "vscode")
+     (snippet "S"
+              :icon "symbol-snippet"
+              :face font-lock-string-face
+              :collection "vscode")
+     (string "s"
+             :icon "symbol-string"
+             :face font-lock-string-face
+             :collection "vscode")
+     (struct "%"
+             :icon "symbol-structure"
+             :face font-lock-variable-name-face
+             :collection "vscode")
+     (text "tx"
+           :icon "symbol-key"
+           :face font-lock-doc-face
+           :collection "vscode")
+     (typeparameter "tp"
+                    :icon "symbol-parameter"
+                    :face font-lock-type-face
+                    :collection "vscode")
+     (type-parameter "tp"
+                     :icon "symbol-parameter"
+                     :face font-lock-type-face
+                     :collection "vscode")
+     (unit "u"
+           :icon "symbol-ruler"
+           :face font-lock-constant-face
+           :collection "vscode")
+     (value "v"
+            :icon "symbol-enum"
+            :face font-lock-builtin-face
+            :collection "vscode")
+     (variable "va"
+               :icon "symbol-variable"
+               :face font-lock-variable-name-face
+               :collection "vscode")
+     (t "."
+        :icon "question"
+        :face font-lock-warning-face
+        :collection "vscode")))
   :config
   (plist-put kind-icon-default-style :height 0.9)
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
@@ -2545,10 +3125,12 @@ The DWIM behaviour of this command is as follows:
   :custom (magit-format-file-function #'magit-format-file-nerd-icons))
 
 (use-package marginalia
+  :when (memq window-system '(x pgtk ns mac)) ; works for Windows in Emacs 31
   :ensure t
   :demand t
-  :custom (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
-  :config (marginalia-mode 1))
+  :custom (marginalia-annotators '(marginalia-annotators-heavy
+                                   marginalia-annotators-light nil))
+  :init (marginalia-mode 1))
 
 (use-package multiple-cursors
   :ensure t
@@ -2564,10 +3146,15 @@ The DWIM behaviour of this command is as follows:
   (add-hook 'multiple-cursors-mode-disabled-hook (lambda () (corfu-mode 1))))
 
 (use-package nerd-icons
-  ;; M-x nerd-icons-install-fonts
   :ensure t
   :demand t
-  :config (add-to-list 'nerd-icons-mode-icon-alist '(fundamental-mode nerd-icons-mdicon "nf-md-file")))
+  :custom (nerd-icons-font-family "Symbols Nerd Font Mono")
+  :config
+  (add-to-list 'nerd-icons-mode-icon-alist
+               '(fundamental-mode nerd-icons-mdicon "nf-md-file"))
+
+  (unless (find-font (font-spec :name "Symbols Nerd Font Mono"))
+    (nerd-icons-install-fonts "c:/Users/glg/Desktop/")))
 
 (use-package nerd-icons-completion
   :ensure t
@@ -2645,7 +3232,9 @@ The DWIM behaviour of this command is as follows:
   :demand t
   :delight
   :hook (org-mode-hook . org-table-highlight-mode)
-  :custom (org-table-highlight-metadata-file (expand-file-name "org-table-highlight-metadata.el" user-emacs-directory))
+  :custom (org-table-highlight-metadata-file (expand-file-name
+                                              "org-table-highlight-metadata.el"
+                                              user-emacs-directory))
   :config (add-hook 'after-init-hook #'org-table-highlight--load-metadata))
 
 (use-package paredit
@@ -2655,9 +3244,11 @@ The DWIM behaviour of this command is as follows:
   :hook (emacs-lisp-mode-hook . #'enable-paredit-mode))
 
 (use-package powershell
-  ;; M-x powershell-install-langserver for Eglot support
   :ensure t
-  :demand t)
+  :demand t
+  :config
+  (unless (file-directory-p powershell-default-langserver-path)
+    (powershell-install-langserver)))
 
 (use-package project-git-autofetch
   :ensure t
@@ -2683,16 +3274,39 @@ The DWIM behaviour of this command is as follows:
   :hook ((prog-mode-hook text-mode-hook) . rainbow-mode)
   :custom (rainbow-x-colors nil))
 
+(use-package shfmt
+  :ensure t
+  :demand t
+  :custom
+  (shfmt-arguments '("--binary-next-line" "--case-indent" "--space-redirects"))
+  (shfmt-respect-sh-basic-offset t))
+
 (use-package suggest :ensure t :demand t)
 
 (use-package symbol-overlay
   :ensure t
   :demand t
   :delight
-  :hook ((text-mode-hook prog-mode-hook fundamental-mode-hook) . symbol-overlay-mode)
+  :hook ((text-mode-hook
+          prog-mode-hook
+          fundamental-mode-hook) . symbol-overlay-mode)
   :custom (symbol-overlay-idle-time 0.2))
 
 (use-package systemd :ensure t :demand t)
+
+(use-package tramp-rpc
+  :disabled t
+  :ensure t
+  :after tramp
+  :vc (:url "https://github.com/ArthurHeymans/emacs-tramp-rpc"
+            :rev :newest
+            :lisp-dir "lisp")
+  :custom
+  (tramp-rpc-controlmaster-path "~/.ssh/sockets/tramp-rpc-%r@%h:%p")
+  (tramp-rpc-controlmaster-persist 3600)
+  :config
+  (when (string-equal system-type 'windows-nt)
+    (setopt tramp-rpc-use-controlmaster nil)))
 
 (use-package tramp-theme
   :ensure t
@@ -2720,7 +3334,8 @@ The DWIM behaviour of this command is as follows:
 
   (cl-defmethod vertico--format-candidate :around
     (cand prefix suffix index start &context ((and +vertico-current-arrow
-                                                   (not (bound-and-true-p vertico-flat-mode)))
+                                                   (not (bound-and-true-p
+                                                         vertico-flat-mode)))
                                               (eql t)))
     (setq cand (cl-call-next-method cand prefix suffix index start))
     (if (bound-and-true-p vertico-grid-mode)
@@ -2728,10 +3343,8 @@ The DWIM behaviour of this command is as follows:
             (concat #(">" 0 1 (face vertico-current)) cand)
           (concat #("_" 0 1 (display " ")) cand))
       (if (= vertico--index index)
-          (concat
-           #(" " 1 0 (display (left-fringe right-triangle vertico-current)))
-           cand)
-        cand)))
+          (concat "-> " cand)
+        (concat "   " cand))))
 
   (vertico-multiform-mode t)
   (add-to-list 'vertico-multiform-categories '(embark-keybinding grid))
@@ -2749,7 +3362,7 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :demand t
   :vc (:url "https://github.com/xenodium/winpulse")
-  :custom (winpulse-duration 0.4)
+  :custom (winpulse-duration 0.9)
   :config (winpulse-mode 1))
 
 (use-package yaml-mode
@@ -2769,7 +3382,9 @@ The DWIM behaviour of this command is as follows:
     (yas-minor-mode -1))
   :hook (org-capture-mode-hook . my/disable-yasnippet)
   :custom
-  (yas-snippet-dirs (list (expand-file-name "templates/yasnippets" user-emacs-directory)))
+  (yas-snippet-dirs (list (expand-file-name
+                           "templates/yasnippets"
+                           user-emacs-directory)))
   (yas-indent-line 'fixed)
   (yas-new-snippet-default "# -*- mode: snippet -*-\n\
 # uuid: `(replace-regexp-in-string \"\n\\'\" \"\" (shell-command-to-string \"uuidgen\"))`\
@@ -2784,10 +3399,21 @@ The DWIM behaviour of this command is as follows:
 ;;; LOCAL PACKAGES ;;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+;; extra packages to load
 (use-package extra :load-path "lisp/" :demand t)
-;; (use-package nerd-icons-mode-line-v2 :load-path "lisp/" :demand t)
-;; (use-package gnus-notify :load-path "~/git/gnus-notify/" :demand t)
-;; (use-package project-git-autofetch :load-path "~/git/project-git-autofetch/" :demand t)
-;; (use-package nerd-icons-mode-line :load-path "~/git/nerd-icons-mode-line/" :demand t)
+
+;; useful for dev test
+
+;; (use-package gnus-notify
+;;   :load-path "~/git/gnus-notify/"
+;;   :demand t)
+
+;; (use-package project-git-autofetch
+;;   :load-path "~/git/project-git-autofetch/"
+;;   :demand t)
+
+;; (use-package nerd-icons-mode-line
+;;   :load-path "~/git/nerd-icons-mode-line/"
+;;   :demand t)
 
 ;;; init.el ends here

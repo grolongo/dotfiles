@@ -4,7 +4,9 @@
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
 (("x230"
   (filename . "/ssh:x230:"))
- ("x230s"
+ ;; ("x230-rpc"
+ ;; (filename . "/rpc:x230:"))
+ ("x230sudo"
   (filename . "/ssh:x230|sudo::"))
  ("emacs"
   (filename . "~/.config/emacs"))

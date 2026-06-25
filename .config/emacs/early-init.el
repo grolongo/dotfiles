@@ -5,6 +5,10 @@
 
 ;;; Code:
 
+;;; Wayland optimization
+(when (boundp 'pgtk-wait-for-event-timeout)
+  (setq pgtk-wait-for-event-timeout 0.001))
+
 ;;; Garbage collector tweak (taken from doom-emacs)
 (defvar my-gc-cons-threshold 16777216) ; 16mb, default = 800000
 (defvar default-gc-cons-percentage gc-cons-percentage) ; default = 0.1
@@ -52,13 +56,15 @@
 (push '(width . 190) default-frame-alist)
 ;; Added this after using --with-metal for emacs-mac port,
 ;; since Metal takes care of double-buffering.
-;; https://bitbucket.org/mituharu/emacs-mac/commits/15b25d3144f3b802d0f11caf4017827ab400d7ba?at=work
 ;; (remove if flickers and half-way updates occur)
 (and (eq system-type 'darwin)
-     (string-match-p (regexp-quote "--with-mac-metal") system-configuration-options)
+     (string-match-p
+      (regexp-quote "--with-mac-metal") system-configuration-options)
      (push '(inhibit-double-buffering . t) default-frame-alist))
 
-(setq frame-title-format `((buffer-file-name "%f" "%b") ,(format " - GNU Emacs %s" emacs-version)))
+(setq frame-title-format
+      `((buffer-file-name "%f" "%b")
+        ,(format " - GNU Emacs %s" emacs-version)))
 
 ;; Remove command line options that aren't relevant to our current OS; means
 ;; slightly less to process at startup.
@@ -73,7 +79,8 @@
 
 ;;; package.el
 
-(setopt package-quickstart t)
+(setopt package-native-compile t
+        package-quickstart t)
 
 (with-eval-after-load 'package
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
