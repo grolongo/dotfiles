@@ -826,6 +826,25 @@ set_sway() {
     fc-cache -f -v
 }
 
+install_gnomekeyring() {
+    pam_login="/etc/pam.d/login"
+    sudo apt install gnome-keyring seahorse libsecret-tools
+
+    if ! grep -qE '^\s*auth\s+optional\s+pam_gnome_keyring\.so\s*$' "${pam_login}"; then
+        sudo sed -i '/^@include common-auth/a auth optional pam_gnome_keyring.so' "$pam_login"
+    fi
+
+    if ! grep -qE '^\s*session\s+optional\s+pam_gnome_keyring\.so\s+auto_start\s*$' "${pam_login}"; then
+        sudo sed -i '/^@include common-session/a session optional pam_gnome_keyring.so auto_start' "${pam_login}"
+    fi
+
+    sudo pam-auth-update --enable gnome-keyring
+
+    systemctl --user enable --now gcr-ssh-agent.socket
+    systemctl --user enable --now gnome-keyring-daemon.socket
+    systemctl --user mask ssh-agent.socket
+}
+
 set_git() {
     (
         cd "${HOME}/git/dotfiles"
@@ -871,9 +890,10 @@ usage() {
     printf 'aptextra    (s) - install packages from third party sources and repositories\n'
     printf 'snaps       (s) - install a few snaps\n'
     printf 'emacs       (s) - build Emacs from latest stable\n'
-    printf 'gsettings       - configures Gnome settings\n'
-    printf 'i3          (s) - install and set up i3wm related packages & configs\n'
-    printf 'sway        (s) - install and set up sway related packages & configs\n'
+    printf 'gsettings       - configures GNOME settings\n'
+    printf 'i3          (s) - install and set up i3 related packages & configs\n'
+    printf 'sway        (s) - install and set up Sway related packages & configs\n'
+    printf 'gkeyring        - install and set up GNOME Keyring\n'
     printf 'git             - set correct SSH origin for this repository\n'
     printf 'drivers     (s) - install third party drivers\n'
     printf 'firmware    (s) - update hardware components with vendor firmware\n'
@@ -916,6 +936,10 @@ main() {
         check_is_sudo
         jq_check
         set_sway
+        apt_clean
+    elif [[ "${1}" == "gkeyring" ]]; then
+        check_is_not_sudo
+        install_gnomekeyring
         apt_clean
     elif [[ "${1}" == "git" ]]; then
         check_is_not_sudo
