@@ -150,10 +150,12 @@ rrg() {
 }
 
 sway() {
-    if [[ -z "$WAYLAND_DISPLAY" ]] && (( XDG_VTNR == 1 )); then
+    if [[ -z "${WAYLAND_DISPLAY}" ]] && (( XDG_VTNR == 1 )); then
         export XDG_CURRENT_DESKTOP=sway
         export XDG_SESSION_DESKTOP=sway
-        export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/gcr/ssh"
+        if [[ -S "${XDG_RUNTIME_DIR}/gcr/ssh" ]]; then
+            export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/gcr/ssh"
+        fi
         exec /usr/bin/sway
     fi
 }
