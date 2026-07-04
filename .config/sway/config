@@ -4,13 +4,14 @@ exec dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP \
                                                   WAYLAND_DISPLAY \
                                                   DISPLAY \
                                                   SWAYSOCK
-# xwayland disable
-primary_selection disabled
-for_window [shell="xwayland"] title_format "[XWayland] %title"
-exec_always autotiling
 exec rfkill block bluetooth
 exec mako
 exec synology-drive
+exec_always autotiling
+
+primary_selection disabled
+# xwayland disable
+for_window [shell="xwayland"] title_format "[XWayland] %title"
 
 set $mod  Mod4
 set $term foot
