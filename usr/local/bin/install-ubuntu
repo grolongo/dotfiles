@@ -940,7 +940,6 @@ main() {
     elif [[ "${1}" == "gkeyring" ]]; then
         check_is_not_sudo
         install_gnomekeyring
-        apt_clean
     elif [[ "${1}" == "git" ]]; then
         check_is_not_sudo
         set_git
