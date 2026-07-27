@@ -318,17 +318,17 @@ apt_extra() {
     if confirm "Install VeraCrypt?" "Y"; then
         jq_check
 
-        local vc_latest vc_uname repo release
+        local vc_latest os_version repo release
         vc_latest=$(wget -qO- "https://api.github.com/repos/veracrypt/veracrypt/releases/latest" | jq --raw-output .tag_name)
         vc_latest=${vc_latest#VeraCrypt_}
-        vc_uname="Ubuntu-25.04"
+        os_version=$(lsb_release -rs)
         repo="https://github.com/veracrypt/VeraCrypt/releases/download/"
-        release="VeraCrypt_${vc_latest}/veracrypt-${vc_latest}-${vc_uname}-${arch}.deb"
+        release="VeraCrypt_${vc_latest}/veracrypt-${vc_latest}-Ubuntu-${os_version}-${arch}.deb"
 
         (
             cd "${tmpdir}" || exit 1
             wget "${repo}${release}"
-            apt install ./veracrypt-"${vc_latest}"-"${vc_uname}"-"${arch}".deb
+            apt install ./"veracrypt-${vc_latest}-Ubuntu-${os_version}-${arch}.deb"
         )
     fi
 
