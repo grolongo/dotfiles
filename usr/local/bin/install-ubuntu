@@ -162,7 +162,6 @@ apt_common() {
         exiftool
         fd-find
         ffmpeg
-        ffmpegthumbnailer
         git
         httrack
         hunspell
@@ -307,7 +306,7 @@ apt_extra() {
 
     if confirm "Install Synology Drive Client?" "Y"; then
         local sdc_source
-        sdc_source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.2-17889/Ubuntu/Installer/synology-drive-client-17889.x86_64.deb"
+        sdc_source="https://global.synologydownload.com/download/Utility/SynologyDriveClient/4.0.3-17892/Ubuntu/Installer/synology-drive-client-17892.x86_64.deb"
 
         (
             cd "${tmpdir}" || exit 1
@@ -698,6 +697,7 @@ set_i3wm() {
         caffeine
         dosfstools
         dunst
+        ffmpegthumbnailer
         fonts-noto
         fonts-spleen
         fonts-ubuntu
@@ -750,6 +750,7 @@ set_sway() {
         bluez
         brightnessctl
         dosfstools
+        ffmpegthumbnailer
         fonts-noto
         fonts-ubuntu
         grim
