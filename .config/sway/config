@@ -6,7 +6,7 @@ exec dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP \
                                                   SWAYSOCK
 exec rfkill block bluetooth
 exec mako
-exec synology-drive
+exec sh -c 'sleep 20; synology-drive'
 exec_always autotiling
 
 primary_selection disabled
@@ -233,7 +233,7 @@ client.focused #8066bb #6141ab #ffffff #8066bb #8066bb
 # Status Bar
 # ==========
 
-exec waybar
+bar swaybar_command waybar
 
 # bar {
 #     position bottom
