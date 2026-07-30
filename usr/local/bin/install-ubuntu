@@ -143,6 +143,24 @@ initial_setup() {
         apt upgrade
     fi
 
+    if confirm "Extend LVM space?" "N"; then
+        local lvm_path
+        lvm_path=$(lvdisplay | awk '/LV Path/ {print $3}')
+        lvextend -l +100%FREE "${lvm_path}"
+        sleep 5
+        resize2fs "${lvm_path}"
+    fi
+
+    if confirm "Disable waiting for all networking interfaces?" "N"; then
+        install -d /etc/systemd/system/systemd-networkd-wait-online.service.d
+
+        cat <<- EOF > /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+		[Service]
+		ExecStart=
+		ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any
+		EOF
+    fi
+
     msg_info "Creating Downloads and git folder in home..."
     install -d -o "${SUDO_USER}" -g "${SUDO_USER}" \
             "/home/${SUDO_USER}/Downloads" \
@@ -300,7 +318,6 @@ apt_extra() {
             mkdir -vp /opt/Chatty
             wget "${repo}${release}"
             unzip Chatty_"${chatty_latest}".zip -d /opt/Chatty
-
         )
     fi
 
