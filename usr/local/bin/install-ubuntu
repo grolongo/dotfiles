@@ -202,6 +202,7 @@ apt_common() {
         virt-manager
         wget
         yt-dlp
+        zbar-tools
     )
 
     for p in "${packages[@]}"; do
