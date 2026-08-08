@@ -197,6 +197,7 @@ apt_common() {
         shellcheck
         shfmt
         streamlink
+        syncthingtray
         tmux
         virt-manager
         wget
@@ -460,6 +461,24 @@ apt_extra() {
         apt update
         apt install -y tlp --no-install-recommends
         apt install -y tlp-pd
+    fi
+
+    if confirm "Install Syncthing? (no tray)" "Y"; then
+        install -m 0755 -d /etc/apt/keyrings
+        wget -qO- https://syncthing.net/release-key.gpg \
+             > /etc/apt/keyrings/syncthing-archive-keyring.gpg
+        chmod a+r /etc/apt/keyrings/syncthing-archive-keyring.gpg
+
+        cat <<- EOF > /etc/apt/sources.list.d/syncthing.sources
+		Types: deb
+		URIs: https://apt.syncthing.net/
+		Suites: syncthing
+		Components: stable-v2
+		Signed-By: /etc/apt/keyrings/syncthing-archive-keyring.gpg
+		EOF
+
+        apt update
+        apt install -y syncthing
     fi
 }
 
