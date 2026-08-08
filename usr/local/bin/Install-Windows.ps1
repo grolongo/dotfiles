@@ -658,6 +658,7 @@ function Install-WinGet {
         'Spotify.Spotify',
         'Streamlink.Streamlink',
         'Valve.Steam',
+        'GermanCoding.SyncTrayzor',
         'Telegram.TelegramDesktop',
         'IDRIX.VeraCrypt',
         'Oracle.VirtualBox',

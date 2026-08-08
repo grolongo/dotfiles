@@ -163,6 +163,7 @@ install_formulae() {
         tor
         wget
         yt-dlp
+        zbar
     )
 
     for p in "${packages[@]}"; do
@@ -231,6 +232,7 @@ install_casks() {
         signal
         silentknight
         spotify
+        syncthing-app
         synology-drive
         tor-browser
         veracrypt
@@ -378,10 +380,12 @@ install_ports() {
         silentknight
         speedtest-cli
         streamlink
+        syncthing-macos
         tmux
         tor
         wget
         yt-dlp
+        zbar
     )
 
     for p in "${packages[@]}"; do
