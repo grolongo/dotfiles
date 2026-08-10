@@ -793,71 +793,89 @@ function Install-WinGet {
     }
 }
 
-function Install-MPV {
-    Write-Output 'Installing latest mpv...'
+function Install-Extra {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
 
-    $apiUrl = "https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest"
-    $mpvDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.Contains('mpv-x86_64-v3') }
-    $mpvDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'mpv.7z'
-    $mpvInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'mpv'
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Installing MPV')) {
+        Write-Output 'Installing latest mpv...'
 
-    Invoke-WebRequest -Uri $mpvDownloadUrl -OutFile $mpvDownloadLocation
-    Install-Module -Name 7Zip4Powershell
-    Expand-7Zip -ArchiveFileName $mpvDownloadLocation -TargetPath $mpvInstallDirectory
-    Remove-Item $mpvDownloadLocation
+        $apiUrl = "https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest"
+        $mpvDownloadUrl = $(Invoke-RestMethod $apiUrl).assets.browser_download_url | Where-Object { $_.Contains('mpv-x86_64-v3') }
+        $mpvDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'mpv.7z'
+        $mpvInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'mpv'
 
-    if (-not ($env:PATH -split ';' -contains $mpvInstallDirectory)) {
-        [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallDirectory", [EnvironmentVariableTarget]::User)
+        Invoke-WebRequest -Uri $mpvDownloadUrl -OutFile $mpvDownloadLocation
+        Install-Module -Name 7Zip4Powershell
+        Expand-7Zip -ArchiveFileName $mpvDownloadLocation -TargetPath $mpvInstallDirectory
+        Remove-Item $mpvDownloadLocation
+
+        if (-not ($env:PATH -split ';' -contains $mpvInstallDirectory)) {
+            [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$mpvInstallDirectory", [EnvironmentVariableTarget]::User)
+        }
+
+        Write-Output 'Running mpv script(s)...'
+        Start-Process -FilePath (Join-Path -Path $mpvInstallDirectory -ChildPath 'installer' -AdditionalChildPath 'mpv-install.bat') -NoNewWindow -Wait
+
+        Write-Output 'Installing plugins...'
+
+        $mpvConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath 'mpv'
+        $mpvScriptDirectory = Join-Path -Path $mpvConfigDirectory -ChildPath 'scripts'
+        $uoscDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'uosc.zip'
+
+        New-Item -Force -Path $mpvConfigDirectory -ItemType directory
+        New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'fonts') -ItemType directory
+        New-Item -Force -Path $mpvScriptDirectory -ItemType directory
+        New-Item -Force -Path (Join-Path -Path $mpvScriptDirectory -ChildPath 'uosc') -ItemType directory
+
+        Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile $uoscDownloadLocation
+        Expand-Archive -Path $uoscDownloadLocation -DestinationPath $mpvConfigDirectory
+        Remove-Item $uoscDownloadLocation
+
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'thumbfast.lua')
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'visualizer.lua')
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'crop.lua')
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'encode.lua')
     }
 
-    Write-Output 'Running mpv script(s)...'
-    Start-Process -FilePath (Join-Path -Path $mpvInstallDirectory -ChildPath 'installer' -AdditionalChildPath 'mpv-install.bat') -NoNewWindow -Wait
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Installing Findutils')) {
+        $findutilsDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'findutils.pkg.tar.zst'
+        $findutilsInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'GnuFindutils'
+        $findutilsBinariesDirectory = Join-Path -Path $findutilsInstallDirectory -ChildPath 'usr' -AdditionalChildPath 'bin'
 
-    Write-Output 'Installing plugins...'
+        New-Item -Force -Path $findutilsInstallDirectory -ItemType directory
+        Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile $findutilsDownloadLocation
+        tar --extract --file=$findutilsDownloadLocation --directory=$findutilsInstallDirectory
+        Remove-Item $findutilsDownloadLocation
 
-    $mpvConfigDirectory = Join-Path -Path $env:APPDATA -ChildPath 'mpv'
-    $mpvScriptDirectory = Join-Path -Path $mpvConfigDirectory -ChildPath 'scripts'
-    $uoscDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'uosc.zip'
-
-    New-Item -Force -Path $mpvConfigDirectory -ItemType directory
-    New-Item -Force -Path (Join-Path -Path $mpvConfigDirectory -ChildPath 'fonts') -ItemType directory
-    New-Item -Force -Path $mpvScriptDirectory -ItemType directory
-    New-Item -Force -Path (Join-Path -Path $mpvScriptDirectory -ChildPath 'uosc') -ItemType directory
-
-    Invoke-WebRequest -Uri 'https://github.com/tomasklaen/uosc/releases/latest/download/uosc.zip' -OutFile $uoscDownloadLocation
-    Expand-Archive -Path $uoscDownloadLocation -DestinationPath $mpvConfigDirectory
-    Remove-Item $uoscDownloadLocation
-
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/po5/thumbfast/master/thumbfast.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'thumbfast.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mfcc64/mpv-scripts/master/visualizer.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'visualizer.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/crop.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'crop.lua')
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/occivink/mpv-scripts/master/scripts/encode.lua' -OutFile (Join-Path -Path $mpvScriptDirectory -ChildPath 'encode.lua')
-}
-
-function Install-Findutils {
-    $findutilsDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'findutils.pkg.tar.zst'
-    $findutilsInstallDirectory = Join-Path -Path $env:ProgramFiles -ChildPath 'GnuFindutils'
-    $findutilsBinariesDirectory = Join-Path -Path $findutilsInstallDirectory -ChildPath 'usr' -AdditionalChildPath 'bin'
-
-    New-Item -Force -Path $findutilsInstallDirectory -ItemType directory
-    Invoke-WebRequest -Uri 'https://mirror.msys2.org/msys/x86_64/findutils-4.10.0-2-x86_64.pkg.tar.zst' -OutFile $findutilsDownloadLocation
-    tar --extract --file=$findutilsDownloadLocation --directory=$findutilsInstallDirectory
-    Remove-Item $findutilsDownloadLocation
-
-    if (-not ($env:PATH -split ';' -contains $findutilsBinariesDirectory)) {
-        [Environment]::SetEnvironmentVariable("Path", "$findutilsBinariesDirectory;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
+        if (-not ($env:PATH -split ';' -contains $findutilsBinariesDirectory)) {
+            [Environment]::SetEnvironmentVariable("Path", "$findutilsBinariesDirectory;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
+        }
     }
-}
 
-function Install-VBCable {
-    $vbcableDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'vbcable.zip'
-    $vbcableUnzipLocation = Join-Path -Path $env:TEMP -ChildPath 'vbcable'
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Installing VBCable')) {
+        $vbcableDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'vbcable.zip'
+        $vbcableUnzipLocation = Join-Path -Path $env:TEMP -ChildPath 'vbcable'
 
-    Invoke-WebRequest -Uri 'https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip' -OutFile $vbcableDownloadLocation
-    Expand-Archive -Path $vbcableDownloadLocation -DestinationPath $vbcableUnzipLocation
-    Start-Process -FilePath (Join-Path -Path $vbcableUnzipLocation -ChildPath 'VBCABLE_Setup_x64.exe') -Wait
-    Remove-Item $vbcableDownloadLocation
-    Remove-Item -Recurse $vbcableUnzipLocation
+        Invoke-WebRequest -Uri 'https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip' -OutFile $vbcableDownloadLocation
+        Expand-Archive -Path $vbcableDownloadLocation -DestinationPath $vbcableUnzipLocation
+        Start-Process -FilePath (Join-Path -Path $vbcableUnzipLocation -ChildPath 'VBCABLE_Setup_x64.exe') -Wait
+        Remove-Item $vbcableDownloadLocation
+        Remove-Item -Recurse $vbcableUnzipLocation
+    }
+
+    if ($PSCmdlet.ShouldContinue('Continue?', 'Installing ZBar')) {
+        $zbarDownloadLocation = Join-Path -Path $env:TEMP -ChildPath 'zbar-setup.exe'
+        $zbarBinariesDirectory = Join-Path -Path ${env:ProgramFiles(x86)} -ChildPath 'ZBar' -AdditionalChildPath 'bin'
+
+        Invoke-WebRequest -UserAgent "Wget" -Uri 'https://sourceforge.net/projects/zbar/files/zbar/0.10/zbar-0.10-setup.exe/download' -OutFile $zbarDownloadLocation
+        Start-Process -FilePath $zbarDownloadLocation -Wait
+        Remove-Item $zbarDownloadLocation
+
+        if (-not ($env:PATH -split ';' -contains $zbarBinariesDirectory)) {
+            [Environment]::SetEnvironmentVariable("Path", "$zbarBinariesDirectory;" + [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine), [EnvironmentVariableTarget]::Machine)
+        }
+    }
 }
 
 function Use-Massgrave {
@@ -897,9 +915,7 @@ function Show-Menu {
     Write-Output '  firewall        - firewall rules: block incoming, allow outgoing'
     Write-Output '  powersetting    - disable power saving modes on AC power'
     Write-Output '  winget          - download and install some packages with winget'
-    Write-Output '  mpv             - install mpv'
-    Write-Output '  findutils       - install GNU Findutils'
-    Write-Output '  vbcable         - install VB-CABLE Virtual Audio Device'
+    Write-Output '  extra           - install additional softwares'
     Write-Output '  activate        - run massgrave activation script'
     Write-Output '  git             - set correct SSH origin for this repository'
     Write-Output ''
@@ -917,9 +933,7 @@ function Get-Choice {
     elseif ($commandChoice -eq 'firewall')        { Set-FireWall }
     elseif ($commandChoice -eq 'powersetting')    { Set-PowerSetting }
     elseif ($commandChoice -eq 'winget')          { Install-WinGet }
-    elseif ($commandChoice -eq 'mpv')             { Install-MPV }
-    elseif ($commandChoice -eq 'findutils')       { Install-Findutils }
-    elseif ($commandChoice -eq 'vbcable')         { Install-VBCable }
+    elseif ($commandChoice -eq 'extra')           { Install-Extra }
     elseif ($commandChoice -eq 'activate')        { Use-Massgrave }
     elseif ($commandChoice -eq 'git')             { Set-Git }
     else { Show-Menu }
