@@ -25,6 +25,20 @@ function Get-Version {
 
 $dotfilesRoot = Split-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -Parent
 
+function Set-Path {
+    [CmdletBinding(SupportsShouldProcess)]
+    param()
+
+    if ($PSCmdlet.ShouldContinue('Continue?', "Adding $PSScriptRoot to the PATH.")) {
+        if (-not ($env:PATH -split ';' -contains $PSScriptRoot)) {
+            [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$PSScriptRoot", [EnvironmentVariableTarget]::User)
+        }
+        else {
+            Write-Output 'Already in PATH.'
+        }
+    }
+}
+
 function Set-Emacs {
     [CmdletBinding(SupportsShouldProcess)]
     param()
@@ -134,6 +148,7 @@ function Set-PowerShell {
 }
 
 Get-Version
+Set-Path
 # Set-Emacs
 Set-MPV
 Set-Streamlink

@@ -420,20 +420,6 @@ function Set-GPO {
     }
 }
 
-function Set-Path {
-    [CmdletBinding(SupportsShouldProcess)]
-    param()
-
-    if ($PSCmdlet.ShouldContinue('Continue?', "Adding $PSScriptRoot to the PATH.")) {
-        if (-not ($env:PATH -split ';' -contains $PSScriptRoot)) {
-            [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$PSScriptRoot", [EnvironmentVariableTarget]::User)
-        }
-        else {
-            Write-Output 'Already in PATH.'
-        }
-    }
-}
-
 function Set-UIPreference {
     [CmdletBinding(SupportsShouldProcess)]
     param()
@@ -908,7 +894,6 @@ function Set-Git {
 function Show-Menu {
     Write-Output ''
     Write-Output 'Usage:'
-    Write-Output '  path            - add the root folder of this script to the PATH variable'
     Write-Output '  gpo             - apply machine and user group policies'
     Write-Output '  uisetting       - explorer, taskbar, keyboard and other preferences'
     Write-Output '  bitlocker       - change Group Policy settings for BitLocker and encrypts C:'
@@ -927,7 +912,6 @@ function Get-Choice {
     if (-not $commandChoice) { Show-Menu; exit 1 }
 
     if ($commandChoice -eq 'gpo')                 { Set-GPO }
-    elseif ($commandChoice -eq 'path')            { Set-Path }
     elseif ($commandChoice -eq 'uisetting')       { Set-UIPreference }
     elseif ($commandChoice -eq 'bitlocker')       { Set-BitLocker }
     elseif ($commandChoice -eq 'firewall')        { Set-FireWall }
