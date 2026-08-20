@@ -748,6 +748,7 @@ set_i3wm() {
         ubuntu-restricted-extras
         ubuntu-restricted-addons
         unzip
+        wireguard
         wireplumber
         xorg
         # pulseaudio
@@ -810,6 +811,7 @@ set_sway() {
         ubuntu-restricted-addons
         unzip
         waybar
+        wireguard
         wireplumber
         wl-clipboard
         xdg-desktop-portal
