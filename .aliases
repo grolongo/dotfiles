@@ -52,6 +52,7 @@ alias chatty="nohup java -jar /opt/Chatty/Chatty.jar </dev/null &>/dev/null & di
 alias cdtbb="cd ~/.local/share/torbrowser/tbb/x86_64/tor-browser_en-US/Browser/Downloads/"
 alias wgetws="wget -mpEk" # add "--wait=seconds" if ban occurs
 alias logo="swaymsg exit"
+alias ipcheck="curl http://ip-api.com"
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
