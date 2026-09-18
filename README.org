@@ -1,18 +1,18 @@
 #+TITLE: Installation
 
-* Linux/macOS
+** Linux/macOS
 
-** Git (HTTPS)
+*** Git (HTTPS)
 #+BEGIN_SRC shell
 git clone https://github.com/grolongo/dotfiles.git "${HOME}/git/dotfiles"
 #+END_SRC
 
-** Git (SSH)
+*** Git (SSH)
 #+BEGIN_SRC shell
 git clone git@github.com:grolongo/dotfiles.git "${HOME}/git/dotfiles"
 #+END_SRC
 
-** Wget
+*** Wget
 #+BEGIN_SRC shell
 tmpdir=$(mktemp -d); trap 'rm -rf "${tmpdir}"' EXIT && \
 mkdir -vp "${HOME}/git" && \
@@ -21,7 +21,7 @@ tar -xvzf "${tmpdir}/dotfiles.tar.gz" -C "${HOME}/git" && \
 mv "${HOME}/git/dotfiles-master" "${HOME}/git/dotfiles"
 #+END_SRC
 
-** cURL
+*** cURL
 #+BEGIN_SRC shell
 tmpdir=$(mktemp -d); trap 'rm -rf "${tmpdir}"' EXIT && \
 mkdir -vp "${HOME}/git" && \
@@ -30,21 +30,21 @@ unzip "${tmpdir}/dotfiles.zip" -d "${HOME}"/git && \
 mv "${HOME}/git/dotfiles-master" "${HOME}/git/dotfiles"
 #+END_SRC
 
-* Windows
+** Windows
 
-** Git (HTTPS)
+*** Git (HTTPS)
 #+BEGIN_SRC powershell
 $cloneLocation = Join-Path -Path $env:USERPROFILE -ChildPath 'git' -AdditionalChildPath 'dotfiles'; `
 git clone https://github.com/grolongo/dotfiles.git $cloneLocation
 #+END_SRC
 
-** Git (SSH)
+*** Git (SSH)
 #+BEGIN_SRC powershell
 $cloneLocation = Join-Path -Path $env:USERPROFILE -ChildPath 'git' -AdditionalChildPath 'dotfiles'; `
 git clone git@github.com:grolongo/dotfiles.git $cloneLocation
 #+END_SRC
 
-** Invoke-WebRequest
+*** Invoke-WebRequest
 #+BEGIN_SRC powershell
 $dotfilesUrl = "https://github.com/grolongo/dotfiles/archive/refs/heads/master.zip"; `
 $downloadLocation = Join-Path -Path $env:TEMP -ChildPath 'dotfiles.zip'; `
