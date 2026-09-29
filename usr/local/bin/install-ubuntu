@@ -484,9 +484,19 @@ apt_extra() {
 }
 
 snaps_common() {
+    if confirm "Install Firefox?" "Y"; then
+        snap install firefox
+        snap connect firefox:cups-control
+        mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf \
+           "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
+        ln -s "${HOME}"/.config/fontconfig/fonts.conf \
+           "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf
+    fi
+
     if confirm "Install Chromium (includes ffmpeg)?" "Y"; then
         snap install chromium
         snap install chromium-ffmpeg
+        snap connect chromium:cups-control
     fi
 
     if confirm "Install Emacs (non-pgtk)?" "N"; then
@@ -761,16 +771,6 @@ set_i3wm() {
         fi
     done
 
-    if confirm "Install Firefox (SNAP)?" "Y"; then
-        snap install firefox
-        mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf \
-           "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
-        ln -s "${HOME}"/.config/fontconfig/fonts.conf \
-           "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf
-    fi
-
-    snap refresh
-
     if confirm "Install autotiling script for i3wm?" "Y"; then
         apt install python3-i3ipc
         wget -O /usr/local/bin/autotiling \
@@ -787,6 +787,7 @@ set_sway() {
         aircrack-ng
         bluez
         brightnessctl
+        cups
         dosfstools
         ffmpegthumbnailer
         fonts-noto
@@ -800,6 +801,7 @@ set_sway() {
         pinentry-gtk2
         # power-profiles-daemon # TLP instead
         playerctl
+        printer-driver-escpr # epson inkjet driver
         slurp
         sway
         swaylock
@@ -826,12 +828,6 @@ set_sway() {
             apt install -y "${p}"
         fi
     done
-
-    if confirm "Install Firefox (SNAP)?" "Y"; then
-        snap install firefox
-    fi
-
-    snap refresh
 
     if confirm "Install autotiling script for sway?" "Y"; then
         apt install python3-i3ipc
