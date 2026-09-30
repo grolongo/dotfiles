@@ -738,6 +738,7 @@ set_i3wm() {
         aircrack-ng
         brightnessctl
         caffeine
+        cups
         dosfstools
         dunst
         ffmpegthumbnailer
@@ -749,7 +750,9 @@ set_i3wm() {
         mtools
         pinentry-gtk2
         playerctl
+        printer-driver-escpr # epson inkjet driver
         rxvt-unicode
+        system-config-printer
         ttf-mscorefonts-installer
         ubuntu-restricted-extras
         ubuntu-restricted-addons
@@ -803,6 +806,7 @@ set_sway() {
         swaylock
         swayidle
         swayimg
+        system-config-printer
         tofi
         ttf-mscorefonts-installer
         ubuntu-restricted-extras
