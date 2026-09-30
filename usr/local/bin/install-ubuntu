@@ -487,10 +487,6 @@ snaps_common() {
     if confirm "Install Firefox?" "Y"; then
         snap install firefox
         snap connect firefox:cups-control
-        mv "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf \
-           "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf.bk
-        ln -s "${HOME}"/.config/fontconfig/fonts.conf \
-           "${HOME}"/snap/firefox/current/.config/fontconfig/fonts.conf
     fi
 
     if confirm "Install Chromium (includes ffmpeg)?" "Y"; then
