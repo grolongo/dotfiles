@@ -492,7 +492,6 @@ snaps_common() {
     if confirm "Install Chromium (includes ffmpeg)?" "Y"; then
         snap install chromium
         snap install chromium-ffmpeg
-        snap connect chromium:cups-control
     fi
 
     if confirm "Install Emacs (non-pgtk)?" "N"; then
