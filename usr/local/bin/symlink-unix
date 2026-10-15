@@ -219,6 +219,10 @@ symlink_sway() {
         symlink ".config/waybar/config.jsonc"
         symlink ".config/waybar/style.css"
 
+        # osd
+        mkdir -vp "${HOME}/.config/swayosd"
+        symlink ".config/swayosd/config.toml"
+
         # lockscreen
         mkdir -vp "${HOME}/.config/swaylock"
         symlink ".config/swaylock/config"

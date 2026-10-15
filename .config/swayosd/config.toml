@@ -1,0 +1,4 @@
+[server]
+show_percentage = true
+min_brightness = 0
+max_volume = 120

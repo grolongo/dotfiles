@@ -6,6 +6,7 @@ exec dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP \
                                                   SWAYSOCK
 exec rfkill block bluetooth
 exec mako
+exec swayosd-server
 exec sh -c 'sleep 20; synology-drive'
 exec_always autotiling
 
@@ -183,24 +184,39 @@ mode "resize" {
 }
 
 # Audio Controls
-bindsym --locked XF86AudioMicMute     exec wpctl set-mute          \@DEFAULT_AUDIO_SOURCE@ toggle
-bindsym --locked XF86AudioMute        exec wpctl set-mute          \@DEFAULT_AUDIO_SINK@   toggle
-bindsym --locked XF86AudioLowerVolume exec wpctl set-volume        \@DEFAULT_AUDIO_SINK@   5%-
-bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1.5 \@DEFAULT_AUDIO_SINK@   5%+
+# wpctl (wireplumber)
+# bindsym --locked XF86AudioMicMute     exec wpctl set-mute          \@DEFAULT_AUDIO_SOURCE@ toggle
+# bindsym --locked XF86AudioMute        exec wpctl set-mute          \@DEFAULT_AUDIO_SINK@   toggle
+# bindsym --locked XF86AudioLowerVolume exec wpctl set-volume        \@DEFAULT_AUDIO_SINK@   5%-
+# bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1.5 \@DEFAULT_AUDIO_SINK@   5%+
+# SwayOSD
+bindsym --locked XF86AudioMute        exec swayosd-client --output-volume mute-toggle
+bindsym --locked XF86AudioMicMute     exec swayosd-client --input-volume  mute-toggle
+bindsym --locked XF86AudioRaiseVolume exec swayosd-client --output-volume 5
+bindsym --locked XF86AudioLowerVolume exec swayosd-client --output-volume -5
 
 # Multimedia Controls
-bindsym --locked XF86AudioPlay  exec playerctl play-pause
-bindsym --locked XF86AudioPause exec playerctl play-pause
-bindsym --locked XF86AudioPrev  exec playerctl previous
-bindsym --locked XF86AudioNext  exec playerctl next
+# playerctl
+# bindsym --locked XF86AudioPlay  exec playerctl play-pause
+# bindsym --locked XF86AudioPause exec playerctl play-pause
+# bindsym --locked XF86AudioPrev  exec playerctl previous
+# bindsym --locked XF86AudioNext  exec playerctl next
+# SwayOSD
+bindsym --locked XF86AudioPlay  exec swayosd-client --playerctl play-pause
+bindsym --locked XF86AudioPause exec swayosd-client --playerctl play-pause
+bindsym --locked XF86AudioNext  exec swayosd-client --playerctl next
 
 # Screen Brightness Controls
-bindsym XF86MonBrightnessDown exec "brightness down"
-bindsym XF86MonBrightnessUp   exec "brightness up"
+# brightnessctl
+# bindsym --locked XF86MonBrightnessDown exec "brightness down"
+# bindsym --locked XF86MonBrightnessUp   exec "brightness up"
+# SwayOSD
+bindsym --locked XF86MonBrightnessUp   exec swayosd-client --brightness +10
+bindsym --locked XF86MonBrightnessDown exec swayosd-client --brightness -10
 
 # Keyboard Brightness Controls
-bindsym XF86KbdBrightnessDown exec "sudo keyboard-backlight down"
-bindsym XF86KbdBrightnessUp   exec "sudo keyboard-backlight up"
+bindsym --locked XF86KbdBrightnessDown exec "sudo keyboard-backlight down"
+bindsym --locked XF86KbdBrightnessUp   exec "sudo keyboard-backlight up"
 
 # Special keys to take a screenshot with grim
 bindsym print      exec grim "${HOME}"/Downloads/$(date +'screenshot_%d-%b-%Y_%Hh%M_%N.png')

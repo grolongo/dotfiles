@@ -802,9 +802,9 @@ set_sway() {
         printer-driver-escpr # epson inkjet driver
         slurp
         sway
-        swaylock
         swayidle
         swayimg
+        swaylock
         system-config-printer
         tofi
         ttf-mscorefonts-installer
@@ -827,6 +827,12 @@ set_sway() {
             apt install -y "${p}"
         fi
     done
+
+    if confirm "Install swayosd?" "Y"; then
+        apt install -y swayosd
+        # disable caps lock OSD
+        systemctl disable --now swayosd-libinput-backend.service
+    fi
 
     if confirm "Install autotiling script for sway?" "Y"; then
         apt install python3-i3ipc
