@@ -27,3 +27,8 @@ border-color=#5e5086
 [urgency=critical]
 border-color=#d54e53
 default-timeout=0
+
+[app-name=Spotify]
+border-size=2
+border-color=#1db954
+background-color=#191414
