@@ -411,51 +411,51 @@ apt_extra() {
         apt install -y tor torbrowser-launcher
     fi
 
-    if confirm "Install Docker?" "Y"; then
-        local version
-        version="4.30.0"
+    # if confirm "Install Docker?" "Y"; then
+    #     local version
+    #     version="4.30.0"
 
-        apt update
-        apt install ca-certificates
+    #     apt update
+    #     apt install ca-certificates
 
-        install -m 0755 -d /etc/apt/keyrings
-        wget -qO- https://download.docker.com/linux/ubuntu/gpg > /etc/apt/keyrings/docker.asc
-        chmod a+r /etc/apt/keyrings/docker.asc
+    #     install -m 0755 -d /etc/apt/keyrings
+    #     wget -qO- https://download.docker.com/linux/ubuntu/gpg > /etc/apt/keyrings/docker.asc
+    #     chmod a+r /etc/apt/keyrings/docker.asc
 
-        cat <<- EOF > /etc/apt/sources.list.d/docker.sources
-		Types: deb
-		URIs: https://download.docker.com/linux/ubuntu
-		Architectures: ${arch}
-		Suites: ${distrib}
-		Components: stable
-		Signed-By: /etc/apt/keyrings/docker.asc
-		EOF
+    #     cat <<- EOF > /etc/apt/sources.list.d/docker.sources
+	# 	Types: deb
+	# 	URIs: https://download.docker.com/linux/ubuntu
+	# 	Architectures: ${arch}
+	# 	Suites: ${distrib}
+	# 	Components: stable
+	# 	Signed-By: /etc/apt/keyrings/docker.asc
+	# 	EOF
 
-        apt update
+    #     apt update
 
-        PS3="Select: "
+    #     PS3="Select: "
 
-        select lng in Server Desktop; do
-            case "$lng" in
-                "Server")
-                    apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-                    break
-                    ;;
-                "Desktop")
-                    (
-                        msg_info "Creating temporary folder..."
-                        cd "${tmpdir}" || exit 1
-                        wget https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-"${version}"-amd64.deb
-                        apt install ./docker-desktop-"${version}"-amd64.deb
-                    )
-                    break
-                    ;;
-                *)
-                    msg_error "Wrong input"
-                    ;;
-            esac
-        done
-    fi
+    #     select lng in Server Desktop; do
+    #         case "$lng" in
+    #             "Server")
+    #                 apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    #                 break
+    #                 ;;
+    #             "Desktop")
+    #                 (
+    #                     msg_info "Creating temporary folder..."
+    #                     cd "${tmpdir}" || exit 1
+    #                     wget https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-"${version}"-amd64.deb
+    #                     apt install ./docker-desktop-"${version}"-amd64.deb
+    #                 )
+    #                 break
+    #                 ;;
+    #             *)
+    #                 msg_error "Wrong input"
+    #                 ;;
+    #         esac
+    #     done
+    # fi
 
     if confirm "Install TLP?" "Y"; then
         add-apt-repository ppa:linrunner/tlp
@@ -502,7 +502,7 @@ snaps_common() {
         snap install emacs --channel=pgtk/stable --classic
     fi
 
-    if confirm "Install Mu4e?" "Y"; then
+    if confirm "Install Mu4e?" "N"; then
         snap install maildir-utils
     fi
 
@@ -518,9 +518,10 @@ snaps_common() {
         snap install powershell --classic
     fi
 
-    if confirm "Install shfmt?" "Y"; then
-        snap install shfmt
-    fi
+    # using apt shfmt instead
+    # if confirm "Install shfmt?" "Y"; then
+    #     snap install shfmt
+    # fi
 
     snap refresh
 }
@@ -747,7 +748,7 @@ set_i3wm() {
         i3
         libnotify-bin
         mtools
-        pinentry-gtk2
+        pinentry-gnome3
         playerctl
         printer-driver-escpr # epson inkjet driver
         rxvt-unicode
@@ -796,7 +797,7 @@ set_sway() {
         libspa-0.2-bluetooth # pipewire bluetooth
         mako-notifier
         mtools
-        pinentry-gtk2
+        pinentry-gnome3
         # power-profiles-daemon # TLP instead
         playerctl
         printer-driver-escpr # epson inkjet driver
