@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -e
+set -u
+set -o pipefail
+IFS=$'\n\t'
+
+folder="${HOME}/Downloads"
+file="$folder/$(date +'screenshot_%Y-%m-%d_%H-%M-%S.png')"
+
+help() {
+    local b="" r=""
+    if [[ -t 1 ]]; then
+        b=$(tput bold)
+        r=$(tput sgr0)
+    fi
+
+    cat <<EOF
+Take a screenshot with grim and save it to ${folder}
+If no argument is given, take a screenshot of the whole screen.
+
+${b}Usage${r}: ${0##*/} [OPTION]
+
+${b}Options${r}:
+  ${b}-s, --selection${r}
+          Select a region with slurp before capturing.
+  ${b}-h, --help${r}
+          Show this help and exit.
+EOF
+}
+
+usage() {
+    printf 'Usage: %s [OPTION]\n' "${0##*/}" >&2
+    printf '\n'
+    printf "For more information, try \'--help\'."
+    printf '\n'
+    exit 1
+}
+
+screenshot() {
+    case "${1:-}" in
+        "")
+            grim "${file}"
+            ;;
+        -s | --selection)
+            grim -g "$(slurp)" "${file}"
+            ;;
+        -h | --help)
+            help
+            exit 0
+            ;;
+        *)
+            usage
+            ;;
+    esac
+}
+
+notification() {
+    notify-send "Screenshot" \
+                "Image saved in ${folder}" \
+                --icon="${file}"
+}
+
+main () {
+    mkdir -p "$folder"
+    screenshot "$@"
+    notification
+}
+
+main "$@"

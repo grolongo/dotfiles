@@ -281,6 +281,7 @@ symlink_binary() {
             symlink_root "usr/local/bin/battery"
             symlink_root "usr/local/bin/brightness"
             symlink_root "usr/local/bin/colorpicker"
+            symlink_root "usr/local/bin/screenshot"
             symlink_root "usr/local/bin/swaylock-randomize"
             symlink_root "usr/local/bin/volume-sound"
             symlink_root "usr/local/sbin/keyboard-backlight"

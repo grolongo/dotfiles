@@ -9,11 +9,11 @@ IFS=$'\n\t'
 # mako will display 1x1 icon while dunst will show a proper size.
 
 tmpfile=$(mktemp --suffix=.ppm)
-trap 'rm -f "$tmpfile"' EXIT
+trap 'rm -f "${tmpfile}"' EXIT
 
-grim -g "$(slurp -p)" -t ppm "$tmpfile"
+grim -g "$(slurp -p)" -t ppm "${tmpfile}"
 
 hex=$(magick "$tmpfile" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2> /dev/null \
           || printf '#??????')
 
-printf '%s' "$hex" | wl-copy && notify-send -i "$tmpfile" "$hex"
+printf '%s' "${hex}" | wl-copy && notify-send  "${hex}" --icon="${tmpfile}"
