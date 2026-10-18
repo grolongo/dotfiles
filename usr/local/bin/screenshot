@@ -21,6 +21,8 @@ If no argument is given, take a screenshot of the whole screen.
 ${b}Usage${r}: ${0##*/} [OPTION]
 
 ${b}Options${r}:
+  ${b}-f, --fullscreen${r}
+          Take a screenshot of the whole screen.
   ${b}-s, --selection${r}
           Select a region with slurp before capturing.
   ${b}-h, --help${r}
@@ -38,7 +40,7 @@ usage() {
 
 screenshot() {
     case "${1:-}" in
-        "")
+        "" | -f | --fullscreen)
             grim "${file}"
             ;;
         -s | --selection)
