@@ -4,6 +4,29 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
+usage() {
+    cat << EOF
+Usage: ${0##*/} [option] command
+
+Wrapper around brightnessctl using notify-send as an OSD feedback.
+
+Commands:
+  up    Increase brightness.
+  down  Decrease brightness.
+
+Options:
+  -h, --help  Show this help and exit.
+EOF
+}
+
+usage_error() {
+    {
+        printf "%s: invalid argument '%s'\n" "${0##*/}" "${1:-}"
+        printf "Try '%s --help' for more information.\n" "${0##*/}"
+    }  >&2
+    exit 1
+}
+
 get_brightness() {
     local brightness_current brightness_max
     brightness_current=$(brightnessctl get)
@@ -12,7 +35,7 @@ get_brightness() {
         'BEGIN { printf "%.0f", current/max*100 }'
 }
 
-show_brightness_notif() {
+notification() {
     local brightness
     brightness=$(get_brightness)
     notify-send --icon=/usr/share/icons/Adwaita/symbolic/status/display-brightness-symbolic.svg \
@@ -21,17 +44,31 @@ show_brightness_notif() {
                 --urgency=low
 }
 
-main() {
-    case "$1" in
+set_brightness() {
+    case "${1}" in
         up)
             brightnessctl -q set +10%
-            show_brightness_notif
             ;;
         down)
             brightnessctl -q set 10%-
-            show_brightness_notif
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage_error "${1}"
             ;;
     esac
+}
+
+main() {
+    if (( $# > 1 )); then
+        usage_error "${2}"
+    else
+        set_brightness "${1}"
+        notification
+    fi
 }
 
 main "$@"
