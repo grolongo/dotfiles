@@ -13,12 +13,12 @@ get_brightness() {
 }
 
 show_brightness_notif() {
-    local brightness logo_path
+    local brightness
     brightness=$(get_brightness)
-    logo_path="/usr/share/icons/Adwaita/symbolic/status/display-brightness-symbolic.svg"
-    notify-send -u low -i "${logo_path}" \
-                -h string:x-dunst-stack-tag:brightness_notification \
-                -h int:value:"${brightness}" "Brightness: ${brightness}%"
+    notify-send --icon=/usr/share/icons/Adwaita/symbolic/status/display-brightness-symbolic.svg \
+                --hint=string:x-dunst-stack-tag:brightness_notification \
+                --hint=int:value:"${brightness}" "Brightness: ${brightness}%" \
+                --urgency=low
 }
 
 main() {

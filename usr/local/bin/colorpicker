@@ -11,9 +11,20 @@ IFS=$'\n\t'
 tmpfile=$(mktemp --suffix=.ppm)
 trap 'rm -f "${tmpfile}"' EXIT
 
-grim -g "$(slurp -p)" -t ppm "${tmpfile}"
+pixel_capture() {
+    grim -g "$(slurp -p)" -t ppm "${tmpfile}"
+}
 
-hex=$(magick "$tmpfile" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2> /dev/null \
-          || printf '#??????')
+hex() {
+    hex=$(magick "$tmpfile" -scale 1x1\! -format "#%[hex:p{0,0}]" info: 2> /dev/null \
+              || printf '#??????')
+    printf '%s' "${hex}" | wl-copy && notify-send "${hex}" \
+                                                  --icon="${tmpfile}"
+}
 
-printf '%s' "${hex}" | wl-copy && notify-send  "${hex}" --icon="${tmpfile}"
+main() {
+    pixel_capture
+    hex
+}
+
+main

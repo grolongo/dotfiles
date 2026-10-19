@@ -25,9 +25,12 @@ notification() {
     local id
     id=$(cat "${HOME}"/.config/dunst/.dunst_volume)
     if (( id > 0 )); then
-        notify-send -p -r "${id}" "Volume: ${text}" > "${HOME}"/.config/dunst/.dunst_volume
+        notify-send --print-id \
+                    --replace-id="${id}" \
+                    "Volume: ${text}" > "${HOME}"/.config/dunst/.dunst_volume
     else
-        notify-send -p "Volume: ${text}" > "${HOME}"/.config/dunst/.dunst_volume
+        notify-send --print-id \
+                    "Volume: ${text}" > "${HOME}"/.config/dunst/.dunst_volume
     fi
 }
 
