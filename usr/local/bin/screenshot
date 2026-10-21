@@ -4,12 +4,12 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-folder="${HOME}/Downloads"
-file="$folder/$(date +'screenshot_%Y-%m-%d_%H-%M-%S.png')"
+readonly prog="${0##*/}"
+readonly folder="${HOME}/Downloads"
 
 usage() {
     cat << EOF
-Usage: ${0##*/} [option]
+Usage: ${prog} [option]
 
 Take a screenshot with grim and save it to ${folder}
 If no argument is given, take a screenshot of the whole screen.
@@ -19,30 +19,44 @@ Options:
   -s, --selection   Select a region with slurp before capturing.
   -h, --help        Show this help and exit.
 EOF
+    exit 0
 }
 
 usage_error() {
     {
-        printf "%s: unrecognized option '%s'\n" "${0##*/}" "${1:-}"
-        printf "Try '%s --help' for more information.\n" "${0##*/}"
+        printf '%s: %s\n' "${prog}" "${1}"
+        printf 'Usage: %s %s %s %s\n' \
+               "${prog}" \
+               '[-f|--fullscreen]' \
+               '[-s|--selection]' \
+               '[-h|--help]'
+        printf "Try '%s --help' for more information.\n" "${prog}"
     }  >&2
     exit 1
 }
 
-screenshot() {
+capture() {
+    mkdir -p "${folder}"
+    file="${folder}/$(date +'screenshot_%Y-%m-%d_%H-%M-%S.png')"
+    grim "$@" "${file}"
+}
+
+run_command() {
+    local region
+
     case "${1:-}" in
         "" | -f | --fullscreen)
-            grim "${file}"
+            capture
             ;;
         -s | --selection)
-            grim -g "$(slurp)" "${file}"
+            region="$(slurp)"
+            capture -g "${region}"
             ;;
         -h | --help)
             usage
-            exit 0
             ;;
         *)
-            usage_error "${1}"
+            usage_error "unrecognized option '${1}'"
             ;;
     esac
 }
@@ -55,10 +69,9 @@ notification() {
 
 main() {
     if (( $# > 1 )); then
-        usage_error "${2}"
+        usage_error "too many arguments"
     else
-        mkdir -p "${folder}"
-        screenshot "$@"
+        run_command "$@"
         notification
     fi
 }
