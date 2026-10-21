@@ -4,27 +4,52 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
+readonly prog="${0##*/}"
+readonly step=10
+
 usage() {
     cat << EOF
-Usage: ${0##*/} [option] command
+Usage: ${prog} <command>
 
 Wrapper around brightnessctl using notify-send as an OSD feedback.
 
 Commands:
-  up    Increase brightness.
-  down  Decrease brightness.
+  up    Increase brightness by ${step}%.
+  down  Decrease brightness by ${step}%.
 
 Options:
   -h, --help  Show this help and exit.
 EOF
+    exit 0
 }
 
 usage_error() {
     {
-        printf "%s: invalid argument '%s'\n" "${0##*/}" "${1:-}"
-        printf "Try '%s --help' for more information.\n" "${0##*/}"
-    }  >&2
+        printf '%s: %s\n' "${prog}" "${1}"
+        printf 'Usage: %s <up|down>\n' "${prog}"
+        printf "Try '%s --help' for more information.\n" "${prog}"
+    } >&2
     exit 1
+}
+
+run_command() {
+    case "${1:-}" in
+        up)
+            brightnessctl -q set "+${step}%"
+            ;;
+        down)
+            brightnessctl -q set "${step}%-"
+            ;;
+        -h | --help)
+            usage
+            ;;
+        "")
+            usage_error "missing command"
+            ;;
+        *)
+            usage_error "invalid command '${1}'"
+            ;;
+    esac
 }
 
 get_brightness() {
@@ -38,37 +63,20 @@ get_brightness() {
 notification() {
     local brightness
     brightness=$(get_brightness)
-    notify-send --icon=/usr/share/icons/Adwaita/symbolic/status/display-brightness-symbolic.svg \
+    notify-send "Brightness: ${brightness}%" \
+                --icon=/usr/share/icons/Adwaita/symbolic/status/display-brightness-symbolic.svg \
                 --hint=string:x-dunst-stack-tag:brightness_notification \
-                --hint=int:value:"${brightness}" "Brightness: ${brightness}%" \
+                --hint=int:value:"${brightness}" \
                 --urgency=low
-}
-
-set_brightness() {
-    case "${1}" in
-        up)
-            brightnessctl -q set +10%
-            ;;
-        down)
-            brightnessctl -q set 10%-
-            ;;
-        -h | --help)
-            usage
-            exit 0
-            ;;
-        *)
-            usage_error "${1}"
-            ;;
-    esac
 }
 
 main() {
     if (( $# > 1 )); then
-        usage_error "${2}"
-    else
-        set_brightness "${1}"
-        notification
+        usage_error "too many arguments"
     fi
+
+    run_command "${1:-}"
+    notification
 }
 
 main "$@"
