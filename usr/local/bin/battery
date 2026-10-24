@@ -4,15 +4,50 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
-battery_path="/sys/class/power_supply/BAT0"
-battery_status=$(< "${battery_path}/status")
-battery_percentage=$(< "${battery_path}/capacity")
+readonly prog="${0##*/}"
+readonly battery_threshold=20
+
+usage() {
+    cat << EOF
+Usage: ${prog} [option]
+
+Provides an alert if the battery is discharging and
+below ${battery_threshold}% capacity.
+
+Options:
+  -h, --help  Show this help and exit.
+EOF
+    exit 0
+}
+
+usage_error() {
+    {
+        printf '%s: %s\n' "${prog}" "${1}"
+        printf 'Usage: %s [-h|--help]\n' "${prog}"
+        printf "Try '%s --help' for more information.\n" "${prog}"
+    } >&2
+    exit 1
+}
+
+read_battery() {
+    local battery_path
+    battery_path="/sys/class/power_supply/BAT0"
+
+    if [[ ! -d "${battery_path}" ]]; then
+        printf '%s: no battery at %s\n' "${prog}" "${battery_path}" >&2
+        exit 1
+    fi
+
+    battery_status=$(< "${battery_path}/status")
+    battery_percentage=$(< "${battery_path}/capacity")
+}
 
 battery_check() {
     low_battery=0
+
     if [[ "${battery_status}" == "Not charging" ||
               "${battery_status}" == "Discharging" ]] \
-                  && (( battery_percentage < 20 )); then
+                  && (( battery_percentage < battery_threshold )); then
         low_battery=1
     fi
 }
@@ -28,8 +63,23 @@ notification() {
 }
 
 main() {
-    battery_check
-    notification
+    if (( $# > 1 )); then
+        usage_error "too many arguments"
+    fi
+
+    case "${1:-}" in
+        -h | --help)
+            usage
+            ;;
+        "")
+            read_battery
+            battery_check
+            notification
+            ;;
+        *)
+            usage_error "invalid command '${1}'"
+            ;;
+    esac
 }
 
-main
+main "$@"
