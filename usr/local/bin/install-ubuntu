@@ -486,6 +486,8 @@ apt_extra() {
         add-apt-repository ppa:mkasberg/ghostty-ubuntu
         apt update
         apt install -y ghostty
+        sleep 5
+        systemctl --user --machine="${SUDO_USER}@.host" enable app-com.mitchellh.ghostty.service
     fi
 }
 
