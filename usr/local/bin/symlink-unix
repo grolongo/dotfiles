@@ -238,6 +238,8 @@ symlink_sway() {
         # terminal
         mkdir -vp "${HOME}/.config/foot"
         symlink ".config/foot/foot.ini"
+        mkdir -vp "${HOME}/.config/ghostty"
+        symlink ".config/ghostty/config.ghostty"
 
         # notifications
         mkdir -vp "${HOME}/.config/mako"

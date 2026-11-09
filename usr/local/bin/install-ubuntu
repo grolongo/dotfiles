@@ -481,6 +481,12 @@ apt_extra() {
         apt update
         apt install -y syncthing
     fi
+
+    if confirm "Install Ghostty?" "Y"; then
+        add-apt-repository ppa:mkasberg/ghostty-ubuntu
+        apt update
+        apt install -y ghostty
+    fi
 }
 
 snaps_common() {
@@ -791,8 +797,10 @@ set_sway() {
         ffmpegthumbnailer
         fonts-noto
         fonts-ubuntu
+        # foot
+        # ghostty
         grim
-        #i3status
+        # i3status
         libnotify-bin
         libspa-0.2-bluetooth # pipewire bluetooth
         mako-notifier

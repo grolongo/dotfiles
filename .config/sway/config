@@ -15,7 +15,7 @@ primary_selection disabled
 for_window [shell="xwayland"] title_format "[XWayland] %title"
 
 set $mod  Mod4
-set $term foot
+set $term ghostty +new-window
 set $menu tofi-drun --drun-launch=true
 # emacs movements
 set $left  b
@@ -113,6 +113,7 @@ for_window [app_id="firefox_firefox" title="Library"] floating enable
 # Bindings
 # ========
 
+bindsym $mod+Shift+t move container to workspace prev; workspace prev
 bindsym $mod+Tab     workspace next
 bindsym $mod+Return  exec $term
 bindsym $mod+d       exec $menu

@@ -1,0 +1,13 @@
+font-family = "Ubuntu Sans Mono"
+font-size = 12
+bold-is-bright = true
+cursor-style-blink = false
+cursor-style = block
+clipboard-paste-protection = false
+resize-overlay = never
+bell-features = false
+shell-integration-features = no-cursor,no-title,sudo,ssh-env,ssh-terminfo
+title = "Ghostty"
+background-opacity = 1
+theme = "Modus Vivendi"
+window-theme = ghostty
