@@ -1,5 +1,6 @@
 # general
 # =======
+
 Set-PSReadLineOption -BellStyle None
 Set-PSReadLineOption -EditMode Emacs
 
