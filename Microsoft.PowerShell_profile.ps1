@@ -1,3 +1,13 @@
+# general
+# =======
+Set-PSReadLineOption -BellStyle None
+Set-PSReadLineOption -EditMode Emacs
+
+# disable cursor blinking
+if ($PSVersionTable.PSVersion.Major -ge 7) {
+    Write-Output "`e[?12l"
+}
+
 # history
 # =======
 
@@ -18,13 +28,8 @@ function Search-History {
 
 New-Alias -Name hist -Value Search-History
 
-# prompt stuff
-# ============
-
-# disable cursor blinking
-if ($PSVersionTable.PSVersion.Major -ge 7) {
-    Write-Output "`e[?12l"
-}
+# prompt
+# ======
 
 function Get-LastStatus() {
     if ($?) {
