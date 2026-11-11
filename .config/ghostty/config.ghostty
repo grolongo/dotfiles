@@ -9,5 +9,6 @@ bell-features = false
 shell-integration-features = no-cursor,no-title,sudo,ssh-env,ssh-terminfo
 title = "Ghostty"
 background-opacity = 1
-theme = "Modus Vivendi"
+# Ubuntu, Kitty Default
+theme = "Ubuntu"
 window-theme = ghostty
