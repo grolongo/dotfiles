@@ -13,7 +13,7 @@ if [[ "$OSTYPE" = linux* ]]; then
     alias cp="cp --interactive --verbose"
     alias mv="mv --interactive --verbose"
     alias rm="rm --interactive=once --verbose"
-    alias fstabshow="column -t /etc/fstab"
+    alias fstab-column="column -t /etc/fstab"
     alias img="swayimg"
 fi
 
@@ -46,13 +46,15 @@ alias se="sudoedit"
 alias sv="sudo visudo"
 alias hist="history | sed -E 's/^ *[0-9]+ *//' | grep "
 alias screenoff="setterm -blank 1"
-alias curldl="curl --location --progress-bar --remote-name"
-alias youtube2mp3="youtube-dl --audio-format mp3 --audio-quality 0 --extract-audio"
+alias yt-mp3="yt-dlp --audio-format mp3 --audio-quality 0 --extract-audio"
 alias chatty="nohup java -jar /opt/Chatty/Chatty.jar </dev/null &>/dev/null & disown;"
 alias cdtbb="cd ~/.local/share/torbrowser/tbb/x86_64/tor-browser_en-US/Browser/Downloads/"
-alias wgetws="wget -mpEk" # add "--wait=seconds" if ban occurs
 alias logo="swaymsg exit"
 alias ipcheck="curl http://ip-api.com"
+alias ipv4="curl --silent --ipv4 ipv4.icanhazip.com"
+alias ipv6="curl --silent --ipv6 ipv6.icanhazip.com"
+alias curl-dl="curl --location --progress-bar --remote-name"
+alias wget-dl="wget --quiet --show-progress"
 
 # security/privacy
 alias chckvir="sudo freshclam && clamscan --recursive=yes --infected /"
@@ -66,6 +68,23 @@ fi
 # =========
 # Functions
 # =========
+
+ipv6-disable() {
+    if [[ "$(uname)" = "Linux" ]]; then
+        sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+        sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
+        sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=1
+    fi
+}
+
+wget-ws() {
+    wget --mirror \
+         --page-requisites \
+         --adjust-extension \
+         --convert-links \
+         --wait=1 \
+         "${1}"
+}
 
 metavideoremove() {
     ffmpeg -i "${1}" \
