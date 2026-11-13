@@ -55,8 +55,14 @@ function prompt {
     "${currentDirectory}${gitBranch}${lastStatus} "
 }
 
-# extra
-# =====
+# aliases
+# =======
+
+Set-Alias -Name claer -Value clear
+Set-Alias -Name cl -Value clear
+
+# extra functions
+# ===============
 
 function Search-File {
     [CmdletBinding()]
@@ -144,5 +150,56 @@ function Send-Stuff {
 
     scp $filePath x230:/home/glg/Downloads/
 }
-
 New-Alias -Name scpp -Value Send-Stuff
+
+function Get-Mp3 {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [uri]$Uri
+    )
+
+    yt-dlp.exe --audio-format mp3 --audio-quality 0 --extract-audio $Uri
+}
+New-Alias -Name yt-mp3 -Value Get-Mp3
+
+function Get-RemoteFile {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [uri]$Uri
+    )
+
+    curl.exe --location --progress-bar --remote-name --fail $Uri
+}
+New-Alias -Name curl-dl -Value Get-RemoteFile
+
+function Get-IPInfo {
+    Invoke-RestMethod -Uri "http://ip-api.com/json/"
+}
+New-Alias -Name ipcheck -Value Get-IPInfo
+
+function Get-IPv4 {
+    (Invoke-WebRequest `
+      -Uri "https://ipv4.icanhazip.com" `
+      -Method Get).Content.Trim()
+}
+New-Alias -Name ipv4 -Value Get-IPv4
+
+function Get-IPv6 {
+    (Invoke-WebRequest `
+      -Uri "https://ipv6.icanhazip.com" `
+      -Method Get).Content.Trim()
+}
+New-Alias -Name ipv6 -Value Get-IPv6
+
+function Get-Hex10 {
+    $bytes = [byte[]]::new(5)
+
+    [System.Security.Cryptography.RandomNumberGenerator]::Fill(
+        $bytes
+    )
+
+    [Convert]::ToHexString($bytes).ToLower()
+}
+New-Alias -Name hex10 -Value Get-Hex10

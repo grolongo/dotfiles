@@ -53,7 +53,7 @@ alias logo="swaymsg exit"
 alias ipcheck="curl http://ip-api.com"
 alias ipv4="curl --silent --ipv4 ipv4.icanhazip.com"
 alias ipv6="curl --silent --ipv6 ipv6.icanhazip.com"
-alias curl-dl="curl --location --progress-bar --remote-name"
+alias curl-dl="curl --location --progress-bar --remote-name --fail"
 alias wget-dl="wget --quiet --show-progress"
 
 # security/privacy
