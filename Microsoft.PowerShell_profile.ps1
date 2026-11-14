@@ -1,4 +1,4 @@
-# general
+# General
 # =======
 
 Set-PSReadLineOption -BellStyle None
@@ -9,7 +9,7 @@ if ($PSVersionTable.PSVersion.Major -ge 7) {
     Write-Output "`e[?12l"
 }
 
-# history
+# History
 # =======
 
 $MaximumHistoryCount = 30000
@@ -29,7 +29,7 @@ function Search-History {
 
 New-Alias -Name hist -Value Search-History
 
-# prompt
+# Prompt
 # ======
 
 function Get-LastStatus() {
@@ -55,13 +55,7 @@ function prompt {
     "${currentDirectory}${gitBranch}${lastStatus} "
 }
 
-# aliases
-# =======
-
-Set-Alias -Name claer -Value clear
-Set-Alias -Name cl -Value clear
-
-# extra functions
+# Extra Functions
 # ===============
 
 function Search-File {
@@ -150,48 +144,42 @@ function Send-Stuff {
 
     scp $filePath x230:/home/glg/Downloads/
 }
-New-Alias -Name scpp -Value Send-Stuff
 
 function Get-Mp3 {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, Position = 0)]
-        [uri]$Uri
+        [string]$Uri
     )
 
     yt-dlp.exe --audio-format mp3 --audio-quality 0 --extract-audio $Uri
 }
-New-Alias -Name yt-mp3 -Value Get-Mp3
 
 function Get-RemoteFile {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, Position = 0)]
-        [uri]$Uri
+        [string]$Uri
     )
 
     curl.exe --location --progress-bar --remote-name --fail $Uri
 }
-New-Alias -Name curl-dl -Value Get-RemoteFile
 
 function Get-IPInfo {
     Invoke-RestMethod -Uri "http://ip-api.com/json/"
 }
-New-Alias -Name ipcheck -Value Get-IPInfo
 
 function Get-IPv4 {
     (Invoke-WebRequest `
-      -Uri "https://ipv4.icanhazip.com" `
-      -Method Get).Content.Trim()
+     -Uri "https://ipv4.icanhazip.com" `
+     -Method Get).Content.Trim()
 }
-New-Alias -Name ipv4 -Value Get-IPv4
 
 function Get-IPv6 {
     (Invoke-WebRequest `
-      -Uri "https://ipv6.icanhazip.com" `
-      -Method Get).Content.Trim()
+     -Uri "https://ipv6.icanhazip.com" `
+     -Method Get).Content.Trim()
 }
-New-Alias -Name ipv6 -Value Get-IPv6
 
 function Get-Hex10 {
     $bytes = [byte[]]::new(5)
@@ -202,4 +190,30 @@ function Get-Hex10 {
 
     [Convert]::ToHexString($bytes).ToLower()
 }
+
+function Get-Playlist {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$Uri,
+
+        [Parameter(Position = 1)]
+        [string]$OutFile = 'm3u8_vid.mp4'
+    )
+
+    ffmpeg.exe -i $Uri -c copy $OutFile
+}
+
+# Aliases
+# =======
+
+New-Alias -Name claer -Value clear
+New-Alias -Name cl -Value clear
+New-Alias -Name scpp -Value Send-Stuff
+New-Alias -Name yt-mp3 -Value Get-Mp3
+New-Alias -Name curl-dl -Value Get-RemoteFile
+New-Alias -Name ipcheck -Value Get-IPInfo
+New-Alias -Name ipv4 -Value Get-IPv4
+New-Alias -Name ipv6 -Value Get-IPv6
 New-Alias -Name hex10 -Value Get-Hex10
+New-Alias -Name ffmpeg-dl-m3u8 -Value Get-Playlist
