@@ -4,50 +4,89 @@ set -u
 set -o pipefail
 IFS=$'\n\t'
 
+readonly prog="${0##*/}"
+
 usage() {
-    printf "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|7z|xz|\
-exe|tar.bz2|tar.gz|tar.xz|tar.zst|lzma|pax.Z|Z|dmg|pax|deb|rpm>\n"
+    cat << EOF
+Usage: ${prog} <filename>
+
+Automatically detects a file's archive format based on its extension and
+extracts it using the appropriate system tool.
+
+Supported formats:
+  tar, tar.bz2, tbz2, tar.gz, tgz, tar.xz, tar.zst, tar.z, lzma, bz2, gz, xz,
+  rar, zip, pax.z, z, 7z, exe (CAB), pax, deb, rpm, dmg (mounts the image)
+
+Options:
+  -h, --help  Show this help and exit.
+EOF
+    exit 0
+}
+
+usage_error() {
+    {
+        printf '%s: %s\n' "${prog}" "${1}"
+        printf "Usage: %s <filename>\n" "${prog}"
+        printf "Try '%s --help' for more information.\n" "${prog}"
+    } >&2
+    exit 1
 }
 
 filecheck() {
-    if [[ -z "${1}" ]]; then
-        usage
-        exit 1
-    fi
-
     if [[ ! -f "${1}" ]]; then
-        printf "%s - file does not exist\n" "${1}"
+        printf "%s: file does not exist '%s' \n" "${prog}" "${1}" >&2
         exit 1
     fi
 }
 
-main() {
-    filecheck "${1-}"
-    local filename_lowercase
-    filename_lowercase="${1,,}"
-    case "${filename_lowercase}" in
-        *.tar)            tar xvf "${1}"                                        ;;
-        *.tar.bz2|*.tbz2) tar xvjf "${1}"                                       ;;
-        *.tar.gz|*.tgz)   tar xvzf "${1}"                                       ;;
-        *.tar.xz)         tar xvJf "${1}"                                       ;;
-        *.tar.zst)        tar --zstd -xvf "${1}"                                ;;
-        *.lzma)           unlzma "${1}"                                         ;;
-        *.bz2)            bunzip2 "${1}"                                        ;;
-        *.rar)            unrar x -ad "${1}"                                    ;;
-        *.gz)             gunzip "${1}"                                         ;;
-        *.zip)            unzip "${1}"                                          ;;
-        *.pax.Z)          uncompress "${1}" --stdout | pax-r                    ;;
-        *.Z)              uncompress "${1}"                                     ;;
-        *.7z)             7z x "${1}"                                           ;;
-        *.xz)             unxz "${1}"                                           ;;
-        *.exe)            cabextract "${1}"                                     ;;
-        *.dmg)            hdiutil mount "${1}"                                  ;;
-        *.pax)            cat "${1}" | pax-r                                    ;;
-        *.deb)            ar x "${1}"                                           ;;
-        *.rpm)            rpm2cpio "${1}" | cpio -idmv                          ;;
+dispatch() {
+    local file lower
+    file="${1}"
+    lower="$(printf '%s' "${file}" | tr '[:upper:]' '[:lower:]')"
+
+    case "${lower}" in
+        *.tar)            tar -xvf "${file}"                                       ;;
+        *.tar.bz2|*.tbz2) tar -xvjf "${file}"                                      ;;
+        *.tar.gz|*.tgz)   tar -xvzf "${file}"                                      ;;
+        *.tar.xz)         tar -xvJf "${file}"                                      ;;
+        *.tar.zst)        tar --zstd -xvf "${file}"                                ;;
+        *.tar.z)          uncompress -c "${file}" | tar -xvf -                     ;;
+        *.lzma)           unlzma "${file}"                                         ;;
+        *.bz2)            bunzip2 "${file}"                                        ;;
+        *.gz)             gunzip "${file}"                                         ;;
+        *.xz)             unxz "${file}"                                           ;;
+        *.rar)            unrar x -ad "${file}"                                    ;;
+        *.zip)            unzip "${file}"                                          ;;
+        *.pax.z)          uncompress "${file}" --stdout | pax -r                   ;;
+        *.z)              uncompress "${file}"                                     ;;
+        *.7z)             7z x "${file}"                                           ;;
+        *.exe)            cabextract "${file}"                                     ;;
+        *.dmg)            hdiutil attach "${file}"                                 ;;
+        *.pax)            pax -r < "${file}"                                       ;;
+        *.deb)            ar x "${file}"                                           ;;
+        *.rpm)            rpm2cpio "${file}" | cpio -idmv                          ;;
         *)
-            printf "extract: %s - unknown archive method\n" "${1}"
+            printf "%s: unknown archive method '%s' \n" "${prog}" "${file}" >&2
             exit 1
+            ;;
+    esac
+}
+
+main() {
+    if (( $# > 1 )); then
+        usage_error "too many arguments"
+    fi
+
+    case "${1:-}" in
+        -h | --help)
+            usage
+            ;;
+        "")
+            usage_error "missing file"
+            ;;
+        *)
+            filecheck "${1}"
+            dispatch "${1}"
             ;;
     esac
 }

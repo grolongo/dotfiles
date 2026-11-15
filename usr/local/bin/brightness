@@ -32,7 +32,7 @@ usage_error() {
     exit 1
 }
 
-run_command() {
+dispatch() {
     case "${1:-}" in
         up)
             brightnessctl -q set "+${step}%"
@@ -75,7 +75,7 @@ main() {
         usage_error "too many arguments"
     fi
 
-    run_command "${1:-}"
+    dispatch "${1:-}"
     notification
 }
 
