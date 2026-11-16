@@ -66,15 +66,14 @@ dispatch() {
         *.deb)            ar x "${file}"                                           ;;
         *.rpm)            rpm2cpio "${file}" | cpio -idmv                          ;;
         *)
-            printf "%s: unknown archive method '%s'\n" "${prog}" "${file}" >&2
-            exit 1
+            usage_error "unknown archive method '${file}'"
             ;;
     esac
 }
 
 main() {
     if (( $# > 1 )); then
-        usage_error "too many arguments"
+        usage_error "too many arguments ($#)"
     fi
 
     case "${1:-}" in
@@ -82,7 +81,7 @@ main() {
             usage
             ;;
         -*)
-            usage_error "unknown option: ${1}"
+            usage_error "unknown option '${1}'"
             ;;
         "")
             usage_error "missing file"

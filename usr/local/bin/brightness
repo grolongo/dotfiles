@@ -9,7 +9,7 @@ readonly step=10
 
 usage() {
     cat << EOF
-Usage: ${prog} <command>
+Usage: ${prog} <subcommand>
 
 Wrapper around brightnessctl using notify-send as an OSD feedback.
 
@@ -40,14 +40,8 @@ dispatch() {
         down)
             brightnessctl -q set "${step}%-"
             ;;
-        -h | --help)
-            usage
-            ;;
-        "")
-            usage_error "missing command"
-            ;;
         *)
-            usage_error "invalid command '${1}'"
+            usage_error "unknown subcommand '${1}'"
             ;;
     esac
 }
@@ -72,11 +66,24 @@ notification() {
 
 main() {
     if (( $# > 1 )); then
-        usage_error "too many arguments"
+        usage_error "too many arguments ($#)"
     fi
 
-    dispatch "${1:-}"
-    notification
+    case "${1:-}" in
+        -h | --help)
+            usage
+            ;;
+        -*)
+            usage_error "unknown option '${1}'"
+            ;;
+        "")
+            usage_error "missing subcommand"
+            ;;
+        *)
+            dispatch "${1:-}"
+            notification
+            ;;
+    esac
 }
 
 main "$@"

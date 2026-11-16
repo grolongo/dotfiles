@@ -23,7 +23,7 @@ EOF
 usage_error() {
     {
         printf '%s: %s\n' "${prog}" "${1}"
-        printf 'Usage: %s [-h|--help]\n' "${prog}"
+        printf 'Usage: %s\n' "${prog}"
         printf "Try '%s --help' for more information.\n" "${prog}"
     } >&2
     exit 1
@@ -64,12 +64,15 @@ notification() {
 
 main() {
     if (( $# > 1 )); then
-        usage_error "too many arguments"
+        usage_error "too many arguments ($#)"
     fi
 
     case "${1:-}" in
         -h | --help)
             usage
+            ;;
+        -*)
+            usage_error "unknown option '${1}'"
             ;;
         "")
             read_battery
@@ -77,7 +80,7 @@ main() {
             notification
             ;;
         *)
-            usage_error "invalid command '${1}'"
+            usage_error "unknown argument '${1}'"
             ;;
     esac
 }

@@ -8,6 +8,30 @@ IFS=$'\n\t'
 # also waiting for https://github.com/emersion/mako/pull/585 to be merged,
 # mako will display 1x1 icon while dunst will show a proper size.
 
+readonly prog="${0##*/}"
+
+usage() {
+    cat << EOF
+Usage: ${prog}
+
+Let the user pick a 1x1 pixel on the screen and reports it's hex as
+a notification.
+
+Options:
+  -h, --help  Show this help and exit.
+EOF
+    exit 0
+}
+
+usage_error() {
+    {
+        printf '%s: %s\n' "${prog}" "${1}"
+        printf "Usage: %s\n" "${prog}"
+        printf "Try '%s --help' for more information.\n" "${prog}"
+    } >&2
+    exit 1
+}
+
 tmpfile=$(mktemp --suffix=.ppm)
 trap 'rm -f "${tmpfile}"' EXIT
 
@@ -23,8 +47,25 @@ hex() {
 }
 
 main() {
-    pixel_capture
-    hex
+    if (( $# > 1 )); then
+        usage_error "too many arguments ($#)"
+    fi
+
+    case "${1:-}" in
+        -h | --help)
+            usage
+            ;;
+        -*)
+            usage_error "unknown option '${1}'"
+            ;;
+        "")
+            pixel_capture
+            hex
+            ;;
+        *)
+            usage_error "unknown argument '${1}'"
+            ;;
+    esac
 }
 
-main
+main "$@"
