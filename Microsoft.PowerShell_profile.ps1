@@ -3,6 +3,8 @@
 
 Set-PSReadLineOption -BellStyle None
 Set-PSReadLineOption -EditMode Emacs
+Set-PSReadLineOption -PredictionSource None # default = HistoryAndPlugin
+Set-PSReadLineOption -PredictionViewStyle ListView
 
 # disable cursor blinking
 if ($PSVersionTable.PSVersion.Major -ge 7) {
