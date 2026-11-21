@@ -5,19 +5,21 @@ set -o pipefail
 IFS=$'\n\t'
 
 readonly prog="${0##*/}"
-readonly folder="${HOME}/Downloads"
+folder="${HOME}/Pictures/screenshots/"
 
 usage() {
     cat << EOF
-Usage: ${prog} [option]
+Usage: ${prog} [options]
 
-Take a screenshot with grim and save it to ${folder}
-If no argument is given, take a screenshot of the whole screen.
+Take a screenshot with grim and save it to a folder
+(default: ${folder}).
+If no capture option is given, take a screenshot of the whole screen.
 
 Options:
-  -f, --fullscreen  Take a screenshot of the whole screen.
-  -s, --selection   Select a region with slurp before capturing.
-  -h, --help        Show this help and exit.
+  -f, --fullscreen      Take a screenshot of the whole screen.
+  -s, --selection       Select a region with slurp before capturing.
+  -d, --directory=DIR   Save the screenshot in DIR (created if missing).
+  -h, --help            Show this help and exit.
 EOF
     exit 0
 }
@@ -29,7 +31,7 @@ usage_error() {
                "${prog}" \
                '[-f|--fullscreen]' \
                '[-s|--selection]' \
-               '[-h|--help]'
+               '[-d|--directory DIR]'
         printf "Try '%s --help' for more information.\n" "${prog}"
     }  >&2
     exit 1
@@ -41,22 +43,57 @@ capture() {
     grim "$@" "${file}"
 }
 
-run_command() {
+parse_args() {
+    while (( $# > 0 )); do
+        case "${1}" in
+            -h | --help)
+                usage
+                ;;
+            -f | --fullscreen)
+                mode="fullscreen"
+                shift
+                ;;
+            -s | --selection)
+                mode="selection"
+                shift
+                ;;
+            -d | --directory)
+                if (( $# < 2 )); then
+                    usage_error "option '${1}' requires a path to a directory"
+                fi
+                folder="${2}"
+                shift 2
+                ;;
+            --directory=*)
+                folder="${1#*=}"
+                shift
+                ;;
+            -*)
+                usage_error "unknown option '${1}'"
+                ;;
+            *)
+                usage_error "unknown argument '${1}'"
+                ;;
+        esac
+    done
+
+    if [[ -z "${folder}" ]]; then
+        usage_error "the directory cannot be empty"
+    fi
+
+    folder="${folder/#\~/${HOME}}"
+}
+
+dispatch() {
     local region
 
-    case "${1:-}" in
-        "" | -f | --fullscreen)
+    case "${mode:-fullscreen}" in
+        fullscreen)
             capture
             ;;
-        -s | --selection)
+        selection)
             region="$(slurp)"
             capture -g "${region}"
-            ;;
-        -h | --help)
-            usage
-            ;;
-        *)
-            usage_error "unrecognized option '${1}'"
             ;;
     esac
 }
@@ -68,12 +105,9 @@ notification() {
 }
 
 main() {
-    if (( $# > 1 )); then
-        usage_error "too many arguments"
-    else
-        run_command "$@"
-        notification
-    fi
+    parse_args "$@"
+    dispatch
+    notification
 }
 
 main "$@"

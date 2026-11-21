@@ -220,8 +220,8 @@ bindsym --locked XF86KbdBrightnessDown exec "sudo keyboard-backlight down"
 bindsym --locked XF86KbdBrightnessUp   exec "sudo keyboard-backlight up"
 
 # Special keys to take a screenshot with grim
-bindsym print      exec "screenshot --fullscreen"
-bindsym ctrl+print exec "screenshot --selection"
+bindsym print      exec "screenshot --fullscreen --directory=$HOME/Downloads"
+bindsym ctrl+print exec "screenshot --selection --directory=$HOME/Downloads"
 bindsym $mod+c     exec colorpicker
 
 # =========
